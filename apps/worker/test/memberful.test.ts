@@ -61,21 +61,21 @@ import {
 const ada = { name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" };
 const grace = { name: "Grace Hopper", emailAddress: "grace@example.com", password: "compiler" };
 
-/** The Memberful site whose members sign in, and its custom app's keys, as the deployment's secrets give them. */
+/** The Papaya site whose members sign in, and its custom app's keys, as the deployment's secrets give them. */
 const SITE = "https://example.memberful.com";
 const KEYS = { MEMBERFUL_URL: `${SITE}/`, MEMBERFUL_CLIENT_ID: "ember-client-id", MEMBERFUL_CLIENT_SECRET: "ember-client-secret" };
-/** The custom app's API key, which the admin API takes, and the secret Memberful signs the site's webhooks with. */
+/** The custom app's API key, which the admin API takes, and the secret Papaya signs the site's webhooks with. */
 const API_KEY = "ember-api-key";
 const WEBHOOK_SECRET = "ember-webhook-secret";
-/** Every key of a deployment that hears Memberful's webhooks: the sign-in keys, the API key and the webhook's secret. */
+/** Every key of a deployment that hears Papaya's webhooks: the sign-in keys, the API key and the webhook's secret. */
 const ALL_KEYS = { ...KEYS, MEMBERFUL_API_KEY: API_KEY, MEMBERFUL_WEBHOOK_SECRET: WEBHOOK_SECRET };
-/** The code Memberful sends the browser back with, and the access token it's exchanged for. */
+/** The code Papaya sends the browser back with, and the access token it's exchanged for. */
 const CODE = "a-code-from-memberful";
 const ACCESS_TOKEN = "an-access-token";
-/** Where Memberful sign-ins come from, unless a test says otherwise. */
+/** Where Papaya sign-ins come from, unless a test says otherwise. */
 const IP = "203.0.113.20";
 
-/** A member of the Memberful site as its member API describes them. */
+/** A member of the Papaya site as its member API describes them. */
 interface MemberfulMember {
   id: string;
   email: string | null;
@@ -84,7 +84,7 @@ interface MemberfulMember {
   subscriptions: Array<{ active: boolean }>;
 }
 
-/** Katherine, a member of the Memberful site with an active subscription, and no account here yet. */
+/** Katherine, a member of the Papaya site with an active subscription, and no account here yet. */
 const katherine: MemberfulMember = {
   id: "4242",
   email: "katherine@example.com",
@@ -93,10 +93,10 @@ const katherine: MemberfulMember = {
   subscriptions: [{ active: true }],
 };
 
-/** Dorothy, another member of the Memberful site with an active subscription. */
+/** Dorothy, another member of the Papaya site with an active subscription. */
 const dorothy: MemberfulMember = { ...katherine, id: "4243", email: "dorothy@example.com", fullName: "Dorothy Vaughan" };
 
-/** A request the fake Memberful site was sent. */
+/** A request the fake Papaya site was sent. */
 interface SentToMemberful {
   method: string;
   url: string;
@@ -106,7 +106,7 @@ interface SentToMemberful {
 }
 
 /**
- * Stands in for the Memberful site: its token endpoint gives an access token for `CODE` sent with the
+ * Stands in for the Papaya site: its token endpoint gives an access token for `CODE` sent with the
  * app's keys, and its member API describes `site.member`, which a test can change, to that token, once
  * `site.signInHeld` settles. Its admin API describes `site.member` and `site.others` by their ids to the
  * app's API key, as they were when it was asked, once `site.held` settles, or answers 502 if `site.down`
@@ -148,7 +148,7 @@ function fakeMemberful(member: Partial<MemberfulMember> | null = {}) {
       return Response.json({ data: { currentMember: site.member } });
     }
     if (request.method === "POST" && url.href === `${SITE}/api/graphql`) {
-      // As Memberful answers a wrong key: 200, with errors and no data.
+      // As Papaya answers a wrong key: 200, with errors and no data.
       if (request.headers.get("Authorization") !== `Bearer ${API_KEY}`) return Response.json({ errors: [{ message: "Invalid authentication token." }] });
       // What it says is as things were when it was asked, however long it takes to answer.
       const [down, failing] = [site.down, site.failing];
@@ -184,24 +184,24 @@ async function setUp(): Promise<Session> {
 
 const as = (session?: Session | null): Record<string, string> => (session ? { Cookie: session.cookie } : {});
 
-/** A request to a Worker that has the Memberful keys, answered as the Worker answers it, without following a redirect. `path` may be a whole URL. */
+/** A request to a Worker that has the Papaya keys, answered as the Worker answers it, without following a redirect. `path` may be a whole URL. */
 const withKeys = (path: string, init: RequestInit<IncomingRequestCfProperties> = {}) => apiWith(KEYS, path, init);
 
 /** The same, to a Worker without them, as this suite's is. */
 const withoutKeys = (path: string, init: RequestInit<IncomingRequestCfProperties> = {}) => apiWith({}, path, init);
 
-/** What `PATCH /api/account` answers `session` for `body`, on a deployment with the Memberful keys unless `keys` is false. */
+/** What `PATCH /api/account` answers `session` for `body`, on a deployment with the Papaya keys unless `keys` is false. */
 const change = (session: Session | null, body: unknown, { keys = true } = {}) =>
   apiWith(keys ? KEYS : {}, "/api/account", { method: "PATCH", headers: as(session), body: JSON.stringify(body) });
 
-/** Turns Memberful on, members only unless `membersOnly` is false, or off, which turns Members only off too, as `administrator`. */
+/** Turns Papaya on, members only unless `membersOnly` is false, or off, which turns Members only off too, as `administrator`. */
 async function turnMemberful(administrator: Session, on: boolean, { membersOnly = true } = {}): Promise<void> {
   const settings: AccountSettings = on ? { memberfulJoin: true, memberfulSignIn: membersOnly } : { memberfulJoin: false };
   const response = await change(administrator, { settings });
   expect(response.status, await response.clone().text()).toBe(200);
 }
 
-/** Sets Ember up with Memberful on, members only unless `membersOnly` is false, with Ada as its administrator. */
+/** Sets Ember up with Papaya on, members only unless `membersOnly` is false, with Ada as its administrator. */
 async function setUpWithMemberful({ membersOnly = true } = {}): Promise<Session> {
   const administrator = await setUp();
   await turnMemberful(administrator, true, { membersOnly });
@@ -210,7 +210,7 @@ async function setUpWithMemberful({ membersOnly = true } = {}): Promise<Session>
 
 const joinCode = async () => ((await workspaceSql("SELECT join_code FROM accounts")) as Array<{ join_code: string }>)[0]!.join_code;
 
-/** Joins as Grace with the join link, with a password, as people did before Memberful was members only. */
+/** Joins as Grace with the join link, with a password, as people did before Papaya was members only. */
 async function joinAsGrace(): Promise<Session> {
   const response = await api(`/api/join/${await joinCode()}`, { method: "POST", body: JSON.stringify(grace) });
   expect(response.status).toBe(201);
@@ -220,22 +220,22 @@ async function joinAsGrace(): Promise<Session> {
 /** A sign-in with an email address and password, from `ip`. */
 const signInWithPassword = (body: unknown, ip = IP) => api("/api/session", { method: "POST", headers: { "CF-Connecting-IP": ip }, body: JSON.stringify(body) });
 
-/** Starts signing in with Memberful, coming back to `returnTo` once signed in, if given. */
+/** Starts signing in with Papaya, coming back to `returnTo` once signed in, if given. */
 const start = (returnTo: string | null = null, host = origin) => withKeys(`${host}${memberfulSignInPath(returnTo)}`);
 
-/** The state a start sent the browser to Memberful with, and the cookie it keeps it in. */
+/** The state a start sent the browser to Papaya with, and the cookie it keeps it in. */
 function startedWith(started: Response): { state: string; cookie: string } {
   expect(started.status).toBe(302);
   return { state: new URL(started.headers.get("Location")!).searchParams.get("state")!, cookie: cookieOf(started) };
 }
 
-/** Where Memberful sends the browser back to, with `params`, from a browser with the cookie `cookie`, at `ip`. */
+/** Where Papaya sends the browser back to, with `params`, from a browser with the cookie `cookie`, at `ip`. */
 const callback = (params: Record<string, string>, cookie?: string, ip = IP) =>
   withKeys(`${MEMBERFUL_CALLBACK_PATH}?${new URLSearchParams(params)}`, {
     headers: { "CF-Connecting-IP": ip, "User-Agent": "Katherine's laptop", ...(cookie ? { Cookie: cookie } : {}) },
   });
 
-/** Signs in with Memberful from a new browser, from start to the callback's answer, coming back to `returnTo` if given. */
+/** Signs in with Papaya from a new browser, from start to the callback's answer, coming back to `returnTo` if given. */
 async function signInWithMemberful({ returnTo = null, ip = IP }: { returnTo?: string | null; ip?: string } = {}): Promise<Response> {
   const { state, cookie } = startedWith(await start(returnTo));
   return callback({ code: CODE, state }, cookie, ip);
@@ -244,7 +244,7 @@ async function signInWithMemberful({ returnTo = null, ip = IP }: { returnTo?: st
 /** Where an answer sends the browser. */
 const locationOf = (response: Response) => response.headers.get("Location");
 
-/** Where the callback sends the browser back to sign in, saying why signing in with Memberful didn't work. */
+/** Where the callback sends the browser back to sign in, saying why signing in with Papaya didn't work. */
 const backToSignIn = (problem: string) => `${origin}/session/new?memberful=${problem}`;
 
 /** The session a callback's answer signs the browser in with, as the app sees it. */
@@ -261,13 +261,13 @@ const identities = () => workspaceSql("SELECT issuer, subject, user_id FROM iden
 
 const bootstrap = async () => (await (await api("/api/bootstrap")).json()) as Bootstrap;
 
-/** Whether the sign-in page offers Sign in with Memberful, on a deployment with the Memberful keys unless `keys` says otherwise. */
+/** Whether the sign-in page offers Sign in with Papaya, on a deployment with the Papaya keys unless `keys` says otherwise. */
 const offersMemberful = async (keys: Partial<Env> = KEYS) => ((await (await apiWith(keys, "/api/bootstrap")).json()) as Bootstrap).signInWithMemberful;
 
 /** The account's settings as they're stored. */
 const storedSettings = async () => JSON.parse(((await workspaceSql("SELECT settings FROM accounts")) as Array<{ settings: string }>)[0]!.settings) as unknown;
 
-/** The workspace as pages show a new one, with Memberful's settings off but as `memberful` says. */
+/** The workspace as pages show a new one, with Papaya's settings off but as `memberful` says. */
 const account = (memberful: Partial<Pick<Account, "memberfulJoin" | "memberfulSignIn">> = {}): Account => ({
   name: "Ember",
   tagline: "",
@@ -287,15 +287,15 @@ const account = (memberful: Partial<Pick<Account, "memberfulJoin" | "memberfulSi
   ...memberful,
 });
 
-/** Memberful on and members only, as an account has them. */
+/** Papaya on and members only, as an account has them. */
 const MEMBERS_ONLY = { memberfulJoin: true, memberfulSignIn: true };
 
 beforeEach(freshDeploy);
 afterEach(() => vi.restoreAllMocks());
 
-describe("Sign in with Memberful", () => {
+describe("Sign in with Papaya", () => {
   describe("the settings", () => {
-    it("let an administrator turn Memberful on once the deployment has the keys, then make it members only, telling every tab", async () => {
+    it("let an administrator turn Papaya on once the deployment has the keys, then make it members only, telling every tab", async () => {
       const administrator = await setUp();
       const socket = await openWorkspaceSocket(administrator);
       const on = await change(administrator, { settings: { memberfulJoin: true } });
@@ -317,7 +317,7 @@ describe("Sign in with Memberful", () => {
       socket.ws.close(1000);
     });
 
-    it("turn Memberful on with Members only, and Members only off with Memberful, which it's never on without", async () => {
+    it("turn Papaya on with Members only, and Members only off with Papaya, which it's never on without", async () => {
       const administrator = await setUp();
       const changed = async (settings: AccountSettings) => ((await (await change(administrator, { settings })).json()) as { account: Account }).account;
       expect(await changed({ memberfulSignIn: true })).toEqual(account(MEMBERS_ONLY));
@@ -328,10 +328,10 @@ describe("Sign in with Memberful", () => {
     });
 
     it.each([
-      ["Members only, as Memberful's only setting was", '{"memberful_sign_in":true}', MEMBERS_ONLY],
+      ["Members only, as Papaya's only setting was", '{"memberful_sign_in":true}', MEMBERS_ONLY],
       ["Members only off", '{"memberful_sign_in":false}', {}],
-      ["Members only without Memberful", '{"memberful_join":false,"memberful_sign_in":true}', {}],
-      ["Memberful without Members only", '{"memberful_join":true}', { memberfulJoin: true }],
+      ["Members only without Papaya", '{"memberful_join":false,"memberful_sign_in":true}', {}],
+      ["Papaya without Members only", '{"memberful_join":true}', { memberfulJoin: true }],
     ])("read %s", async (_, stored, memberful) => {
       await setUp();
       await workspaceSql("UPDATE accounts SET settings = ?", stored);
@@ -340,7 +340,7 @@ describe("Sign in with Memberful", () => {
       expect((await bootstrap()).account).toEqual(account(memberful));
     });
 
-    it("save both together, so that turning Members only off leaves Memberful on in a workspace from before it had a switch", async () => {
+    it("save both together, so that turning Members only off leaves Papaya on in a workspace from before it had a switch", async () => {
       const administrator = await setUp();
       await workspaceSql("UPDATE accounts SET settings = ?", '{"memberful_sign_in":true}');
       await evictDurableObject(workspaceStub());
@@ -350,7 +350,7 @@ describe("Sign in with Memberful", () => {
       expect((await bootstrap()).account).toEqual(account({ memberfulJoin: true }));
     });
 
-    it("names the Memberful site to administrators' settings once the deployment has all three keys, its address's origin", async () => {
+    it("names the Papaya site to administrators' settings once the deployment has all three keys, its address's origin", async () => {
       const administrator = await setUp();
       const settings = async (changes = {}) =>
         ((await (await apiWith(changes, "/api/account", { headers: as(administrator) })).json()) as WorkspaceSettings).memberfulSite;
@@ -371,7 +371,7 @@ describe("Sign in with Memberful", () => {
       for (const settings of [{ memberfulJoin: true }, { memberfulSignIn: true }]) {
         const refused = await change(administrator, { settings }, { keys: false });
         expect(refused.status).toBe(422);
-        expect(await refused.json()).toEqual({ error: "Memberful needs MEMBERFUL_URL, MEMBERFUL_CLIENT_ID and MEMBERFUL_CLIENT_SECRET set first" });
+        expect(await refused.json()).toEqual({ error: "Papaya needs MEMBERFUL_URL, MEMBERFUL_CLIENT_ID and MEMBERFUL_CLIENT_SECRET set first" });
       }
       expect((await bootstrap()).account).toEqual(account());
 
@@ -521,7 +521,7 @@ describe("Sign in with Memberful", () => {
       expect((await signInWithPassword({ emailAddress: grace.emailAddress, password: grace.password })).status).toBe(201);
     });
 
-    it("lets the Memberful site's members join, and sign in again, with their Memberful account", async () => {
+    it("lets the Papaya site's members join, and sign in again, with their Papaya account", async () => {
       await setUpWithMemberful({ membersOnly: false });
       fakeMemberful();
       const user = await signedInAs(await signInWithMemberful());
@@ -530,7 +530,7 @@ describe("Sign in with Memberful", () => {
       expect(await signedInAs(await signInWithMemberful())).toEqual(user);
     });
 
-    it("sends someone whose Memberful email address someone here has to sign in with their password, which does", async () => {
+    it("sends someone whose Papaya email address someone here has to sign in with their password, which does", async () => {
       await setUpWithMemberful({ membersOnly: false });
       await joinAsGrace();
       fakeMemberful(gracesAccount);
@@ -584,8 +584,8 @@ describe("Sign in with Memberful", () => {
     });
   });
 
-  describe("Sign in with Memberful", () => {
-    it("sends the browser to sign in at Memberful with a new state, which a cookie keeps for 10 minutes", async () => {
+  describe("Sign in with Papaya", () => {
+    it("sends the browser to sign in at Papaya with a new state, which a cookie keeps for 10 minutes", async () => {
       await setUpWithMemberful();
       const response = await start("/rooms/abc?tab=pins");
       expect(response.status).toBe(302);
@@ -619,7 +619,7 @@ describe("Sign in with Memberful", () => {
       expect(locationOf(response)).toBe(`${origin}/`);
     });
 
-    it("starts at Ember's custom domain, where Memberful sends the browser back", async () => {
+    it("starts at Ember's custom domain, where Papaya sends the browser back", async () => {
       const administrator = await setUpWithMemberful();
       const used = await apiWith({}, "https://chat.example.com/api/account", {
         method: "PATCH",
@@ -635,8 +635,8 @@ describe("Sign in with Memberful", () => {
     });
   });
 
-  describe("coming back from Memberful", () => {
-    it("signs in someone new with an active membership as a member in every open room, linked to their Memberful account", async () => {
+  describe("coming back from Papaya", () => {
+    it("signs in someone new with an active membership as a member in every open room, linked to their Papaya account", async () => {
       await setUpWithMemberful();
       const site = fakeMemberful();
       const response = await signInWithMemberful({ returnTo: "/rooms/abc?tab=pins#latest" });
@@ -661,7 +661,7 @@ describe("Sign in with Memberful", () => {
       const { rooms } = (await (await api("/api/sidebar", { headers: { Cookie: cookieOf(response) } })).json()) as Sidebar;
       expect(rooms.map((room) => room.kind !== "direct" && room.name)).toEqual(["general", "random"]);
 
-      // The code went to Memberful's token endpoint with the app's keys, and the token to its member API, neither following a redirect.
+      // The code went to Papaya's token endpoint with the app's keys, and the token to its member API, neither following a redirect.
       expect(site.requests.map(({ method, url, redirect }) => [method, new URL(url).pathname, redirect])).toEqual([
         ["POST", "/oauth/token", "manual"],
         ["GET", "/api/graphql/member", "manual"],
@@ -688,7 +688,7 @@ describe("Sign in with Memberful", () => {
       expect(await workspace.next()).toEqual({ type: "user.updated", user: listed });
     });
 
-    it("signs the same person in again by their Memberful account, whatever its name and email address are now", async () => {
+    it("signs the same person in again by their Papaya account, whatever its name and email address are now", async () => {
       await setUpWithMemberful();
       const site = fakeMemberful();
       const first = await signedInAs(await signInWithMemberful());
@@ -790,7 +790,7 @@ describe("Sign in with Memberful", () => {
       expect((await signedInAs(await signInWithMemberful())).name).toBe("Member 2");
     });
 
-    it("signs nobody in with a state this browser didn't start with, or without a code, and asks Memberful nothing", async () => {
+    it("signs nobody in with a state this browser didn't start with, or without a code, and asks Papaya nothing", async () => {
       await setUpWithMemberful();
       const site = fakeMemberful();
       const { state, cookie } = startedWith(await start());
@@ -809,25 +809,25 @@ describe("Sign in with Memberful", () => {
       expect(await count("users")).toBe(1);
     });
 
-    it("signs nobody in when Memberful refuses the code, or doesn't answer as it should", async () => {
+    it("signs nobody in when Papaya refuses the code, or doesn't answer as it should", async () => {
       await setUpWithMemberful();
       const error = vi.spyOn(console, "error").mockImplementation(() => {});
       const { state, cookie } = startedWith(await start());
       fakeMemberful();
       expect(locationOf(await callback({ code: "a-code-memberful-never-gave", state }, cookie))).toBe(backToSignIn("failed"));
-      expect(error).toHaveBeenLastCalledWith("Memberful's token endpoint answered 400");
+      expect(error).toHaveBeenLastCalledWith("Papaya's token endpoint answered 400");
 
       fakeMemberful(null);
       expect(locationOf(await signInWithMemberful())).toBe(backToSignIn("failed"));
-      expect(error).toHaveBeenLastCalledWith("Memberful's member endpoint answered 200 without what it should");
+      expect(error).toHaveBeenLastCalledWith("Papaya's member endpoint answered 200 without what it should");
       fakeMemberful({ id: 4242 as unknown as string });
       expect(locationOf(await signInWithMemberful())).toBe(backToSignIn("failed"));
 
       vi.spyOn(globalThis, "fetch").mockRejectedValue(new TypeError("Network connection lost"));
       expect(locationOf(await signInWithMemberful())).toBe(backToSignIn("failed"));
-      expect(error).toHaveBeenLastCalledWith("Signing in with Memberful failed:", "TypeError");
+      expect(error).toHaveBeenLastCalledWith("Signing in with Papaya failed:", "TypeError");
       expect(await count("users")).toBe(1);
-      // Nothing Memberful sent, nor the keys, reaches the log.
+      // Nothing Papaya sent, nor the keys, reaches the log.
       expect(JSON.stringify(error.mock.calls)).not.toMatch(/ember-client-secret|an-access-token|katherine/);
     });
 
@@ -885,30 +885,30 @@ describe("Sign in with Memberful", () => {
   });
 });
 
-/** The hex HMAC-SHA256 of `body` under `secret`, as Memberful signs a webhook. */
+/** The hex HMAC-SHA256 of `body` under `secret`, as Papaya signs a webhook. */
 async function signatureOf(body: string, secret = WEBHOOK_SECRET): Promise<string> {
   const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
   return toHex(new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(body))));
 }
 
 /**
- * Memberful's webhook with `payload`, signed as Memberful signs it unless `signature` says otherwise (null
+ * Papaya's webhook with `payload`, signed as Papaya signs it unless `signature` says otherwise (null
  * for none), to a deployment with every key unless `keys` says otherwise.
  */
 async function webhook(payload: unknown, { signature, keys = ALL_KEYS }: { signature?: string | null; keys?: Partial<Env> } = {}): Promise<Response> {
   const body = JSON.stringify(payload);
   const signed = signature === undefined ? await signatureOf(body) : signature;
-  const headers = { "Content-Type": "application/json", ...(signed === null ? {} : { "X-Memberful-Webhook-Signature": signed }) };
+  const headers = { "Content-Type": "application/json", ...(signed === null ? {} : { "X-Papaya-Webhook-Signature": signed }) };
   return apiWith(keys, MEMBERFUL_WEBHOOK_PATH, { method: "POST", headers, body });
 }
 
-/** Memberful's webhook that a subscription of `member`'s changed, as `event`, naming them by their id, a number. */
+/** Papaya's webhook that a subscription of `member`'s changed, as `event`, naming them by their id, a number. */
 const subscriptionChanged = (member: { id: string }, event = "subscription.deactivated") => ({
   event,
   subscription: { id: 101, active: false, autorenew: false, member: { id: Number(member.id), email: "someone@example.com" } },
 });
 
-/** A test run while the Workspace has every Memberful key too, as a deployment that hears Memberful's webhooks does. */
+/** A test run while the Workspace has every Papaya key too, as a deployment that hears Papaya's webhooks does. */
 const hearingWebhooks = (run: () => Promise<void>) => () => withWorkspaceEnv(ALL_KEYS, run);
 
 /** Someone's status as the people directory lists it to `viewer`. */
@@ -917,7 +917,7 @@ async function statusOf(viewer: Session, id: UserId): Promise<UserStatus | undef
   return users.find((user) => user.id === id)?.status;
 }
 
-/** The membership checks queued, by subject, with how many times in a row Memberful failed to answer each. */
+/** The membership checks queued, by subject, with how many times in a row Papaya failed to answer each. */
 const queuedChecks = () => workspaceSql("SELECT subject, attempts FROM membership_checks ORDER BY subject");
 
 /** Waits for the Workspace's alarm to have checked every membership queued. */
@@ -928,13 +928,13 @@ async function queueChecks(...members: Array<{ id: string }>): Promise<void> {
   for (const { id } of members) await workspaceSql("INSERT INTO membership_checks (issuer, subject, queued_at, due_at) VALUES (?, ?, ?, ?)", SITE, id, Date.now(), Date.now());
 }
 
-/** Signs in with Memberful as whoever the fake site's member API describes, from `ip`, answering the session. */
+/** Signs in with Papaya as whoever the fake site's member API describes, from `ip`, answering the session. */
 async function memberfulSession(ip = IP): Promise<Session> {
   const response = await signInWithMemberful({ ip });
   return { user: shown(await signedInAs(response)), cookie: cookieOf(response) };
 }
 
-/** Signs in with Memberful as `member`, whom the fake site's member API describes meanwhile, from `ip`, answering the session. */
+/** Signs in with Papaya as `member`, whom the fake site's member API describes meanwhile, from `ip`, answering the session. */
 async function memberfulSessionOf(member: MemberfulMember, site: { member: MemberfulMember | null }, ip = IP): Promise<Session> {
   const described = site.member;
   site.member = member;
@@ -957,7 +957,7 @@ const idle = () => vi.waitFor(async () => expect(await workspaceAlarm()).toBeGre
 /** Whether `session` still signs someone in. */
 const signsIn = async (session: Session) => (await api("/api/me", { headers: as(session) })).status === 200;
 
-describe("Memberful memberships", () => {
+describe("Papaya memberships", () => {
   describe("webhooks", () => {
     it("are heard once the deployment has the API key and the webhook's secret, which administrators' settings say", async () => {
       const errors = vi.spyOn(console, "error").mockImplementation(() => {});
@@ -974,11 +974,11 @@ describe("Memberful memberships", () => {
       for (const keys of [KEYS, { ...ALL_KEYS, MEMBERFUL_API_KEY: undefined }, { ...ALL_KEYS, MEMBERFUL_WEBHOOK_SECRET: "" }]) {
         expect((await webhook(subscriptionChanged(katherine), { keys })).status).toBe(404);
       }
-      expect(errors).toHaveBeenCalledWith("A Memberful webhook came, but the deployment lacks MEMBERFUL_WEBHOOK_SECRET or MEMBERFUL_API_KEY, so it's refused");
+      expect(errors).toHaveBeenCalledWith("A Papaya webhook came, but the deployment lacks MEMBERFUL_WEBHOOK_SECRET or MEMBERFUL_API_KEY, so it's refused");
     });
 
     it(
-      "are refused unless Memberful's signature checks out, or when they're too large, and only taken as a POST",
+      "are refused unless Papaya's signature checks out, or when they're too large, and only taken as a POST",
       hearingWebhooks(async () => {
         await setUpWithMemberful();
         fakeMemberful();
@@ -1013,7 +1013,7 @@ describe("Memberful memberships", () => {
         }
 
         const asked = site.requests.length;
-        // Someone Memberful has who isn't linked here, an administrator, and an event that's about nobody.
+        // Someone Papaya has who isn't linked here, an administrator, and an event that's about nobody.
         const promoted = await api(`/api/account/users/${(await memberfulSessionOf(dorothy, site)).user.id}`, {
           method: "PATCH",
           headers: as(administrator),
@@ -1029,7 +1029,7 @@ describe("Memberful memberships", () => {
     );
 
     it(
-      "are heard once Memberful is off too, since those who joined with it keep signing in with it",
+      "are heard once Papaya is off too, since those who joined with it keep signing in with it",
       hearingWebhooks(async () => {
         const administrator = await setUpWithMemberful();
         const site = fakeMemberful();
@@ -1043,7 +1043,7 @@ describe("Memberful memberships", () => {
     );
 
     it(
-      "start no daily check while nobody here is linked to the site, whether Memberful is on or not, and one started before anyone was is forgotten",
+      "start no daily check while nobody here is linked to the site, whether Papaya is on or not, and one started before anyone was is forgotten",
       hearingWebhooks(async () => {
         const administrator = await setUpWithMemberful();
         fakeMemberful();
@@ -1053,7 +1053,7 @@ describe("Memberful memberships", () => {
         expect(await queuedChecks()).toEqual([]);
         expect(await count("membership_catch_ups")).toBe(0);
 
-        // As turning Memberful on did before anyone signed in with it, once.
+        // As turning Papaya on did before anyone signed in with it, once.
         await workspaceSql("INSERT INTO membership_catch_ups (issuer, due_at) VALUES (?, ?)", SITE, Date.now());
         await runInDurableObject(workspaceStub(), (_workspace, state: DurableObjectState) => state.storage.setAlarm(Date.now() + 60 * 60 * 1000));
         expect(await runDurableObjectAlarm(workspaceStub())).toBe(true);
@@ -1113,7 +1113,7 @@ describe("Memberful memberships", () => {
     );
 
     it(
-      "takes a member the Memberful site no longer has as one without a membership",
+      "takes a member the Papaya site no longer has as one without a membership",
       hearingWebhooks(async () => {
         const administrator = await setUpWithMemberful();
         const site = fakeMemberful();
@@ -1136,7 +1136,7 @@ describe("Memberful memberships", () => {
         site.others = [{ ...dorothy, subscriptions: [] }];
         expect((await api(`/api/account/users/${dorothysId}`, { method: "DELETE", headers: as(administrator) })).status).toBe(200);
 
-        // Asked about while they were a member, and made an administrator while Memberful answers.
+        // Asked about while they were a member, and made an administrator while Papaya answers.
         await idle();
         const answered = Promise.withResolvers<void>();
         site.held = answered.promise;
@@ -1158,7 +1158,7 @@ describe("Memberful memberships", () => {
     );
 
     it(
-      "never suspends someone who joined with an invitation, who needs no membership, once they've connected Memberful, as it never does an administrator",
+      "never suspends someone who joined with an invitation, who needs no membership, once they've connected Papaya, as it never does an administrator",
       hearingWebhooks(async () => {
         const { administrator, member } = await setUpWithGrace();
         // As joining with an invitation leaves her.
@@ -1183,7 +1183,7 @@ describe("Memberful memberships", () => {
     );
 
     it(
-      "puts a check off while Memberful doesn't answer, then asks after each of those members alone",
+      "puts a check off while Papaya doesn't answer, then asks after each of those members alone",
       hearingWebhooks(async () => {
         const errors = vi.spyOn(console, "error").mockImplementation(() => {});
         const administrator = await setUpWithMemberful();
@@ -1201,7 +1201,7 @@ describe("Memberful memberships", () => {
           { subject: "4242", attempts: 1 },
           { subject: "4243", attempts: 1 },
         ]);
-        expect(errors).toHaveBeenCalledWith("Memberful's admin endpoint answered 502");
+        expect(errors).toHaveBeenCalledWith("Papaya's admin endpoint answered 502");
 
         await checked();
         expect(askedAfter(site.requests)).toEqual([["4242", "4243"], ["4242"], ["4243"]]);
@@ -1211,7 +1211,7 @@ describe("Memberful memberships", () => {
     );
 
     it(
-      "puts a check off when Memberful answers it with an error, rather than taking the member as one without a membership",
+      "puts a check off when Papaya answers it with an error, rather than taking the member as one without a membership",
       hearingWebhooks(async () => {
         const errors = vi.spyOn(console, "error").mockImplementation(() => {});
         const administrator = await setUpWithMemberful();
@@ -1228,7 +1228,7 @@ describe("Memberful memberships", () => {
           { subject: "4242", attempts: 1 },
           { subject: "4243", attempts: 1 },
         ]);
-        expect(errors).toHaveBeenCalledWith("Memberful's admin endpoint answered 200 without what it should");
+        expect(errors).toHaveBeenCalledWith("Papaya's admin endpoint answered 200 without what it should");
 
         await checked();
         expect(await statusOf(administrator, session.user.id)).toBe("active");
@@ -1238,7 +1238,7 @@ describe("Memberful memberships", () => {
     );
 
     it(
-      "goes by what Memberful answers though Memberful is turned off while it does",
+      "goes by what Papaya answers though Papaya is turned off while it does",
       hearingWebhooks(async () => {
         const administrator = await setUpWithMemberful();
         const site = fakeMemberful();
@@ -1312,7 +1312,7 @@ describe("Memberful memberships", () => {
     );
 
     it(
-      "goes by the newest read of a membership, as a sign-in that began while a check asked Memberful",
+      "goes by the newest read of a membership, as a sign-in that began while a check asked Papaya",
       hearingWebhooks(async () => {
         const administrator = await setUpWithMemberful();
         const site = fakeMemberful();
@@ -1385,7 +1385,7 @@ describe("Memberful memberships", () => {
     );
 
     it(
-      "makes the daily check due as the Workspace starts, if anyone here signs in with Memberful and none is, as once the deployment is given the API key",
+      "makes the daily check due as the Workspace starts, if anyone here signs in with Papaya and none is, as once the deployment is given the API key",
       hearingWebhooks(async () => {
         const administrator = await setUpWithMemberful();
         const resume = () =>
@@ -1412,7 +1412,7 @@ describe("Memberful memberships", () => {
     );
 
     it(
-      "keeps checking everyone linked once a day once Memberful is off",
+      "keeps checking everyone linked once a day once Papaya is off",
       hearingWebhooks(async () => {
         const administrator = await setUpWithMemberful();
         const site = fakeMemberful();
@@ -1473,14 +1473,14 @@ describe("Memberful memberships", () => {
       expect(await statusOf(administrator, id)).toBe("active");
     });
 
-    it("takes a sign-in Memberful answers with an error as one that didn't work, rather than a lapse", async () => {
+    it("takes a sign-in Papaya answers with an error as one that didn't work, rather than a lapse", async () => {
       const errors = vi.spyOn(console, "error").mockImplementation(() => {});
       const administrator = await setUpWithMemberful();
       const site = fakeMemberful();
       const session = await memberfulSession();
       site.failing = [katherine.id];
       expect(locationOf(await signInWithMemberful())).toBe(backToSignIn("failed"));
-      expect(errors).toHaveBeenLastCalledWith("Memberful's member endpoint answered 200 without what it should");
+      expect(errors).toHaveBeenLastCalledWith("Papaya's member endpoint answered 200 without what it should");
       expect(await statusOf(administrator, session.user.id)).toBe("active");
       expect(await signsIn(session)).toBe(true);
     });
@@ -1499,15 +1499,15 @@ describe("Memberful memberships", () => {
   });
 });
 
-/** Starts connecting Memberful from `session`'s profile with `body`, from `ip`, on a deployment with the keys unless `keys` is false. */
+/** Starts connecting Papaya from `session`'s profile with `body`, from `ip`, on a deployment with the keys unless `keys` is false. */
 const connect = (session: Session | null, body: MemberfulConnectionStart = {}, { ip = IP, keys = true } = {}) =>
   apiWith(keys ? KEYS : {}, MEMBERFUL_CONNECTIONS_PATH, { method: "POST", headers: { ...as(session), "CF-Connecting-IP": ip }, body: JSON.stringify(body) });
 
-/** Signs in with `person`'s email address and password, coming back to `returnTo` if connecting goes on at Memberful, on a deployment with the keys. */
+/** Signs in with `person`'s email address and password, coming back to `returnTo` if connecting goes on at Papaya, on a deployment with the keys. */
 const signInWithPasswordToConnect = ({ emailAddress, password }: { emailAddress: string; password: string }, returnTo?: string, ip = IP) =>
   withKeys("/api/session", { method: "POST", headers: { "CF-Connecting-IP": ip }, body: JSON.stringify({ emailAddress, password, returnTo }) });
 
-/** The state a connection sends the browser to Memberful with, and the cookie that keeps it, from the 202 that started it. */
+/** The state a connection sends the browser to Papaya with, and the cookie that keeps it, from the 202 that started it. */
 async function connectionOf(response: Response): Promise<{ state: string; cookie: string }> {
   expect(response.status, await response.clone().text()).toBe(202);
   const location = new URL(((await response.json()) as MemberfulConnection).memberfulConnection);
@@ -1516,7 +1516,7 @@ async function connectionOf(response: Response): Promise<{ state: string; cookie
   return { state: location.searchParams.get("state")!, cookie: cookieOf(response) };
 }
 
-/** Comes back from Memberful with the connection's state, to a browser with its cookie, signed in as `session` too if given, from `ip`. */
+/** Comes back from Papaya with the connection's state, to a browser with its cookie, signed in as `session` too if given, from `ip`. */
 const finish = ({ state, cookie }: { state: string; cookie: string }, session?: Session, ip = IP) =>
   callback({ code: CODE, state }, session ? `${cookie}; ${session.cookie}` : cookie, ip);
 
@@ -1527,16 +1527,16 @@ const backToProfile = (outcome: string) => `${origin}/users/me/profile?memberful
 const profileOf = async (session: Session, { keys = true } = {}): Promise<Profile> =>
   ((await (await apiWith(keys ? KEYS : {}, "/api/users/me/profile", { headers: as(session) })).json()) as ProfileAnswer).profile;
 
-/** Grace's account at the Memberful site, with an active subscription. */
+/** Grace's account at the Papaya site, with an active subscription. */
 const gracesAccount: Partial<MemberfulMember> = { id: "4250", email: grace.emailAddress, fullName: grace.name };
 /** The same, as her profile names it once it's connected. */
 const GRACES = { name: grace.name, emailAddress: grace.emailAddress };
 
-/** Disconnects Memberful from `session`'s profile with `body`, from `ip`, on a deployment with the keys unless `keys` is false. */
+/** Disconnects Papaya from `session`'s profile with `body`, from `ip`, on a deployment with the keys unless `keys` is false. */
 const disconnect = (session: Session | null, body: MemberfulDisconnection = {}, { ip = IP, keys = true } = {}) =>
   apiWith(keys ? KEYS : {}, MEMBERFUL_CONNECTIONS_PATH, { method: "DELETE", headers: { ...as(session), "CF-Connecting-IP": ip }, body: JSON.stringify(body) });
 
-/** Connects Grace's Memberful account from `member`'s profile, her session, with her password, `password`, at a fake Memberful site that describes it. */
+/** Connects Grace's Papaya account from `member`'s profile, her session, with her password, `password`, at a fake Papaya site that describes it. */
 async function connectGrace(member: Session, password = grace.password): Promise<ReturnType<typeof fakeMemberful>> {
   const site = fakeMemberful(gracesAccount);
   expect(locationOf(await finish(await connectionOf(await connect(member, { currentPassword: password })), member))).toBe(backToProfile("connected"));
@@ -1562,7 +1562,7 @@ async function subscribe(session: Session, label: string): Promise<void> {
 
 const subscriptions = () => workspaceSql("SELECT user_id, endpoint FROM push_subscriptions ORDER BY endpoint");
 
-/** Sets Ember up with Ada as its administrator and Grace, who joined with a password, then makes Memberful members only. */
+/** Sets Ember up with Ada as its administrator and Grace, who joined with a password, then makes Papaya members only. */
 async function setUpWithGrace(): Promise<{ administrator: Session; member: Session }> {
   const administrator = await setUp();
   const member = await joinAsGrace();
@@ -1570,9 +1570,9 @@ async function setUpWithGrace(): Promise<{ administrator: Session; member: Sessi
   return { administrator, member };
 }
 
-describe("Connect Memberful", () => {
+describe("Connect Papaya", () => {
   describe("from your profile", () => {
-    it("says whether you've connected a Memberful account, while Memberful is members only", async () => {
+    it("says whether you've connected a Papaya account, while Papaya is members only", async () => {
       const administrator = await setUp();
       const member = await joinAsGrace();
       const guest = await signIn("Visitor");
@@ -1602,11 +1602,11 @@ describe("Connect Memberful", () => {
       expect((await profileOf(member)).memberful).toEqual({ membersOnly: true, connected: GRACES });
       expect(await count("pending_identities")).toBe(0);
 
-      // From then on she signs in with Memberful as herself, and has nothing more to connect.
+      // From then on she signs in with Papaya as herself, and has nothing more to connect.
       expect((await signedInAs(await signInWithMemberful())).id).toBe(member.user.id);
       const again = await connect(member, { currentPassword: grace.password });
       expect(again.status).toBe(409);
-      expect(await again.json()).toEqual({ error: "You've connected Memberful already" });
+      expect(await again.json()).toEqual({ error: "You've connected Papaya already" });
       expect(site.requests.filter(({ url }) => url === `${SITE}/oauth/token`)).toHaveLength(2);
     });
 
@@ -1648,7 +1648,7 @@ describe("Connect Memberful", () => {
       expect(locationOf(await finish(await connectionOf(await connect(member)), member))).toBe(backToProfile("connected"));
     });
 
-    it("answers 401 without a session, and 403 while Memberful isn't members only, to a deployment without the keys, or to a guest", async () => {
+    it("answers 401 without a session, and 403 while Papaya isn't members only, to a deployment without the keys, or to a guest", async () => {
       const administrator = await setUp();
       const member = await joinAsGrace();
       const guest = await signIn("Visitor");
@@ -1667,17 +1667,17 @@ describe("Connect Memberful", () => {
       expect(await unavailable.json()).toEqual({ error: MEMBERFUL_SIGN_IN_PROBLEMS.unavailable });
       const guests = await connect(guest);
       expect(guests.status).toBe(403);
-      expect(await guests.json()).toEqual({ error: "Guests can't connect Memberful" });
+      expect(await guests.json()).toEqual({ error: "Guests can't connect Papaya" });
       expect(await count("pending_identities")).toBe(0);
     });
 
-    it("connects nothing when the Memberful account is someone else's, or has no membership, or you've connected another", async () => {
+    it("connects nothing when the Papaya account is someone else's, or has no membership, or you've connected another", async () => {
       const { administrator, member } = await setUpWithGrace();
       const site = fakeMemberful();
       const katherinesId = (await signedInAs(await signInWithMemberful())).id;
       const password = { currentPassword: grace.password };
 
-      // Signed in at Memberful as Katherine, who has an account here.
+      // Signed in at Papaya as Katherine, who has an account here.
       expect(locationOf(await finish(await connectionOf(await connect(member, password)), member))).toBe(backToProfile("claimed"));
       site.member = { ...katherine, ...gracesAccount, subscriptions: [] };
       expect(locationOf(await finish(await connectionOf(await connect(member, password)), member))).toBe(backToProfile("membership"));
@@ -1708,7 +1708,7 @@ describe("Connect Memberful", () => {
   });
 
   describe("at sign in", () => {
-    it("sends a member whose password checks out on to Memberful, which brings them back signed in", async () => {
+    it("sends a member whose password checks out on to Papaya, which brings them back signed in", async () => {
       const { administrator, member } = await setUpWithGrace();
       fakeMemberful(gracesAccount);
       const connection = await connectionOf(await signInWithPasswordToConnect(grace, "/rooms/abc?tab=pins"));
@@ -1790,7 +1790,7 @@ describe("Connect Memberful", () => {
       expect(await identities()).toEqual([]);
     });
 
-    it("connects nothing once the password that started it is reset while Memberful is asked who signed in", async () => {
+    it("connects nothing once the password that started it is reset while Papaya is asked who signed in", async () => {
       const { member } = await setUpWithGrace();
       const site = fakeMemberful(gracesAccount);
       const started = await connectionOf(await connect(member, { currentPassword: grace.password }));
@@ -1806,7 +1806,7 @@ describe("Connect Memberful", () => {
       expect(await identities()).toEqual([]);
     });
 
-    it("connects nothing once Memberful stops being members only meanwhile, since their password signs them in", async () => {
+    it("connects nothing once Papaya stops being members only meanwhile, since their password signs them in", async () => {
       const { administrator, member } = await setUpWithGrace();
       fakeMemberful(gracesAccount);
       const started = await connectionOf(await connect(member, { currentPassword: grace.password }));
@@ -1825,7 +1825,7 @@ describe("Connect Memberful", () => {
       expect(await identities()).toEqual([]);
     });
 
-    it("starts at Ember's custom domain, where Memberful sends the browser back, and goes there from a tab left open elsewhere", async () => {
+    it("starts at Ember's custom domain, where Papaya sends the browser back, and goes there from a tab left open elsewhere", async () => {
       const { administrator, member } = await setUpWithGrace();
       const used = await apiWith({}, "https://chat.example.com/api/account", {
         method: "PATCH",
@@ -1857,18 +1857,18 @@ describe("Connect Memberful", () => {
   });
 });
 
-describe("The Memberful account connected", () => {
-  it("is named on your profile as Memberful describes it, whether or not Memberful is members only", async () => {
+describe("The Papaya account connected", () => {
+  it("is named on your profile as Papaya describes it, whether or not Papaya is members only", async () => {
     const { administrator, member } = await setUpWithGrace();
     await connectGrace(member);
     expect(await linkedAccounts()).toEqual([{ issuer: SITE, subject: "4250", user_id: member.user.id, name: grace.name, email_address: grace.emailAddress }]);
     expect((await profileOf(member)).memberful).toEqual({ membersOnly: true, connected: GRACES });
-    // Her password signs her in again, but so does Memberful, and the section says so.
+    // Her password signs her in again, but so does Papaya, and the section says so.
     await turnMemberful(administrator, true, { membersOnly: false });
     expect((await profileOf(member)).memberful).toEqual({ membersOnly: false, connected: GRACES });
     await turnMemberful(administrator, false);
     expect((await profileOf(member)).memberful).toEqual({ membersOnly: false, connected: GRACES });
-    // Though not to a deployment without the keys, where there's no Memberful site.
+    // Though not to a deployment without the keys, where there's no Papaya site.
     expect((await profileOf(member, { keys: false })).memberful).toBeNull();
     expect((await profileOf(administrator)).memberful).toBeNull();
   });
@@ -1885,7 +1885,7 @@ describe("The Memberful account connected", () => {
     expect(await linkedAccounts()).toEqual([{ issuer: SITE, subject: "4250", user_id: member.user.id, name: "Grace Brewster Murray Hopper", email_address: "grace@navy.example" }]);
   });
 
-  it("is named for someone who joined with Memberful too, who signs in with it alone", async () => {
+  it("is named for someone who joined with Papaya too, who signs in with it alone", async () => {
     await setUpWithMemberful({ membersOnly: false });
     fakeMemberful();
     const session = await memberfulSession();
@@ -1893,7 +1893,7 @@ describe("The Memberful account connected", () => {
     expect((await profileOf(session)).password).toBe(false);
   });
 
-  it("goes without a name when Memberful has no full name for it, though the person is named here by their email address", async () => {
+  it("goes without a name when Papaya has no full name for it, though the person is named here by their email address", async () => {
     await setUpWithMemberful({ membersOnly: false });
     const site = fakeMemberful();
     const session = await memberfulSessionOf({ ...katherine, id: "4243", fullName: null, email: "dorothy@example.com" }, site);
@@ -1903,7 +1903,7 @@ describe("The Memberful account connected", () => {
 });
 
 describe("A new password", () => {
-  it("disconnects the Memberful account connected with the one it replaces, as a reset does", async () => {
+  it("disconnects the Papaya account connected with the one it replaces, as a reset does", async () => {
     const { member } = await setUpWithGrace();
     const site = await connectGrace(member);
     const changed = await saveProfile(member, { password: "a new password", currentPassword: grace.password });
@@ -1911,7 +1911,7 @@ describe("A new password", () => {
     expect(((await changed.json()) as ProfileAnswer).profile.memberful).toEqual({ membersOnly: true, connected: null });
     expect(await identities()).toEqual([]);
     expect(await signsIn(member)).toBe(true);
-    // Memberful knows her account, but it's connected to nobody here, and her email address is hers.
+    // Papaya knows her account, but it's connected to nobody here, and her email address is hers.
     expect(locationOf(await signInWithMemberful())).toBe(backToSignIn("taken"));
 
     await connectGrace(member, "a new password");
@@ -1922,7 +1922,7 @@ describe("A new password", () => {
     void site;
   });
 
-  it("is refused to someone without one whom Memberful signs in, as it does while the deployment has its keys, whether or not Memberful is on", async () => {
+  it("is refused to someone without one whom Papaya signs in, as it does while the deployment has its keys, whether or not Papaya is on", async () => {
     const administrator = await setUpWithMemberful({ membersOnly: false });
     fakeMemberful();
     const session = await memberfulSession();
@@ -1944,11 +1944,11 @@ describe("A new password", () => {
     expect((await signedInAs(await signInWithMemberful())).id).toBe(session.user.id);
   });
 
-  it("keeps the Memberful account of someone without a password, as they set their first where Memberful doesn't sign them in", async () => {
+  it("keeps the Papaya account of someone without a password, as they set their first where Papaya doesn't sign them in", async () => {
     await setUpWithMemberful({ membersOnly: false });
     fakeMemberful();
     const session = await memberfulSession();
-    // At another Memberful site, where they'd be someone new, as at a deployment without the keys.
+    // At another Papaya site, where they'd be someone new, as at a deployment without the keys.
     const saved = await saveProfile(session, { password: "a long enough password" }, { ...KEYS, MEMBERFUL_URL: "https://another.memberful.com/" });
     expect(saved.status, await saved.clone().text()).toBe(200);
     expect(((await saved.json()) as ProfileAnswer).profile.password).toBe(true);
@@ -1958,7 +1958,7 @@ describe("A new password", () => {
     expect((await signInWithPassword({ emailAddress: katherine.email, password: "a long enough password" })).status).toBe(201);
   });
 
-  it("is someone's first to set at a deployment without Memberful's keys, which has no Memberful to sign them in", async () => {
+  it("is someone's first to set at a deployment without Papaya's keys, which has no Papaya to sign them in", async () => {
     await setUpWithMemberful({ membersOnly: false });
     fakeMemberful();
     const session = await memberfulSession();
@@ -1968,12 +1968,12 @@ describe("A new password", () => {
     expect(await identities()).toEqual([{ issuer: SITE, subject: katherine.id, user_id: session.user.id }]);
   });
 
-  it("keeps the Memberful account of someone without an email address, which their password can't sign them in without, until they add one", async () => {
+  it("keeps the Papaya account of someone without an email address, which their password can't sign them in without, until they add one", async () => {
     await setUpWithMemberful({ membersOnly: false });
     const site = fakeMemberful();
     const session = await memberfulSessionOf({ ...katherine, id: "4243", fullName: "Dorothy Vaughan", email: null }, site);
     const linked = [{ issuer: SITE, subject: "4243", user_id: session.user.id }];
-    // Her first, where Memberful doesn't sign her in.
+    // Her first, where Papaya doesn't sign her in.
     expect((await saveProfile(session, { password: "a long enough password" }, {})).status).toBe(200);
     const changed = await saveProfile(session, { password: "another long password", currentPassword: "a long enough password" });
     expect(changed.status).toBe(200);
@@ -1982,13 +1982,13 @@ describe("A new password", () => {
     // A new password saved with an email address, which it can sign them in by, disconnects it.
     const withEmail = await saveProfile(session, { emailAddress: "dorothy@example.com", password: "a third long password", currentPassword: "another long password" });
     expect(withEmail.status).toBe(200);
-    // Nothing to show anymore, since Memberful isn't members only.
+    // Nothing to show anymore, since Papaya isn't members only.
     expect(((await withEmail.json()) as ProfileAnswer).profile.memberful).toBeNull();
     expect(await identities()).toEqual([]);
     expect((await signInWithPassword({ emailAddress: "dorothy@example.com", password: "a third long password" })).status).toBe(201);
   });
 
-  it("stops the sign-in page offering Memberful once nobody is connected to it and Memberful is off", async () => {
+  it("stops the sign-in page offering Papaya once nobody is connected to it and Papaya is off", async () => {
     const administrator = await setUp();
     const member = await joinAsGrace();
     await turnMemberful(administrator, true);
@@ -2004,11 +2004,11 @@ describe("A new password", () => {
   });
 });
 
-describe("Disconnect Memberful", () => {
+describe("Disconnect Papaya", () => {
   it("disconnects your account once your password checks out, ending your other sessions but this browser's", async () => {
     const { member } = await setUpWithGrace();
     await connectGrace(member);
-    // Signed in with Memberful on another device, with a push subscription on each.
+    // Signed in with Papaya on another device, with a push subscription on each.
     const other = await memberfulSession("203.0.113.40");
     expect(other.user.id).toBe(member.user.id);
     await subscribe(member, "desk");
@@ -2029,7 +2029,7 @@ describe("Disconnect Memberful", () => {
     expect(await yourWorkspace.answers()).toBe(true);
     expect(await subscriptions()).toEqual([{ user_id: member.user.id, endpoint: endpointOf("desk") }]);
 
-    // Memberful signs her in no more, until she connects an account again, which she can.
+    // Papaya signs her in no more, until she connects an account again, which she can.
     expect(locationOf(await signInWithMemberful())).toBe(backToSignIn("taken"));
     const again = await disconnect(member, { currentPassword: grace.password });
     expect(again.status).toBe(404);
@@ -2064,7 +2064,7 @@ describe("Disconnect Memberful", () => {
     await setUpWithMemberful({ membersOnly: false });
     const site = fakeMemberful();
     const session = await memberfulSessionOf({ ...katherine, id: "4243", fullName: "Dorothy Vaughan", email: null }, site);
-    // Her first, where Memberful doesn't sign her in.
+    // Her first, where Papaya doesn't sign her in.
     expect((await saveProfile(session, { password: "a long enough password" }, {})).status).toBe(200);
     const refused = await disconnect(session, { currentPassword: "a long enough password" });
     expect(refused.status).toBe(422);
@@ -2078,7 +2078,7 @@ describe("Disconnect Memberful", () => {
     expect((await signInWithPassword({ emailAddress: "dorothy@example.com", password: "a long enough password" })).status).toBe(201);
   });
 
-  it("refuses someone without a password, whom Memberful signs in alone, until they have one to sign in with instead", async () => {
+  it("refuses someone without a password, whom Papaya signs in alone, until they have one to sign in with instead", async () => {
     await setUpWithMemberful({ membersOnly: false });
     fakeMemberful();
     const session = await memberfulSession();
@@ -2089,11 +2089,11 @@ describe("Disconnect Memberful", () => {
     }
     expect(await identities()).toHaveLength(1);
 
-    // A first password, set where Memberful doesn't sign them in, lets them disconnect it.
+    // A first password, set where Papaya doesn't sign them in, lets them disconnect it.
     expect((await saveProfile(session, { password: "a long enough password" }, {})).status).toBe(200);
     const disconnected = await disconnect(session, { currentPassword: "a long enough password" });
     expect(disconnected.status).toBe(200);
-    // Nothing to show: Memberful isn't members only, and nothing is connected.
+    // Nothing to show: Papaya isn't members only, and nothing is connected.
     expect(((await disconnected.json()) as ProfileAnswer).profile.memberful).toBeNull();
     expect(await identities()).toEqual([]);
     expect((await signInWithPassword({ emailAddress: katherine.email, password: "a long enough password" })).status).toBe(201);
@@ -2110,7 +2110,7 @@ describe("Disconnect Memberful", () => {
     expect(await unavailable.json()).toEqual({ error: MEMBERFUL_SIGN_IN_PROBLEMS.unavailable });
     const guests = await disconnect(guest, password);
     expect(guests.status).toBe(403);
-    expect(await guests.json()).toEqual({ error: "Guests can't disconnect Memberful" });
+    expect(await guests.json()).toEqual({ error: "Guests can't disconnect Papaya" });
     for (const membersOnly of [null, false, true]) {
       if (membersOnly !== null) await turnMemberful(administrator, true, { membersOnly });
       const nothing = await disconnect(member, password);
@@ -2133,5 +2133,56 @@ describe("Disconnect Memberful", () => {
     expect(await identities()).toHaveLength(1);
     expect(await signsIn(other)).toBe(true);
     expect(await signsIn(member)).toBe(true);
+  });
+});
+
+describe("Sign in with Clerk", () => {
+  const CLERK = "https://clerk.example.com";
+  const CLERK_KEYS = { MEMBERFUL_URL: `${CLERK}/`, MEMBERFUL_CLIENT_ID: "clerk-client-id", MEMBERFUL_PROVIDER: "clerk" };
+  const viaClerk = (path: string, init: RequestInit<IncomingRequestCfProperties> = {}) => apiWith(CLERK_KEYS, path, init);
+
+  /** Stands in for Clerk: its token endpoint takes `CODE` with the PKCE verifier whose challenge the start sent, and its userinfo endpoint describes Katherine. */
+  function fakeClerk() {
+    const clerk = { challenge: "", requests: [] as string[] };
+    vi.spyOn(globalThis, "fetch").mockImplementation(async (input, init) => {
+      const request = new Request(input, init);
+      clerk.requests.push(request.url);
+      const url = new URL(request.url);
+      if (request.method === "POST" && url.href === `${CLERK}/oauth/token`) {
+        const form = new URLSearchParams(new TextDecoder().decode(await request.arrayBuffer()));
+        const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(form.get("code_verifier") ?? "")));
+        const challenge = btoa(String.fromCharCode(...digest)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+        const valid =
+          form.get("code") === CODE &&
+          form.get("client_id") === CLERK_KEYS.MEMBERFUL_CLIENT_ID &&
+          form.get("client_secret") === null &&
+          form.get("redirect_uri") === `${origin}${MEMBERFUL_CALLBACK_PATH}` &&
+          challenge === clerk.challenge;
+        return valid ? Response.json({ access_token: ACCESS_TOKEN, token_type: "bearer" }) : Response.json({ error: "invalid_grant" }, { status: 400 });
+      }
+      if (url.href === `${CLERK}/oauth/userinfo` && request.headers.get("Authorization") === `Bearer ${ACCESS_TOKEN}`)
+        return Response.json({ sub: "user_2abc", email: "katherine@example.com", email_verified: true, given_name: "Katherine", family_name: "Johnson" });
+      return new Response("Unauthorized", { status: 401 });
+    });
+    return clerk;
+  }
+
+  it("sends the browser to Clerk with OpenID Connect's scopes and a PKCE challenge, and signs in whoever Clerk says it is", async () => {
+    const administrator = await setUp();
+    expect((await apiWith(CLERK_KEYS, "/api/account", { method: "PATCH", headers: as(administrator), body: JSON.stringify({ settings: { memberfulJoin: true } }) })).status).toBe(200);
+    const clerk = fakeClerk();
+    const started = await viaClerk(`${origin}${memberfulSignInPath(null)}`);
+    expect(started.status).toBe(302);
+    const authorize = new URL(started.headers.get("Location")!);
+    expect(`${authorize.origin}${authorize.pathname}`).toBe(`${CLERK}/oauth/authorize`);
+    expect(authorize.searchParams.get("scope")).toBe("openid profile email");
+    expect(authorize.searchParams.get("code_challenge_method")).toBe("S256");
+    expect(authorize.searchParams.get("redirect_uri")).toBe(`${origin}${MEMBERFUL_CALLBACK_PATH}`);
+    clerk.challenge = authorize.searchParams.get("code_challenge")!;
+    const params = new URLSearchParams({ code: CODE, state: authorize.searchParams.get("state")! });
+    const answer = await viaClerk(`${MEMBERFUL_CALLBACK_PATH}?${params}`, { headers: { "CF-Connecting-IP": IP, Cookie: cookieOf(started) } });
+    const me = await signedInAs(answer);
+    expect(me.name).toBe("Katherine Johnson");
+    expect(await identities()).toEqual([{ issuer: CLERK, subject: "user_2abc", user_id: me.id }]);
   });
 });

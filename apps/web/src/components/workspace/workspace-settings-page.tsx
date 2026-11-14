@@ -101,7 +101,7 @@ interface Props {
  *   rooms, then for administrators, the switch that says so, and the rooms' order for everyone, each
  *   linking to its settings.
  * - Membership: for administrators, who can join, with switches for Open, the join link, which they can
- *   regenerate, and Memberful, how Ember sends email, and whether Cloudflare Turnstile checks who joins,
+ *   regenerate, and Papaya, how Ember sends email, and whether Cloudflare Turnstile checks who joins,
  *   or for members, the links that let people in, then the administrators and members, whom
  *   administrators can make administrators or members and remove.
  * - Domain settings: for administrators, the custom domain Ember answers at.

@@ -101,11 +101,11 @@ function settled(typed: Fields, sent: Fields, saved: Fields): Fields {
  * Your profile: how to install Ember, for the browsers that get steps, then your avatar, which a photo
  * picked saves at once, showing it meanwhile, with the notice "It may take up to 30 minutes to change
  * everywhere.", and Remove avatar takes away, then your name, email address, a new password, unless
- * Memberful signs you in without one, your current password while you have one, which changing your
+ * Papaya signs you in without one, your current password while you have one, which changing your
  * email address or password takes, and your
  * bio, which Save changes saves with the notice "✓", keeping the page, then, while members sign in with
- * Memberful, connecting your Memberful account, or the one you've connected, which Disconnect Memberful
- * unlinks with the notice "Your Memberful account is disconnected.", then, while Ember AI is on, how much @ember thinks and
+ * Papaya, connecting your Papaya account, or the one you've connected, which Disconnect Papaya
+ * unlinks with the notice "Your Papaya account is disconnected.", then, while Ember AI is on, how much @ember thinks and
  * how long it answers you, then your notification level in each of your rooms and DMs, then a sign-in
  * link for you, a new one each time the page loads or saves, and Log out in the top bar. Go Back
  * returns to the page it was opened from. Your avatar, name and bio reach everyone's open pages at
@@ -124,20 +124,20 @@ export function ProfilePage({ me, rooms, askForRoom, onSignOut, onFailed }: Prop
   const [hasPassword, setHasPassword] = useState(false);
   /**
    * Whether you have an email address saved, which signing in with your password takes, so disconnecting
-   * Memberful needs it: from loading and saving the profile alone, which change it, so a photo's answer
+   * Papaya needs it: from loading and saving the profile alone, which change it, so a photo's answer
    * arriving late doesn't take it away.
    */
   const [hasEmailAddress, setHasEmailAddress] = useState(false);
-  /** The Memberful account you've connected, or none to connect yet, or null while there's nothing to show. */
+  /** The Papaya account you've connected, or none to connect yet, or null while there's nothing to show. */
   const [memberful, setMemberful] = useState<MemberfulStatus | null>(null);
-  /** Whether you need Memberful to sign in while it's members only, unlike administrators and the people they invite. */
+  /** Whether you need Papaya to sign in while it's members only, unlike administrators and the people they invite. */
   const [membershipNeeded, setMembershipNeeded] = useState(true);
   /** Which model @ember answers you with, how much it thinks and how long its answers are, or null while Ember AI is off. */
   const [assistant, setAssistant] = useState<Profile["assistant"]>(null);
   const [saving, setSaving] = useState(false);
   const passwordInput = useRef<HTMLInputElement>(null);
   const currentPasswordInput = useRef<HTMLInputElement>(null);
-  /** Whether you've disconnected your Memberful account here, since when no answer shows it connected: connecting one reloads the page. */
+  /** Whether you've disconnected your Papaya account here, since when no answer shows it connected: connecting one reloads the page. */
   const disconnectedMemberful = useRef(false);
   const people = useContext(PeopleContext);
   const back = useBackPath();
@@ -171,7 +171,7 @@ export function ProfilePage({ me, rooms, askForRoom, onSignOut, onFailed }: Prop
   useEffect(() => () => void (picked && URL.revokeObjectURL(picked)), [picked]);
 
   /**
-   * Shows your avatar, whether you have a password, where you stand with Memberful and whether you need
+   * Shows your avatar, whether you have a password, where you stand with Papaya and whether you need
    * it, and a new sign-in link, as an answer has them. An answer can arrive after a later one, as a
    * profile's save can after a photo's, and the later avatar stays then.
    */
@@ -180,7 +180,7 @@ export function ProfilePage({ me, rooms, askForRoom, onSignOut, onFailed }: Prop
     setPicture((shown) => (shown && avatarVersionOf(shown.avatarUrl) > avatarVersionOf(answered.avatarUrl) ? shown : answered));
     // Nothing takes a password away, so an answer arriving late doesn't hide the field.
     setHasPassword((had) => had || profile.password);
-    // Nothing connects a Memberful account without a reload, so once it's disconnected here, an answer
+    // Nothing connects a Papaya account without a reload, so once it's disconnected here, an answer
     // arriving late doesn't show it connected again, and shows what the Worker does for one disconnected.
     const { memberful } = profile;
     setMemberful(disconnectedMemberful.current && memberful?.connected ? (memberful.membersOnly ? { membersOnly: true, connected: null } : null) : memberful);
@@ -188,7 +188,7 @@ export function ProfilePage({ me, rooms, askForRoom, onSignOut, onFailed }: Prop
     setTransferId(transferId);
   }
 
-  /** Shows your profile as disconnecting your Memberful account answered it, with the notice. */
+  /** Shows your profile as disconnecting your Papaya account answered it, with the notice. */
   function disconnected(answer: ProfileAnswer) {
     disconnectedMemberful.current = true;
     showAnswer(answer);
@@ -257,7 +257,7 @@ export function ProfilePage({ me, rooms, askForRoom, onSignOut, onFailed }: Prop
   // Another tab's change reaches the people directory, whose address is the later one then.
   const listed = avatarUrlOf(people, me);
   const avatarUrl = picture && avatarVersionOf(picture.avatarUrl) >= avatarVersionOf(listed) ? picture.avatarUrl : listed;
-  // Someone Memberful signs in who has no password is given none, as the Worker refuses one: Memberful is their way in.
+  // Someone Papaya signs in who has no password is given none, as the Worker refuses one: Papaya is their way in.
   const signsInWithMemberfulAlone = !hasPassword && Boolean(memberful?.connected);
 
   const logOut = (
@@ -327,10 +327,10 @@ export function ProfilePage({ me, rooms, askForRoom, onSignOut, onFailed }: Prop
                 className={FIELD_INPUT}
               />
               <p id="profile-password-help" className="text-[0.8em] text-muted-foreground">
-                {/* Someone who signed in with just a name has no password, nor has someone who joined with Memberful once it no longer signs them in. */}
+                {/* Someone who signed in with just a name has no password, nor has someone who joined with Papaya once it no longer signs them in. */}
                 {fields && !hasPassword ? "Leave blank to keep signing in without a password." : "Leave blank to keep your current password."}
                 {/* As the one it replaces connected it, while it's saved with an email address to sign in by. */}
-                {fields && hasPassword && memberful?.connected && fields.emailAddress.trim() !== "" && " A new one disconnects your Memberful account."}
+                {fields && hasPassword && memberful?.connected && fields.emailAddress.trim() !== "" && " A new one disconnects your Papaya account."}
               </p>
             </Field>
           )}

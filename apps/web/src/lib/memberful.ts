@@ -8,11 +8,11 @@ import {
 } from "@ember/protocol";
 import type { FlashMessage } from "./flash";
 
-// What signing in with Memberful, or connecting a Memberful account, came to, as the Worker's callback
+// What signing in with Papaya, or connecting a Papaya account, came to, as the Worker's callback
 // names it in the address it sends the browser back to (`?memberful=`): the sign-in page says what went
-// wrong, and a page of the workspace flashes it, or that your Memberful account is connected.
+// wrong, and a page of the workspace flashes it, or that your Papaya account is connected.
 
-/** What a Memberful sign-in or connection that came back to this page came to, as its address names it, if it does. */
+/** What a Papaya sign-in or connection that came back to this page came to, as its address names it, if it does. */
 export function memberfulOutcomeOnArrival(): MemberfulSignInProblem | typeof MEMBERFUL_CONNECTED | null {
   const value = new URLSearchParams(location.search).get(MEMBERFUL_PROBLEM_PARAM);
   return value === MEMBERFUL_CONNECTED ? value : memberfulProblemOf(value);
@@ -27,7 +27,7 @@ export function forgetMemberfulOutcome(): void {
   history.replaceState(history.state, "", `${location.pathname}${search ? `?${search}` : ""}${location.hash}`);
 }
 
-/** What a page of the workspace flashes for what this page's address says a Memberful connection came to, taking it out of the address. */
+/** What a page of the workspace flashes for what this page's address says a Papaya connection came to, taking it out of the address. */
 export function takeMemberfulFlash(): FlashMessage | null {
   const outcome = memberfulOutcomeOnArrival();
   forgetMemberfulOutcome();

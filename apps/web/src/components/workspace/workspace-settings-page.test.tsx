@@ -172,7 +172,7 @@ function serve(settings: WorkspaceSettings, { saved, regenerated, roleChanged, r
           emailFrom = email.from,
         } = JSON.parse(String(init?.body)) as AccountChanges;
         email = { ...email, from: emailFrom };
-        // Members only turns Memberful on with it, and turning Memberful off turns it off, as the Worker does.
+        // Members only turns Papaya on with it, and turning Papaya off turns it off, as the Worker does.
         const memberfulJoin = changed?.memberfulJoin ?? (changed?.memberfulSignIn || account.memberfulJoin);
         const emailDomainSignUp = changed?.emailDomainSignUp ?? account.emailDomainSignUp;
         keptDomains = emailDomains;
@@ -1123,29 +1123,29 @@ describe("Custom domain", () => {
   });
 });
 
-describe("Sign in with Memberful", () => {
+describe("Sign in with Papaya", () => {
   const SITE = "https://example.memberful.com";
   const withKeys: WorkspaceSettings = { ...asAdministrator, memberfulSite: SITE };
-  /** `settings` with Memberful on, and members only if `membersOnly`. */
+  /** `settings` with Papaya on, and members only if `membersOnly`. */
   const withMemberful = (settings: WorkspaceSettings, membersOnly = false): WorkspaceSettings => ({
     ...settings,
     account: { ...settings.account, memberfulJoin: true, memberfulSignIn: membersOnly },
   });
-  const memberfulSwitch = () => screen.findByRole("switch", { name: "Memberful" });
+  const memberfulSwitch = () => screen.findByRole("switch", { name: "Papaya" });
   const membersOnlySwitch = () => screen.queryByRole("switch", { name: "Members only" });
   showingSection("membership-settings");
 
-  it("gives administrators a Memberful card among the ways to join, after the join link, that's only its switch and what it does while it's off", async () => {
+  it("gives administrators a Papaya card among the ways to join, after the join link, that's only its switch and what it does while it's off", async () => {
     showPage();
-    const section = await screen.findByRole("region", { name: "Memberful" });
+    const section = await screen.findByRole("region", { name: "Papaya" });
     const following = (a: Element, b: Element) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
     expect(following(screen.getByRole("heading", { level: 1, name: "Membership" }), section)).toBe(true);
     expect(following(await joinLink(), section)).toBe(true);
     expect(screen.getByRole("region", { name: "Who can join" })).toContainElement(section);
-    const on = within(section).getByRole("switch", { name: "Memberful" });
+    const on = within(section).getByRole("switch", { name: "Papaya" });
     expect(on).not.toBeChecked();
     expect(on).toBeEnabled();
-    expect(on).toHaveAccessibleDescription("Members of a Memberful site join and sign in with their Memberful account.");
+    expect(on).toHaveAccessibleDescription("Members of a Papaya site join and sign in with their Papaya account.");
     expect(within(section).queryByRole("list")).not.toBeInTheDocument();
     expect(section).not.toHaveTextContent("MEMBERFUL_URL");
   });
@@ -1155,20 +1155,20 @@ describe("Sign in with Memberful", () => {
     const on = await memberfulSwitch();
     await user.click(on);
     expect(on).toBeChecked();
-    expect(on).toHaveAccessibleDescription("Memberful can't be turned on until this deployment has your Memberful site's keys. These steps give it them.");
-    const steps = screen.getByRole("list", { name: "Steps to let Memberful members sign in" });
+    expect(on).toHaveAccessibleDescription("Papaya can't be turned on until this deployment has your Papaya site's keys. These steps give it them.");
+    const steps = screen.getByRole("list", { name: "Steps to let Papaya members sign in" });
     expect(within(steps).getAllByRole("listitem")).toHaveLength(4);
-    // Memberful's custom app sends people back to Ember's address.
+    // Papaya's custom app sends people back to Ember's address.
     expect(steps).toHaveTextContent(`OAuth redirect URL ${location.origin}/auth/memberful/callback`);
     expect(steps).toHaveTextContent("MEMBERFUL_URL");
-    expect(steps).toHaveTextContent("Reload this page, and turn on Memberful again.");
+    expect(steps).toHaveTextContent("Reload this page, and turn on Papaya again.");
     expect(within(steps).getByRole("link", { name: "Open the Cloudflare dashboard" })).toHaveAttribute("target", "_blank");
     expect(membersOnlySwitch()).not.toBeInTheDocument();
 
     await user.click(on);
     expect(on).not.toBeChecked();
-    expect(on).toHaveAccessibleDescription("Members of a Memberful site join and sign in with their Memberful account.");
-    expect(screen.queryByRole("list", { name: "Steps to let Memberful members sign in" })).not.toBeInTheDocument();
+    expect(on).toHaveAccessibleDescription("Members of a Papaya site join and sign in with their Papaya account.");
+    expect(screen.queryByRole("list", { name: "Steps to let Papaya members sign in" })).not.toBeInTheDocument();
     expect(saved()).toEqual([]);
   });
 
@@ -1178,7 +1178,7 @@ describe("Sign in with Memberful", () => {
     const on = await memberfulSwitch();
     expect(on).toBeDisabled();
     expect(on).toHaveAccessibleDescription("Set aside while Open lets anyone join.");
-    expect(screen.queryByRole("list", { name: "Steps to let Memberful members sign in" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("list", { name: "Steps to let Papaya members sign in" })).not.toBeInTheDocument();
   });
 
   it("lets an administrator turn it on once the deployment has the keys, without asking, saved at once with no notice, keeping the other ways", async () => {
@@ -1188,11 +1188,11 @@ describe("Sign in with Memberful", () => {
     const on = await memberfulSwitch();
     expect(on).not.toBeChecked();
     expect(on).toHaveAccessibleDescription(
-      `Members of ${SITE} join and sign in with their Memberful account. Turned off, it lets nobody new join, but those who did keep signing in with it.`,
+      `Members of ${SITE} join and sign in with their Papaya account. Turned off, it lets nobody new join, but those who did keep signing in with it.`,
     );
     // What it takes waits until it's on.
-    const section = screen.getByRole("region", { name: "Memberful" });
-    expect(section).not.toHaveTextContent("Memberful sends people back to");
+    const section = screen.getByRole("region", { name: "Papaya" });
+    expect(section).not.toHaveTextContent("Papaya sends people back to");
     expect(within(section).queryByRole("list")).not.toBeInTheDocument();
     expect(membersOnlySwitch()).not.toBeInTheDocument();
 
@@ -1201,8 +1201,8 @@ describe("Sign in with Memberful", () => {
     expect(on).toBeChecked();
     await waitFor(() => expect(onAccountChanged).toHaveBeenLastCalledWith({ ...asAdministrator.account, memberfulJoin: true }));
     expect(saved()).toEqual([{ settings: { memberfulJoin: true } }]);
-    expect(section).toHaveTextContent(`Memberful sends people back to ${location.origin}/auth/memberful/callback`);
-    expect(screen.queryByRole("list", { name: "Steps to let Memberful members sign in" })).not.toBeInTheDocument();
+    expect(section).toHaveTextContent(`Papaya sends people back to ${location.origin}/auth/memberful/callback`);
+    expect(screen.queryByRole("list", { name: "Steps to let Papaya members sign in" })).not.toBeInTheDocument();
     // Everyone else keeps joining as they did.
     expect(await joinLink()).toBeInTheDocument();
     expect(await screen.findByRole("switch", { name: "Open" })).toBeEnabled();
@@ -1218,7 +1218,7 @@ describe("Sign in with Memberful", () => {
     const membersOnly = membersOnlySwitch()!;
     expect(membersOnly).not.toBeChecked();
     expect(membersOnly).toHaveAccessibleDescription(
-      "Nobody else can join but the people you invite, and only they and administrators sign in with a password. Members who have one connect their Memberful account as they next sign in.",
+      "Nobody else can join but the people you invite, and only they and administrators sign in with a password. Members who have one connect their Papaya account as they next sign in.",
     );
 
     await user.click(membersOnly);
@@ -1230,7 +1230,7 @@ describe("Sign in with Memberful", () => {
     for (const name of ["Open", "Join link"]) {
       const way = await screen.findByRole("switch", { name });
       expect(way).toBeDisabled();
-      expect(way).toHaveAccessibleDescription("Off while Memberful is members only.");
+      expect(way).toHaveAccessibleDescription("Off while Papaya is members only.");
     }
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
@@ -1272,7 +1272,7 @@ describe("Sign in with Memberful", () => {
     expect(on).toBeChecked();
     expect(saved()).toEqual([{ settings: { memberfulJoin: true } }]);
 
-    answer(Response.json({ error: "Memberful needs MEMBERFUL_URL, MEMBERFUL_CLIENT_ID and MEMBERFUL_CLIENT_SECRET set first" }, { status: 422 }));
+    answer(Response.json({ error: "Papaya needs MEMBERFUL_URL, MEMBERFUL_CLIENT_ID and MEMBERFUL_CLIENT_SECRET set first" }, { status: 422 }));
     await waitFor(() => expect(onFailed).toHaveBeenCalledWith(expect.objectContaining({ status: 422 })));
     expect(on).not.toBeChecked();
   });
@@ -1289,7 +1289,7 @@ describe("Sign in with Memberful", () => {
     await act(async () => answer(Response.json({ account: { ...withKeys.account, memberfulJoin: true } })));
     expect(membersOnly).toBeEnabled();
 
-    // Were turning Memberful off saved before turning Members only on, Members only would turn it back on.
+    // Were turning Papaya off saved before turning Members only on, Members only would turn it back on.
     await user.click(membersOnly);
     expect(membersOnly).toBeChecked();
     expect(on).toBeDisabled();
@@ -1300,20 +1300,20 @@ describe("Sign in with Memberful", () => {
     expect(saved()).toEqual([{ settings: { memberfulJoin: true } }, { settings: { memberfulSignIn: true } }, { settings: { memberfulJoin: false } }]);
   });
 
-  it("keeps the switch to turn it off once the deployment has lost the keys, saying nobody can sign in with Memberful", async () => {
+  it("keeps the switch to turn it off once the deployment has lost the keys, saying nobody can sign in with Papaya", async () => {
     serve(withMemberful(asAdministrator, true));
     const { user } = showPage();
     const on = await memberfulSwitch();
     expect(on).toBeChecked();
-    expect(on).toHaveAccessibleDescription("It's on, but this deployment no longer has its Memberful keys, so nobody can sign in with Memberful.");
+    expect(on).toHaveAccessibleDescription("It's on, but this deployment no longer has its Papaya keys, so nobody can sign in with Papaya.");
     expect(membersOnlySwitch()).not.toBeInTheDocument();
-    expect(screen.getByRole("list", { name: "Steps to let Memberful members sign in" })).toBeInTheDocument();
+    expect(screen.getByRole("list", { name: "Steps to let Papaya members sign in" })).toBeInTheDocument();
 
     await user.click(on);
     expect(saved()).toEqual([{ settings: { memberfulJoin: false } }]);
-    await waitFor(() => expect(on).toHaveAccessibleDescription("Members of a Memberful site join and sign in with their Memberful account."));
+    await waitFor(() => expect(on).toHaveAccessibleDescription("Members of a Papaya site join and sign in with their Papaya account."));
     expect(on).not.toBeChecked();
-    expect(screen.queryByRole("list", { name: "Steps to let Memberful members sign in" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("list", { name: "Steps to let Papaya members sign in" })).not.toBeInTheDocument();
     expect(await joinLink()).toBeInTheDocument();
   });
 
@@ -1327,22 +1327,22 @@ describe("Sign in with Memberful", () => {
     expect(screen.queryByRole("textbox", { name: "Share to invite more people" })).not.toBeInTheDocument();
   });
 
-  it("isn't shown to members, who see the join link is off while Memberful is members only", async () => {
+  it("isn't shown to members, who see the join link is off while Papaya is members only", async () => {
     serve({ ...withMemberful(withKeys, true), canAdminister: false });
     showPage(asLinus);
     expect(await screen.findByText(/so the join link is off/)).toBeInTheDocument();
-    expect(screen.queryByRole("region", { name: "Memberful" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Papaya" })).not.toBeInTheDocument();
     expect(screen.queryByText(SITE)).not.toBeInTheDocument();
     expect(screen.queryByRole("textbox", { name: "Share to invite more people" })).not.toBeInTheDocument();
   });
 
-  it("tells members that the site's members join with Memberful while no other way lets anyone in", async () => {
+  it("tells members that the site's members join with Papaya while no other way lets anyone in", async () => {
     const memberful = withMemberful(withKeys);
     serve({ ...memberful, canAdminister: false, account: { ...memberful.account, joinLink: false } });
     showPage(asLinus);
-    expect(await screen.findByText(/join by signing in with Memberful/)).toHaveTextContent(`Members of ${SITE} join by signing in with Memberful.`);
+    expect(await screen.findByText(/join by signing in with Papaya/)).toHaveTextContent(`Members of ${SITE} join by signing in with Papaya.`);
     expect(screen.queryByText("Only the people administrators invite can join.")).not.toBeInTheDocument();
-    expect(screen.queryByRole("region", { name: "Memberful" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Papaya" })).not.toBeInTheDocument();
   });
 });
 
@@ -1354,14 +1354,14 @@ describe("Ways to join", () => {
   const way = (name: string) => screen.findByRole("switch", { name });
   const signUpLink = () => screen.queryByRole("textbox", { name: "Share so anyone can sign up" });
   const OPEN_OVERRIDES = "Set aside while Open lets anyone join.";
-  const MEMBERS_ONLY_OVERRIDES = "Off while Memberful is members only.";
+  const MEMBERS_ONLY_OVERRIDES = "Off while Papaya is members only.";
 
-  it("gives administrators Who can join: Open, Join link, Email domain and Memberful, each with a switch and whom it lets in", async () => {
+  it("gives administrators Who can join: Open, Join link, Email domain and Papaya, each with a switch and whom it lets in", async () => {
     serve(withKeys);
     showPage();
     const ways = await screen.findByRole("region", { name: "Who can join" });
     expect(within(ways).getByRole("heading", { level: 2, name: "Who can join" })).toBeInTheDocument();
-    expect(within(ways).getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent)).toEqual(["Open", "Join link", "Email domain", "Memberful"]);
+    expect(within(ways).getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent)).toEqual(["Open", "Join link", "Email domain", "Papaya"]);
     const open = await way("Open");
     expect(open).not.toBeChecked();
     expect(open).toHaveAccessibleDescription("Anyone can create an account at Ember's sign-up page.");
@@ -1375,7 +1375,7 @@ describe("Ways to join", () => {
     expect(emailDomain).toHaveAccessibleDescription(
       "People with an email address at your domains join with a link Ember emails them. Ember can't send email yet, so turning this on sets that up first.",
     );
-    expect(await way("Memberful")).not.toBeChecked();
+    expect(await way("Papaya")).not.toBeChecked();
     // Each shows its settings while it's on.
     expect(within(screen.getByRole("region", { name: "Join link" })).getByRole("textbox", { name: "Share to invite more people" })).toBeInTheDocument();
     expect(signUpLink()).not.toBeInTheDocument();
@@ -1395,8 +1395,8 @@ describe("Ways to join", () => {
     expect(screen.getByRole("button", { name: "Copy sign-up link" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Show sign-up link QR code" })).toBeInTheDocument();
 
-    // The join link and Memberful keep their settings, greyed out.
-    for (const name of ["Join link", "Memberful"]) {
+    // The join link and Papaya keep their settings, greyed out.
+    for (const name of ["Join link", "Papaya"]) {
       expect(await way(name)).toBeDisabled();
       expect(await way(name)).toHaveAccessibleDescription(OPEN_OVERRIDES);
     }
@@ -1427,7 +1427,7 @@ describe("Ways to join", () => {
   });
 
   it.each([
-    { way: "Open", on: { openSignUp: true }, off: { openSignUp: false }, others: ["Join link", "Memberful"] },
+    { way: "Open", on: { openSignUp: true }, off: { openSignUp: false }, others: ["Join link", "Papaya"] },
     { way: "Members only", on: { memberfulJoin: true, memberfulSignIn: true }, off: { memberfulJoin: true, memberfulSignIn: false }, others: ["Open", "Join link"] },
   ])("keeps what $way sets aside greyed out until turning it off is saved, since the server refuses those till then", async ({ way: overriding, on, off, others }) => {
     let answer = (_: Response) => {};
@@ -1509,14 +1509,14 @@ describe("Ways to join", () => {
     expect(saved()).toEqual([{ settings: { joinLink: false } }, { settings: { joinLink: true } }]);
   });
 
-  it("greys out Open and Join link while Memberful is members only", async () => {
+  it("greys out Open and Join link while Papaya is members only", async () => {
     serve(withAccount(withKeys, { memberfulJoin: true, memberfulSignIn: true }));
     showPage();
     for (const name of ["Open", "Join link"]) {
       expect(await way(name)).toBeDisabled();
       expect(await way(name)).toHaveAccessibleDescription(MEMBERS_ONLY_OVERRIDES);
     }
-    expect(await way("Memberful")).toBeEnabled();
+    expect(await way("Papaya")).toBeEnabled();
     expect(await way("Members only")).toBeEnabled();
     expect(screen.queryByRole("textbox", { name: "Share to invite more people" })).not.toBeInTheDocument();
   });
@@ -1525,12 +1525,12 @@ describe("Ways to join", () => {
     serve(withAccount(withKeys, { memberfulJoin: true, memberfulSignIn: true, openSignUp: true }));
     showPage();
     expect(await way("Open")).toBeEnabled();
-    expect(await way("Memberful")).toBeEnabled();
+    expect(await way("Papaya")).toBeEnabled();
     expect(await way("Members only")).toBeEnabled();
     expect(await way("Join link")).toBeDisabled();
   });
 
-  it("keeps Memberful beside the join link and Open, set aside while Open is on", async () => {
+  it("keeps Papaya beside the join link and Open, set aside while Open is on", async () => {
     serve(withAccount(withKeys, { memberfulJoin: true, joinLink: false }));
     vi.spyOn(window, "confirm").mockReturnValue(true);
     const { user } = showPage();
@@ -1541,9 +1541,9 @@ describe("Ways to join", () => {
 
     const open = await way("Open");
     await user.click(open);
-    await waitFor(async () => expect(await way("Memberful")).toBeDisabled());
+    await waitFor(async () => expect(await way("Papaya")).toBeDisabled());
     expect(saved()).toEqual([{ settings: { joinLink: true } }, { settings: { openSignUp: true } }]);
-    const memberful = await way("Memberful");
+    const memberful = await way("Papaya");
     expect(memberful).toBeChecked();
     expect(memberful).toHaveAccessibleDescription(OPEN_OVERRIDES);
     expect(screen.queryByRole("switch", { name: "Members only" })).not.toBeInTheDocument();
@@ -1765,7 +1765,7 @@ describe("Join with an email domain", () => {
 
   it.each([
     { way: "Open", changes: { openSignUp: true }, says: "Set aside while Open lets anyone join." },
-    { way: "Members only", changes: { memberfulJoin: true, memberfulSignIn: true }, says: "Off while Memberful is members only." },
+    { way: "Members only", changes: { memberfulJoin: true, memberfulSignIn: true }, says: "Off while Papaya is members only." },
   ])("greys it out while $way is on, keeping its domains for later", async ({ changes, says }) => {
     const settings = letsIn(["example.org"]);
     serve({ ...settings, memberfulSite: "https://example.memberful.com", account: { ...settings.account, ...changes } });
@@ -2946,26 +2946,26 @@ describe("Remove someone from the workspace", () => {
   });
 });
 
-describe("Memberful memberships", () => {
+describe("Papaya memberships", () => {
   showingSection("membership-settings");
   const SITE = "https://example.memberful.com";
   const withKeys: WorkspaceSettings = { ...asAdministrator, memberfulSite: SITE };
   const webhookSteps = () => screen.queryByRole("list", { name: "Steps to sign out members whose membership lapses" });
   const lapsed = listed("u7", "Sam Lapsed", "member", "suspended");
 
-  it("says how to hear Memberful's webhooks in the steps to get the keys", async () => {
+  it("says how to hear Papaya's webhooks in the steps to get the keys", async () => {
     const { user } = showPage();
-    await user.click(await screen.findByRole("switch", { name: "Memberful" }));
-    const steps = screen.getByRole("list", { name: "Steps to let Memberful members sign in" });
+    await user.click(await screen.findByRole("switch", { name: "Papaya" }));
+    const steps = screen.getByRole("list", { name: "Steps to let Papaya members sign in" });
     expect(steps).toHaveTextContent(`order events to ${location.origin}/webhooks/memberful.`);
     expect(steps).toHaveTextContent("the webhook's secret key as MEMBERFUL_WEBHOOK_SECRET, and the custom app's API key as MEMBERFUL_API_KEY");
     expect(webhookSteps()).not.toBeInTheDocument();
   });
 
-  it("gives administrators the steps to hear Memberful's webhooks once it's on, until the deployment has their secrets", async () => {
+  it("gives administrators the steps to hear Papaya's webhooks once it's on, until the deployment has their secrets", async () => {
     serve(withKeys);
     const { user } = showPage();
-    const on = await screen.findByRole("switch", { name: "Memberful" });
+    const on = await screen.findByRole("switch", { name: "Papaya" });
     expect(on).toHaveAccessibleDescription(expect.not.stringContaining("signed out"));
     expect(webhookSteps()).not.toBeInTheDocument();
     await user.click(on);
@@ -2977,13 +2977,13 @@ describe("Memberful memberships", () => {
     expect(screen.getByText(/stays signed in where they are/)).toBeInTheDocument();
   });
 
-  it("says a member whose membership lapses is signed out once the deployment hears Memberful's webhooks, and where they come", async () => {
+  it("says a member whose membership lapses is signed out once the deployment hears Papaya's webhooks, and where they come", async () => {
     serve({ ...withKeys, memberfulWebhooks: true, account: { ...withKeys.account, memberfulJoin: true } });
     showPage();
-    const on = await screen.findByRole("switch", { name: "Memberful" });
+    const on = await screen.findByRole("switch", { name: "Papaya" });
     expect(on).toHaveAccessibleDescription(expect.stringMatching(/ A member whose membership lapses is signed out until it's renewed\.$/));
     expect(webhookSteps()).not.toBeInTheDocument();
-    expect(screen.getByRole("region", { name: "Memberful" })).toHaveTextContent(
+    expect(screen.getByRole("region", { name: "Papaya" })).toHaveTextContent(
       `and its webhook to ${location.origin}/webhooks/memberful. If Ember's address changes, change both there too.`,
     );
   });

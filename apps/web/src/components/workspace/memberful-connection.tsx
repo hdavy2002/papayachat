@@ -8,24 +8,24 @@ import { connectMemberful, disconnectMemberful, isSignedOut } from "@/lib/api";
 import { openPage } from "@/lib/page";
 import { pushEndpoint } from "@/lib/push";
 
-// The Memberful section of your profile: while Memberful is members only, someone with an account from
-// before connects their Memberful account to it, with their password, as changing their email address
-// takes it, and signs in with Memberful from then on. Once one is connected, it names the account, and
-// Disconnect Memberful, with their password again, unlinks it and ends their other sessions, as a new
+// The Papaya section of your profile: while Papaya is members only, someone with an account from
+// before connects their Papaya account to it, with their password, as changing their email address
+// takes it, and signs in with Papaya from then on. Once one is connected, it names the account, and
+// Disconnect Papaya, with their password again, unlinks it and ends their other sessions, as a new
 // password does, while they have a password and an email address to sign in with instead. Someone who
-// joined with Memberful has no password, and is given none while Memberful signs them in, so theirs
-// stays connected. Boxed as workspace settings' Memberful section is.
+// joined with Papaya has no password, and is given none while Papaya signs them in, so theirs
+// stays connected. Boxed as workspace settings' Papaya section is.
 
 interface Props {
-  /** The Memberful account you've connected, as Memberful describes it, or null while you haven't. */
+  /** The Papaya account you've connected, as Papaya describes it, or null while you haven't. */
   connected: MemberfulAccount | null;
-  /** Whether Memberful is members only, when members sign in with Memberful alone, unless they need no membership. */
+  /** Whether Papaya is members only, when members sign in with Papaya alone, unless they need no membership. */
   membersOnly: boolean;
   /** Whether you have a password, which connecting one asks for then, and disconnecting it needs. */
   hasPassword: boolean;
   /** Whether you have an email address, which signing in with your password takes, so disconnecting needs it too. */
   hasEmailAddress: boolean;
-  /** Whether you need Memberful to sign in, as everyone does but administrators and the people they invite, who sign in with a password too. */
+  /** Whether you need Papaya to sign in, as everyone does but administrators and the people they invite, who sign in with a password too. */
   membershipNeeded: boolean;
   /** Shows your profile as disconnecting answered it. */
   onDisconnected: (answer: ProfileAnswer) => void;
@@ -33,15 +33,15 @@ interface Props {
   onFailed: (error: unknown) => void;
 }
 
-/** Who `account` is, as Memberful describes it: "Grace Hopper (grace@example.com)", or whichever of the two it said, or null when it said neither. */
+/** Who `account` is, as Papaya describes it: "Grace Hopper (grace@example.com)", or whichever of the two it said, or null when it said neither. */
 function describe({ name, emailAddress }: MemberfulAccount): string | null {
   if (name && emailAddress) return `${name} (${emailAddress})`;
   return name || emailAddress || null;
 }
 
 /**
- * The Memberful account you've connected, with Disconnect Memberful, or Connect Memberful, which sends
- * the browser to sign in at the Memberful site once your password checks out, and Memberful sends it
+ * The Papaya account you've connected, with Disconnect Papaya, or Connect Papaya, which sends
+ * the browser to sign in at the Papaya site once your password checks out, and Papaya sends it
  * back here.
  */
 export function MemberfulConnection({ connected, membersOnly, hasPassword, hasEmailAddress, membershipNeeded, onDisconnected, onFailed }: Props) {
@@ -108,9 +108,9 @@ export function MemberfulConnection({ connected, membersOnly, hasPassword, hasEm
     </Field>
   );
 
-  // Whether your password signs you in, which takes an email address to sign in by, so that Memberful can be disconnected.
+  // Whether your password signs you in, which takes an email address to sign in by, so that Papaya can be disconnected.
   const signsInWithPassword = hasPassword && hasEmailAddress;
-  // Whether Memberful is your way in, rather than one of two: a member's, while Memberful is members only,
+  // Whether Papaya is your way in, rather than one of two: a member's, while Papaya is members only,
   // and anyone's whose password doesn't sign them in.
   const signsYouIn = (membersOnly && membershipNeeded) || !signsInWithPassword;
   const who = connected && describe(connected);
@@ -118,12 +118,12 @@ export function MemberfulConnection({ connected, membersOnly, hasPassword, hasEm
   return (
     <section aria-labelledby="memberful-connection-heading" className="flex flex-col gap-3 rounded-[10px] border bg-surface px-[2ch] py-4 max-md:px-3">
       <h2 id="memberful-connection-heading" className="text-base font-semibold">
-        Memberful
+        Papaya
       </h2>
       {connected ? (
         <>
           <p>
-            {who ? `Connected to Memberful as ${who}` : "Your Memberful account is connected"}
+            {who ? `Connected to Papaya as ${who}` : "Your Papaya account is connected"}
             {signsYouIn ? ", so you sign in with it." : ", so you can sign in with it too."}
           </p>
           {signsInWithPassword ? (
@@ -134,7 +134,7 @@ export function MemberfulConnection({ connected, membersOnly, hasPassword, hasEm
                   : "Disconnecting ends your other sessions, as a new password does."}
               </p>
               {passwordField("memberful-disconnection-help")}
-              <SubmitButton disabled={busy}>Disconnect Memberful</SubmitButton>
+              <SubmitButton disabled={busy}>Disconnect Papaya</SubmitButton>
             </form>
           ) : (
             hasPassword && <p>Add your email address above to disconnect it, so that you can still sign in with your password.</p>
@@ -143,11 +143,11 @@ export function MemberfulConnection({ connected, membersOnly, hasPassword, hasEm
       ) : (
         <form onSubmit={connect} className={AUTH_FORM}>
           <p id="memberful-connection-help">
-            Members sign in with Memberful.{" "}
-            {membershipNeeded ? "Connect your Memberful account to keep signing in as yourself." : "Connect your Memberful account to sign in with it too."}
+            Members sign in with Papaya.{" "}
+            {membershipNeeded ? "Connect your Papaya account to keep signing in as yourself." : "Connect your Papaya account to sign in with it too."}
           </p>
           {hasPassword && passwordField("memberful-connection-help")}
-          <SubmitButton disabled={busy}>Connect Memberful</SubmitButton>
+          <SubmitButton disabled={busy}>Connect Papaya</SubmitButton>
         </form>
       )}
     </section>

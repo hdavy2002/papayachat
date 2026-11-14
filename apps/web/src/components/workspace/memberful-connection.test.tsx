@@ -16,11 +16,11 @@ import { MemberfulConnection } from "./memberful-connection";
 
 vi.mock("@/lib/page", () => ({ loadPage: vi.fn(), openPage: vi.fn() }));
 
-/** Where the Memberful site signs you in to connect your account there. */
+/** Where the Papaya site signs you in to connect your account there. */
 const MEMBERFUL_OAUTH = "https://example.memberful.com/oauth?response_type=code&client_id=ember&state=s7a7e";
-/** Grace's Memberful account, as Memberful describes it. */
+/** Grace's Papaya account, as Papaya describes it. */
 const grace: MemberfulAccount = { name: "Grace Hopper", emailAddress: "grace@example.com" };
-/** Your profile once your Memberful account is disconnected, as disconnecting answers it. */
+/** Your profile once your Papaya account is disconnected, as disconnecting answers it. */
 const DISCONNECTED: ProfileAnswer = {
   profile: {
     name: "Grace Hopper",
@@ -38,7 +38,7 @@ const DISCONNECTED: ProfileAnswer = {
 /** Where this browser's push subscription takes its pushes, when it has one. */
 const ENDPOINT = "https://fcm.googleapis.com/fcm/send/desk";
 
-/** Answers Connect Memberful with where to sign in at the Memberful site, and Disconnect Memberful with your profile, or as `answer` says. */
+/** Answers Connect Papaya with where to sign in at the Papaya site, and Disconnect Papaya with your profile, or as `answer` says. */
 const serve = (answer?: () => Response) =>
   vi
     .spyOn(globalThis, "fetch")
@@ -67,9 +67,9 @@ function showSection({ connected = null as MemberfulAccount | null, membersOnly 
   return { onDisconnected, onFailed, user: userEvent.setup() };
 }
 
-const section = () => screen.getByRole("region", { name: "Memberful" });
-const connectButton = () => screen.getByRole("button", { name: "Connect Memberful" });
-const disconnectButton = () => screen.getByRole("button", { name: "Disconnect Memberful" });
+const section = () => screen.getByRole("region", { name: "Papaya" });
+const connectButton = () => screen.getByRole("button", { name: "Connect Papaya" });
+const disconnectButton = () => screen.getByRole("button", { name: "Disconnect Papaya" });
 
 beforeEach(() => serve());
 
@@ -79,27 +79,27 @@ afterEach(() => {
   Reflect.deleteProperty(navigator, "serviceWorker");
 });
 
-describe("Connect Memberful", () => {
-  it("asks a member to connect their Memberful account with their password, to keep signing in as themselves", () => {
+describe("Connect Papaya", () => {
+  it("asks a member to connect their Papaya account with their password, to keep signing in as themselves", () => {
     showSection();
-    expect(section()).toHaveTextContent("Members sign in with Memberful. Connect your Memberful account to keep signing in as yourself.");
+    expect(section()).toHaveTextContent("Members sign in with Papaya. Connect your Papaya account to keep signing in as yourself.");
     const password = screen.getByLabelText("Password");
     expect(password).toHaveAttribute("type", "password");
     expect(password).toHaveAttribute("autocomplete", "current-password");
     expect(password).toHaveAttribute("placeholder", "Enter your password");
     expect(password).toHaveAttribute("maxlength", String(MAX_PASSWORD_LENGTH));
     expect(password).toBeRequired();
-    expect(password).toHaveAccessibleDescription("Members sign in with Memberful. Connect your Memberful account to keep signing in as yourself.");
+    expect(password).toHaveAccessibleDescription("Members sign in with Papaya. Connect your Papaya account to keep signing in as yourself.");
     expect(connectButton()).toBeEnabled();
-    expect(screen.queryByRole("button", { name: "Disconnect Memberful" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Disconnect Papaya" })).not.toBeInTheDocument();
   });
 
   it("tells an administrator, or someone they invited, who needs no membership, that they can sign in with it too", () => {
     showSection({ membershipNeeded: false });
-    expect(section()).toHaveTextContent("Members sign in with Memberful. Connect your Memberful account to sign in with it too.");
+    expect(section()).toHaveTextContent("Members sign in with Papaya. Connect your Papaya account to sign in with it too.");
   });
 
-  it("goes to sign in at the Memberful site once your password checks out, staying busy meanwhile", async () => {
+  it("goes to sign in at the Papaya site once your password checks out, staying busy meanwhile", async () => {
     const { user, onFailed } = showSection();
     await user.type(screen.getByLabelText("Password"), "correct horse");
     await user.click(connectButton());
@@ -131,12 +131,12 @@ describe("Connect Memberful", () => {
   });
 });
 
-describe("Disconnect Memberful", () => {
+describe("Disconnect Papaya", () => {
   it("names the account you've connected, and offers to disconnect it with your password", () => {
     showSection({ connected: grace });
-    expect(section()).toHaveTextContent("Connected to Memberful as Grace Hopper (grace@example.com), so you sign in with it.");
+    expect(section()).toHaveTextContent("Connected to Papaya as Grace Hopper (grace@example.com), so you sign in with it.");
     expect(section()).toHaveTextContent("Disconnecting ends your other sessions. Signing in with your password then asks you to connect one again.");
-    expect(screen.queryByRole("button", { name: "Connect Memberful" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Connect Papaya" })).not.toBeInTheDocument();
     const password = screen.getByLabelText("Password");
     expect(password).toHaveAttribute("type", "password");
     expect(password).toHaveAttribute("autocomplete", "current-password");
@@ -147,21 +147,21 @@ describe("Disconnect Memberful", () => {
 
   it("tells someone who needs no membership, and has connected one, that they can sign in with it too", () => {
     showSection({ connected: grace, membershipNeeded: false });
-    expect(section()).toHaveTextContent("Connected to Memberful as Grace Hopper (grace@example.com), so you can sign in with it too.");
+    expect(section()).toHaveTextContent("Connected to Papaya as Grace Hopper (grace@example.com), so you can sign in with it too.");
     expect(section()).toHaveTextContent("Disconnecting ends your other sessions, as a new password does.");
   });
 
-  it("tells a member the same while Memberful isn't members only, since their password signs them in", () => {
+  it("tells a member the same while Papaya isn't members only, since their password signs them in", () => {
     showSection({ connected: grace, membersOnly: false });
-    expect(section()).toHaveTextContent("Connected to Memberful as Grace Hopper (grace@example.com), so you can sign in with it too.");
+    expect(section()).toHaveTextContent("Connected to Papaya as Grace Hopper (grace@example.com), so you can sign in with it too.");
     expect(section()).toHaveTextContent("Disconnecting ends your other sessions, as a new password does.");
   });
 
   it.each([
-    [{ name: "Grace Hopper", emailAddress: null }, "Connected to Memberful as Grace Hopper, so you sign in with it."],
-    [{ name: null, emailAddress: "grace@example.com" }, "Connected to Memberful as grace@example.com, so you sign in with it."],
-    [{ name: null, emailAddress: null }, "Your Memberful account is connected, so you sign in with it."],
-  ])("names the account by what Memberful said of it: %j", (connected, text) => {
+    [{ name: "Grace Hopper", emailAddress: null }, "Connected to Papaya as Grace Hopper, so you sign in with it."],
+    [{ name: null, emailAddress: "grace@example.com" }, "Connected to Papaya as grace@example.com, so you sign in with it."],
+    [{ name: null, emailAddress: null }, "Your Papaya account is connected, so you sign in with it."],
+  ])("names the account by what Papaya said of it: %j", (connected, text) => {
     showSection({ connected });
     expect(section()).toHaveTextContent(text);
   });
@@ -204,22 +204,22 @@ describe("Disconnect Memberful", () => {
   });
 
   it.each([
-    ["while Memberful is members only", {}],
+    ["while Papaya is members only", {}],
     ["even while it isn't, since nothing else signs them in", { membersOnly: false, membershipNeeded: false }],
-  ])("offers someone without a password nothing to disconnect, Memberful being how they sign in, %s", (_, settings) => {
+  ])("offers someone without a password nothing to disconnect, Papaya being how they sign in, %s", (_, settings) => {
     showSection({ connected: grace, hasPassword: false, ...settings });
-    expect(section()).toHaveTextContent("Connected to Memberful as Grace Hopper (grace@example.com), so you sign in with it.");
+    expect(section()).toHaveTextContent("Connected to Papaya as Grace Hopper (grace@example.com), so you sign in with it.");
     // Nothing asks them for a password, which they're given none of, nor offers to disconnect it.
     expect(section()).not.toHaveTextContent(/password|disconnect/i);
-    expect(screen.queryByRole("button", { name: "Disconnect Memberful" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Disconnect Papaya" })).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Password")).not.toBeInTheDocument();
   });
 
   it("asks someone with a password but no email address to add one first, since signing in with a password takes one", () => {
     showSection({ connected: grace, hasEmailAddress: false, membersOnly: false, membershipNeeded: false });
-    expect(section()).toHaveTextContent("Connected to Memberful as Grace Hopper (grace@example.com), so you sign in with it.");
+    expect(section()).toHaveTextContent("Connected to Papaya as Grace Hopper (grace@example.com), so you sign in with it.");
     expect(section()).toHaveTextContent("Add your email address above to disconnect it, so that you can still sign in with your password.");
-    expect(screen.queryByRole("button", { name: "Disconnect Memberful" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Disconnect Papaya" })).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Password")).not.toBeInTheDocument();
   });
 });

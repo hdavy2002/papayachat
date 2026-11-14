@@ -190,7 +190,7 @@ export type Role = "member" | "administrator" | "bot";
 
 /**
  * Whether someone can still sign in: people who were removed are deactivated, and banned people are
- * banned. A member who signs in with Memberful is suspended while their membership has lapsed, until
+ * banned. A member who signs in with Papaya is suspended while their membership has lapsed, until
  * it's renewed.
  */
 export type UserStatus = "active" | "deactivated" | "banned" | "suspended";
@@ -434,32 +434,32 @@ export interface Account {
   customDomain: string | null;
   /**
    * Whether the join link lets people in, which an administrator turns off in Membership: then it sends
-   * them to sign in, keeping its code for when it's on again. On until one turns it off. While Memberful
+   * them to sign in, keeping its code for when it's on again. On until one turns it off. While Papaya
    * is members only it's off whatever this says (`joinsWithLink`).
    */
   joinLink: boolean;
   /**
    * Whether anyone may create an account at `/join`, with no link, which an administrator turns on in
-   * Membership as Open. Off until one does, and never on while Memberful is members only.
+   * Membership as Open. Off until one does, and never on while Papaya is members only.
    */
   openSignUp: boolean;
   /**
-   * Whether the members of the deployment's Memberful site join, and sign in, with their Memberful
-   * account, which an administrator turns on in Membership as Memberful. Off until one does. Members who
+   * Whether the members of the deployment's Papaya site join, and sign in, with their Papaya
+   * account, which an administrator turns on in Membership as Papaya. Off until one does. Members who
    * joined with it keep signing in with it once it's off, while the deployment has its keys.
    */
   memberfulJoin: boolean;
   /**
-   * Whether only Memberful's members sign in, and administrators, which an administrator turns on in
-   * Membership as Memberful's Members only: then the join link, open sign-up, Email domain and signing in
+   * Whether only Papaya's members sign in, and administrators, which an administrator turns on in
+   * Membership as Papaya's Members only: then the join link, open sign-up, Email domain and signing in
    * with just a name are off, and only administrators and the people they invite sign in with a
-   * password. Off until one turns it on, and never on while Memberful is off.
+   * password. Off until one turns it on, and never on while Papaya is off.
    */
   memberfulSignIn: boolean;
   /**
    * Whether people with an email address at one of `emailDomains` may join with a link Ember emails
    * them, which they ask for at `/join/email`, and which an administrator turns on in Membership as Email
-   * domain. Off until one does, and off whatever this says while Memberful is members only
+   * domain. Off until one does, and off whatever this says while Papaya is members only
    * (`signsUpWithEmailDomain`).
    */
   emailDomainSignUp: boolean;
@@ -494,15 +494,15 @@ export interface WorkspaceSettings {
   /** Whether you can change the workspace, as administrators can. Members see it read-only. */
   canAdminister: boolean;
   /**
-   * The address of the Memberful site whose members can sign in, such as https://example.memberful.com,
+   * The address of the Papaya site whose members can sign in, such as https://example.memberful.com,
    * once the deployment has the keys of its custom app (`MEMBERFUL_URL` and the rest), or null while it
-   * hasn't, when Memberful can't be turned on.
+   * hasn't, when Papaya can't be turned on.
    */
   memberfulSite: string | null;
   /**
-   * Whether the deployment also has what Memberful's webhooks take, their signing secret and the custom
+   * Whether the deployment also has what Papaya's webhooks take, their signing secret and the custom
    * app's API key (`MEMBERFUL_WEBHOOK_SECRET` and `MEMBERFUL_API_KEY`), so that Ember hears when a
-   * membership lapses or is renewed, and checks what it hears with Memberful.
+   * membership lapses or is renewed, and checks what it hears with Papaya.
    */
   memberfulWebhooks: boolean;
   /**
@@ -723,9 +723,9 @@ export interface AccountChanges {
 
 /**
  * The workspace's settings that workspace settings' switches change, the ways to join among them: the
- * join link's switch, Open, Memberful, its Members only, which the Worker turns on only with the
- * deployment's Memberful keys, and Email domain, which it turns on only with a domain to let in, while
- * Ember can send email. Members only turns Memberful on with it, turning Memberful off turns it off, and
+ * join link's switch, Open, Papaya, its Members only, which the Worker turns on only with the
+ * deployment's Papaya keys, and Email domain, which it turns on only with a domain to let in, while
+ * Ember can send email. Members only turns Papaya on with it, turning Papaya off turns it off, and
  * it's never on together with Open.
  */
 export interface AccountSettings {
@@ -738,20 +738,20 @@ export interface AccountSettings {
   emailDomainSignUp?: boolean;
 }
 
-/** Whether the join link lets people in: its switch is on, and Memberful isn't members only, which turns it off. */
+/** Whether the join link lets people in: its switch is on, and Papaya isn't members only, which turns it off. */
 export const joinsWithLink = ({ joinLink, memberfulSignIn }: Pick<Account, "joinLink" | "memberfulSignIn">) => joinLink && !memberfulSignIn;
 
-/** Whether anyone may create an account at `/join`: Open is on, and Memberful isn't members only, which it can't be on with. */
+/** Whether anyone may create an account at `/join`: Open is on, and Papaya isn't members only, which it can't be on with. */
 export const signsUpOpenly = ({ openSignUp, memberfulSignIn }: Pick<Account, "openSignUp" | "memberfulSignIn">) => openSignUp && !memberfulSignIn;
 
 /**
  * Whether people may join with an email address at the workspace's email domains: Email domain is on,
- * with a domain to let in, and Memberful isn't members only, which turns it off.
+ * with a domain to let in, and Papaya isn't members only, which turns it off.
  */
 export const signsUpWithEmailDomain = ({ emailDomainSignUp, emailDomains, memberfulSignIn }: Pick<Account, "emailDomainSignUp" | "emailDomains" | "memberfulSignIn">) =>
   emailDomainSignUp && emailDomains.length > 0 && !memberfulSignIn;
 
-/** Why turning on Open, or Memberful's Members only, is refused while the other is on: Members only lets only Memberful's members in. */
+/** Why turning on Open, or Papaya's Members only, is refused while the other is on: Members only lets only Papaya's members in. */
 export const OPEN_WITH_MEMBERFUL = "Open and Members only can't both be on. Turn one off first.";
 
 /** The most domains Email domain lets in, which every page carries while it's on. */
@@ -910,15 +910,15 @@ export interface Profile {
   /** Whether you have a password, which changing your email address or password then asks for (`currentPassword`). */
   password: boolean;
   /**
-   * Whether you need a Memberful membership to sign in while Memberful is members only, as everyone does
+   * Whether you need a Papaya membership to sign in while Papaya is members only, as everyone does
    * but administrators and the people they invite, who sign in with a password too.
    */
   membershipNeeded: boolean;
   /**
-   * Where you stand with Memberful (`MemberfulStatus`): the account at the Memberful site you've connected
-   * your account to, which you can sign in with then, or none yet while Memberful is members only. Null
-   * when there's nothing to show: while the deployment lacks Memberful's keys, for a guest, who has
-   * nothing to connect, or while Memberful isn't members only and you haven't connected one.
+   * Where you stand with Papaya (`MemberfulStatus`): the account at the Papaya site you've connected
+   * your account to, which you can sign in with then, or none yet while Papaya is members only. Null
+   * when there's nothing to show: while the deployment lacks Papaya's keys, for a guest, who has
+   * nothing to connect, or while Papaya isn't members only and you haven't connected one.
    */
   memberful: MemberfulStatus | null;
   /** How much @ember thinks and how long it answers you, and the most each may be, and the model you picked, if you did, and the ones you can pick, or null while Ember AI is off. */
@@ -981,8 +981,8 @@ export interface Bootstrap {
   /** Whether people may sign in with just a name (`EMBER_GUEST_SIGN_IN`). */
   guestSignIn: boolean;
   /**
-   * Whether the sign-in page offers Sign in with Memberful, once the deployment has the keys of its
-   * Memberful site's custom app: while Memberful lets that site's members join, or while anyone here signs
+   * Whether the sign-in page offers Sign in with Papaya, once the deployment has the keys of its
+   * Papaya site's custom app: while Papaya lets that site's members join, or while anyone here signs
    * in with an account there, as members who joined with it keep doing once it's off.
    */
   signInWithMemberful: boolean;
@@ -1151,7 +1151,7 @@ export interface PasswordResetWithCode {
 
 /**
  * What a new password chosen with a code answers: who it signed this browser in as, or null when they
- * sign in themselves, as someone who signs in with Memberful while it's members only does.
+ * sign in themselves, as someone who signs in with Papaya while it's members only does.
  */
 export interface PasswordResetDone {
   user: Me | null;
@@ -1204,8 +1204,8 @@ export interface PasswordSignIn {
   emailAddress: string;
   password: string;
   /**
-   * The page to come back to, a page of the workspace, if signing in goes on at the Memberful site, to
-   * connect a member's account there first (`MemberfulConnection`), as Sign in with Memberful names it.
+   * The page to come back to, a page of the workspace, if signing in goes on at the Papaya site, to
+   * connect a member's account there first (`MemberfulConnection`), as Sign in with Papaya names it.
    */
   returnTo?: string;
 }
@@ -1238,38 +1238,38 @@ export const SIGN_IN_REJECTED = "Incorrect email or password. Please try again."
 export const SIGN_IN_LIMITED = "Too many sign-in attempts. Please wait a few minutes and try again.";
 
 /**
- * Campfire's one answer to a sign-in it refuses, which a Memberful sign-in Ember refuses still gets,
+ * Campfire's one answer to a sign-in it refuses, which a Papaya sign-in Ember refuses still gets,
  * since it can't say which of the two went wrong.
  */
 export const SIGN_IN_REFUSED = "Too many requests or unauthorized.";
 
 /**
- * Where the sign-in page's Sign in with Memberful goes, which sends the browser on to sign in at the
- * Memberful site, naming the page to come back to in `return_to`.
+ * Where the sign-in page's Sign in with Papaya goes, which sends the browser on to sign in at the
+ * Papaya site, naming the page to come back to in `return_to`.
  */
 export const MEMBERFUL_SIGN_IN_PATH = "/auth/memberful";
 
-/** Where Memberful sends the browser back to, which the Memberful site's custom app names as its OAuth redirect URL. */
+/** Where Papaya sends the browser back to, which the Papaya site's custom app names as its OAuth redirect URL. */
 export const MEMBERFUL_CALLBACK_PATH = "/auth/memberful/callback";
 
 /**
- * Where the Memberful site's webhooks go, which say when a member's membership changes. Memberful signs
- * each, and the Worker checks what it says with Memberful.
+ * Where the Papaya site's webhooks go, which say when a member's membership changes. Papaya signs
+ * each, and the Worker checks what it says with Papaya.
  */
 export const MEMBERFUL_WEBHOOK_PATH = "/webhooks/memberful";
 
-/** Signing in with Memberful, coming back to `returnTo`, a page of the workspace, once signed in, or home without one. */
+/** Signing in with Papaya, coming back to `returnTo`, a page of the workspace, once signed in, or home without one. */
 export const memberfulSignInPath = (returnTo: string | null) =>
   returnTo === null ? MEMBERFUL_SIGN_IN_PATH : `${MEMBERFUL_SIGN_IN_PATH}?return_to=${encodeURIComponent(returnTo)}`;
 
 /**
- * Where your profile's Connect Memberful goes, which answers where to sign in at the Memberful site
+ * Where your profile's Connect Papaya goes, which answers where to sign in at the Papaya site
  * (`MemberfulConnection`) once it knows it's you.
  */
 export const MEMBERFUL_CONNECTIONS_PATH = "/api/users/me/memberful_connections";
 
 /**
- * What connecting your account to a Memberful account from your profile takes (`POST
+ * What connecting your account to a Papaya account from your profile takes (`POST
  * /api/users/me/memberful_connections`): your password, while you have one, so that holding your session
  * isn't enough to add a way into your account, as changing your email address or password takes it.
  */
@@ -1278,8 +1278,8 @@ export interface MemberfulConnectionStart {
 }
 
 /**
- * The Memberful account you've connected, as Memberful described it when you connected it or last
- * signed in with it: its name and email address there, either null when Memberful didn't say, or for
+ * The Papaya account you've connected, as Papaya described it when you connected it or last
+ * signed in with it: its name and email address there, either null when Papaya didn't say, or for
  * an account connected before Ember kept them, until you sign in with it again.
  */
 export interface MemberfulAccount {
@@ -1288,9 +1288,9 @@ export interface MemberfulAccount {
 }
 
 /**
- * Where you stand with Memberful, as your profile's Memberful section shows it: the account you've
+ * Where you stand with Papaya, as your profile's Papaya section shows it: the account you've
  * connected, which you sign in with, or null while you haven't, when the section offers Connect
- * Memberful, and whether Memberful is members only, when members sign in with Memberful alone, unless
+ * Papaya, and whether Papaya is members only, when members sign in with Papaya alone, unless
  * they need no membership (`Profile.membershipNeeded`).
  */
 export interface MemberfulStatus {
@@ -1299,7 +1299,7 @@ export interface MemberfulStatus {
 }
 
 /**
- * What disconnecting your Memberful account from your profile takes (`DELETE
+ * What disconnecting your Papaya account from your profile takes (`DELETE
  * /api/users/me/memberful_connections`): your password, so that holding your session isn't enough to
  * change how you sign in, as connecting one takes it, and this browser's push subscription, if it has
  * one, which it keeps while it forgets your other browsers', as a new password does.
@@ -1310,11 +1310,11 @@ export interface MemberfulDisconnection {
 }
 
 /**
- * Where to sign in at the Memberful site, within ten minutes, to connect the account you sign in to there
+ * Where to sign in at the Papaya site, within ten minutes, to connect the account you sign in to there
  * to yours here: what connecting from your profile answers, and what signing in with a password answers a
- * member whose password checks out while Memberful is members only, until they've connected one.
- * Memberful sends the browser back, which connects it. Asked at an address Ember has moved from to its
- * custom domain, where Memberful doesn't send it back, it's the page to come back to at the custom domain
+ * member whose password checks out while Papaya is members only, until they've connected one.
+ * Papaya sends the browser back, which connects it. Asked at an address Ember has moved from to its
+ * custom domain, where Papaya doesn't send it back, it's the page to come back to at the custom domain
  * instead, to sign in and connect there.
  */
 export interface MemberfulConnection {
@@ -1322,62 +1322,62 @@ export interface MemberfulConnection {
 }
 
 /**
- * Why a Memberful sign-in didn't sign anyone in, or didn't connect an account, which the callback sends
+ * Why a Papaya sign-in didn't sign anyone in, or didn't connect an account, which the callback sends
  * the browser back to sign in with, as `?memberful=`, or to your profile when it's signed in as you, and
  * what that page then says.
  */
 export const MEMBERFUL_SIGN_IN_PROBLEMS = {
-  /** Memberful sent the browser back without a sign-in, or with one this browser didn't start, or didn't answer as it should. */
-  failed: "Signing in with Memberful didn't work. Try again.",
-  /** The Memberful account has no active subscription, nor the all access pass. */
-  membership: "Your Memberful account has no active membership.",
+  /** Papaya sent the browser back without a sign-in, or with one this browser didn't start, or didn't answer as it should. */
+  failed: "Signing in with Papaya didn't work. Try again.",
+  /** The Papaya account has no active subscription, nor the all access pass. */
+  membership: "Your Papaya account has no active membership.",
   /**
-   * Someone here has the Memberful account's email address already, and accounts are never matched by it,
-   * but connected by its owner, as signing in with that password does while Memberful is members only.
+   * Someone here has the Papaya account's email address already, and accounts are never matched by it,
+   * but connected by its owner, as signing in with that password does while Papaya is members only.
    */
-  taken: "Someone here has your Memberful email address already. If that's you, sign in with your password.",
-  /** The Memberful account is connected to someone else here already. */
-  claimed: "That Memberful account is connected to someone else here.",
-  /** Your account is connected to another account at the Memberful site already. */
-  another: "Your account is connected to another Memberful account already.",
-  /** Someone new signed in with Memberful while an administrator has Memberful off. */
-  off: "Joining with Memberful is off.",
-  /** Someone connected their account to one at Memberful once Memberful stopped being members only, when their password signs them in. */
-  unneeded: "Memberful isn't members only anymore, so there's nothing to connect. Your password signs you in.",
-  /** It's on, but the deployment has no Memberful keys. */
-  unavailable: "Memberful sign-in isn't set up. Ask an administrator for help.",
+  taken: "Someone here has your Papaya email address already. If that's you, sign in with your password.",
+  /** The Papaya account is connected to someone else here already. */
+  claimed: "That Papaya account is connected to someone else here.",
+  /** Your account is connected to another account at the Papaya site already. */
+  another: "Your account is connected to another Papaya account already.",
+  /** Someone new signed in with Papaya while an administrator has Papaya off. */
+  off: "Joining with Papaya is off.",
+  /** Someone connected their account to one at Papaya once Papaya stopped being members only, when their password signs them in. */
+  unneeded: "Papaya isn't members only anymore, so there's nothing to connect. Your password signs you in.",
+  /** It's on, but the deployment has no Papaya keys. */
+  unavailable: "Papaya sign-in isn't set up. Ask an administrator for help.",
   /** Too many sign-ins from the address, or the account was removed or banned, which this doesn't tell apart. */
   refused: SIGN_IN_REFUSED,
 } as const;
 export type MemberfulSignInProblem = keyof typeof MEMBERFUL_SIGN_IN_PROBLEMS;
 
-/** The query parameter that names a Memberful sign-in's problem, or says that your profile connected your Memberful account. */
+/** The query parameter that names a Papaya sign-in's problem, or says that your profile connected your Papaya account. */
 export const MEMBERFUL_PROBLEM_PARAM = "memberful";
 
-/** What that parameter says once your Memberful account is connected, and what your profile then says. */
+/** What that parameter says once your Papaya account is connected, and what your profile then says. */
 export const MEMBERFUL_CONNECTED = "connected";
-export const MEMBERFUL_CONNECTED_NOTICE = "Your Memberful account is connected.";
+export const MEMBERFUL_CONNECTED_NOTICE = "Your Papaya account is connected.";
 
 /** The problem `value` names, or null for none it names. */
 export const memberfulProblemOf = (value: string | null): MemberfulSignInProblem | null =>
   value !== null && Object.hasOwn(MEMBERFUL_SIGN_IN_PROBLEMS, value) ? (value as MemberfulSignInProblem) : null;
 
-/** Why connecting Memberful from your profile is refused without your password, while you have one. */
-export const MEMBERFUL_PASSWORD_NEEDED = "Enter your password to connect Memberful.";
+/** Why connecting Papaya from your profile is refused without your password, while you have one. */
+export const MEMBERFUL_PASSWORD_NEEDED = "Enter your password to connect Papaya.";
 
 /** Why disconnecting it is refused without your password. */
-export const MEMBERFUL_DISCONNECT_PASSWORD_NEEDED = "Enter your password to disconnect Memberful.";
-/** Why it's refused while you have no password, which you'd have nothing to sign in with without, and which Memberful signing you in gives you none of. */
-export const MEMBERFUL_DISCONNECT_WITHOUT_PASSWORD = "You sign in with Memberful alone, so it can't be disconnected.";
+export const MEMBERFUL_DISCONNECT_PASSWORD_NEEDED = "Enter your password to disconnect Papaya.";
+/** Why it's refused while you have no password, which you'd have nothing to sign in with without, and which Papaya signing you in gives you none of. */
+export const MEMBERFUL_DISCONNECT_WITHOUT_PASSWORD = "You sign in with Papaya alone, so it can't be disconnected.";
 /** Why it's refused while you have no email address, which signing in with your password takes. */
-export const MEMBERFUL_DISCONNECT_WITHOUT_EMAIL = "Add your email address first, so that you can still sign in once Memberful is disconnected.";
-/** Why it's refused while you haven't connected a Memberful account. */
-export const MEMBERFUL_NOT_CONNECTED = "Your account isn't connected to a Memberful account.";
-/** What your profile says once your Memberful account is disconnected. */
-export const MEMBERFUL_DISCONNECTED_NOTICE = "Your Memberful account is disconnected.";
+export const MEMBERFUL_DISCONNECT_WITHOUT_EMAIL = "Add your email address first, so that you can still sign in once Papaya is disconnected.";
+/** Why it's refused while you haven't connected a Papaya account. */
+export const MEMBERFUL_NOT_CONNECTED = "Your account isn't connected to a Papaya account.";
+/** What your profile says once your Papaya account is disconnected. */
+export const MEMBERFUL_DISCONNECTED_NOTICE = "Your Papaya account is disconnected.";
 
-/** Why signing in with a password, joining with the join link, or signing in with just a name is refused while Memberful is members only. */
-export const MEMBERFUL_SIGN_IN_NEEDED = "Members sign in with Memberful. Only administrators and invited people sign in with a password.";
+/** Why signing in with a password, joining with the join link, or signing in with just a name is refused while Papaya is members only. */
+export const MEMBERFUL_SIGN_IN_NEEDED = "Members sign in with Papaya. Only administrators and invited people sign in with a password.";
 
 /**
  * Why a page for joining sent the browser to sign in instead, which the address names as `?joining=`,
@@ -1454,10 +1454,10 @@ export const CURRENT_PASSWORD_NEEDED = "Enter your current password to change yo
 /** Why it's refused with a current password that isn't yours. */
 export const CURRENT_PASSWORD_WRONG = "That isn't your current password.";
 /**
- * Why a first password is refused to someone Memberful signs in, while it does: it's their way in, and
+ * Why a first password is refused to someone Papaya signs in, while it does: it's their way in, and
  * a password that whoever holds their session could set would be another.
  */
-export const PASSWORD_WITH_MEMBERFUL = "You sign in with Memberful, so there's no password to set.";
+export const PASSWORD_WITH_MEMBERFUL = "You sign in with Papaya, so there's no password to set.";
 
 export interface Boost {
   id: string;
@@ -2037,7 +2037,7 @@ const SETTING_NAMES: Record<keyof AccountSettings, string> = {
   restrictRoomCreation: "Must be admin to create new rooms",
   joinLink: "Join link",
   openSignUp: "Open",
-  memberfulJoin: "Memberful",
+  memberfulJoin: "Papaya",
   memberfulSignIn: "Members only",
   emailDomainSignUp: "Email domain",
 };
@@ -2404,7 +2404,7 @@ export function parseProfileChanges(data: unknown): ProfileChanges | string {
 }
 
 /**
- * Parses an untrusted disconnection of your Memberful account. Returns why it's refused instead. Whether
+ * Parses an untrusted disconnection of your Papaya account. Returns why it's refused instead. Whether
  * the password is yours, and whether you have one, the server checks once it knows who's asking.
  */
 export function parseMemberfulDisconnection(data: unknown): MemberfulDisconnection | string {

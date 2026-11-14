@@ -228,20 +228,20 @@ describe("Custom CSS", () => {
   });
 });
 
-describe("Sign in with Memberful", () => {
+describe("Sign in with Papaya", () => {
   const withMemberful = { ...workspace, signInWithMemberful: true, account: { ...workspace.account, memberfulJoin: true, memberfulSignIn: true } };
 
-  it("offers Sign in with Memberful in place of the password form while Memberful is members only, coming back to the page this tab was sent from", async () => {
+  it("offers Sign in with Papaya in place of the password form while Papaya is members only, coming back to the page this tab was sent from", async () => {
     // As the app remembers the page it was on before it sends a tab to sign in.
     sessionStorage.setItem("ember:return-to", "/rooms/abc?tab=pins");
     history.replaceState(null, "", "/session/new");
     render(<SignInPage workspace={withMemberful} onSignedIn={vi.fn()} />, { wrapper: FlashProvider });
-    const memberful = screen.getByRole("link", { name: "Sign in with Memberful" });
+    const memberful = screen.getByRole("link", { name: "Sign in with Papaya" });
     expect(memberful).toHaveAttribute("href", "/auth/memberful?return_to=%2Frooms%2Fabc%3Ftab%3Dpins");
     expect(screen.queryByLabelText("Email address")).not.toBeInTheDocument();
     expect(screen.getByText("Have a password?")).toBeInTheDocument();
 
-    // The Worker opens that page once it's signed in, and this tab keeps it, for another try if Memberful
+    // The Worker opens that page once it's signed in, and this tab keeps it, for another try if Papaya
     // sends it back here, or an administrator's password. jsdom can't follow the link.
     document.addEventListener("click", (event) => event.preventDefault(), { once: true });
     await userEvent.click(memberful);
@@ -250,7 +250,7 @@ describe("Sign in with Memberful", () => {
 
   it("goes home once signed in when this tab came to sign in itself", () => {
     render(<SignInPage workspace={withMemberful} onSignedIn={vi.fn()} />, { wrapper: FlashProvider });
-    expect(screen.getByRole("link", { name: "Sign in with Memberful" })).toHaveAttribute("href", "/auth/memberful");
+    expect(screen.getByRole("link", { name: "Sign in with Papaya" })).toHaveAttribute("href", "/auth/memberful");
   });
 
   it("lets someone sign in with a password instead, and back", async () => {
@@ -258,11 +258,11 @@ describe("Sign in with Memberful", () => {
     render(<SignInPage workspace={withMemberful} onSignedIn={vi.fn()} />, { wrapper: FlashProvider });
     await user.click(screen.getByRole("button", { name: "Sign in with a password" }));
     expect(screen.getByLabelText("Email address")).toHaveFocus();
-    expect(screen.queryByRole("link", { name: "Sign in with Memberful" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Sign in with Papaya" })).not.toBeInTheDocument();
     expect(screen.getByText("Member?")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Sign in with Memberful" }));
-    expect(screen.getByRole("link", { name: "Sign in with Memberful" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Sign in with Papaya" }));
+    expect(screen.getByRole("link", { name: "Sign in with Papaya" })).toBeInTheDocument();
     expect(screen.queryByLabelText("Password")).not.toBeInTheDocument();
   });
 
@@ -275,10 +275,10 @@ describe("Sign in with Memberful", () => {
     expect(card()).toHaveClass("motion-safe:animate-shake");
   });
 
-  it("says why signing in with Memberful didn't work, once, taking it out of the address", () => {
+  it("says why signing in with Papaya didn't work, once, taking it out of the address", () => {
     history.replaceState(null, "", "/session/new?memberful=membership&email_address=ada%40example.com#top");
     render(<SignInPage workspace={withMemberful} onSignedIn={vi.fn()} />, { wrapper: FlashProvider });
-    expect(screen.getByRole("alert")).toHaveTextContent("Your Memberful account has no active membership.");
+    expect(screen.getByRole("alert")).toHaveTextContent("Your Papaya account has no active membership.");
     expect(`${location.pathname}${location.search}${location.hash}`).toBe("/session/new?email_address=ada%40example.com#top");
 
     cleanup();
@@ -293,28 +293,28 @@ describe("Sign in with Memberful", () => {
     expect(location.search).toBe("");
   });
 
-  it("offers it under the password form while Memberful lets its members in beside everyone else, coming back to the page this tab was sent from", () => {
+  it("offers it under the password form while Papaya lets its members in beside everyone else, coming back to the page this tab was sent from", () => {
     sessionStorage.setItem("ember:return-to", "/rooms/abc?tab=pins");
     const alongside = { ...workspace, signInWithMemberful: true, account: { ...workspace.account, memberfulJoin: true } };
     render(<SignInPage workspace={alongside} onSignedIn={vi.fn()} />, { wrapper: FlashProvider });
     expect(screen.getByLabelText("Email address")).toBeInTheDocument();
     expect(screen.getByText("Member?")).toBeInTheDocument();
-    const memberful = screen.getByRole("link", { name: "Sign in with Memberful" });
+    const memberful = screen.getByRole("link", { name: "Sign in with Papaya" });
     expect(memberful).toHaveAttribute("href", "/auth/memberful?return_to=%2Frooms%2Fabc%3Ftab%3Dpins");
     expect(screen.getByRole("button", { name: "Sign in" }).compareDocumentPosition(memberful)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     expect(screen.queryByRole("button", { name: "Sign in with a password" })).not.toBeInTheDocument();
   });
 
-  it("offers it while anyone here signs in with Memberful, as those who joined with it do once it's off", () => {
+  it("offers it while anyone here signs in with Papaya, as those who joined with it do once it's off", () => {
     render(<SignInPage workspace={{ ...workspace, signInWithMemberful: true }} onSignedIn={vi.fn()} />, { wrapper: FlashProvider });
     expect(screen.getByLabelText("Email address")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Sign in with Memberful" })).toHaveAttribute("href", "/auth/memberful");
+    expect(screen.getByRole("link", { name: "Sign in with Papaya" })).toHaveAttribute("href", "/auth/memberful");
   });
 
-  it("asks only for a password while nobody here signs in with Memberful", () => {
+  it("asks only for a password while nobody here signs in with Papaya", () => {
     render(<SignInPage workspace={workspace} onSignedIn={vi.fn()} />, { wrapper: FlashProvider });
-    expect(screen.queryByRole("link", { name: "Sign in with Memberful" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Sign in with Memberful" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Sign in with Papaya" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Sign in with Papaya" })).not.toBeInTheDocument();
     expect(screen.queryByText("Member?")).not.toBeInTheDocument();
     expect(screen.queryByText("Have a password?")).not.toBeInTheDocument();
   });
@@ -331,7 +331,7 @@ describe("Sign up without a link", () => {
     expect(create.compareDocumentPosition(screen.getByRole("button", { name: "Join with just a name" }))).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
   });
 
-  it("doesn't while it's off, or Memberful is members only", () => {
+  it("doesn't while it's off, or Papaya is members only", () => {
     render(<SignInPage workspace={workspace} onSignedIn={vi.fn()} />, { wrapper: FlashProvider });
     expect(screen.queryByRole("link", { name: "Create an account" })).not.toBeInTheDocument();
     cleanup();
@@ -350,7 +350,7 @@ describe("Join with an email domain", () => {
     expect(joinWithIt()!.parentElement).toHaveTextContent("Have an address at example.org or example.com? Join with it");
   });
 
-  it("offers Create an account in its place while Open lets anyone in, and neither while Memberful is members only", () => {
+  it("offers Create an account in its place while Open lets anyone in, and neither while Papaya is members only", () => {
     render(<SignInPage workspace={{ ...atDomains, account: { ...atDomains.account, openSignUp: true } }} onSignedIn={vi.fn()} />, { wrapper: FlashProvider });
     expect(screen.getByRole("link", { name: "Create an account" })).toBeInTheDocument();
     expect(joinWithIt()).not.toBeInTheDocument();
@@ -388,12 +388,12 @@ describe("Ways to join", () => {
   });
 });
 
-describe("Connect Memberful", () => {
+describe("Connect Papaya", () => {
   const withMemberful = { ...workspace, signInWithMemberful: true, account: { ...workspace.account, memberfulJoin: true, memberfulSignIn: true } };
-  /** Where the Memberful site signs someone in to connect their account there. */
+  /** Where the Papaya site signs someone in to connect their account there. */
   const MEMBERFUL_OAUTH = "https://example.memberful.com/oauth?response_type=code&client_id=ember&state=s7a7e";
 
-  it("asks a member whose password checks out to connect their Memberful account, to come back to the page this tab was sent from", async () => {
+  it("asks a member whose password checks out to connect their Papaya account, to come back to the page this tab was sent from", async () => {
     sessionStorage.setItem("ember:return-to", "/rooms/abc?tab=pins");
     const fetch = respond(202, { memberfulConnection: MEMBERFUL_OAUTH });
     const onSignedIn = vi.fn();
@@ -403,8 +403,8 @@ describe("Connect Memberful", () => {
 
     const credentials = { emailAddress: "ada@example.com", password: "correct horse", returnTo: "/rooms/abc?tab=pins" };
     expect(fetch).toHaveBeenCalledWith("/api/session", expect.objectContaining({ method: "POST", body: JSON.stringify(credentials) }));
-    expect(await screen.findByText("Members sign in with Memberful now. Connect your Memberful account to keep signing in as yourself.")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Connect Memberful" })).toHaveAttribute("href", MEMBERFUL_OAUTH);
+    expect(await screen.findByText("Members sign in with Papaya now. Connect your Papaya account to keep signing in as yourself.")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Connect Papaya" })).toHaveAttribute("href", MEMBERFUL_OAUTH);
     expect(screen.queryByLabelText("Password")).not.toBeInTheDocument();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(onSignedIn).not.toHaveBeenCalled();
@@ -413,7 +413,7 @@ describe("Connect Memberful", () => {
   it.each([
     ["is members only", withMemberful],
     ["lets its members in beside everyone else", { ...withMemberful, account: { ...withMemberful.account, memberfulSignIn: false } }],
-  ])("asks for a password at once when someone here has the Memberful email address already, while Memberful %s", (_, workspace) => {
+  ])("asks for a password at once when someone here has the Papaya email address already, while Papaya %s", (_, workspace) => {
     history.replaceState(null, "", "/session/new?memberful=taken");
     render(<SignInPage workspace={workspace} onSignedIn={vi.fn()} />, { wrapper: FlashProvider });
     expect(screen.getByRole("alert")).toHaveTextContent(MEMBERFUL_SIGN_IN_PROBLEMS.taken);
@@ -443,7 +443,7 @@ describe("Reset a forgotten password with an emailed code", () => {
     expect(resetIt()).toHaveAttribute("href", "/passwords/new?email_address=ada%40example.com");
   });
 
-  it("doesn't while Ember can't send email, or while the card offers Memberful in place of the password form", async () => {
+  it("doesn't while Ember can't send email, or while the card offers Papaya in place of the password form", async () => {
     render(<SignInPage workspace={workspace} onSignedIn={vi.fn()} />, { wrapper: FlashProvider });
     expect(resetIt()).not.toBeInTheDocument();
     cleanup();

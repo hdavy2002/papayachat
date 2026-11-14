@@ -182,8 +182,8 @@ async function signIn(request: Request, env: Env): Promise<Response> {
 /**
  * The sign-in: every attempt counts against its IP address's limit before anything is checked, and an
  * unknown email address costs a password check too, so the answer's timing doesn't say who has an
- * account. While Memberful is members only, only an administrator signs in with a password. Anyone else
- * whose password checks out goes on to connect their Memberful account, as 202 says, to come back to
+ * account. While Papaya is members only, only an administrator signs in with a password. Anyone else
+ * whose password checks out goes on to connect their Papaya account, as 202 says, to come back to
  * `returnTo` signed in, until they have one connected, and hears 403 once they have.
  */
 async function signInWithPassword({ emailAddress, password, returnTo }: Record<string, unknown>, request: Request, env: Env): Promise<Response> {
@@ -225,7 +225,7 @@ async function signInWithPassword({ emailAddress, password, returnTo }: Record<s
 
 /**
  * Signs someone in with just a name, as someone new every time, when EMBER_GUEST_SIGN_IN allows it,
- * unless Memberful is members only, or the name is @ember's or an agent's.
+ * unless Papaya is members only, or the name is @ember's or an agent's.
  */
 async function signInGuest(given: unknown, request: Request, env: Env): Promise<Response> {
   if (!guestSignIn(env)) return problem(403, "Signing in with just a name is turned off");
@@ -281,7 +281,7 @@ async function me(request: Request, env: Env): Promise<Response> {
 
 /**
  * Workspace settings, which anyone signed in may see, read-only unless they're an administrator, with
- * the Memberful site whose members can sign in, once the deployment has its keys, whether it hears the
+ * the Papaya site whose members can sign in, once the deployment has its keys, whether it hears the
  * site's webhooks, where Turnstile's keys come from, the deployment's taking the place of any an
  * administrator gave, and, for administrators, the Cloudflare account Ember is deployed to. They hold
  * the join code, which no cache should keep, as the sidebar's invitation does.
@@ -404,8 +404,8 @@ async function regenerateJoinCode(request: Request, env: Env): Promise<Response>
 /**
  * Changes the workspace, as its settings save it. Someone who isn't an administrator hears so before
  * anything they sent is checked. Ember's address can only be the one the request came to, or a custom
- * domain or where a deploy puts Ember while it reaches Ember (`addressRefusal`), Memberful, or its
- * Members only, can only be turned on with the deployment's Memberful keys, and Email domain only with a
+ * domain or where a deploy puts Ember while it reaches Ember (`addressRefusal`), Papaya, or its
+ * Members only, can only be turned on with the deployment's Papaya keys, and Email domain only with a
  * domain to let in, while Ember can send email. Turning any of them off always works.
  */
 async function changeAccount(request: Request, env: Env): Promise<Response> {
@@ -597,7 +597,7 @@ async function unbanPerson(request: Request, env: Env, userId: UserId): Promise<
 
 /**
  * Your profile as its page shows it, with a new sign-in link for you, as each of Campfire's profile
- * pages has (users/profiles/_transfer.html.erb), and where you stand with Memberful, at the site the
+ * pages has (users/profiles/_transfer.html.erb), and where you stand with Papaya, at the site the
  * deployment's keys name. No cache should keep it, since it holds your email address and the link.
  */
 async function profileAnswer({ transfer, profile, memberful }: YourProfile, env: Env): Promise<Response> {
@@ -607,9 +607,9 @@ async function profileAnswer({ transfer, profile, memberful }: YourProfile, env:
 }
 
 /**
- * Where you stand with Memberful, for your profile: the account you've connected at `site`, named as
- * Memberful described it, or none yet while Memberful is members only, which your profile offers to
- * connect. Null when there's nothing to show: without the site, for a guest, or while Memberful isn't
+ * Where you stand with Papaya, for your profile: the account you've connected at `site`, named as
+ * Papaya described it, or none yet while Papaya is members only, which your profile offers to
+ * connect. Null when there's nothing to show: without the site, for a guest, or while Papaya isn't
  * members only and you haven't connected one.
  */
 function memberfulStatusOf(memberful: YourProfile["memberful"], site: string | null): MemberfulStatus | null {
@@ -633,7 +633,7 @@ async function profile(request: Request, env: Env): Promise<Response> {
  * takes is refused (422). An email address someone else has is refused. Changing your email address or
  * password, while you have one, takes your current password too, so that holding your session isn't
  * enough to take your account: it's checked as sign-in checks a password, counting against the same
- * limit (429), and refused (422) when it's missing or wrong. Someone without a password whom Memberful
+ * limit (429), and refused (422) when it's missing or wrong. Someone without a password whom Papaya
  * signs in, as it does while the deployment has the keys to the site they're linked at, is refused a
  * first one (422), for the same reason: it would be a way in that holding their session was enough to
  * make. A new password ends your other sessions, keeping this browser's push subscription at
@@ -668,11 +668,11 @@ async function changeProfile(request: Request, env: Env): Promise<Response> {
 }
 
 /**
- * Connect Memberful on your profile: once your password checks out, while you have one, so that holding
+ * Connect Papaya on your profile: once your password checks out, while you have one, so that holding
  * your session isn't enough to add a way into your account, as for changing your email address or
- * password, answers where to sign in at the Memberful site to connect your account there to yours, with
+ * password, answers where to sign in at the Papaya site to connect your account there to yours, with
  * the cookie that keeps the state it goes with, to come back to your profile. 401 without a valid
- * session; 403 while Memberful isn't members only, or the deployment lacks its keys, or to a guest; 409
+ * session; 403 while Papaya isn't members only, or the deployment lacks its keys, or to a guest; 409
  * once you've connected one; 422 without your password, or with one that isn't yours; and 429 past
  * sign-in's limit, which checking the password counts against.
  */
@@ -687,8 +687,8 @@ async function connectMemberful(request: Request, env: Env): Promise<Response> {
   if (!check) return problem(401, "Not signed in");
   if (check === "limited") return problem(429, SIGN_IN_LIMITED);
   if (check === "unneeded") return problem(403, MEMBERFUL_SIGN_IN_PROBLEMS.unneeded);
-  if (check === "forbidden") return problem(403, "Guests can't connect Memberful");
-  if (check === "connected") return problem(409, "You've connected Memberful already");
+  if (check === "forbidden") return problem(403, "Guests can't connect Papaya");
+  if (check === "connected") return problem(409, "You've connected Papaya already");
   if (check.passwordDigest !== "") {
     if (typeof currentPassword !== "string" || !currentPassword) return problem(422, MEMBERFUL_PASSWORD_NEEDED);
     // One longer than the form takes is nobody's, as at sign-in.
@@ -696,15 +696,15 @@ async function connectMemberful(request: Request, env: Env): Promise<Response> {
   }
   const connecting = await memberfulConnectionFor(request, env, check.userId, check.passwordDigest, PROFILE_PATH);
   // Something changed meanwhile: their password, the setting, or what they've connected.
-  return connecting ? connectionAnswer(connecting) : problem(409, "Connecting Memberful didn't start. Try again.");
+  return connecting ? connectionAnswer(connecting) : problem(409, "Connecting Papaya didn't start. Try again.");
 }
 
 /**
- * Disconnect Memberful on your profile: once your password checks out, so that holding your session isn't
+ * Disconnect Papaya on your profile: once your password checks out, so that holding your session isn't
  * enough to change how you sign in, as for connecting one, unlinks your account from the one at the
- * Memberful site, ends your other sessions and forgets their browsers' push subscriptions, as a new
+ * Papaya site, ends your other sessions and forgets their browsers' push subscriptions, as a new
  * password does, keeping this browser's at `pushSubscriptionEndpoint`, and answers your profile as it
- * is then. 401 without a valid session; 403 to a guest, or while the deployment lacks Memberful's keys;
+ * is then. 401 without a valid session; 403 to a guest, or while the deployment lacks Papaya's keys;
  * 404 while you haven't connected one; 422 while you have no password, or no email address, to sign in
  * with once it's disconnected, or without your password, or with one that isn't yours; 429 past
  * sign-in's limit, which checking the password counts against; and 409 when your password, email
@@ -721,7 +721,7 @@ async function disconnectMemberful(request: Request, env: Env): Promise<Response
   const check = await workspace(env).memberfulDisconnectionCheck(credentials, request.headers.get("CF-Connecting-IP") ?? "unknown", site);
   if (!check) return problem(401, "Not signed in");
   if (check === "limited") return problem(429, SIGN_IN_LIMITED);
-  if (check === "forbidden") return problem(403, "Guests can't disconnect Memberful");
+  if (check === "forbidden") return problem(403, "Guests can't disconnect Papaya");
   if (check === "not connected") return problem(404, MEMBERFUL_NOT_CONNECTED);
   if (check === "no password") return problem(422, MEMBERFUL_DISCONNECT_WITHOUT_PASSWORD);
   if (check === "no email address") return problem(422, MEMBERFUL_DISCONNECT_WITHOUT_EMAIL);
@@ -731,12 +731,12 @@ async function disconnectMemberful(request: Request, env: Env): Promise<Response
   const yours = await workspace(env).disconnectMemberful(credentials, site, check.passwordDigest, pushSubscriptionEndpoint || null);
   if (!yours) return problem(401, "Not signed in");
   // Something changed meanwhile: their password, or what they've connected.
-  if (yours === "refused") return problem(409, "Disconnecting Memberful didn't work. Try again.");
+  if (yours === "refused") return problem(409, "Disconnecting Papaya didn't work. Try again.");
   return profileAnswer(yours, env);
 }
 
 /**
- * Sends the browser on to sign in at the Memberful site to connect an account there, with the cookie that
+ * Sends the browser on to sign in at the Papaya site to connect an account there, with the cookie that
  * keeps the state it goes with, or on to Ember's custom domain to connect from there, which no cache should keep.
  */
 const connectionAnswer = ({ connection, cookie }: { connection: MemberfulConnection; cookie: string | null }) =>
@@ -1244,7 +1244,7 @@ async function route(request: Request, env: Env, pathname: string): Promise<Resp
   // A browser's report of what a page's policy blocked comes without the page's cookies or origin,
   // and from any browser the page reached.
   if (pathname === CSP_REPORT_PATH) return cspReport(request);
-  // Nor is Memberful's webhook, which its servers sign with the webhook's secret.
+  // Nor is Papaya's webhook, which its servers sign with the webhook's secret.
   if (pathname === MEMBERFUL_WEBHOOK_PATH) return memberfulWebhook(request, env);
   const write = request.method !== "GET" && request.method !== "HEAD";
   // Nor are a room's files, to whoever has the address, whatever their browser.

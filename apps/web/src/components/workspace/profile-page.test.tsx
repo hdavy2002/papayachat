@@ -57,13 +57,13 @@ interface Answers {
   uploaded?: () => Response | Promise<Response>;
   /** What changing your model or levels of @ember's dials answers, rather than `LEVELS` with the changes sent. */
   leveled?: (changes: YourAssistantChanges) => Response | Promise<Response>;
-  /** What disconnecting your Memberful account answers, rather than the profile with none connected. */
+  /** What disconnecting your Papaya account answers, rather than the profile with none connected. */
   disconnected?: () => Response | Promise<Response>;
 }
 
-/** Ada's Memberful account, as Memberful describes it, once she has connected it. */
+/** Ada's Papaya account, as Papaya describes it, once she has connected it. */
 const ADAS_ACCOUNT = { name: "Ada Lovelace", emailAddress: "ada@example.com" };
-/** Where Ada stands with Memberful while it's members only: not connected, or connected to her account there. */
+/** Where Ada stands with Papaya while it's members only: not connected, or connected to her account there. */
 const NOT_CONNECTED: MemberfulStatus = { membersOnly: true, connected: null };
 const CONNECTED: MemberfulStatus = { membersOnly: true, connected: ADAS_ACCOUNT };
 
@@ -440,8 +440,8 @@ describe("Levels on your profile", () => {
   });
 });
 
-describe("Connect Memberful", () => {
-  const memberful = () => screen.queryByRole("region", { name: "Memberful" });
+describe("Connect Papaya", () => {
+  const memberful = () => screen.queryByRole("region", { name: "Papaya" });
   const passwordHelp = () => screen.getByText(/Leave blank to keep/);
   /** What each disconnection sent, in order. */
   const disconnections = () =>
@@ -450,12 +450,12 @@ describe("Connect Memberful", () => {
       .mock.calls.filter(([input, init]) => String(input) === MEMBERFUL_CONNECTIONS_PATH && init?.method === "DELETE")
       .map(([, init]) => JSON.parse(String(init?.body)) as MemberfulDisconnection);
 
-  it("has a Memberful section between the form and your rooms' levels while members sign in with Memberful", async () => {
+  it("has a Papaya section between the form and your rooms' levels while members sign in with Papaya", async () => {
     serve({ loaded: () => Response.json({ profile: { ...profile, memberful: NOT_CONNECTED }, transferId: LOADED_LINK } satisfies ProfileAnswer) });
     const { showRooms } = showPage();
     await loaded();
     showRooms([{ id: "design", name: "Design", kind: "open", icon: null, unread: false, involvement: "mentions" }]);
-    expect(memberful()).toHaveTextContent("Connect your Memberful account to keep signing in as yourself.");
+    expect(memberful()).toHaveTextContent("Connect your Papaya account to keep signing in as yourself.");
     // Its own password field, as you have a password.
     expect(within(memberful()!).getByLabelText("Password")).toBeInTheDocument();
     expect(saveButton().compareDocumentPosition(memberful()!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
@@ -468,12 +468,12 @@ describe("Connect Memberful", () => {
     serve({ loaded: () => Response.json({ profile: { ...profile, memberful: CONNECTED }, transferId: LOADED_LINK } satisfies ProfileAnswer) });
     showPage();
     await loaded();
-    expect(memberful()).toHaveTextContent("Connected to Memberful as Ada Lovelace (ada@example.com), so you sign in with it.");
-    expect(within(memberful()!).getByRole("button", { name: "Disconnect Memberful" })).toBeEnabled();
-    expect(passwordHelp()).toHaveTextContent("Leave blank to keep your current password. A new one disconnects your Memberful account.");
+    expect(memberful()).toHaveTextContent("Connected to Papaya as Ada Lovelace (ada@example.com), so you sign in with it.");
+    expect(within(memberful()!).getByRole("button", { name: "Disconnect Papaya" })).toBeEnabled();
+    expect(passwordHelp()).toHaveTextContent("Leave blank to keep your current password. A new one disconnects your Papaya account.");
   });
 
-  it("offers no password to someone without one whom Memberful signs in, whose way in it is, and saves the rest without one", async () => {
+  it("offers no password to someone without one whom Papaya signs in, whose way in it is, and saves the rest without one", async () => {
     const theirs = { ...profile, password: false, memberful: CONNECTED };
     serve({
       loaded: () => Response.json({ profile: theirs, transferId: LOADED_LINK } satisfies ProfileAnswer),
@@ -481,10 +481,10 @@ describe("Connect Memberful", () => {
     });
     const { user } = showPage();
     await loaded();
-    expect(memberful()).toHaveTextContent("Connected to Memberful as Ada Lovelace (ada@example.com), so you sign in with it.");
+    expect(memberful()).toHaveTextContent("Connected to Papaya as Ada Lovelace (ada@example.com), so you sign in with it.");
     expect(screen.queryByLabelText("New password")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Current password")).not.toBeInTheDocument();
-    expect(within(memberful()!).queryByRole("button", { name: "Disconnect Memberful" })).not.toBeInTheDocument();
+    expect(within(memberful()!).queryByRole("button", { name: "Disconnect Papaya" })).not.toBeInTheDocument();
 
     await user.clear(field("Email address"));
     await user.type(field("Email address"), "countess@example.com");
@@ -494,7 +494,7 @@ describe("Connect Memberful", () => {
     expect(screen.queryByLabelText("New password")).not.toBeInTheDocument();
   });
 
-  it("offers a first password to someone without one once Memberful doesn't sign them in, as at a deployment without its keys", async () => {
+  it("offers a first password to someone without one once Papaya doesn't sign them in, as at a deployment without its keys", async () => {
     serve({ loaded: () => Response.json({ profile: { ...profile, password: false, memberful: null }, transferId: LOADED_LINK } satisfies ProfileAnswer) });
     showPage();
     await loaded();
@@ -508,12 +508,12 @@ describe("Connect Memberful", () => {
     const { user } = showPage();
     await loaded();
     expect(memberful()).toHaveTextContent("Add your email address above to disconnect it, so that you can still sign in with your password.");
-    expect(within(memberful()!).queryByRole("button", { name: "Disconnect Memberful" })).not.toBeInTheDocument();
+    expect(within(memberful()!).queryByRole("button", { name: "Disconnect Papaya" })).not.toBeInTheDocument();
     expect(passwordHelp()).toHaveTextContent("Leave blank to keep your current password.");
     expect(passwordHelp()).not.toHaveTextContent("disconnects");
     // Saved with an email address, a new password would disconnect it.
     await user.type(screen.getByLabelText("Email address"), "ada@example.com");
-    expect(passwordHelp()).toHaveTextContent("Leave blank to keep your current password. A new one disconnects your Memberful account.");
+    expect(passwordHelp()).toHaveTextContent("Leave blank to keep your current password. A new one disconnects your Papaya account.");
   });
 
   it("disconnects it with your password, offering to connect one again, with the notice", async () => {
@@ -521,8 +521,8 @@ describe("Connect Memberful", () => {
     const { user, onFailed } = showPage();
     await loaded();
     await user.type(within(memberful()!).getByLabelText("Password"), "analytical engine");
-    await user.click(within(memberful()!).getByRole("button", { name: "Disconnect Memberful" }));
-    await waitFor(() => expect(memberful()).toHaveTextContent("Connect your Memberful account to keep signing in as yourself."));
+    await user.click(within(memberful()!).getByRole("button", { name: "Disconnect Papaya" }));
+    await waitFor(() => expect(memberful()).toHaveTextContent("Connect your Papaya account to keep signing in as yourself."));
     expect(disconnections()).toEqual([{ currentPassword: "analytical engine" }]);
     expect(await screen.findByRole("alert")).toHaveTextContent(MEMBERFUL_DISCONNECTED_NOTICE);
     expect(passwordHelp()).toHaveTextContent("Leave blank to keep your current password.");
@@ -541,13 +541,13 @@ describe("Connect Memberful", () => {
     const { user } = showPage();
     await loaded();
     await user.type(within(memberful()!).getByLabelText("Password"), "analytical engine");
-    await user.click(within(memberful()!).getByRole("button", { name: "Disconnect Memberful" }));
-    await waitFor(() => expect(memberful()).toHaveTextContent("Connect your Memberful account to keep signing in as yourself."));
+    await user.click(within(memberful()!).getByRole("button", { name: "Disconnect Papaya" }));
+    await waitFor(() => expect(memberful()).toHaveTextContent("Connect your Papaya account to keep signing in as yourself."));
     await user.type(field("Name"), " King");
     await user.click(saveButton());
     await waitFor(() => expect(field("Name")).toHaveValue("Ada King"));
-    expect(memberful()).toHaveTextContent("Connect your Memberful account to keep signing in as yourself.");
-    expect(within(memberful()!).queryByRole("button", { name: "Disconnect Memberful" })).not.toBeInTheDocument();
+    expect(memberful()).toHaveTextContent("Connect your Papaya account to keep signing in as yourself.");
+    expect(within(memberful()!).queryByRole("button", { name: "Disconnect Papaya" })).not.toBeInTheDocument();
     expect(passwordHelp()).not.toHaveTextContent("disconnects");
   });
 
@@ -564,20 +564,20 @@ describe("Connect Memberful", () => {
     await loaded();
     await user.upload(screen.getByLabelText("Upload avatar", { exact: false }), new File(["moon"], "moon.jpg", { type: "image/jpeg" }));
     await waitFor(() => expect(screen.getByRole("img", { name: "Your avatar" })).toHaveAttribute("src", UPLOADED));
-    expect(within(memberful()!).getByRole("button", { name: "Disconnect Memberful" })).toBeEnabled();
+    expect(within(memberful()!).getByRole("button", { name: "Disconnect Papaya" })).toBeEnabled();
     expect(memberful()).not.toHaveTextContent("Add your email address");
   });
 
-  it("takes the section away once it's disconnected while Memberful isn't members only, since your password signs you in", async () => {
+  it("takes the section away once it's disconnected while Papaya isn't members only, since your password signs you in", async () => {
     serve({
       loaded: () => Response.json({ profile: { ...profile, memberful: { membersOnly: false, connected: ADAS_ACCOUNT } }, transferId: LOADED_LINK } satisfies ProfileAnswer),
       disconnected: () => Response.json({ profile: { ...profile, memberful: null }, transferId: SAVED_LINK } satisfies ProfileAnswer),
     });
     const { user } = showPage();
     await loaded();
-    expect(memberful()).toHaveTextContent("Connected to Memberful as Ada Lovelace (ada@example.com), so you can sign in with it too.");
+    expect(memberful()).toHaveTextContent("Connected to Papaya as Ada Lovelace (ada@example.com), so you can sign in with it too.");
     await user.type(within(memberful()!).getByLabelText("Password"), "analytical engine");
-    await user.click(within(memberful()!).getByRole("button", { name: "Disconnect Memberful" }));
+    await user.click(within(memberful()!).getByRole("button", { name: "Disconnect Papaya" }));
     await waitFor(() => expect(memberful()).not.toBeInTheDocument());
     expect(await screen.findByRole("alert")).toHaveTextContent(MEMBERFUL_DISCONNECTED_NOTICE);
   });
@@ -590,9 +590,9 @@ describe("Connect Memberful", () => {
     const { user, onFailed } = showPage();
     await loaded();
     await user.type(within(memberful()!).getByLabelText("Password"), "wrong");
-    await user.click(within(memberful()!).getByRole("button", { name: "Disconnect Memberful" }));
+    await user.click(within(memberful()!).getByRole("button", { name: "Disconnect Papaya" }));
     await waitFor(() => expect(onFailed).toHaveBeenCalledWith(expect.objectContaining({ status: 422, message: CURRENT_PASSWORD_WRONG })));
-    expect(memberful()).toHaveTextContent("Connected to Memberful as Ada Lovelace (ada@example.com), so you sign in with it.");
+    expect(memberful()).toHaveTextContent("Connected to Papaya as Ada Lovelace (ada@example.com), so you sign in with it.");
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
@@ -600,10 +600,10 @@ describe("Connect Memberful", () => {
     serve({ loaded: () => Response.json({ profile: { ...profile, membershipNeeded: false, memberful: NOT_CONNECTED }, transferId: LOADED_LINK } satisfies ProfileAnswer) });
     showPage();
     await loaded();
-    expect(memberful()).toHaveTextContent("Connect your Memberful account to sign in with it too.");
+    expect(memberful()).toHaveTextContent("Connect your Papaya account to sign in with it too.");
   });
 
-  it("has none while members don't sign in with Memberful", async () => {
+  it("has none while members don't sign in with Papaya", async () => {
     showPage();
     await loaded();
     expect(memberful()).not.toBeInTheDocument();

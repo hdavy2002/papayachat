@@ -28,31 +28,31 @@ import { forgetMemberfulOutcome, memberfulOutcomeOnArrival } from "@/lib/memberf
 import { returnPath } from "@/lib/return-path";
 
 // The sign-in page. A refused sign-in shakes the card and says why at the top of the form, in place of a
-// flash, keeping the email address and emptying the password. While Memberful is members only, the card
-// offers signing in with Memberful instead, and the email and password form to those who ask for it:
+// flash, keeping the email address and emptying the password. While Papaya is members only, the card
+// offers signing in with Papaya instead, and the email and password form to those who ask for it:
 // administrators, and members with an account from before, whose password then asks them to connect
-// their Memberful account. Otherwise, while Memberful's members sign in with it, the card links to that
+// their Papaya account. Otherwise, while Papaya's members sign in with it, the card links to that
 // under the form. While anyone may sign up, it links to the page for that, and it says why a way to join
 // that's off sent someone here. While Ember can send email, the form links to resetting a forgotten
 // password with a code Ember emails.
 
-/** What a Memberful sign-in that came back here says went wrong, as this page's address names it, if it does. */
+/** What a Papaya sign-in that came back here says went wrong, as this page's address names it, if it does. */
 function memberfulProblemOnArrival() {
   const outcome = memberfulOutcomeOnArrival();
   return outcome === MEMBERFUL_CONNECTED ? null : outcome;
 }
 
 /**
- * Signs in with an email address and password, or with Memberful while its members sign in with it, or
- * with just a name when the workspace allows it, or, while Memberful is members only, with Memberful, or
- * a password for administrators, which asks anyone else to connect their Memberful account until they
+ * Signs in with an email address and password, or with Papaya while its members sign in with it, or
+ * with just a name when the workspace allows it, or, while Papaya is members only, with Papaya, or
+ * a password for administrators, which asks anyone else to connect their Papaya account until they
  * have.
  */
 export function SignInPage({ workspace, onSignedIn }: { workspace: SignedOutWorkspace; onSignedIn: (me: Me) => void }) {
   const { memberfulSignIn: membersOnly } = workspace.account;
   const [arrival] = useState(memberfulProblemOnArrival);
   const [asGuest, setAsGuest] = useState(false);
-  // Someone whose Memberful email address is someone's here is asked for that someone's password.
+  // Someone whose Papaya email address is someone's here is asked for that someone's password.
   const [withPassword, setWithPassword] = useState(!membersOnly || arrival === "taken");
   const [emailAddress, setEmailAddress] = useState(() => new URLSearchParams(location.search).get("email_address") ?? "");
   const [busy, setBusy] = useState(false);
@@ -60,7 +60,7 @@ export function SignInPage({ workspace, onSignedIn }: { workspace: SignedOutWork
   const [problem, setProblem] = useState<string | null>(() => (arrival ? MEMBERFUL_SIGN_IN_PROBLEMS[arrival] : joiningProblemOnArrival()));
   /** Why the last sign-in was refused, said at the top of the form. */
   const [refusal, setRefusal] = useState<string | null>(null);
-  /** Where to connect your Memberful account, once your password has checked out but you have yet to connect one. */
+  /** Where to connect your Papaya account, once your password has checked out but you have yet to connect one. */
   const [connection, setConnection] = useState<string | null>(null);
   const passwordInput = useRef<HTMLInputElement>(null);
 
@@ -75,7 +75,7 @@ export function SignInPage({ workspace, onSignedIn }: { workspace: SignedOutWork
     setProblem(null);
     setRefusal(null);
     try {
-      // Connecting Memberful comes back to the page this tab was sent here from, signed in.
+      // Connecting Papaya comes back to the page this tab was sent here from, signed in.
       const answer = await signIn({ emailAddress, password: passwordInput.current?.value ?? "", returnTo: returnPath() ?? undefined });
       if (!("memberfulConnection" in answer)) return onSignedIn(answer);
       setBusy(false);
@@ -84,7 +84,7 @@ export function SignInPage({ workspace, onSignedIn }: { workspace: SignedOutWork
       setBusy(false);
       if (!(error instanceof ApiError)) return setProblem("Couldn't reach Ember. Check your connection and try again.");
       if (passwordInput.current) passwordInput.current.value = "";
-      // A member whose password is right, and who has connected Memberful, hears that they sign in with it.
+      // A member whose password is right, and who has connected Papaya, hears that they sign in with it.
       setRefusal(error.status === 403 ? error.message : error.status === 429 ? SIGN_IN_LIMITED : SIGN_IN_REJECTED);
       setShaking(true);
       passwordInput.current?.focus();
@@ -98,10 +98,10 @@ export function SignInPage({ workspace, onSignedIn }: { workspace: SignedOutWork
         {connection !== null ? (
           <>
             <AuthHeading title={`Sign in to ${workspace.account.name}`} logo={workspace.account.logo}>
-              Members sign in with Memberful now. Connect your Memberful account to keep signing in as yourself.
+              Members sign in with Papaya now. Connect your Papaya account to keep signing in as yourself.
             </AuthHeading>
             <Button asChild className={PRIMARY_BUTTON}>
-              <a href={connection}>Connect Memberful</a>
+              <a href={connection}>Connect Papaya</a>
             </Button>
           </>
         ) : asGuest ? (
@@ -153,7 +153,7 @@ export function SignInPage({ workspace, onSignedIn }: { workspace: SignedOutWork
             ) : (
               <Button asChild className={PRIMARY_BUTTON}>
                 {/* The Worker opens the page this tab was sent here from once it's signed in. The tab keeps it too, for a try that fails. */}
-                <a href={memberfulSignInPath(returnPath())}>Sign in with Memberful</a>
+                <a href={memberfulSignInPath(returnPath())}>Sign in with Papaya</a>
               </Button>
             )}
             {withPassword && workspace.passwordResetCodes && (
@@ -161,12 +161,12 @@ export function SignInPage({ workspace, onSignedIn }: { workspace: SignedOutWork
             )}
             {membersOnly ? (
               withPassword ? (
-                <AuthAlternative question="Member?" action="Sign in with Memberful" onClick={() => setWithPassword(false)} disabled={busy} />
+                <AuthAlternative question="Member?" action="Sign in with Papaya" onClick={() => setWithPassword(false)} disabled={busy} />
               ) : (
                 <AuthAlternative question="Have a password?" action="Sign in with a password" onClick={() => setWithPassword(true)} />
               )
             ) : (
-              workspace.signInWithMemberful && <AuthAlternative question="Member?" action="Sign in with Memberful" href={memberfulSignInPath(returnPath())} />
+              workspace.signInWithMemberful && <AuthAlternative question="Member?" action="Sign in with Papaya" href={memberfulSignInPath(returnPath())} />
             )}
             {signsUpOpenly(workspace.account) ? (
               <AuthAlternative question="New here?" action="Create an account" href={SIGN_UP_PATH} />

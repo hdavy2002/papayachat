@@ -22,23 +22,23 @@ import { workspaceSectionPath } from "./settings-navigation";
 import { SetUpTurnstile } from "./turnstile-settings";
 
 // The ways for new people to join, at the top of Membership: for administrators, a card for each, Open,
-// Join link, Email domain and Memberful, whose switch saves as it's flipped, as the Memberful card's
-// did, and which shows the way's settings while it's on. Open lets anyone in, and Memberful's Members
+// Join link, Email domain and Papaya, whose switch saves as it's flipped, as the Papaya card's
+// did, and which shows the way's settings while it's on. Open lets anyone in, and Papaya's Members
 // only only its members, so while either is on the ways it overrides are greyed out, keeping their
 // settings for when it's off. Members see the links that let people in.
 
 /** What turning on Open asks first, since it lets anyone in. */
 export const CONFIRM_OPEN = "Are you sure you want to let anyone create an account? Ember doesn't check that the email addresses people sign up with are theirs.";
 
-/** What turning on Memberful's Members only asks first, since it keeps everyone but administrators, and the people they invite, from signing in with a password. */
+/** What turning on Papaya's Members only asks first, since it keeps everyone but administrators, and the people they invite, from signing in with a password. */
 export const CONFIRM_MEMBERS_ONLY =
-  "Are you sure only Memberful's members should sign in? Everyone but administrators and the people they invite will need a Memberful membership to sign in.";
+  "Are you sure only Papaya's members should sign in? Everyone but administrators and the people they invite will need a Papaya membership to sign in.";
 
 /** Why a way is greyed out while Open is on. */
 const OPEN_OVERRIDES = "Set aside while Open lets anyone join.";
 
-/** Why a way is greyed out while Memberful is members only. */
-const MEMBERS_ONLY_OVERRIDES = "Off while Memberful is members only.";
+/** Why a way is greyed out while Papaya is members only. */
+const MEMBERS_ONLY_OVERRIDES = "Off while Papaya is members only.";
 
 const CARD = "flex flex-col gap-3 rounded-[10px] border bg-surface px-[2ch] py-4 text-start max-md:px-3";
 const NOTE = "text-[0.8em] text-muted-foreground max-md:text-[12px]";
@@ -75,7 +75,7 @@ export function WaysToJoin({ settings, saveSwitch, saveEmailDomains, onSetUpEmai
   const link = moved.joinLink ?? account.joinLink;
   const emailDomain = moved.emailDomainSignUp ?? account.emailDomainSignUp;
   const memberful = moved.memberfulJoin ?? account.memberfulJoin;
-  // Off with Memberful, as the server turns it.
+  // Off with Papaya, as the server turns it.
   const membersOnly = memberful && (moved.memberfulSignIn ?? account.memberfulSignIn);
   // A way sets the others aside while it's on, until turning it off is saved, so that none is turned on
   // while the server still has the way that overrides it on, which would refuse it.
@@ -204,7 +204,7 @@ function Way({ id, title, description, checked, onCheckedChange, setAside, child
 /**
  * How new people join, for members: open sign-up's link while it's on, or else Email domain's while it
  * lets people in, and the join link, with `joinCode`, while it does, unless they're a guest, who isn't
- * given the code, or else a line saying how they join with Memberful, if they do, at `memberfulSite`,
+ * given the code, or else a line saying how they join with Papaya, if they do, at `memberfulSite`,
  * or that only the people administrators invite can.
  */
 export function HowPeopleJoin({ joinCode, memberfulSite }: { joinCode: string | null; memberfulSite: string | null }) {
@@ -217,12 +217,12 @@ export function HowPeopleJoin({ joinCode, memberfulSite }: { joinCode: string | 
     if (account.memberfulSignIn)
       return (
         <p className="text-start">
-          <strong>Members sign in with Memberful</strong>, so the join link is off.
+          <strong>Members sign in with Papaya</strong>, so the join link is off.
         </p>
       );
     return account.memberfulJoin && memberfulSite !== null ? (
       <p className="text-start">
-        Members of <strong className="wrap-anywhere">{memberfulSite}</strong> join by signing in with Memberful.
+        Members of <strong className="wrap-anywhere">{memberfulSite}</strong> join by signing in with Papaya.
       </p>
     ) : (
       <p className="text-start">Only the people administrators invite can join.</p>

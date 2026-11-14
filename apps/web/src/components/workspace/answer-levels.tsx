@@ -10,7 +10,7 @@ import { NOTE, SELECT } from "./model-picker";
 // before it answers you, and how long its answers to you are, up to the most administrators allow. A
 // choice saves at once, and shows as it was again if it isn't saved. Default follows the administrators'
 // choice of model, whichever they choose, while a model picked by name stays yours, even the one they
-// chose. Boxed as the Memberful section is.
+// chose. Boxed as the Papaya section is.
 
 /** What the Model menu says under it. */
 export const DEFAULT_MODEL_EXPLAINED =

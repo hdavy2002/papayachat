@@ -847,8 +847,8 @@ describe("Sign in with email and password", () => {
   });
 });
 
-describe("Sign in with Memberful", () => {
-  it("forgets the page to come back to once it opens signed in, as signing in with Memberful opens that page itself", async () => {
+describe("Sign in with Papaya", () => {
+  it("forgets the page to come back to once it opens signed in, as signing in with Papaya opens that page itself", async () => {
     sessionStorage.setItem("ember:return-to", "/rooms/general");
     history.replaceState(null, "", "/rooms/general");
     serve({ signedIn: true });

@@ -254,7 +254,7 @@ export async function askForPasswordResetCode(asked: PasswordResetRequest): Prom
 /**
  * Gives whoever has `reset.emailAddress` the password `reset.password`, with the code Ember emailed
  * them, ending all their sessions, and signs this browser in as them: who they are, or null when they
- * sign in themselves, as Memberful's members do while it's members only. A code that doesn't work fails
+ * sign in themselves, as Papaya's members do while it's members only. A code that doesn't work fails
  * with an ApiError for the `code` field.
  */
 export async function resetPasswordWithCode(reset: PasswordResetWithCode): Promise<Me | null> {
@@ -263,7 +263,7 @@ export async function resetPasswordWithCode(reset: PasswordResetWithCode): Promi
 
 /**
  * Signs in with an email address and password: who signed in, or, for a member whose password checks out
- * while Memberful is members only, until they've connected their Memberful account, where to connect it,
+ * while Papaya is members only, until they've connected their Papaya account, where to connect it,
  * which signs them in and opens the page `credentials.returnTo` names.
  */
 export async function signIn(credentials: PasswordSignIn): Promise<Me | MemberfulConnection> {
@@ -338,7 +338,7 @@ export async function fetchProfile(): Promise<ProfileAnswer> {
 }
 
 /**
- * Starts connecting your account to an account at the Memberful site, with your password while you have
+ * Starts connecting your account to an account at the Papaya site, with your password while you have
  * one: where to sign in there, which sends the browser back to your profile. Fails with a 422 ApiError
  * without your password, or with one that isn't yours, and a 409 once you've connected one.
  */
@@ -348,7 +348,7 @@ export async function connectMemberful(currentPassword?: string): Promise<Member
 }
 
 /**
- * Disconnects your account from your Memberful account, with your password, ending your other sessions
+ * Disconnects your account from your Papaya account, with your password, ending your other sessions
  * but keeping this browser's push subscription, as a new password does, and answers your profile as it
  * is then, with a new sign-in link. Fails with a 422 ApiError without your password, or with one that
  * isn't yours, or while you have no password, and a 404 once it's disconnected.

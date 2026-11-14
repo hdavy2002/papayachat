@@ -515,7 +515,7 @@ describe("AI agents", () => {
       expect((await api(`/api/users/${member.user.id}/ban`, { method: "POST", headers: as(administrator) })).status).toBe(200);
       await taken();
       expect((await api(`/api/users/${member.user.id}/ban`, { method: "DELETE", headers: as(administrator) })).status).toBe(200);
-      // As their Memberful membership's lapsing leaves them.
+      // As their Papaya membership's lapsing leaves them.
       await workspaceSql("UPDATE users SET status = 3 WHERE id = ?", member.user.id);
       await taken();
       expect((await api(`/api/account/users/${member.user.id}`, { method: "DELETE", headers: as(administrator) })).status).toBe(200);

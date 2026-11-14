@@ -336,8 +336,8 @@ describe("Welcome and invite card", () => {
   });
 });
 
-describe("Sign in with Memberful", () => {
-  it("shows no welcome card while Memberful is members only, since its join link is off", () => {
+describe("Sign in with Papaya", () => {
+  it("shows no welcome card while Papaya is members only, since its join link is off", () => {
     const account = { name: "Ember", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo: null, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: true, memberfulSignIn: true, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false };
     render(<AccountContext value={account}>{list({ messages: [], paged: false }, vi.fn(), { roomId: "general", joinCode: "aB3d-Ef5h-iJ7k" })}</AccountContext>);
     expect(screen.queryByRole("heading", { name: "Welcome to Ember" })).not.toBeInTheDocument();

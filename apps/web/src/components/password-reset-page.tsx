@@ -151,7 +151,7 @@ interface NewPasswordProps {
 
 /**
  * The form giving the code Ember emailed to `emailAddress` with a new password, which signs in with it and
- * opens the page this tab was sent to sign in from, or else goes to sign in, as Memberful's members do
+ * opens the page this tab was sent to sign in from, or else goes to sign in, as Papaya's members do
  * while it's members only. A code that doesn't work, or a password Ember won't take, is said at the top
  * of the form, as sign-in's refusals are, keeping what was typed.
  */

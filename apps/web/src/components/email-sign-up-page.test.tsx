@@ -57,7 +57,7 @@ const SITE_KEY = "1x00000000000000000000AA";
 const checked = { ...workspace, turnstileSiteKey: SITE_KEY };
 /** Email domain turned off, when the workspace says no domains. */
 const off = { ...workspace, account: { ...workspace.account, emailDomainSignUp: false, emailDomains: [] } };
-/** Memberful's Members only, which lets in nobody else. */
+/** Papaya's Members only, which lets in nobody else. */
 const membersOnly = { ...workspace, account: { ...workspace.account, memberfulJoin: true, memberfulSignIn: true } };
 const TOKEN = "Ab-_9z".repeat(7) + "Q";
 
@@ -196,7 +196,7 @@ describe("Join with an email domain", () => {
 
   it.each([
     ["it's off", off],
-    ["Memberful is members only", membersOnly],
+    ["Papaya is members only", membersOnly],
   ])("sends the browser to sign in, which says why, while %s", (_, shown) => {
     const fetch = vi.spyOn(globalThis, "fetch");
     open("/join/email", shown);

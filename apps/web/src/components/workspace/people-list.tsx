@@ -14,7 +14,7 @@ import { AvatarLink } from "./user-avatar";
 // avatar linking to the person's page, and your own row to your profile. Administrators also see who's
 // banned, dimmed under a cancel mark (Campfire's avatars.css), and on each active person's row a crown
 // that makes them an administrator or a member again, and, but on their own, Delete, which removes them.
-// They see members suspended for their Memberful membership's lapsing too, dimmed and said to be so,
+// They see members suspended for their Papaya membership's lapsing too, dimmed and said to be so,
 // with Delete.
 
 /** What Delete asks before removing someone. */

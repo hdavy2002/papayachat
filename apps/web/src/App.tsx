@@ -100,7 +100,7 @@ export function App() {
             rememberThisPage();
             navigate(SIGN_IN_PATH, { replace: true });
           }
-          // Someone signed in has come back already, as signing in with Memberful opens that page itself.
+          // Someone signed in has come back already, as signing in with Papaya opens that page itself.
           if (user && !signingIn && location.pathname !== TRANSFER_PATH) forgetReturnPath();
           // The room the page shows connects now, while the workspace loads, rather than once it shows.
           if (user && workspace.setup === "complete") letGoOfRoom = openRoomSocketAhead(location.pathname);

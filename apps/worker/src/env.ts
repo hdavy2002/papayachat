@@ -61,24 +61,30 @@ export interface Env {
    */
   EMBER_RECOVERY_TOKEN?: string;
   /**
-   * The address of the Memberful site whose members may join and sign in, such as
-   * https://example.memberful.com, once an administrator turns Memberful on (memberful.ts). Without it,
-   * or either of the two keys of the site's custom app below, Memberful can't be turned on, and nobody
+   * The address of the Papaya site whose members may join and sign in, such as
+   * https://example.memberful.com, once an administrator turns Papaya on (memberful.ts). Without it,
+   * or either of the two keys of the site's custom app below, Papaya can't be turned on, and nobody
    * signs in with it.
    */
   MEMBERFUL_URL?: string;
-  /** The OAuth identifier of the Memberful site's custom app, a server-side one. */
+  /** The OAuth identifier of the Papaya site's custom app, a server-side one. */
   MEMBERFUL_CLIENT_ID?: string;
   /** That app's client secret, which never leaves the Worker. */
   MEMBERFUL_CLIENT_SECRET?: string;
   /**
-   * That app's API key, with which the Workspace asks Memberful's admin API whose memberships are
+   * That app's API key, with which the Workspace asks Papaya's admin API whose memberships are
    * active, when a webhook says one changed, and once a day (memberful-api.ts). Without it, only
-   * signing in checks a membership, and Memberful's webhooks are refused, as they are without the
+   * signing in checks a membership, and Papaya's webhooks are refused, as they are without the
    * secret below.
    */
   MEMBERFUL_API_KEY?: string;
-  /** The secret Memberful signs its webhooks to `/webhooks/memberful` with, which its Webhooks settings show. */
+  /**
+   * Which OAuth provider MEMBERFUL_URL is: "clerk" for a Clerk instance, such as
+   * https://clerk.papayaos.app, whose OAuth application signs people in with OpenID Connect and PKCE,
+   * so MEMBERFUL_CLIENT_SECRET may be left unset for a public one. Anything else is Memberful.
+   */
+  MEMBERFUL_PROVIDER?: string;
+  /** The secret Papaya signs its webhooks to `/webhooks/memberful` with, which its Webhooks settings show. */
   MEMBERFUL_WEBHOOK_SECRET?: string;
   /**
    * The site key of a Cloudflare Turnstile widget, whose check the open sign-up form shows, and the forms

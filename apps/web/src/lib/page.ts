@@ -11,7 +11,7 @@ export function loadPage(path: string, flash?: FlashMessage): void {
   location.replace(path);
 }
 
-/** Opens `url`, a page elsewhere, such as the Memberful site's, after this one, which Back comes back to. */
+/** Opens `url`, a page elsewhere, such as the Papaya site's, after this one, which Back comes back to. */
 export function openPage(url: string): void {
   location.assign(url);
 }

@@ -19,33 +19,33 @@ import { urlOf } from "./request-url";
 import { isToken } from "./secrets";
 import { MEMBERFUL_ROUND_TRIP_MS, workspace } from "./workspace";
 
-// Signing in with Memberful. Memberful speaks OAuth 2.0 but not OpenID Connect, so this follows its
+// Signing in with Papaya. Papaya speaks OAuth 2.0 but not OpenID Connect, so this follows its
 // guide for a server-side custom app (memberful.com/docs/api-reference/sign-in-for-apps-via-oauth): Sign
-// in with Memberful sends the browser to the site's `/oauth` with a random state, which a cookie keeps,
+// in with Papaya sends the browser to the site's `/oauth` with a random state, which a cookie keeps,
 // and the site sends it back to the callback with that state and a code, which the Worker exchanges,
 // with the app's client secret, for an access token to ask the member API who signed in. It works only
 // while the deployment has the app's keys, and lets someone new in only while an administrator has
-// Memberful on, but signs in the members who joined with it once it's off too, since they have no
-// password. While it's members only, someone who has an account here already connects their Memberful
+// Papaya on, but signs in the members who joined with it once it's off too, since they have no
+// password. While it's members only, someone who has an account here already connects their Papaya
 // account to it the same way, once their password has checked out, from their profile, or as they sign
 // in: the Workspace keeps the state's digest for the callback, which connects the account to theirs.
 
-/** The cookie that keeps a sign-in's state, and the page to come back to, until Memberful sends the browser back. */
+/** The cookie that keeps a sign-in's state, and the page to come back to, until Papaya sends the browser back. */
 const STATE_COOKIE = "memberful_state";
-/** How long that takes at most: long enough to sign in at Memberful, or sign up there. */
+/** How long that takes at most: long enough to sign in at Papaya, or sign up there. */
 const STATE_MAX_AGE_SECONDS = MEMBERFUL_ROUND_TRIP_MS / 1000;
 /** The longest page to come back to that the cookie keeps. Any longer, and signing in goes home. */
 const MAX_RETURN_PATH_LENGTH = 1024;
-/** Where Memberful signs a webhook: the HMAC-SHA256 of its body, under the webhook's secret, in hex. */
-const SIGNATURE_HEADER = "X-Memberful-Webhook-Signature";
+/** Where Papaya signs a webhook: the HMAC-SHA256 of its body, under the webhook's secret, in hex. */
+const SIGNATURE_HEADER = "X-Papaya-Webhook-Signature";
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder("utf-8", { fatal: true, ignoreBOM: false });
 
-/** Why Memberful can't be turned on: the deployment lacks the keys of a Memberful site's custom app. */
-export const MEMBERFUL_KEYS_NEEDED = "Memberful needs MEMBERFUL_URL, MEMBERFUL_CLIENT_ID and MEMBERFUL_CLIENT_SECRET set first";
+/** Why Papaya can't be turned on: the deployment lacks the keys of a Papaya site's custom app. */
+export const MEMBERFUL_KEYS_NEEDED = "Papaya needs MEMBERFUL_URL, MEMBERFUL_CLIENT_ID and MEMBERFUL_CLIENT_SECRET set first";
 
-/** Why `settings` can't be saved with the keys the deployment has: turning Memberful, or its Members only, on takes them all. Null when they can. */
+/** Why `settings` can't be saved with the keys the deployment has: turning Papaya, or its Members only, on takes them all. Null when they can. */
 export const memberfulRefusal = (settings: AccountSettings | undefined, env: Env) =>
   (settings?.memberfulJoin || settings?.memberfulSignIn) && !memberfulKeysOf(env) ? MEMBERFUL_KEYS_NEEDED : null;
 
@@ -53,21 +53,54 @@ export const memberfulRefusal = (settings: AccountSettings | undefined, env: Env
 const redirect = (location: string, ...cookies: string[]) =>
   withCookies(new Response(null, { status: 302, headers: { Location: location, "Cache-Control": "no-store" } }), ...cookies);
 
-/** Sends the browser back to sign in, which says why signing in with Memberful didn't work. */
+/** Sends the browser back to sign in, which says why signing in with Papaya didn't work. */
 const backToSignIn = (request: Request, problem: MemberfulSignInProblem) =>
   redirect(new URL(`/session/new?${MEMBERFUL_PROBLEM_PARAM}=${problem}`, request.url).href);
 
-/** Sends the browser back to `returnPath`, a page of the workspace, which says how connecting Memberful went: `outcome`. */
+/** Sends the browser back to `returnPath`, a page of the workspace, which says how connecting Papaya went: `outcome`. */
 function backTo(request: Request, returnPath: string, outcome: MemberfulSignInProblem | typeof MEMBERFUL_CONNECTED): Response {
   const url = new URL(returnPath, request.url);
   url.searchParams.set(MEMBERFUL_PROBLEM_PARAM, outcome);
   return redirect(url.href);
 }
 
-/** Where to sign in at the Memberful site, which sends the browser back to the callback with `state`. */
-function authorizationOf({ site, clientId }: MemberfulKeys, state: string): string {
-  const authorize = new URL("/oauth", site);
-  authorize.search = new URLSearchParams({ response_type: "code", client_id: clientId, state }).toString();
+/** Where the provider sends the browser back to, at `origin`. Clerk checks it against its application's redirect URIs. */
+const callbackOf = (origin: string) => new URL("/auth/memberful/callback", origin).href;
+
+/** `bytes` in base64url without padding, as PKCE writes a verifier and its challenge. */
+const unpadded = (bytes: Uint8Array) => toBase64url(bytes).replace(/=+$/, "");
+
+/**
+ * The PKCE verifier of the sign-in that `state` began: derived from it under `SESSION_SECRET`, so the
+ * callback finds it again with nothing more kept, and nobody without the secret can work it out.
+ */
+async function codeVerifierOf(state: string, env: Env): Promise<string> {
+  const key = await crypto.subtle.importKey("raw", encoder.encode(env.SESSION_SECRET), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  return unpadded(new Uint8Array(await crypto.subtle.sign("HMAC", key, encoder.encode(`clerk-pkce:${state}`))));
+}
+
+/**
+ * Where to sign in at the provider, which sends the browser back to the callback at `origin` with
+ * `state`: Memberful's `/oauth`, or Clerk's `/oauth/authorize`, with OpenID Connect's scopes and a PKCE
+ * challenge.
+ */
+async function authorizationOf({ site, clientId, provider }: MemberfulKeys, state: string, origin: string, env: Env): Promise<string> {
+  if (provider === "memberful") {
+    const authorize = new URL("/oauth", site);
+    authorize.search = new URLSearchParams({ response_type: "code", client_id: clientId, state }).toString();
+    return authorize.href;
+  }
+  const challenge = unpadded(new Uint8Array(await crypto.subtle.digest("SHA-256", encoder.encode(await codeVerifierOf(state, env)))));
+  const authorize = new URL("/oauth/authorize", site);
+  authorize.search = new URLSearchParams({
+    response_type: "code",
+    client_id: clientId,
+    redirect_uri: callbackOf(origin),
+    scope: "openid profile email",
+    state,
+    code_challenge: challenge,
+    code_challenge_method: "S256",
+  }).toString();
   return authorize.href;
 }
 
@@ -110,10 +143,10 @@ function keptStateOf(request: Request): { state: string; returnPath: string; con
 }
 
 /**
- * `GET /auth/memberful`, Sign in with Memberful: sends the browser to sign in at the Memberful site,
+ * `GET /auth/memberful`, Sign in with Papaya: sends the browser to sign in at the Papaya site,
  * keeping a new state and the page `return_to` names in a cookie, to come back to Ember's address, its
- * custom domain if it has one, where Memberful sends the browser back. Before first run it goes home,
- * and while it isn't offered (`Workspace.offersMemberfulSignIn`), back to sign in, which says Memberful
+ * custom domain if it has one, where Papaya sends the browser back. Before first run it goes home,
+ * and while it isn't offered (`Workspace.offersMemberfulSignIn`), back to sign in, which says Papaya
  * is off, or isn't set up while it's on without the deployment's keys.
  */
 export async function startMemberfulSignIn(request: Request, env: Env): Promise<Response> {
@@ -128,15 +161,15 @@ export async function startMemberfulSignIn(request: Request, env: Env): Promise<
   const origin = originFor(request, account.customDomain);
   if (origin !== url.origin) return redirect(new URL(`${url.pathname}${url.search}`, origin).href);
   const state = newSessionToken();
-  return redirect(authorizationOf(keys, state), stateCookie(request, state, returnPathOf(url.searchParams.get("return_to"), origin)));
+  return redirect(await authorizationOf(keys, state, origin, env), stateCookie(request, state, returnPathOf(url.searchParams.get("return_to"), origin)));
 }
 
 /**
  * Starts connecting the account of `userId`, whose password's digest `passwordDigest` the Worker checked
- * the password they gave against, or "" without one, to an account at the Memberful site, to come back
+ * the password they gave against, or "" without one, to an account at the Papaya site, to come back
  * to the page `returnTo` names: where to sign in there, and the `Set-Cookie` that keeps the state it
  * goes with, whose digest the Workspace keeps for the callback. Null unless the deployment has
- * Memberful's keys and the Workspace kept it (`startMemberfulConnection`). Asked at an address Ember has
+ * Papaya's keys and the Workspace kept it (`startMemberfulConnection`). Asked at an address Ember has
  * moved from to its custom domain, as a tab left open there is, it starts nothing, and answers that page
  * at the custom domain instead, to sign in and connect there.
  */
@@ -151,16 +184,16 @@ export async function memberfulConnectionFor(
   if (!keys) return null;
   const url = urlOf(request);
   const returnPath = returnPathOf(typeof returnTo === "string" ? returnTo : null, url.origin);
-  // Memberful sends the browser back to the custom domain, which a cookie kept here is never sent to.
+  // Papaya sends the browser back to the custom domain, which a cookie kept here is never sent to.
   const origin = originFor(request, (await workspace(env).account())?.customDomain ?? null);
   if (origin !== url.origin) return { connection: { memberfulConnection: new URL(returnPath, origin).href }, cookie: null };
   const state = newSessionToken();
   if (!(await workspace(env).startMemberfulConnection(userId, passwordDigest, await tokenDigest(state, env.SESSION_SECRET), keys.site))) return null;
-  return { connection: { memberfulConnection: authorizationOf(keys, state) }, cookie: stateCookie(request, state, returnPath, true) };
+  return { connection: { memberfulConnection: await authorizationOf(keys, state, origin, env) }, cookie: stateCookie(request, state, returnPath, true) };
 }
 
 /**
- * `GET /auth/memberful/callback`, where Memberful sends the browser back: signs it in as whoever signed
+ * `GET /auth/memberful/callback`, where Papaya sends the browser back: signs it in as whoever signed
  * in there (`Workspace.signInWithMemberful`), or connects their account there to the one here that the
  * state started connecting (`Workspace.connectMemberful`), and opens the page it was started from, or
  * else goes back to sign in, or to that page when the browser is signed in, which says why not. Each
@@ -181,14 +214,14 @@ async function signedInWithMemberful(request: Request, env: Env): Promise<Respon
   // A state this browser didn't start with, as another site's link to the callback would bring, signs
   // nobody in and connects nothing, nor does a callback without a code.
   if (!kept || state === null || !(await isToken(state, kept.state)) || !code) return backToSignIn(request, "failed");
-  // Each try counts against the address's sign-in limit, before Memberful is asked anything.
+  // Each try counts against the address's sign-in limit, before Papaya is asked anything.
   const ip = request.headers.get("CF-Connecting-IP") ?? "unknown";
   const connection = kept.connecting ? await tokenDigest(kept.state, env.SESSION_SECRET) : null;
   const [begun, signedIn] = await Promise.all([workspace(env).beginMemberfulSignIn(ip, connection), authenticate(request, env)]);
   const back = (problem: MemberfulSignInProblem) => (signedIn ? backTo(request, kept.returnPath, problem) : backToSignIn(request, problem));
   if (begun === "limited") return back("refused");
   if (begun === "expired") return back("failed");
-  const member = await memberWhoSignedIn(keys, code);
+  const member = await memberWhoSignedIn(keys, code, { redirectUri: callbackOf(urlOf(request).origin), codeVerifier: await codeVerifierOf(kept.state, env) });
   if (!member) return back("failed");
   const token = newSessionToken();
   const digest = await tokenDigest(token, env.SESSION_SECRET);
@@ -205,18 +238,18 @@ async function signedInWithMemberful(request: Request, env: Env): Promise<Respon
 }
 
 /**
- * `POST /webhooks/memberful`, where the Memberful site says a member's account, subscription or order
+ * `POST /webhooks/memberful`, where the Papaya site says a member's account, subscription or order
  * changed: once its signature checks out, the Workspace queues checking that member's membership with
- * the admin API, if they're linked to someone here, rather than trusting what it says, as Memberful
+ * the admin API, if they're linked to someone here, rather than trusting what it says, as Papaya
  * advises, since its webhooks can come in any order (memberful.com/docs/api-reference/webhooks). Answers
  * 404 without the webhook's secret and the API key to check with, 401 to a signature that doesn't check
- * out, 413 to a body over the limit, and 204 to anything else, which Memberful takes as delivered.
+ * out, 413 to a body over the limit, and 204 to anything else, which Papaya takes as delivered.
  */
 export async function memberfulWebhook(request: Request, env: Env): Promise<Response> {
   if (request.method !== "POST") return notFound(request);
   const webhooks = memberfulWebhooksOf(env);
   if (!webhooks) {
-    console.error("A Memberful webhook came, but the deployment lacks MEMBERFUL_WEBHOOK_SECRET or MEMBERFUL_API_KEY, so it's refused");
+    console.error("A Papaya webhook came, but the deployment lacks MEMBERFUL_WEBHOOK_SECRET or MEMBERFUL_API_KEY, so it's refused");
     return new Response(null, { status: 404 });
   }
   const body = await bytesUpTo(request, MAX_JSON_BODY_BYTES);
@@ -228,8 +261,8 @@ export async function memberfulWebhook(request: Request, env: Env): Promise<Resp
 }
 
 /**
- * What hearing Memberful's webhooks takes, or null without it all: the deployment's Memberful site and
- * its custom app's API key, to check what one says with, and the secret Memberful signs them with.
+ * What hearing Papaya's webhooks takes, or null without it all: the deployment's Papaya site and
+ * its custom app's API key, to check what one says with, and the secret Papaya signs them with.
  */
 export function memberfulWebhooksOf(env: Env): { api: MemberfulApi; secret: string } | null {
   const api = memberfulApiOf(env);
@@ -255,7 +288,7 @@ function parsed(body: ArrayBuffer): unknown {
 }
 
 /**
- * The member a webhook's payload is about, by their member id, where Memberful's WordPress plugin finds
+ * The member a webhook's payload is about, by their member id, where Papaya's WordPress plugin finds
  * it: `member.id` for a member's event, and the `member` of the subscription or order an event of theirs
  * is about. Null for anything else, such as a plan's event, which says nothing about anyone's membership.
  */
@@ -263,7 +296,7 @@ function subjectOf(payload: unknown): string | null {
   const { member, subscription, order } = (typeof payload === "object" && payload !== null ? payload : {}) as Record<string, unknown>;
   const about = [member, (subscription as { member?: unknown } | null)?.member, (order as { member?: unknown } | null)?.member];
   const id = about.map((someone) => (someone as { id?: unknown } | null)?.id).find((id) => id !== undefined && id !== null);
-  // Memberful's ids are numbers in a webhook's JSON, and strings in its GraphQL API, as accounts are linked by them.
+  // Papaya's ids are numbers in a webhook's JSON, and strings in its GraphQL API, as accounts are linked by them.
   const subject = typeof id === "number" && Number.isSafeInteger(id) ? String(id) : id;
   return isSubject(subject) ? subject : null;
 }

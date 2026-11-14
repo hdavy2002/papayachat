@@ -702,13 +702,13 @@ describe("Ways to join", () => {
     expect(parseAccountChanges({ settings: { openSignUp: null } })).toBe("Open must be true or false");
   });
 
-  it("lets people in with the join link while its switch is on, but never while Memberful is members only", () => {
+  it("lets people in with the join link while its switch is on, but never while Papaya is members only", () => {
     expect(joinsWithLink({ joinLink: true, memberfulSignIn: false })).toBe(true);
     expect(joinsWithLink({ joinLink: false, memberfulSignIn: false })).toBe(false);
     expect(joinsWithLink({ joinLink: true, memberfulSignIn: true })).toBe(false);
   });
 
-  it("lets anyone sign up while Open is on, but never while Memberful is members only", () => {
+  it("lets anyone sign up while Open is on, but never while Papaya is members only", () => {
     expect(signsUpOpenly({ openSignUp: true, memberfulSignIn: false })).toBe(true);
     expect(signsUpOpenly({ openSignUp: false, memberfulSignIn: false })).toBe(false);
     expect(signsUpOpenly({ openSignUp: true, memberfulSignIn: true })).toBe(false);
@@ -824,7 +824,7 @@ describe("Join with an email domain", () => {
     expect(EMAIL_SIGN_UP_PATH).toBe("/join/email");
   });
 
-  it("lets people in at the email domains while Email domain is on with a domain, but never while Memberful is members only", () => {
+  it("lets people in at the email domains while Email domain is on with a domain, but never while Papaya is members only", () => {
     const on = { emailDomainSignUp: true, emailDomains: ["example.org"], memberfulSignIn: false };
     expect(signsUpWithEmailDomain(on)).toBe(true);
     expect(signsUpWithEmailDomain({ ...on, emailDomainSignUp: false })).toBe(false);
@@ -915,18 +915,18 @@ describe("Join with an email domain", () => {
   });
 });
 
-describe("Sign in with Memberful", () => {
-  it("takes Memberful and its Members only as true or false, beside the other settings", () => {
+describe("Sign in with Papaya", () => {
+  it("takes Papaya and its Members only as true or false, beside the other settings", () => {
     expect(parseAccountChanges({ settings: { memberfulJoin: true } })).toEqual({ settings: { memberfulJoin: true } });
     expect(parseAccountChanges({ settings: { memberfulSignIn: true } })).toEqual({ settings: { memberfulSignIn: true } });
     expect(parseAccountChanges({ settings: { memberfulJoin: false, memberfulSignIn: false, restrictRoomCreation: true } })).toEqual({
       settings: { memberfulJoin: false, memberfulSignIn: false, restrictRoomCreation: true },
     });
-    expect(parseAccountChanges({ settings: { memberfulJoin: "on" } })).toBe("Memberful must be true or false");
+    expect(parseAccountChanges({ settings: { memberfulJoin: "on" } })).toBe("Papaya must be true or false");
     expect(parseAccountChanges({ settings: { memberfulSignIn: 1 } })).toBe("Members only must be true or false");
   });
 
-  it("names the page to come back to, if any, in Sign in with Memberful's address", () => {
+  it("names the page to come back to, if any, in Sign in with Papaya's address", () => {
     expect(memberfulSignInPath(null)).toBe("/auth/memberful");
     expect(memberfulSignInPath("/rooms/general?x=1#y")).toBe("/auth/memberful?return_to=%2Frooms%2Fgeneral%3Fx%3D1%23y");
   });
@@ -1064,7 +1064,7 @@ describe("Edit your profile", () => {
   });
 });
 
-describe("Disconnect Memberful", () => {
+describe("Disconnect Papaya", () => {
   it("takes your password and this browser's push subscription endpoint as typed, leaving out what isn't sent", () => {
     const typed = { currentPassword: " ", pushSubscriptionEndpoint: "" };
     expect(parseMemberfulDisconnection(typed)).toEqual(typed);

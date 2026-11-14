@@ -5,40 +5,40 @@ import { useAccount } from "@/hooks/use-account";
 import { cn } from "@/lib/utils";
 import { WORKERS_DASHBOARD } from "./custom-domain-settings";
 
-// The Memberful card in Membership's ways to join: an administrator lets the members of a Memberful site
+// The Papaya card in Membership's ways to join: an administrator lets the members of a Papaya site
 // join and sign in with their accounts there, whose custom app's keys the deployment keeps as Worker
 // secrets. While it's off, the card is its name, a line and its switch, as the project's owner asked
 // (2026-10-26): turning it on before the deployment has the keys shows how to make and set them, saving
-// nothing, and once it's on, how to have Memberful's webhooks say when a membership lapses, with Members
+// nothing, and once it's on, how to have Papaya's webhooks say when a membership lapses, with Members
 // only, which keeps everyone else out. Laid out as the other ways to join are, with Members only's
 // switch inside it.
 
 const NOTE = "text-[0.8em] text-muted-foreground max-md:text-[12px]";
 
 interface Props {
-  /** The Memberful site whose members can sign in, once the deployment has its keys, or null while it hasn't. */
+  /** The Papaya site whose members can sign in, once the deployment has its keys, or null while it hasn't. */
   site: string | null;
-  /** Whether the deployment also has what Memberful's webhooks take, so that a member whose membership lapses is signed out. */
+  /** Whether the deployment also has what Papaya's webhooks take, so that a member whose membership lapses is signed out. */
   webhooks: boolean;
-  /** Where Memberful's switch is: where it was moved to while that's saved, or else where the workspace has it. */
+  /** Where Papaya's switch is: where it was moved to while that's saved, or else where the workspace has it. */
   checked: boolean;
   onCheckedChange: (on: boolean) => void;
   /** Where Members only's switch is, likewise. */
   membersOnly: boolean;
   onMembersOnlyChange: (on: boolean) => void;
-  /** Whether a move of Memberful's switch is being saved, while which Members only's waits. */
+  /** Whether a move of Papaya's switch is being saved, while which Members only's waits. */
   memberfulSaving?: boolean;
-  /** Whether a move of Members only's switch is being saved, while which Memberful's waits. */
+  /** Whether a move of Members only's switch is being saved, while which Papaya's waits. */
   membersOnlySaving?: boolean;
   /** Why the switch can't be moved while another way to join is on, said in place of what it does, or null. */
   setAside?: string | null;
 }
 
 /**
- * Memberful, for administrators: its switch, and while it's on, Members only's, the steps to hear
- * Memberful's webhooks until the deployment does, and where Memberful sends people back to. Turned on
+ * Papaya, for administrators: its switch, and while it's on, Members only's, the steps to hear
+ * Papaya's webhooks until the deployment does, and where Papaya sends people back to. Turned on
  * before the deployment has the keys, it shows the steps to get them instead, saving nothing, and while
- * it's on without them, which only turning it off mends, it says nobody can sign in with Memberful.
+ * it's on without them, which only turning it off mends, it says nobody can sign in with Papaya.
  */
 export function MemberfulSettings({
   site,
@@ -62,7 +62,7 @@ export function MemberfulSettings({
     if (site === null && !checked) return setSettingUp(turnOn);
     onCheckedChange(turnOn);
   };
-  // Where Memberful sends people back to, and its webhooks: Ember's address, wherever settings are opened.
+  // Where Papaya sends people back to, and its webhooks: Ember's address, wherever settings are opened.
   const origin = `${location.protocol}//${customDomain ?? location.host}`;
   const redirectUrl = `${origin}${MEMBERFUL_CALLBACK_PATH}`;
   const webhookUrl = `${origin}${MEMBERFUL_WEBHOOK_PATH}`;
@@ -72,20 +72,20 @@ export function MemberfulSettings({
       <div className="flex items-center gap-x-[1ch] gap-y-4">
         <div className="min-w-0 flex-1">
           <h3 id="memberful-heading" className={cn("text-base font-semibold", setAside !== null && "text-muted-foreground")}>
-            Memberful
+            Papaya
           </h3>
           <p id="memberful-description" className={cn(NOTE, site === null && checked && "text-negative")}>
             {site === null && checked ? (
-              "It's on, but this deployment no longer has its Memberful keys, so nobody can sign in with Memberful."
+              "It's on, but this deployment no longer has its Papaya keys, so nobody can sign in with Papaya."
             ) : setAside !== null ? (
               setAside
             ) : askingForKeys ? (
-              "Memberful can't be turned on until this deployment has your Memberful site's keys. These steps give it them."
+              "Papaya can't be turned on until this deployment has your Papaya site's keys. These steps give it them."
             ) : site === null ? (
-              "Members of a Memberful site join and sign in with their Memberful account."
+              "Members of a Papaya site join and sign in with their Papaya account."
             ) : (
               <>
-                Members of <strong className="wrap-anywhere">{site}</strong> join and sign in with their Memberful account. Turned off, it lets nobody new
+                Members of <strong className="wrap-anywhere">{site}</strong> join and sign in with their Papaya account. Turned off, it lets nobody new
                 join, but those who did keep signing in with it.
                 {webhooks && " A member whose membership lapses is signed out until it's renewed."}
               </>
@@ -106,7 +106,7 @@ export function MemberfulSettings({
             <div id="members-only-heading">Members only</div>
             <p id="members-only-description" className={NOTE}>
               Nobody else can join but the people you invite, and only they and administrators sign in with a password. Members who have one connect their
-              Memberful account as they next sign in.
+              Papaya account as they next sign in.
             </p>
           </div>
           <Switch
@@ -126,12 +126,12 @@ export function MemberfulSettings({
           <p className={NOTE}>
             {webhooks ? (
               <>
-                Memberful sends people back to <span className="wrap-anywhere">{redirectUrl}</span>, the OAuth redirect URL of its custom app, and its webhook
+                Papaya sends people back to <span className="wrap-anywhere">{redirectUrl}</span>, the OAuth redirect URL of its custom app, and its webhook
                 to <span className="wrap-anywhere">{webhookUrl}</span>. If Ember's address changes, change both there too.
               </>
             ) : (
               <>
-                Memberful sends people back to <span className="wrap-anywhere">{redirectUrl}</span>, the OAuth redirect URL of its custom app. If Ember's
+                Papaya sends people back to <span className="wrap-anywhere">{redirectUrl}</span>, the OAuth redirect URL of its custom app. If Ember's
                 address changes, change it there too.
               </>
             )}
@@ -152,14 +152,14 @@ function DashboardLink() {
 }
 
 /**
- * The steps to let a Memberful site's members sign in: a custom app in Memberful, then its keys as the
+ * The steps to let a Papaya site's members sign in: a custom app in Papaya, then its keys as the
  * Worker's secrets, and a webhook with the two secrets that hearing it takes.
  */
 function Steps({ redirectUrl, webhookUrl }: { redirectUrl: string; webhookUrl: string }) {
   return (
-    <ol aria-label="Steps to let Memberful members sign in" className="flex list-decimal flex-col gap-2 ps-5">
+    <ol aria-label="Steps to let Papaya members sign in" className="flex list-decimal flex-col gap-2 ps-5">
       <li>
-        In Memberful, open <em>Settings</em>, <em>Custom applications</em>, and add one. Check <em>Include OAuth tokens with this application</em>, choose{" "}
+        In Papaya, open <em>Settings</em>, <em>Custom applications</em>, and add one. Check <em>Include OAuth tokens with this application</em>, choose{" "}
         <em>Server-side</em>, and give it the OAuth redirect URL <strong className="wrap-anywhere">{redirectUrl}</strong>.
       </li>
       <li>
@@ -173,17 +173,17 @@ function Steps({ redirectUrl, webhookUrl }: { redirectUrl: string; webhookUrl: s
         Worker two more secrets: <WebhookSecrets />.
       </li>
       <li>
-        Reload this page, and turn on <em>Memberful</em> again.
+        Reload this page, and turn on <em>Papaya</em> again.
       </li>
     </ol>
   );
 }
 
-/** The steps to hear Memberful's webhooks, once members can sign in, until the deployment has what it takes. */
+/** The steps to hear Papaya's webhooks, once members can sign in, until the deployment has what it takes. */
 function WebhookSteps({ webhookUrl }: { webhookUrl: string }) {
   return (
     <>
-      <p>A member whose membership lapses can't sign in again, but stays signed in where they are until Ember hears Memberful's webhooks.</p>
+      <p>A member whose membership lapses can't sign in again, but stays signed in where they are until Ember hears Papaya's webhooks.</p>
       <ol aria-label="Steps to sign out members whose membership lapses" className="flex list-decimal flex-col gap-2 ps-5">
         <li>
           <AddWebhook webhookUrl={webhookUrl} />
@@ -196,17 +196,17 @@ function WebhookSteps({ webhookUrl }: { webhookUrl: string }) {
   );
 }
 
-/** Adding the webhook in Memberful, which says when a member's account, subscription or order changes. */
+/** Adding the webhook in Papaya, which says when a member's account, subscription or order changes. */
 function AddWebhook({ webhookUrl }: { webhookUrl: string }) {
   return (
     <>
-      In Memberful, open <em>Settings</em>, <em>Webhooks</em>, and add one that sends the member, subscription and order events to{" "}
+      In Papaya, open <em>Settings</em>, <em>Webhooks</em>, and add one that sends the member, subscription and order events to{" "}
       <strong className="wrap-anywhere">{webhookUrl}</strong>.
     </>
   );
 }
 
-/** The two secrets that hearing the webhook takes: its own, to check it came from Memberful, and the API key, to check what it says. */
+/** The two secrets that hearing the webhook takes: its own, to check it came from Papaya, and the API key, to check what it says. */
 function WebhookSecrets() {
   return (
     <>

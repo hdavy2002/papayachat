@@ -83,7 +83,7 @@ export interface Client {
 const ACTIVE = 0;
 const DEACTIVATED = 1;
 const BANNED = 2;
-/** For a member whose Memberful membership has lapsed, until it's renewed. */
+/** For a member whose Papaya membership has lapsed, until it's renewed. */
 const SUSPENDED = 3;
 /** The role for everyone who neither runs the workspace nor is a bot. */
 const MEMBER = 0;
@@ -101,7 +101,7 @@ const NEW_ACCOUNT_SETTINGS = JSON.stringify({ restrict_room_creation_to_administ
 /**
  * What a new account's settings and custom CSS read as: no tagline, translation buttons hidden, no CSS,
  * anyone may create rooms, no custom domain, people join with the join link but can't sign up without
- * it, nor join with Memberful or an email domain, members sign in with passwords, and the rail has its
+ * it, nor join with Papaya or an email domain, members sign in with passwords, and the rail has its
  * own icons.
  */
 export const NEW_ACCOUNT_LOOKS = {
@@ -213,7 +213,7 @@ export interface NewAccount {
  * What `WorkspaceStore.changeAccount` changes: the name, the tagline, the settings workspace settings'
  * switches change, the custom domain and the ones it moved away from, the navigation icons whose slots
  * change, the From address, the sealed Resend API key, Turnstile's keys, the SFU app huddles run through,
- * and the domains Email domain lets in. Memberful's two settings change together, or not at all, as
+ * and the domains Email domain lets in. Papaya's two settings change together, or not at all, as
  * `memberful`.
  */
 export type AccountChange = Partial<
@@ -283,9 +283,9 @@ export interface OwnProfileEntry extends ProfileEntry {
   avatar: StoredPicture | null;
   /** Whether they have a password, which changing their email address or password then asks for. */
   password: boolean;
-  /** Whether they need a Memberful membership to sign in while Memberful is members only, as everyone does but administrators and the people they invited. */
+  /** Whether they need a Papaya membership to sign in while Papaya is members only, as everyone does but administrators and the people they invited. */
   membershipNeeded: boolean;
-  /** The accounts elsewhere they've connected, such as one at the Memberful site. */
+  /** The accounts elsewhere they've connected, such as one at the Papaya site. */
   accounts: LinkedAccount[];
   /** How much @ember thinks and how long it answers them, and the model it answers with, as they picked. */
   picks: AssistantPicks;
@@ -301,16 +301,16 @@ export interface AssistantPicks {
   model: string | null;
 }
 
-/** Someone who signs in with a Memberful account, which no account here is linked to yet. */
+/** Someone who signs in with a Papaya account, which no account here is linked to yet. */
 export interface NewLinkedPerson {
   id: UserId;
   name: string;
-  /** Their Memberful account's email address, or null for one Ember can't keep. */
+  /** Their Papaya account's email address, or null for one Ember can't keep. */
   emailAddress: string | null;
 }
 
 /**
- * An account elsewhere, as `issuer`, the address of the Memberful site it's on, and `subject`, its member
+ * An account elsewhere, as `issuer`, the address of the Papaya site it's on, and `subject`, its member
  * id there, name it, and what it says of itself: its name and email address there, or null for either
  * it didn't say, or Ember didn't keep, for one linked before it kept them.
  */
@@ -334,15 +334,15 @@ export interface LinkedPerson {
   status: UserStatus;
   /** Whether they need a membership to be let in, as everyone does but administrators and the people they invited. */
   membershipNeeded: boolean;
-  /** When their membership was last read, by the Workspace's clock: as a sign-in began, or a check asked Memberful. */
+  /** When their membership was last read, by the Workspace's clock: as a sign-in began, or a check asked Papaya. */
   checkedAt: number;
 }
 
-/** A membership the Workspace has yet to check with the Memberful site's admin API. */
+/** A membership the Workspace has yet to check with the Papaya site's admin API. */
 export interface MembershipCheck {
   /** The member id of the account to check, at the site checked. */
   subject: string;
-  /** How many checks of it in a row Memberful failed to answer. */
+  /** How many checks of it in a row Papaya failed to answer. */
   attempts: number;
 }
 
@@ -643,8 +643,8 @@ const INSERT_SESSION = `INSERT INTO sessions (id, user_id, token_digest, ip_addr
   VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
 /**
- * Whether someone needs no Memberful membership: an administrator, or someone who joined with an
- * invitation. They sign in with a password while Memberful is members only, and a membership of theirs
+ * Whether someone needs no Papaya membership: an administrator, or someone who joined with an
+ * invitation. They sign in with a password while Papaya is members only, and a membership of theirs
  * lapsing doesn't suspend them.
  */
 const NEEDS_NO_MEMBERSHIP = `(users.role = ${ADMINISTRATOR} OR users.invited_by IS NOT NULL)`;
@@ -799,7 +799,7 @@ const QUEUE_MEMBERSHIP_CHECK = `INSERT INTO membership_checks (issuer, subject, 
 
 /**
  * Queues checking the membership of every account at issuer ?1 whose member's counts, due at ?2, if the
- * site's catch-up is due by then. A check queued already stays as it is, so one Memberful has failed to
+ * site's catch-up is due by then. A check queued already stays as it is, so one Papaya has failed to
  * answer still waits its turn.
  */
 const QUEUE_MEMBERSHIP_CATCH_UP = `INSERT INTO membership_checks (issuer, subject, queued_at, due_at)
@@ -855,7 +855,7 @@ const REFRESH_IDENTITY = `UPDATE identities SET name = ?3, email_address = ?4, u
 /**
  * Unlinks every account elsewhere from person ?1 as a reset replaces the password they have, which
  * connected each, so that a new password, as a reset gives someone whose account was taken over, ends
- * every other way in. Someone without one, as people who signed in with Memberful are, keeps theirs
+ * every other way in. Someone without one, as people who signed in with Papaya are, keeps theirs
  * as they set a first password, and so does someone without an email address, who'd have nothing to
  * sign in with once unlinked, since signing in with a password takes one (a reset finds them by it).
  * Before the statement that gives them the new one.
@@ -1237,15 +1237,15 @@ function joinsWithLinkIn(settings: Record<string, unknown> | null): boolean {
 const signsUpOpenlyIn = (settings: Record<string, unknown> | null) => isPresent(settings?.open_sign_up);
 
 /**
- * Whether Memberful is members only, which the account's settings keep as `memberful_sign_in`: only
- * while the setting is present, and Memberful is on (`joinsWithMemberfulIn`).
+ * Whether Papaya is members only, which the account's settings keep as `memberful_sign_in`: only
+ * while the setting is present, and Papaya is on (`joinsWithMemberfulIn`).
  */
 const signsInWithMemberful = (settings: Record<string, unknown> | null) => isPresent(settings?.memberful_sign_in) && joinsWithMemberfulIn(settings);
 
 /**
- * Whether Memberful's members join with it, which the account's settings keep as `memberful_join`: only
+ * Whether Papaya's members join with it, which the account's settings keep as `memberful_join`: only
  * while the setting is present, or, until it's stored, as for an account from before it, while
- * `memberful_sign_in` is, which let them join while it was Memberful's only setting.
+ * `memberful_sign_in` is, which let them join while it was Papaya's only setting.
  */
 function joinsWithMemberfulIn(settings: Record<string, unknown> | null): boolean {
   const on = settings?.memberful_join;
@@ -1503,7 +1503,7 @@ const QUEUE_SESSION_REVOCATIONS = `INSERT INTO pending_revocations (room_id, tag
   WHERE sessions.token_digest = ? RETURNING id`;
 
 /**
- * Whether a membership is that of someone suspended for their Memberful membership's lapsing, in a room
+ * Whether a membership is that of someone suspended for their Papaya membership's lapsing, in a room
  * that's private already, which changing the room leaves be: its settings list only people active, and
  * the room is theirs again once their membership is renewed. Making an open room private takes them out,
  * as it does everyone else nobody chose for it. It's read before the room's kind changes.
@@ -2517,7 +2517,7 @@ export class WorkspaceStore {
   /**
    * Changes the workspace's name, tagline, settings, custom domain and the ones it moved away from,
    * navigation icons, From address, Resend API key, Turnstile's keys, huddles' SFU app and email domains,
-   * as `change` has them, in one batch. Memberful's settings are stored both at once, so that an account
+   * as `change` has them, in one batch. Papaya's settings are stored both at once, so that an account
    * from before `memberful_join` reads as they're saved.
    */
   async changeAccount(
@@ -2901,7 +2901,7 @@ export class WorkspaceStore {
     return row?.user_id ?? null;
   }
 
-  /** Whether `userId` may sign in with a password while Memberful is members only, as an active administrator, or someone who joined with an invitation, may. */
+  /** Whether `userId` may sign in with a password while Papaya is members only, as an active administrator, or someone who joined with an invitation, may. */
   async signsInWhileMembersOnly(userId: UserId): Promise<boolean> {
     return (await this.db.all(`SELECT 1 FROM users WHERE id = ? AND status = ${ACTIVE} AND ${NEEDS_NO_MEMBERSHIP}`, userId)).length > 0;
   }
@@ -2942,7 +2942,7 @@ export class WorkspaceStore {
   /**
    * Starts a session for someone who signed in with the password `passwordDigest` is the digest of,
    * unless they've stopped being active since, or their password has been reset, or, while `membersOnly`
-   * says Memberful is members only, they're neither an administrator nor someone who joined with an
+   * says Papaya is members only, they're neither an administrator nor someone who joined with an
    * invitation, and keeps `rehash`, a digest made now of the same password, in its place when there is one.
    */
   async startSession(
@@ -3105,7 +3105,7 @@ export class WorkspaceStore {
   }
 
   /**
-   * Suspends the active member `userId`, whose membership of the Memberful site `issuer` has lapsed, as
+   * Suspends the active member `userId`, whose membership of the Papaya site `issuer` has lapsed, as
    * their account there with `subject` was read at `readAt`, in one transaction: queues closing each of
    * their sessions' sockets with `code` in every room they're in, due at `dueAt`, as removing them does,
    * ends their sessions, forgets their push subscriptions, marks them suspended, recording when, and
@@ -3125,7 +3125,7 @@ export class WorkspaceStore {
   }
 
   /**
-   * Lets back the suspended member `userId`, whose membership of the Memberful site `issuer` is renewed,
+   * Lets back the suspended member `userId`, whose membership of the Papaya site `issuer` is renewed,
    * as their account there with `subject` was read at `readAt`, in one transaction: makes them active,
    * recording when, puts them in the open rooms made while they were suspended, as joining puts someone
    * in every open room, and records the read.
@@ -3138,7 +3138,7 @@ export class WorkspaceStore {
     ]);
   }
 
-  /** Records that the memberships of the accounts at the Memberful site `issuer` with `subjects` were read at `readAt`, unless they were since. */
+  /** Records that the memberships of the accounts at the Papaya site `issuer` with `subjects` were read at `readAt`, unless they were since. */
   async stampMemberships(issuer: string, subjects: string[], readAt: number): Promise<void> {
     if (subjects.length > 0) await this.db.run(STAMP_MEMBERSHIPS, issuer, JSON.stringify(subjects), readAt);
   }
@@ -3238,7 +3238,7 @@ export class WorkspaceStore {
   }
 
   /**
-   * Queues checking the membership of the account at the Memberful site `issuer` with `subject`, due at
+   * Queues checking the membership of the account at the Papaya site `issuer` with `subject`, due at
    * `now`, as a webhook about it came then, if it's linked to a member whose membership counts, and makes
    * the site's catch-up due by `nextCatchUp`, if anyone here is linked to an account there.
    */
@@ -3246,18 +3246,18 @@ export class WorkspaceStore {
     await this.db.batch([statement(QUEUE_MEMBERSHIP_CHECK, issuer, subject, now), statement(SCHEDULE_MEMBERSHIP_CATCH_UP, issuer, nextCatchUp)]);
   }
 
-  /** Makes the catch-up of the memberships at the Memberful site `issuer` due by `dueAt`, if anyone here is linked to an account there. */
+  /** Makes the catch-up of the memberships at the Papaya site `issuer` due by `dueAt`, if anyone here is linked to an account there. */
   async scheduleMembershipCatchUp(issuer: string, dueAt: number): Promise<void> {
     await this.db.run(SCHEDULE_MEMBERSHIP_CATCH_UP, issuer, dueAt);
   }
 
-  /** Makes the catch-up of the memberships at the Memberful site `issuer` due at `dueAt`, unless one is due already, if anyone here is linked to an account there. */
+  /** Makes the catch-up of the memberships at the Papaya site `issuer` due at `dueAt`, unless one is due already, if anyone here is linked to an account there. */
   async startMembershipCatchUp(issuer: string, dueAt: number): Promise<void> {
     await this.db.run(START_MEMBERSHIP_CATCH_UP, issuer, dueAt);
   }
 
   /**
-   * Forgets the membership checks and catch-ups of every Memberful site but `site`, all of them for null,
+   * Forgets the membership checks and catch-ups of every Papaya site but `site`, all of them for null,
    * as nothing checks them, and the catch-up of `site` while nobody here is linked to an account there,
    * as one started before anyone was may be, then, if the catch-up of `site` is due by `now`, queues
    * checking every membership there that counts and makes the next due at `nextCatchUp`, and answers up
@@ -3275,7 +3275,7 @@ export class WorkspaceStore {
   }
 
   /**
-   * Forgets the checks of the accounts at the Memberful site `issuer` with `subjects`, which it answered
+   * Forgets the checks of the accounts at the Papaya site `issuer` with `subjects`, which it answered
    * for as read at `readAt`, but those queued again since, which are checked again. When it didn't answer
    * (null), puts them off instead, each for twice as long as the time before, up to the longest wait, as
    * a revocation is, for as long as it takes.

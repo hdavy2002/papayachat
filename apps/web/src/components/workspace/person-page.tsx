@@ -52,7 +52,7 @@ const DIRECT_BUTTON =
  * and, for an agent an administrator made, what `AboutAgent` says of it, then the DM button while
  * they're active. Administrators get a new sign-in link for anyone active who isn't a bot, themselves
  * included, and Ban for anyone else active or Remove ban for anyone banned. The people directory keeps
- * what it lists of them current. Members suspended for their Memberful membership's lapsing show as
+ * what it lists of them current. Members suspended for their Papaya membership's lapsing show as
  * removed people do, but to administrators, who see them as banned people, with why they can't sign in,
  * and Ban.
  */
@@ -200,7 +200,7 @@ export function PersonPage({ userId, me, onStartDirect, onPersonChanged, reloadP
                   </>
                 )}
                 {person.status === "suspended" && (
-                  <div className="mt-4">{person.name}’s Memberful membership has lapsed, so they can’t sign in until it’s renewed.</div>
+                  <div className="mt-4">{person.name}’s Papaya membership has lapsed, so they can’t sign in until it’s renewed.</div>
                 )}
                 {me.administrator && !mine && (
                   <div className="mt-4">

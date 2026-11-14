@@ -574,7 +574,7 @@ describe("Ban and unban people", () => {
   });
 });
 
-describe("Memberful memberships", () => {
+describe("Papaya memberships", () => {
   const suspended: Person = { ...grace, status: "suspended" };
 
   it("shows members someone suspended for their membership's lapsing as no longer on this account", async () => {
@@ -593,7 +593,7 @@ describe("Memberful memberships", () => {
     expect(await heading()).toHaveTextContent("Grace Hopper");
     expect(screen.getByText("Wrote the first compiler")).toBeVisible();
     expect(mailLink()).toHaveAttribute("href", "mailto:grace@example.com");
-    expect(screen.getByText("Grace Hopper’s Memberful membership has lapsed, so they can’t sign in until it’s renewed.")).toBeVisible();
+    expect(screen.getByText("Grace Hopper’s Papaya membership has lapsed, so they can’t sign in until it’s renewed.")).toBeVisible();
     expect(screen.queryByText(/no longer on this account/)).toBeNull();
     expect(directButton("Grace Hopper")).toBeNull();
     expect(screen.getByRole("button", { name: "Ban Grace Hopper" })).toBeVisible();

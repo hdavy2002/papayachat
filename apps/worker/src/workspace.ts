@@ -218,14 +218,14 @@ const CLOSING_SOCKETS_MS = 2_000;
 /** How many of a banned person's messages a room deletes each time the outbox asks: a page of history's worth. */
 const MESSAGES_PER_PURGE = 100;
 /**
- * How many memberships the alarm checks in a run, at most, asking Memberful's admin API after them all in
+ * How many memberships the alarm checks in a run, at most, asking Papaya's admin API after them all in
  * one request, a query with an alias for each, so that a run's subrequests stay well within the Free plan's.
  */
 const MEMBERSHIPS_PER_CHECK = 25;
-/** How often the Workspace checks the membership of everyone linked to the Memberful site, in case a webhook about one never came. */
+/** How often the Workspace checks the membership of everyone linked to the Papaya site, in case a webhook about one never came. */
 const MEMBERSHIP_CATCH_UP_MS = 24 * 60 * 60 * 1000;
 /**
- * How long signing in with Memberful, or connecting an account there, has to come back from the Memberful
+ * How long signing in with Papaya, or connecting an account there, has to come back from the Papaya
  * site: long enough to sign in there, or sign up.
  */
 export const MEMBERFUL_ROUND_TRIP_MS = 10 * 60 * 1000;
@@ -256,9 +256,9 @@ function fromOf(account: Pick<JoinableAccount, "name" | "emailFrom">): Mailbox |
 }
 
 /**
- * What `settings` changes of the account's two Memberful settings, `account` having them as they are,
- * both at once, or undefined when it changes neither: Members only turns Memberful on with it, and
- * turning Memberful off turns Members only off.
+ * What `settings` changes of the account's two Papaya settings, `account` having them as they are,
+ * both at once, or undefined when it changes neither: Members only turns Papaya on with it, and
+ * turning Papaya off turns Members only off.
  */
 function memberfulChange(account: Pick<Account, "memberfulJoin" | "memberfulSignIn">, { memberfulJoin, memberfulSignIn }: AccountSettings) {
   const join = memberfulJoin ?? (memberfulSignIn || account.memberfulJoin);
@@ -472,7 +472,7 @@ export const ACCOUNT_NAME = "Ember";
  */
 const FIRST_ROOM_NAMES = ["general", "random"];
 
-/** The account at the Memberful site `issuer` that `member` signed in to, as `identities` keeps it: named as Memberful does, not as the person is here. */
+/** The account at the Papaya site `issuer` that `member` signed in to, as `identities` keeps it: named as Papaya does, not as the person is here. */
 const linkedAccountOf = (issuer: string, member: MemberfulMember): LinkedAccount => ({ issuer, subject: member.id, name: member.fullName, emailAddress: member.emailAddress });
 
 /** Your profile, and the sign-in link it shows you, by the session asking, which the Worker signs. */
@@ -480,8 +480,8 @@ export interface YourProfile {
   transfer: Transfer;
   profile: Omit<Profile, "memberful">;
   /**
-   * Whether Memberful is members only, and the accounts elsewhere you've connected, from which the
-   * Worker, which knows the Memberful site, tells your profile where you stand with Memberful
+   * Whether Papaya is members only, and the accounts elsewhere you've connected, from which the
+   * Worker, which knows the Papaya site, tells your profile where you stand with Papaya
    * (`Profile.memberful`), or null for a guest, who has nothing to connect.
    */
   memberful: { membersOnly: boolean; accounts: LinkedAccount[] } | null;
@@ -591,21 +591,21 @@ export interface ClickAccess extends WebhookAccess {
 }
 
 /**
- * Why signing in with Memberful signed nobody in, or connected no account: Memberful is off for someone
+ * Why signing in with Papaya signed nobody in, or connected no account: Papaya is off for someone
  * new, the person the account is linked to was removed or banned, it has no active membership, someone
- * new would have someone's email address, or, connecting one, Memberful isn't members only, the account
+ * new would have someone's email address, or, connecting one, Papaya isn't members only, the account
  * is connected to someone else, or they're connected to another.
  */
 export type MemberfulRefusal = "off" | "unneeded" | "refused" | "membership" | "taken" | "claimed" | "another";
 
-/** What a join link does: joins, is off while an administrator has turned it off or Memberful is members only, or isn't the join link. */
+/** What a join link does: joins, is off while an administrator has turned it off or Papaya is members only, or isn't the join link. */
 export type JoinLink = "joins" | "off" | "memberful" | "not found";
 
 /** Why open sign-up lets nobody in: it's off, or the workspace has let in as many new people as it does in an hour. */
 export type SignUpRefusal = "closed" | "full";
 
 /**
- * Why a change to the account changes nothing: Open and Memberful's Members only can't both be on
+ * Why a change to the account changes nothing: Open and Papaya's Members only can't both be on
  * ("conflict"), and Email domain can't be on without a domain to let in, nor be turned on while Ember
  * can't send email, since it emails people the links they join with.
  */
@@ -712,8 +712,8 @@ const changesSignIn = ({ emailAddress }: { emailAddress: string | null }, typed:
   newPassword || (typed !== undefined && (typed || null) !== emailAddress);
 
 /**
- * Whether `person` signs in with Memberful alone: they have no password, and are linked at
- * `memberfulSite`, the Memberful site the deployment has the keys to, if any. Memberful is their way in
+ * Whether `person` signs in with Papaya alone: they have no password, and are linked at
+ * `memberfulSite`, the Papaya site the deployment has the keys to, if any. Papaya is their way in
  * then, so they're given no password, which holding their session would be enough to set.
  */
 const signsInWithMemberfulAlone = ({ password, accounts }: Pick<OwnProfileEntry, "password" | "accounts">, memberfulSite: string | null) =>
@@ -789,7 +789,7 @@ export class Workspace extends DurableObject<Env> {
   private knownAccount: JoinableAccount | null = null;
   /** Counts the starts and ends of changes to the account, so a read that overlapped one isn't kept: on D1, queries interleave. */
   private accountChanges = 0;
-  /** The Memberful sites someone here is known to be linked to an account at (see `offersMemberfulSignIn`). */
+  /** The Papaya sites someone here is known to be linked to an account at (see `offersMemberfulSignIn`). */
   private readonly linkedSites = new Set<string>();
   /** Counts the unlinkings of accounts elsewhere, so a read that overlapped one isn't kept as a linked site: on D1, queries interleave. */
   private unlinkings = 0;
@@ -949,7 +949,7 @@ export class Workspace extends DurableObject<Env> {
 
   /**
    * What the join link with `code` does: "not found" unless `code` is the workspace's join code, which it
-   * can't be before first run, "memberful" while Memberful is members only, which turns it off, and "off"
+   * can't be before first run, "memberful" while Papaya is members only, which turns it off, and "off"
    * while an administrator has turned it off.
    */
   async joinLink(code: string): Promise<JoinLink> {
@@ -961,7 +961,7 @@ export class Workspace extends DurableObject<Env> {
 
   /**
    * What the app asks first: the account, if it's set up, who `credentials` signs in, if anyone, whether
-   * the sign-in page offers Sign in with Memberful at `memberfulSite`, the deployment's Memberful site, or
+   * the sign-in page offers Sign in with Papaya at `memberfulSite`, the deployment's Papaya site, or
    * null without its keys (`offersMemberfulSignIn`), and whether it offers to email a code to reset a
    * password, which it does while Ember can send email, and the site key of the Turnstile widget an
    * administrator gave Ember, while it has one (`savedTurnstileKeys`). A page opened at `deployedAddress`,
@@ -1018,8 +1018,8 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * Whether Sign in with Memberful is offered at `site`, the deployment's Memberful site, or null without
-   * its keys, when it never is: while Memberful lets its members join, or anyone here is linked to an
+   * Whether Sign in with Papaya is offered at `site`, the deployment's Papaya site, or null without
+   * its keys, when it never is: while Papaya lets its members join, or anyone here is linked to an
    * account there, since they keep signing in with it once it's off.
    */
   async offersMemberfulSignIn(site: string | null): Promise<boolean> {
@@ -1034,8 +1034,8 @@ export class Workspace extends DurableObject<Env> {
 
   /**
    * Forgets the sites nobody is linked to an account at anymore (`linkedSites`), once a new password or
-   * Disconnect has unlinked accounts: the sign-in page stops offering Sign in with Memberful while
-   * Memberful is off and nobody signs in with it.
+   * Disconnect has unlinked accounts: the sign-in page stops offering Sign in with Papaya while
+   * Papaya is off and nobody signs in with it.
    */
   private async forgetUnlinked(): Promise<void> {
     this.unlinkings++;
@@ -1046,7 +1046,7 @@ export class Workspace extends DurableObject<Env> {
    * Workspace settings as the person `credentials` signs in sees them: "not set up" before first run, or
    * null without a valid session. A guest isn't given the join link's code, since a member's account
    * they made with it would stay once guests are turned away, unless they're an administrator, who
-   * could make a new code anyway. The Worker adds what it knows of the Memberful site from its keys and
+   * could make a new code anyway. The Worker adds what it knows of the Papaya site from its keys and
    * the Cloudflare account it's deployed to, and has the deployment's Turnstile keys take the place of
    * any an administrator gave, and the Workspace says how it sends email, since it's what sends it.
    */
@@ -1073,8 +1073,8 @@ export class Workspace extends DurableObject<Env> {
   /**
    * Makes `changes` to the workspace as the person `credentials` signs in, answering the account as it
    * is then: "forbidden" unless they're an administrator, why it changes nothing, as `AccountRefusal`
-   * has it, or null without a valid session. Members only turns Memberful on with it, and turning
-   * Memberful off turns Members only off. Everyone's workspace sockets hear of a change, a new custom
+   * has it, or null without a valid session. Members only turns Papaya on with it, and turning
+   * Papaya off turns Members only off. Everyone's workspace sockets hear of a change, a new custom
    * domain included, which tabs open at another address then point to. Moving to one, Ember remembers
    * the custom domain it moves away from, and `host`, the address the change was asked at, as they reach
    * it too (`othersAfterMove`).
@@ -1106,7 +1106,7 @@ export class Workspace extends DurableObject<Env> {
         ...(icons && { navigationIcons: icons }),
         ...(emailFrom !== undefined && emailFrom !== account.emailFrom && { emailFrom }),
       };
-      // Open lets anyone in, and Members only only Memberful's members, so neither is turned on while the other is.
+      // Open lets anyone in, and Members only only Papaya's members, so neither is turned on while the other is.
       const open = change.openSignUp ?? account.openSignUp;
       const membersOnly = memberful?.memberfulSignIn ?? account.memberfulSignIn;
       if (open && membersOnly && (change.openSignUp || !account.memberfulSignIn)) return "conflict";
@@ -1818,7 +1818,7 @@ export class Workspace extends DurableObject<Env> {
   /**
    * Adds someone who joined with the join link for `code` as a member, in every open room, and the
    * session their cookie's token opens. Everyone's workspace sockets hear of them, so pages already open
-   * know them. Answers "not found" if `code` isn't the join code, "memberful" while Memberful is members
+   * know them. Answers "not found" if `code` isn't the join code, "memberful" while Papaya is members
    * only, "off" while the link is off, "agent's name" for a name that's an agent's (`takesAgentsName`),
    * and null if someone already has their email address.
    */
@@ -1986,11 +1986,11 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * Counts a sign-in with Memberful from `ip` against the same limit, before Memberful is asked
+   * Counts a sign-in with Papaya from `ip` against the same limit, before Papaya is asked
    * anything, having taken the connection whose state's digest is `connection`, for one that connects an
    * account, so that each is good for one try, whatever comes of it: "limited" past the limit, "expired"
    * for a connection taken already, forgotten, or started more than ten minutes ago, or else when it
-   * began by the Workspace's clock, which what Memberful then says of the membership of whoever signed
+   * began by the Workspace's clock, which what Papaya then says of the membership of whoever signed
    * in is no older than, and whose account it connects, if anyone's, with the password that started it.
    */
   async beginMemberfulSignIn(ip: string, connection: string | null): Promise<"limited" | "expired" | { begunAt: number; connecting: Connecting | null }> {
@@ -2019,7 +2019,7 @@ export class Workspace extends DurableObject<Env> {
 
   /**
    * Signs in someone whose password checked out against `passwordDigest`, unless they've stopped being
-   * active since, or their password has been reset while it was checked. While Memberful is members
+   * active since, or their password has been reset while it was checked. While Papaya is members
    * only, only administrators and the people they invited sign in with a password, and anyone else hears
    * "memberful", which only someone who knows their password can, so it says nothing about who has an
    * account.
@@ -2028,7 +2028,7 @@ export class Workspace extends DurableObject<Env> {
     const membersOnly = (await this.joinableAccount())?.memberfulSignIn ?? false;
     if (membersOnly && !(await this.store.signsInWhileMembersOnly(userId))) return "memberful";
     // On D1 a role change can overlap it, so it's remembered only if none did, and the session starts
-    // only if they may still sign in with a password, while Memberful is members only.
+    // only if they may still sign in with a password, while Papaya is members only.
     const session = await this.sessions.keep(tokenDigest, () =>
       this.store.startSession(userId, passwordDigest, rehash, membersOnly, sortableId(), tokenDigest, client, new Date().toISOString()),
     );
@@ -2051,7 +2051,7 @@ export class Workspace extends DurableObject<Env> {
 
   /**
    * Adds someone who signs in with just a name, and the session their cookie's token opens, unless
-   * Memberful is members only, which answers "memberful", or the name is an agent's, which answers
+   * Papaya is members only, which answers "memberful", or the name is an agent's, which answers
    * "agent's name". Everyone's workspace sockets hear of them.
    */
   async signInGuest(name: string, tokenDigest: string, client: Client): Promise<Me | "memberful" | "agent's name"> {
@@ -2068,22 +2068,22 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * Signs in `member`, who signed in to the Memberful site `issuer`, with the session their cookie's
-   * token opens: as the person their Memberful account is linked to, whether Memberful is on or not, or
+   * Signs in `member`, who signed in to the Papaya site `issuer`, with the session their cookie's
+   * token opens: as the person their Papaya account is linked to, whether Papaya is on or not, or
    * else, while it's on, as someone new, a member in every open room, linked to it, as joining adds
    * someone, called by the first of their names that isn't an agent's, else "Member" (`namelessMember`).
    * Accounts are linked by the site and the member's id there, never matched by email address.
-   * What Memberful said of their membership, as of `readAt`, is gone by as a check's is
+   * What Papaya said of their membership, as of `readAt`, is gone by as a check's is
    * (`settleMembership`), unless the Workspace has gone by a newer read: a member whose membership has
    * lapsed is suspended, their sessions elsewhere ending, and one whose membership is renewed is let back.
-   * Answers "off" for someone new while Memberful is off, "refused" for someone linked who has been
+   * Answers "off" for someone new while Papaya is off, "refused" for someone linked who has been
    * removed or banned, "membership" for anyone but an administrator, or someone they invited, without an
    * active membership, and "taken" when someone here has the email address someone new would have, which
    * creates nothing. Everyone's workspace sockets hear of someone new.
    */
   async signInWithMemberful(issuer: string, member: MemberfulMember, readAt: number, tokenDigest: string, client: Client): Promise<Me | MemberfulRefusal> {
     // One at a time, so that two sign-ins of someone new can't both add them, none can overlap turning
-    // Memberful off, or a check of the same membership, and a suspension closes the sockets it ends
+    // Papaya off, or a check of the same membership, and a suspension closes the sockets it ends
     // before answering.
     return this.closingSockets(async () => {
       const linked = await this.store.linkedPerson(issuer, member.id);
@@ -2099,7 +2099,7 @@ export class Workspace extends DurableObject<Env> {
       }
       if (!(await this.joinableAccount())?.memberfulJoin) return "off";
       if (!member.subscribed) return "membership";
-      // Nobody can take an agent's name, which Memberful knows nothing of.
+      // Nobody can take an agent's name, which Papaya knows nothing of.
       const agents = await this.store.agentEntries();
       const free = (name: string) => !agents.some((agent) => sameName(agent.name, name));
       const name = member.names.find(free) ?? namelessMember(free);
@@ -2120,11 +2120,11 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * What connecting the account of the person `credentials` signs in to one at the Memberful site
+   * What connecting the account of the person `credentials` signs in to one at the Papaya site
    * `issuer` from their profile checks first: whose account it is, and the digest of their password, or
    * "" without one, which the Worker checks the password they give against, counting it against
    * sign-in's limit for `ip`, as changing their email address or password does: "limited" past it.
-   * "unneeded" unless Memberful is members only, "forbidden" for a guest, "connected" when they're
+   * "unneeded" unless Papaya is members only, "forbidden" for a guest, "connected" when they're
    * connected to an account at the site already, and null without a valid session.
    */
   async memberfulConnectionCheck(
@@ -2146,9 +2146,9 @@ export class Workspace extends DurableObject<Env> {
 
   /**
    * Starts connecting the account of `userId`, whose password's digest was `passwordDigest` as the Worker
-   * checked it, or "" without one, to one at the Memberful site `issuer`: keeps `stateDigest`, the digest
+   * checked it, or "" without one, to one at the Papaya site `issuer`: keeps `stateDigest`, the digest
    * of the state their browser goes there with, for the callback to take within ten minutes. Whether it's
-   * kept: not unless Memberful is members only, and they're active, neither a guest nor a bot, have that
+   * kept: not unless Papaya is members only, and they're active, neither a guest nor a bot, have that
    * password still, and aren't connected to an account at the site already.
    */
   async startMemberfulConnection(userId: UserId, passwordDigest: string, stateDigest: string, issuer: string): Promise<boolean> {
@@ -2158,7 +2158,7 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * Connects the account of `member`, who signed in to the Memberful site `issuer`, to the account here of
+   * Connects the account of `member`, who signed in to the Papaya site `issuer`, to the account here of
    * the person `connecting` is for, who started connecting one, and signs them in with the session their
    * cookie's token opens, `tokenDigest`, unless it's null, as it is when the browser is signed in as them
    * already, which answers "connected". Only its owner here connects an account there, which is never
@@ -2166,8 +2166,8 @@ export class Workspace extends DurableObject<Env> {
    * one, as a reset gives someone whose account was taken over, ends a connection on its way as it ends
    * their sessions. A member needs an active membership to connect one, as to sign in with it, which an
    * administrator, or someone they invited, doesn't, and an account connected to them already signs them
-   * in as signing in with it does, going by what Memberful said of its membership as of `readAt`
-   * (`settleMembership`). Answers "unneeded" unless Memberful is members only, "claimed" for an account
+   * in as signing in with it does, going by what Papaya said of its membership as of `readAt`
+   * (`settleMembership`). Answers "unneeded" unless Papaya is members only, "claimed" for an account
    * connected to someone else, "another" when they're connected to another account at the site,
    * "membership" for a member without an active membership, and "refused" when they've been removed or
    * banned, or their password has changed.
@@ -2181,7 +2181,7 @@ export class Workspace extends DurableObject<Env> {
     client: Client,
   ): Promise<Me | "connected" | MemberfulRefusal> {
     const { userId } = connecting;
-    // One at a time, as signing in with Memberful is, so that two can't connect the same account.
+    // One at a time, as signing in with Papaya is, so that two can't connect the same account.
     return this.closingSockets(async () => {
       if (!(await this.joinableAccount())?.memberfulSignIn) return "unneeded";
       const linked = await this.store.linkedPerson(issuer, member.id);
@@ -2208,7 +2208,7 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * What disconnecting the account of the person `credentials` signs in from the one at the Memberful
+   * What disconnecting the account of the person `credentials` signs in from the one at the Papaya
    * site `issuer`, from their profile, checks first: whose account it is, and the digest of their
    * password, which the Worker checks the password they give against, counting it against sign-in's
    * limit for `ip`, as connecting one does: "limited" past it. "forbidden" for a guest, "not connected"
@@ -2235,7 +2235,7 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * Disconnects the account of the person `credentials` signs in from the one at the Memberful site
+   * Disconnects the account of the person `credentials` signs in from the one at the Papaya site
    * `issuer`, once the Worker has checked their password, whose digest is `checked`
    * (`memberfulDisconnectionCheck`), answering their profile as it is then. As a new password does, it
    * ends their other sessions: their sockets close and are told to reconnect, here at once and in every
@@ -2273,9 +2273,9 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * Queues checking the membership of the account with `subject` at the Memberful site `issuer` with its
+   * Queues checking the membership of the account with `subject` at the Papaya site `issuer` with its
    * admin API, as the site's webhook says it changed, if it's linked to a member whose membership
-   * counts, whether Memberful is on or not, since the members who joined with it keep signing in with
+   * counts, whether Papaya is on or not, since the members who joined with it keep signing in with
    * it. The alarm checks it.
    */
   async queueMembershipCheck(issuer: string, subject: string): Promise<void> {
@@ -2285,7 +2285,7 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * Makes the daily check of every membership at the deployment's Memberful site due by `dueAt`, if it
+   * Makes the daily check of every membership at the deployment's Papaya site due by `dueAt`, if it
    * can ask the site's admin API, and sets the alarm for it. Called once someone here is linked to an
    * account there, since the check isn't kept while nobody is.
    */
@@ -2297,8 +2297,8 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * Goes by what Memberful said of the membership of `linked`, the person their account with `subject` at
-   * the Memberful site `issuer` is linked to, as read at `readAt`, unless the Workspace has gone by a newer
+   * Goes by what Papaya said of the membership of `linked`, the person their account with `subject` at
+   * the Papaya site `issuer` is linked to, as read at `readAt`, unless the Workspace has gone by a newer
    * read: suspends a member whose membership has lapsed (`suspendLapsed`), lets back one whose membership
    * is renewed (`restoreRenewed`), or else records the read. Administrators, and the people they invited,
    * are let in whatever their membership, and someone removed or banned stays so. Answers their status
@@ -2321,7 +2321,7 @@ export class Workspace extends DurableObject<Env> {
 
   /**
    * Suspends the active member `userId`, whose membership has lapsed, as their account with `subject` at
-   * the Memberful site `issuer` was read at `readAt`: all their sessions end, and their sockets close
+   * the Papaya site `issuer` was read at `readAt`: all their sessions end, and their sockets close
    * for good, here at once and in every room they're in through the outbox, as removing them closes
    * them, but they stay in their rooms, for when it's renewed. Everyone's workspace sockets hear of it.
    */
@@ -2344,7 +2344,7 @@ export class Workspace extends DurableObject<Env> {
 
   /**
    * Lets back the suspended member `userId`, whose membership is renewed, as their account with `subject`
-   * at the Memberful site `issuer` was read at `readAt`, to sign in again, to the rooms they were in and
+   * at the Papaya site `issuer` was read at `readAt`, to sign in again, to the rooms they were in and
    * every open room. Everyone's workspace sockets hear of it.
    */
   private async restoreRenewed(userId: UserId, issuer: string, subject: string, readAt: number): Promise<void> {
@@ -2522,7 +2522,7 @@ export class Workspace extends DurableObject<Env> {
    * digest of, with the code whose digest is `codeDigest`, spending it, as `beginPasswordReset` found it,
    * and ends all their sessions, as `resetPassword` does. Then it signs this browser in as them, with the
    * session `tokenDigest` names, answering who they are, or null when they sign in themselves, as someone
-   * does who signs in with Memberful while it's members only. Answers "wrong" if the code stopped working
+   * does who signs in with Papaya while it's members only. Answers "wrong" if the code stopped working
    * once it was checked.
    */
   async resetPasswordWithCode(emailAddress: string, codeDigest: string, passwordDigest: string, tokenDigest: string, client: Client): Promise<Me | "wrong" | null> {
@@ -3434,7 +3434,7 @@ export class Workspace extends DurableObject<Env> {
    * `emailAddress`, if it's given, or a new password if `newPassword`: the digest of their password, if
    * they have one and the change is to what they sign in with, which the Worker checks their current
    * password against, counting it against sign-in's limit for `ip`: "limited" past it. "memberful" for
-   * a first password while Memberful signs them in, at `memberfulSite`, the site the deployment has the
+   * a first password while Papaya signs them in, at `memberfulSite`, the site the deployment has the
    * keys to, if any (`signsInWithMemberfulAlone`). Null without a valid session. The passwords
    * themselves stay in the Worker, as at sign-in.
    */
@@ -3461,7 +3461,7 @@ export class Workspace extends DurableObject<Env> {
    * password if it isn't null, answering the profile as it is then: "email address taken" when someone
    * else has the email address, "password needed" when the change is to their email address or password
    * and they have a password whose digest isn't `checked`, the one the Worker checked their current
-   * password against (`profileCheck`), "memberful" for a first password while Memberful signs them in at
+   * password against (`profileCheck`), "memberful" for a first password while Papaya signs them in at
    * `memberfulSite`, as `profileCheck` answers too, or null without a valid session. A blank email address or bio is
    * saved as none, so any number of people can be without one. It writes only what differs. A new
    * password ends their other sessions: their sockets close and are told to reconnect, here at once and
@@ -4022,11 +4022,11 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * Checks the memberships due with the Memberful site's admin API, having queued everyone's if the daily
+   * Checks the memberships due with the Papaya site's admin API, having queued everyone's if the daily
    * catch-up is due, as many as one request asks after, and goes by what it says, as a sign-in goes by
-   * what it reads (`settleMembership`). A check Memberful failed to answer before is asked alone, so that
+   * what it reads (`settleMembership`). A check Papaya failed to answer before is asked alone, so that
    * a member it can't answer for holds up nobody else, and one it fails to answer now is put off, as a
-   * revocation is. Memberships are checked whether Memberful is on or not, since the members who joined
+   * revocation is. Memberships are checked whether Papaya is on or not, since the members who joined
    * with it keep signing in with it, but while the deployment can't ask its admin API, nothing is checked,
    * and whatever was queued is forgotten.
    */
@@ -4044,8 +4044,8 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * Goes by what Memberful said of each membership in `memberships`, by the subject of its account at the
-   * Memberful site `issuer`, as read at `readAt`, as `settleMembership` does, recording all the reads that
+   * Goes by what Papaya said of each membership in `memberships`, by the subject of its account at the
+   * Papaya site `issuer`, as read at `readAt`, as `settleMembership` does, recording all the reads that
    * change nothing at once.
    */
   private async applyMemberships(issuer: string, memberships: Map<string, boolean>, readAt: number): Promise<void> {
@@ -4172,7 +4172,7 @@ export class Workspace extends DurableObject<Env> {
 
   /**
    * Sets the alarm for the outbox's next delivery due, as the Workspace starts, having made the daily
-   * check of memberships due at once if the deployment can ask Memberful's admin API, anyone here is
+   * check of memberships due at once if the deployment can ask Papaya's admin API, anyone here is
    * linked to an account at its site, and none is due, as when it has only just been given the API's
    * key.
    */

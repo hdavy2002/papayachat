@@ -1224,25 +1224,25 @@ describe("Edit your profile", () => {
   });
 });
 
-describe("Connect Memberful", () => {
+describe("Connect Papaya", () => {
   const address = () => `${location.pathname}${location.search}${location.hash}`;
 
-  it("flashes that your Memberful account is connected, once, taking it out of the address", async () => {
+  it("flashes that your Papaya account is connected, once, taking it out of the address", async () => {
     const memberful = { membersOnly: true, connected: { name: "Ada Lovelace", emailAddress: "ada@example.com" } };
     serve({ "GET /api/users/me/profile": () => Response.json({ profile: { name: "Ada", emailAddress: "ada@example.com", bio: null, membershipNeeded: true, memberful } }) });
     const { unmount } = showWorkspace("/users/me/profile?memberful=connected#top");
-    expect(await screen.findByRole("alert")).toHaveTextContent("Your Memberful account is connected.");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Your Papaya account is connected.");
     expect(address()).toBe("/users/me/profile#top");
 
     unmount();
     showWorkspace(address());
-    expect(await screen.findByRole("region", { name: "Memberful" })).toHaveTextContent("Connected to Memberful as Ada Lovelace (ada@example.com), so you sign in with it.");
+    expect(await screen.findByRole("region", { name: "Papaya" })).toHaveTextContent("Connected to Papaya as Ada Lovelace (ada@example.com), so you sign in with it.");
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
   it("flashes what went wrong, on whatever page connecting it was started from", async () => {
     showWorkspace("/rooms/random?memberful=claimed");
-    expect(await screen.findByRole("alert")).toHaveTextContent("That Memberful account is connected to someone else here.");
+    expect(await screen.findByRole("alert")).toHaveTextContent("That Papaya account is connected to someone else here.");
     expect(await roomHeading()).toHaveTextContent("random");
     expect(address()).toBe("/rooms/random");
   });

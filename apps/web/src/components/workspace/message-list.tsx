@@ -291,7 +291,7 @@ export function MessageList({ roomName, direct = false, invitation, onDismissInv
 
   // The card shows in its room while the room is new, and it's the room's welcome, but only to the
   // administrators who haven't dismissed it, who alone are given the invitation, and only while its join
-  // link lets people in: not once an administrator turns it off, or Memberful is members only.
+  // link lets people in: not once an administrator turns it off, or Papaya is members only.
   const linkJoins = joinsWithLink(useAccount());
   const welcomeCard = invitation !== null && state.paged === false && linkJoins;
   // Until the room lets the socket in, which brings its messages afresh. The timeline is busy then, and while it

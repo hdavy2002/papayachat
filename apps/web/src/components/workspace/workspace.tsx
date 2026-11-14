@@ -361,7 +361,7 @@ export function Workspace({ me, workspaceName, onAccountChanged, onSignOut, onSe
   // Why the room ended this tab's huddle, when it does. Whoever's signed in next starts in none.
   useEffect(() => hearHuddleEnd((why) => flash("alert", why)), [flash]);
   useEffect(() => leaveHuddle, []);
-  // What connecting a Memberful account came to, as the address Memberful sent this browser back to says.
+  // What connecting a Papaya account came to, as the address Papaya sent this browser back to says.
   useEffect(() => {
     const message = takeMemberfulFlash();
     if (message) flash(message.kind, message.text);

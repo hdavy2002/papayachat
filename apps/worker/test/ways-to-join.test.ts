@@ -26,7 +26,7 @@ import { api, apiWith, builtPages, cookieOf, createRoom, freshDeploy, openWorksp
 const ada = { name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" };
 const grace = { name: "Grace Hopper", emailAddress: "grace@example.com", password: "compiler" };
 
-/** The keys of a deployment whose members may sign in with Memberful. */
+/** The keys of a deployment whose members may sign in with Papaya. */
 const MEMBERFUL_KEYS = { MEMBERFUL_URL: "https://example.memberful.com/", MEMBERFUL_CLIENT_ID: "ember-client-id", MEMBERFUL_CLIENT_SECRET: "ember-client-secret" };
 /** Turnstile's test keys: a site key whose check always passes, and a secret key, which this suite's fake siteverify takes. */
 const TURNSTILE_KEYS = { TURNSTILE_SITE_KEY: "1x00000000000000000000AA", TURNSTILE_SECRET_KEY: "1x0000000000000000000000000000000AA" };
@@ -213,10 +213,10 @@ describe("Ways to join", () => {
     expect((await bootstrap()).account).toMatchObject({ joinLink, openSignUp });
   });
 
-  describe("with Memberful", () => {
+  describe("with Papaya", () => {
     const membersOnly = { memberfulJoin: true, memberfulSignIn: true };
 
-    it("won't turn Open on while Memberful is members only, or Members only on while Open is", async () => {
+    it("won't turn Open on while Papaya is members only, or Members only on while Open is", async () => {
       const administrator = await setUp();
       await turn(administrator, { openSignUp: true });
       const memberful = await change(administrator, { memberfulSignIn: true }, MEMBERFUL_KEYS);
@@ -236,7 +236,7 @@ describe("Ways to join", () => {
       expect((await bootstrap()).account).toEqual(account(membersOnly));
     });
 
-    it("keeps Memberful on beside Open and the join link, in any order, while it isn't members only", async () => {
+    it("keeps Papaya on beside Open and the join link, in any order, while it isn't members only", async () => {
       const administrator = await setUp();
       await turn(administrator, { openSignUp: true });
       await turn(administrator, { memberfulJoin: true }, MEMBERFUL_KEYS);
@@ -250,7 +250,7 @@ describe("Ways to join", () => {
       expect(await membersOnlyToo.json()).toEqual({ error: OPEN_WITH_MEMBERFUL });
     });
 
-    it("trades one for the other in one change, Memberful staying on as Members only goes off", async () => {
+    it("trades one for the other in one change, Papaya staying on as Members only goes off", async () => {
       const administrator = await setUp();
       await turn(administrator, { openSignUp: true });
       await turn(administrator, { openSignUp: false, memberfulSignIn: true }, MEMBERFUL_KEYS);
@@ -261,7 +261,7 @@ describe("Ways to join", () => {
 
     it.each([
       ["Members only", { memberfulSignIn: false }],
-      ["Memberful", { memberfulJoin: false }],
+      ["Papaya", { memberfulJoin: false }],
     ])("lets everything else change while Open and Members only are both stored on, letting nobody sign up, until %s is turned off", async (_, off) => {
       const administrator = await setUp();
       await storeSettings('{"open_sign_up":true,"memberful_join":true,"memberful_sign_in":true}');
@@ -417,7 +417,7 @@ describe("Sign up without a link", () => {
       workspace.ws.close(1000);
     });
 
-    it("refuses it before it's read while Open is off, or Memberful is members only, sending them to sign in", async () => {
+    it("refuses it before it's read while Open is off, or Papaya is members only, sending them to sign in", async () => {
       const closed = { error: JOINING_PROBLEMS.closed, redirect: "/session/new?joining=closed" };
       for (const settings of [null, "{}", '{"open_sign_up":false}', '{"open_sign_up":true,"memberful_sign_in":true}']) {
         if (settings === "{}") await setUp();

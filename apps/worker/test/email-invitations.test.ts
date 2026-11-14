@@ -27,7 +27,7 @@ const hal = { name: "Hal", password: "heuristically" };
 
 /** A Resend API key, as the deployment's secret holds one. */
 const RESEND_KEY = "re_test_only_not_a_key";
-/** The keys of a deployment whose members may sign in with Memberful. */
+/** The keys of a deployment whose members may sign in with Papaya. */
 const MEMBERFUL_KEYS = { MEMBERFUL_URL: "https://example.memberful.com/", MEMBERFUL_CLIENT_ID: "ember-client-id", MEMBERFUL_CLIENT_SECRET: "ember-client-secret" };
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -47,7 +47,7 @@ async function saveFrom(administrator: Session, emailFrom: string): Promise<void
   expect(response.status, await response.clone().text()).toBe(200);
 }
 
-/** Switches `settings` as `administrator`, as Membership's switches do, on a deployment with Memberful's keys, which has to work. */
+/** Switches `settings` as `administrator`, as Membership's switches do, on a deployment with Papaya's keys, which has to work. */
 async function turn(administrator: Session, settings: Record<string, boolean>): Promise<void> {
   const response = await apiWith(MEMBERFUL_KEYS, "/api/account", { method: "PATCH", headers: as(administrator), body: JSON.stringify({ settings }) });
   expect(response.status, await response.clone().text()).toBe(200);
@@ -510,7 +510,7 @@ describe("Join with an invitation", () => {
       expect(await count("users")).toBe(2);
     });
 
-    it("works whichever ways to join are on, with every one off, or Memberful members only", async () => {
+    it("works whichever ways to join are on, with every one off, or Papaya members only", async () => {
       const administrator = await setUp();
       await turn(administrator, { joinLink: false });
       const { link } = await inviteOne(administrator, "hal@example.com");
@@ -522,7 +522,7 @@ describe("Join with an invitation", () => {
       expect((await joinWith(tokenIn(linus.link), { name: "Linus", password: "a long enough password" })).status).toBe(201);
     });
 
-    it("lets the people who joined with an invitation sign in with their password while Memberful is members only", async () => {
+    it("lets the people who joined with an invitation sign in with their password while Papaya is members only", async () => {
       const administrator = await setUp();
       await joinAsGrace();
       const { link } = await inviteOne(administrator, "hal@example.com");
@@ -535,7 +535,7 @@ describe("Join with an invitation", () => {
       expect(member.status).toBe(403);
       expect(await member.json()).toEqual({ error: MEMBERFUL_SIGN_IN_NEEDED });
 
-      // Their profile offers Memberful as another way to sign in, rather than one they need.
+      // Their profile offers Papaya as another way to sign in, rather than one they need.
       const answer = await apiWith(MEMBERFUL_KEYS, "/api/users/me/profile", { headers: { Cookie: cookieOf(signedIn) } });
       expect(((await answer.json()) as ProfileAnswer).profile).toMatchObject({ membershipNeeded: false, memberful: { membersOnly: true, connected: null } });
     });

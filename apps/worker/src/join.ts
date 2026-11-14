@@ -41,14 +41,14 @@ import type { NewPerson } from "./workspace-store";
 
 // Joining with the workspace's join link, as Campfire's UsersController does (`new` and `create`),
 // except that the form posts to /api/join/<code>. Before first run, there's no join code to match yet,
-// so every link is a 404. An administrator can turn the link off, and while Memberful is members only
+// so every link is a 404. An administrator can turn the link off, and while Papaya is members only
 // (memberful.ts) it's off too: either way it sends people to sign in. Signing up at /join, with no code,
 // is Ember's own: anyone may while an administrator lets them, within its limits, and with Turnstile's
 // check while Ember has a widget's keys. So is joining with an invitation's link, whichever ways to join
 // are on, with the address it was sent to, and with a link someone asks Ember to email an address at the
 // workspace's email domains, while an administrator lets those domains in.
 
-/** What the join form answers while Memberful is members only: why, and where to go instead. */
+/** What the join form answers while Papaya is members only: why, and where to go instead. */
 const MEMBERFUL_INSTEAD = {
   error: MEMBERFUL_SIGN_IN_NEEDED,
   redirect: "/session/new",
@@ -69,7 +69,7 @@ export const joinCodeOf = (pathname: string) => pathname.match(/^\/join\/([^/]+)
 
 /**
  * `GET /join/<code>`: the join page, which is the app's own, for someone signed out with the current
- * code, unless Memberful is members only, or the link is off, when it sends them to sign in.
+ * code, unless Papaya is members only, or the link is off, when it sends them to sign in.
  */
 export async function joinPage(request: Request, env: Env, code: string): Promise<Response> {
   if (request.method !== "GET" && request.method !== "HEAD") return empty(404);
@@ -128,7 +128,7 @@ async function pageForJoining(request: Request, env: Env, turnstile = false): Pr
  * `POST /api/join/<code>`: adds the person the join form describes as a member, in every open room,
  * with the photo it brings, and signs this browser in as them. Someone whose email address is taken
  * goes to sign in with it filled in, and nothing is created. While the link is off, or members sign in
- * with Memberful, it answers 403 before the form is read, and sends them to sign in.
+ * with Papaya, it answers 403 before the form is read, and sends them to sign in.
  */
 export async function join(request: Request, env: Env, code: string): Promise<Response> {
   const [session, link] = await Promise.all([authenticate(request, env), workspace(env).joinLink(code)]);
