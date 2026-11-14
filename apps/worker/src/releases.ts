@@ -2,7 +2,7 @@ import { EMBER_REPOSITORY, isNewer, type CopyOnGitHub, type ReleaseCheck } from 
 import type { Env } from "./env";
 import { isBeta, releaseNameOf, VERSION } from "./version";
 
-// Whether a newer release of Ember is out, which General settings tells administrators, with how to
+// Whether a newer release of Papaya OS is out, which General settings tells administrators, with how to
 // update (docs/self-hosting.md#updating). GitHub's address for a repository's latest release redirects to
 // that release's page, whose address ends in its tag, and that's all this asks of GitHub, rather than
 // asking its API, whose limit of 60 requests an hour for each IP address the many Workers sharing one
@@ -12,21 +12,21 @@ import { isBeta, releaseNameOf, VERSION } from "./version";
 // project's owner asked (2026-11-05, 2026-11-11): once a minute has passed since the isolate last asked,
 // so that going in and out of Admin, or pressing the button again and again, can't keep asking. Each
 // answer says when GitHub named the release it names, which General says it last checked. GitHub's
-// latest release is never a pre-release, as Ember's betas are, so it's Ember's tags that say which beta
+// latest release is never a pre-release, as Papaya OS's betas are, so it's Papaya OS's tags that say which beta
 // is newest, as git lists them, the way `git ls-remote` asks, which GitHub answers apart from its API's
 // limit. General offers a release the newest beta to try, once it's ahead of the newest release, and
 // tells a beta of the next, then of its release (docs/self-hosting.md#betas).
 
-/** Where GitHub sends whoever asks for Ember's latest release. */
+/** Where GitHub sends whoever asks for Papaya OS's latest release. */
 const LATEST_RELEASE = `${EMBER_REPOSITORY}/releases/latest`;
 const GITHUB = new URL(EMBER_REPOSITORY).origin;
 /** What the Worker says it is to GitHub. */
 const USER_AGENT = `Ember/${VERSION} (+${EMBER_REPOSITORY})`;
-/** Where git asks Ember's repository for its tags, as `git ls-remote` does. */
+/** Where git asks Papaya OS's repository for its tags, as `git ls-remote` does. */
 const UPLOAD_PACK = `${EMBER_REPOSITORY}.git/git-upload-pack`;
 /** A line of git's protocol: its length, the four characters that say it among them, in hex, then the line. */
 const pktLine = (line: string) => `${(line.length + 4).toString(16).padStart(4, "0")}${line}`;
-/** Git's request, in version 2 of its protocol, for Ember's tags of releases and betas, as `git ls-remote --tags` makes it. */
+/** Git's request, in version 2 of its protocol, for Papaya OS's tags of releases and betas, as `git ls-remote --tags` makes it. */
 export const LIST_TAGS = `${pktLine("command=ls-refs\n")}0001${pktLine("ref-prefix refs/tags/v\n")}0000`;
 /** What GitHub answers it with, a line for each tag. */
 const TAG_LIST = "application/x-git-upload-pack-result";
@@ -46,7 +46,7 @@ export const AFRESH_AFTER_MS = 60 * 1000;
 const LATEST_PAGE = /^\/[^/]+\/[^/]+\/releases\/latest$/;
 const RELEASE_PAGE = /^\/[^/]+\/[^/]+\/releases\/tag\/v(\d+\.\d+\.\d+(?:-beta\.\d+)?)$/;
 
-/** A release of Ember: its version, such as "0.2.0", and the address of its page on GitHub, which has its notes. */
+/** A release of Papaya OS: its version, such as "0.2.0", and the address of its page on GitHub, which has its notes. */
 interface Release {
   version: string;
   page: string;
@@ -54,7 +54,7 @@ interface Release {
 
 /**
  * The newest release GitHub last named, or null when it named none, when it answered, and until when
- * that's kept, with the newest beta Ember's tags last named, kept through a listing that fails, or null
+ * that's kept, with the newest beta Papaya OS's tags last named, kept through a listing that fails, or null
  * while they've named none.
  */
 let heard: { release: Release | null; at: number; beta: Release | null; until: number } | undefined;
@@ -68,7 +68,7 @@ export function forgetNewestRelease(): void {
 }
 
 /**
- * What General settings says of releases: this Ember's, and the newest on GitHub, with whether it's newer
+ * What General settings says of releases: this Papaya OS's, and the newest on GitHub, with whether it's newer
  * and when GitHub named it, or null when GitHub didn't name one, the newest beta while it's ahead of that
  * release, and the copy this is on GitHub, which it says how to update. GitHub is asked again only once
  * what it said last is no longer kept, or for a check made `afresh` a minute after this isolate last
@@ -82,10 +82,10 @@ export async function releaseCheck(env: Env, afresh = false): Promise<ReleaseChe
     askedAt = Date.now();
     const [[release, at], beta] = await Promise.all([
       newestOnGitHub()
-        .catch((error: unknown) => failed("Asking GitHub for Ember's newest release failed:", error, null))
+        .catch((error: unknown) => failed("Asking GitHub for Papaya OS's newest release failed:", error, null))
         // When GitHub answered, which can be well before it lists the tags.
         .then((release) => [release, Date.now()] as const),
-      newestBetaOnGitHub().catch((error: unknown) => failed("Asking GitHub for Ember's betas failed:", error, undefined)),
+      newestBetaOnGitHub().catch((error: unknown) => failed("Asking GitHub for Papaya OS's betas failed:", error, undefined)),
     ]);
     const kept = heard && Date.now() < heard.until ? heard : undefined;
     if (kept?.release && !release) heard = beta === undefined ? kept : { ...kept, beta };
@@ -103,7 +103,7 @@ export async function releaseCheck(env: Env, afresh = false): Promise<ReleaseChe
   };
 }
 
-/** A release, or a beta, as General names it, with its version, its notes and whether it's newer than this Ember. */
+/** A release, or a beta, as General names it, with its version, its notes and whether it's newer than this Papaya OS. */
 const named = ({ version, page }: Release) => ({ release: releaseNameOf(version), version, notes: page, newer: isNewer(version, VERSION) });
 
 /** That asking GitHub failed, as `what` and `error` say, which is logged, answering `instead`. */
@@ -116,8 +116,8 @@ function failed<T>(what: string, error: unknown, instead: T): T {
 const REPOSITORY = /^[\w-]+\/[\w.-]+$/;
 
 /**
- * The copy of Ember this is on GitHub, as `pnpm run deploy` told the Worker, or null where it didn't,
- * as it doesn't for Ember's own repository, nor for a deploy by any other means.
+ * The copy of Papaya OS this is on GitHub, as `pnpm run deploy` told the Worker, or null where it didn't,
+ * as it doesn't for Papaya OS's own repository, nor for a deploy by any other means.
  */
 function copyOf(env: Env): CopyOnGitHub | null {
   const repository = env.GITHUB_REPOSITORY?.trim() ?? "";
@@ -125,7 +125,7 @@ function copyOf(env: Env): CopyOnGitHub | null {
   return REPOSITORY.test(repository) && branch ? { repository, branch, workflow: env.UPDATE_WORKFLOW === "true", betaWorkflow: env.BETA_WORKFLOW === "true" } : null;
 }
 
-/** Ember's newest release, as GitHub's page for its latest redirects to that release's, or null when it doesn't. */
+/** Papaya OS's newest release, as GitHub's page for its latest redirects to that release's, or null when it doesn't. */
 async function newestOnGitHub(): Promise<Release | null> {
   const signal = AbortSignal.timeout(CHECK_TIMEOUT_MS);
   let address = LATEST_RELEASE;
@@ -147,12 +147,12 @@ async function newestOnGitHub(): Promise<Release | null> {
 
 /** That GitHub didn't name a release, as `why` says, which is logged. */
 function noRelease(why: string): null {
-  console.warn(`GitHub didn't name Ember's newest release: ${why}`);
+  console.warn(`GitHub didn't name Papaya OS's newest release: ${why}`);
   return null;
 }
 
 /**
- * Ember's newest beta, as git lists its tags, or null when it has none, or undefined when GitHub didn't
+ * Papaya OS's newest beta, as git lists its tags, or null when it has none, or undefined when GitHub didn't
  * say. Its notes are its release's page, as the Release workflow publishes a release for each tag.
  */
 async function newestBetaOnGitHub(): Promise<Release | null | undefined> {
@@ -173,8 +173,8 @@ async function newestBetaOnGitHub(): Promise<Release | null | undefined> {
   return newest === undefined ? null : { version: newest, page: `${EMBER_REPOSITORY}/releases/tag/v${newest}` };
 }
 
-/** That GitHub didn't list Ember's tags, as `why` says, which is logged. */
+/** That GitHub didn't list Papaya OS's tags, as `why` says, which is logged. */
 function noBetas(why: string): undefined {
-  console.warn(`GitHub didn't list Ember's betas: ${why}`);
+  console.warn(`GitHub didn't list Papaya OS's betas: ${why}`);
   return undefined;
 }

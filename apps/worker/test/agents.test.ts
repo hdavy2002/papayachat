@@ -144,18 +144,18 @@ afterEach(() => vi.restoreAllMocks());
 
 const as = (session?: Session | null): Record<string, string> => (session ? { Cookie: session.cookie } : {});
 
-/** Turns Ember AI on as `administrator`, or sets it up again, through `apiToken`, with Claude Sonnet answering everyone. */
+/** Turns Papaya AI on as `administrator`, or sets it up again, through `apiToken`, with Claude Sonnet answering everyone. */
 async function turnOn(administrator: Session, apiToken = API_TOKEN): Promise<void> {
   const response = await api("/api/account/assistant", { method: "PUT", headers: as(administrator), body: JSON.stringify({ accountId: ACCOUNT_ID, apiToken, model: SONNET }) });
   expect(response.status, await response.clone().text()).toBe(200);
 }
 
-/** Turns Ember AI off as `administrator`, as its card's switch does. */
+/** Turns Papaya AI off as `administrator`, as its card's switch does. */
 async function turnOff(administrator: Session): Promise<void> {
   expect((await api("/api/account/assistant", { method: "DELETE", headers: as(administrator) })).status).toBe(200);
 }
 
-/** Sets Ember up with Ada as its administrator, signed in, and Ember AI on, forgetting what turning it on asked. */
+/** Sets Ember up with Ada as its administrator, signed in, and Papaya AI on, forgetting what turning it on asked. */
 async function setUp(): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(ada) });
   expect(response.status).toBe(201);
@@ -306,7 +306,7 @@ describe("AI agents", () => {
       expect(await shownAgent(administrator, recap.id)).toEqual(recap);
     });
 
-    it("say Ember AI is off while it's off", async () => {
+    it("say Papaya AI is off while it's off", async () => {
       const administrator = await setUp();
       const recap = await made(administrator);
       await turnOff(administrator);
@@ -340,7 +340,7 @@ describe("AI agents", () => {
         expect(missing.status, id).toBe(404);
         expect(await missing.text()).toBe(notFoundPage);
       }
-      // The app sends a member to workspace settings, anyone signed out to sign in, and anyone while Ember AI is off to the AI assistant tab.
+      // The app sends a member to workspace settings, anyone signed out to sign in, and anyone while Papaya AI is off to the AI assistant tab.
       for (const viewer of [member, null]) expect(await (await page(viewer, "/account/agents/nobody/edit")).text()).toBe("page /");
       await turnOff(administrator);
       expect(await (await page(administrator, "/account/agents/nobody/edit")).text()).toBe("page /");
@@ -388,7 +388,7 @@ describe("AI agents", () => {
         changedAt: expect.any(String) as string,
       } satisfies AgentSettings);
 
-      // Its model answered as it, through Ember AI's account and API token, at the gateway's Anthropic endpoint, and then again at each level of thinking.
+      // Its model answered as it, through Papaya AI's account and API token, at the gateway's Anthropic endpoint, and then again at each level of thinking.
       expect(asked).toHaveLength(5);
       for (const sent of asked) expect(sent).toMatchObject({ url: ANTHROPIC_ENDPOINT, authorization: null, aigAuthorization: `Bearer ${API_TOKEN}`, body: { model: "claude-haiku-5-5" } });
       expect(asked.map(thinks)).toEqual([false, true, true, true, true]);
@@ -531,7 +531,7 @@ describe("AI agents", () => {
       expect(await listed(administrator)).toHaveLength(MAX_AGENTS);
     });
 
-    it("saves nothing once Ember AI was set up again with another API token while the model answered", async () => {
+    it("saves nothing once Papaya AI was set up again with another API token while the model answered", async () => {
       const administrator = await setUp();
       answer = async (question) => {
         answer = answering;
@@ -542,7 +542,7 @@ describe("AI agents", () => {
       expect(await listed(administrator)).toEqual([]);
     });
 
-    it("saves nothing once Ember AI was turned off while the model answered", async () => {
+    it("saves nothing once Papaya AI was turned off while the model answered", async () => {
       const administrator = await setUp();
       answer = async (question) => {
         await turnOff(administrator);
@@ -780,7 +780,7 @@ describe("AI agents", () => {
     });
   });
 
-  describe("with Ember AI", () => {
+  describe("with Papaya AI", () => {
     it("go when it's turned off, and come back as they were when it's on again, in the open rooms there are then", async () => {
       const administrator = await setUp();
       const [support, launch] = [await createRoom("Support", { as: administrator }), await createRoom("Launch", { as: administrator })];
@@ -815,7 +815,7 @@ describe("AI agents", () => {
   });
 
   describe("names", () => {
-    it("are kept from people and bots, whether Ember AI is on or off", async () => {
+    it("are kept from people and bots, whether Papaya AI is on or off", async () => {
       const administrator = await setUp();
       await made(administrator);
       const member = await joinAsGrace();
@@ -939,7 +939,7 @@ describe("AI agents", () => {
 });
 
 describe("@ember's instructions", () => {
-  it("are what administrators add to its own, kept while Ember AI is off", async () => {
+  it("are what administrators add to its own, kept while Papaya AI is off", async () => {
     const administrator = await setUp();
     const changed = await api("/api/account/assistant", { method: "PATCH", headers: as(administrator), body: JSON.stringify({ instructions: " Answer in British English. \n" }) });
     expect(changed.status, await changed.clone().text()).toBe(200);
@@ -955,7 +955,7 @@ describe("@ember's instructions", () => {
     expect(await refusalOf(theirs)).toEqual([403, { error: ASSISTANT_FORBIDDEN }]);
   });
 
-  it("go where what Ember adds around them, which administrators can change, puts them, kept while Ember AI is off, until Ember's own is put back", async () => {
+  it("go where what Ember adds around them, which administrators can change, puts them, kept while Papaya AI is off, until Ember's own is put back", async () => {
     const administrator = await setUp();
     const change = (promptTemplate: unknown, session = administrator) =>
       api("/api/account/assistant", { method: "PATCH", headers: as(session), body: JSON.stringify({ promptTemplate }) });

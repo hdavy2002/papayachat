@@ -7,7 +7,7 @@ import { api, apiWith, cookieOf, freshDeploy, shown, signIn, type Session } from
 
 const ada = { name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" };
 
-/** Sets Ember up with Ada as its administrator, signed in. */
+/** Sets Papaya OS up with Ada as its administrator, signed in. */
 async function setUp(): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(ada) });
   expect(response.status).toBe(201);
@@ -16,7 +16,7 @@ async function setUp(): Promise<Session> {
 
 const as = (session?: Session | null): Record<string, string> => (session ? { Cookie: session.cookie } : {});
 
-/** Asks, as `session`, for the release this Ember is and the newest, as General settings does. */
+/** Asks, as `session`, for the release this Papaya OS is and the newest, as General settings does. */
 const checkRelease = (session: Session | null) => api("/api/account/release", { headers: as(session) });
 /** And afresh, as opening Admin does. */
 const checkReleaseAfresh = (session: Session | null) => api("/api/account/release_checks", { method: "POST", headers: as(session) });
@@ -29,11 +29,11 @@ async function releaseCheckFor(session: Session, check = checkRelease): Promise<
   return response.json();
 }
 
-/** Where GitHub sends whoever asks for Ember's latest release. */
+/** Where GitHub sends whoever asks for Papaya OS's latest release. */
 const LATEST = `${EMBER_REPOSITORY}/releases/latest`;
-/** The page of Ember's release `version`, as GitHub names it. */
+/** The page of Papaya OS's release `version`, as GitHub names it. */
 const pageOf = (version: string) => `${EMBER_REPOSITORY}/releases/tag/v${version}`;
-/** A version after this Ember's, and one before every release. */
+/** A version after this Papaya OS's, and one before every release. */
 const NEXT = `${Number(VERSION.split(".")[0]) + 1}.0.0`;
 const FIRST = "0.0.1";
 
@@ -47,28 +47,28 @@ interface Asked {
   userAgent: string | null;
 }
 
-/** Where git asks Ember's repository for its tags. */
+/** Where git asks Papaya OS's repository for its tags. */
 const UPLOAD_PACK = `${EMBER_REPOSITORY}.git/git-upload-pack`;
 
-/** What GitHub answers git's request for Ember's tags: one for each of `versions`, in git's protocol. */
+/** What GitHub answers git's request for Papaya OS's tags: one for each of `versions`, in git's protocol. */
 function tagsOf(...versions: string[]): Response {
   const line = (text: string) => `${(text.length + 4).toString(16).padStart(4, "0")}${text}`;
   const lines = versions.map((version, at) => line(`${String(at).padStart(40, "0")} refs/tags/v${version}\n`));
   return new Response(`${lines.join("")}0000`, { headers: { "Content-Type": "application/x-git-upload-pack-result" } });
 }
 
-/** A request for Ember's tags the fake GitHub was sent, read as it came, since its body can't be read after. */
+/** A request for Papaya OS's tags the fake GitHub was sent, read as it came, since its body can't be read after. */
 interface AskedForTags {
   method: string;
   headers: Record<string, string>;
   body: string;
 }
 
-/** The requests for Ember's tags the fake GitHub was sent, apart from those for its latest release. */
+/** The requests for Papaya OS's tags the fake GitHub was sent, apart from those for its latest release. */
 let askedForTags: AskedForTags[] = [];
 
 /**
- * Stands in for GitHub, answering each request for Ember's latest release as `answer` does, by its
+ * Stands in for GitHub, answering each request for Papaya OS's latest release as `answer` does, by its
  * address, and keeping what it's asked, and each for its tags as `tags` does, which lists none unless given.
  */
 function fakeGitHub(answer: (url: string) => Response | Promise<Response>, tags: () => Response | Promise<Response> = () => tagsOf()) {
@@ -85,7 +85,7 @@ function fakeGitHub(answer: (url: string) => Response | Promise<Response>, tags:
   return asked;
 }
 
-/** Stands in for GitHub with `version` as Ember's latest release. */
+/** Stands in for GitHub with `version` as Papaya OS's latest release. */
 const latestIs = (version: string) => fakeGitHub(() => redirectTo(pageOf(version)));
 
 beforeEach(async () => {
@@ -115,7 +115,7 @@ describe("Checking for a newer release", () => {
     expect(asked).toEqual([{ url: LATEST, redirect: "manual", userAgent: `Ember/${VERSION} (+${EMBER_REPOSITORY})` }]);
   });
 
-  it("says this one is the newest when GitHub's is the same, or older, as when Ember is ahead of its last release", async () => {
+  it("says this one is the newest when GitHub's is the same, or older, as when Papaya OS is ahead of its last release", async () => {
     const administrator = await setUp();
     for (const [version, name] of [
       [VERSION, releaseNameOf(VERSION)],
@@ -151,17 +151,17 @@ describe("Checking for a newer release", () => {
     expect(["0.5.0-beta.1", "0.5.0", "0.5.0-rc.1"].map(isBeta)).toEqual([true, false, false]);
   });
 
-  // GitHub never takes a pre-release for the latest, but this Ember is on a release only while its version is one.
-  it.skipIf(isBeta(VERSION))("tells an Ember on a release nothing of a beta, should GitHub name one its latest", async () => {
+  // GitHub never takes a pre-release for the latest, but this Papaya OS is on a release only while its version is one.
+  it.skipIf(isBeta(VERSION))("tells an Papaya OS on a release nothing of a beta, should GitHub name one its latest", async () => {
     const administrator = await setUp();
     const logged = vi.spyOn(console, "warn").mockImplementation(() => {});
     const beta = `${Number(VERSION.split(".")[0]) + 1}.0.0-beta.1`;
     latestIs(beta);
     expect(await releaseCheckFor(administrator)).toEqual({ release: releaseNameOf(VERSION), beta: false, newest: null, checkedAt: null, newestBeta: null, copy: null });
-    expect(logged.mock.calls).toEqual([[`GitHub didn't name Ember's newest release: GitHub's latest release is a beta, ${pageOf(beta)}`]]);
+    expect(logged.mock.calls).toEqual([[`GitHub didn't name Papaya OS's newest release: GitHub's latest release is a beta, ${pageOf(beta)}`]]);
   });
 
-  it("follows Ember's repository to where it's moved, as GitHub redirects there first", async () => {
+  it("follows Papaya OS's repository to where it's moved, as GitHub redirects there first", async () => {
     const administrator = await setUp();
     const moved = "https://github.com/someone-else/ember";
     const asked = fakeGitHub((url) => (url === LATEST ? redirectTo(`${moved}/releases/latest`, 301) : redirectTo(`${moved}/releases/tag/v${NEXT}`)));
@@ -189,14 +189,14 @@ describe("Checking for a newer release", () => {
       expect(await releaseCheckFor(administrator)).toEqual({ release: releaseNameOf(VERSION), beta: isBeta(VERSION), newest: null, checkedAt: null, newestBeta: null, copy: null });
     }
     expect(logged.mock.calls).toEqual([
-      ["GitHub didn't name Ember's newest release: GitHub answered 200"],
-      ["GitHub didn't name Ember's newest release: GitHub answered 404"],
-      ["GitHub didn't name Ember's newest release: GitHub answered 429"],
-      ["GitHub didn't name Ember's newest release: GitHub redirected to https://github.com/login?return_to=%2Freleases"],
-      ["GitHub didn't name Ember's newest release: GitHub redirected to https://example.com/releases/tag/v99.0.0"],
-      [`GitHub didn't name Ember's newest release: GitHub redirected to ${EMBER_REPOSITORY}/releases/tag/v1.2`],
-      ["GitHub didn't name Ember's newest release: GitHub redirected more than 3 times"],
-      ["Asking GitHub for Ember's newest release failed:", "The operation was aborted due to timeout"],
+      ["GitHub didn't name Papaya OS's newest release: GitHub answered 200"],
+      ["GitHub didn't name Papaya OS's newest release: GitHub answered 404"],
+      ["GitHub didn't name Papaya OS's newest release: GitHub answered 429"],
+      ["GitHub didn't name Papaya OS's newest release: GitHub redirected to https://github.com/login?return_to=%2Freleases"],
+      ["GitHub didn't name Papaya OS's newest release: GitHub redirected to https://example.com/releases/tag/v99.0.0"],
+      [`GitHub didn't name Papaya OS's newest release: GitHub redirected to ${EMBER_REPOSITORY}/releases/tag/v1.2`],
+      ["GitHub didn't name Papaya OS's newest release: GitHub redirected more than 3 times"],
+      ["Asking GitHub for Papaya OS's newest release failed:", "The operation was aborted due to timeout"],
     ]);
   });
 
@@ -226,7 +226,7 @@ describe("Checking for a newer release", () => {
     vi.setSystemTime(start + NO_ANSWER_KEPT_MS + ANSWER_KEPT_MS);
     expect((await releaseCheckFor(administrator)).newest).toEqual({ release: releaseNameOf(VERSION), version: VERSION, notes: pageOf(VERSION), newer: false });
     expect(asked).toHaveLength(3);
-    // Ember's tags, for its newest beta, each time with the release.
+    // Papaya OS's tags, for its newest beta, each time with the release.
     expect(askedForTags).toHaveLength(3);
   });
 
@@ -326,7 +326,7 @@ describe("Checking afresh, as opening Admin does", () => {
     answer = () => new Response("Unavailable", { status: 503 });
     vi.setSystemTime(start + AFRESH_AFTER_MS);
     expect((await releaseCheckFor(administrator, checkReleaseAfresh)).newest).toEqual(next);
-    expect(logged.mock.calls).toEqual([["GitHub didn't name Ember's newest release: GitHub answered 503"]]);
+    expect(logged.mock.calls).toEqual([["GitHub didn't name Papaya OS's newest release: GitHub answered 503"]]);
     vi.setSystemTime(start + 2 * AFRESH_AFTER_MS - 1);
     expect((await releaseCheckFor(administrator, checkReleaseAfresh)).newest).toEqual(next);
     expect((await releaseCheckFor(administrator)).newest).toEqual(next);
@@ -378,9 +378,9 @@ describe("Checking afresh, as opening Admin does", () => {
   });
 });
 
-describe("Ember's newest beta", () => {
+describe("Papaya OS's newest beta", () => {
   const major = Number(VERSION.split(".")[0]);
-  /** A beta of the release after this Ember's, which comes before it, and the betas of the release after that. */
+  /** A beta of the release after this Papaya OS's, which comes before it, and the betas of the release after that. */
   const NEXTS_BETA = `${major + 1}.0.0-beta.3`;
   const betaAfter = (beta: number) => `${major + 2}.0.0-beta.${beta}`;
   /** What the check says of `version`, as General names it, with its notes. */
@@ -411,7 +411,7 @@ describe("Ember's newest beta", () => {
     expect(LIST_TAGS).toBe(askedForTags[0]!.body);
   });
 
-  it("names none while the newest beta is behind the newest release, or Ember has no beta", async () => {
+  it("names none while the newest beta is behind the newest release, or Papaya OS has no beta", async () => {
     const administrator = await setUp();
     for (const tags of [[FIRST, NEXTS_BETA, NEXT], [FIRST, NEXT], []]) {
       forgetNewestRelease();
@@ -422,7 +422,7 @@ describe("Ember's newest beta", () => {
     }
   });
 
-  it("says whether the beta is newer than this Ember", async () => {
+  it("says whether the beta is newer than this Papaya OS", async () => {
     const administrator = await setUp();
     const older = "0.0.2-beta.1";
     fakeGitHub(() => redirectTo(pageOf(FIRST)), () => tagsOf(FIRST, older));
@@ -436,7 +436,7 @@ describe("Ember's newest beta", () => {
     expect(await releaseCheckFor(administrator)).toMatchObject({ newest: null, newestBeta: null });
   });
 
-  it("says nothing of a beta when GitHub doesn't list Ember's tags, which it logs, though it names the release", async () => {
+  it("says nothing of a beta when GitHub doesn't list Papaya OS's tags, which it logs, though it names the release", async () => {
     const administrator = await setUp();
     const logged = vi.spyOn(console, "warn").mockImplementation(() => {});
     const failures: Array<() => Response | Promise<Response>> = [
@@ -452,10 +452,10 @@ describe("Ember's newest beta", () => {
       expect(await releaseCheckFor(administrator)).toMatchObject({ newest: namedAs(NEXT, true), newestBeta: null });
     }
     expect(logged.mock.calls).toEqual([
-      ["GitHub didn't list Ember's betas: GitHub answered 503"],
-      ["GitHub didn't list Ember's betas: GitHub answered text/html; charset=utf-8"],
-      ["GitHub didn't list Ember's betas: GitHub answered without a Content-Type"],
-      ["Asking GitHub for Ember's betas failed:", "The operation was aborted due to timeout"],
+      ["GitHub didn't list Papaya OS's betas: GitHub answered 503"],
+      ["GitHub didn't list Papaya OS's betas: GitHub answered text/html; charset=utf-8"],
+      ["GitHub didn't list Papaya OS's betas: GitHub answered without a Content-Type"],
+      ["Asking GitHub for Papaya OS's betas failed:", "The operation was aborted due to timeout"],
     ]);
   });
 
@@ -496,7 +496,7 @@ describe("Ember's newest beta", () => {
   });
 });
 
-describe("The copy of Ember on GitHub", () => {
+describe("The copy of Papaya OS on GitHub", () => {
   /** What the release check says of the copy, asked as `path` asks, of a Worker deployed with `vars`. */
   async function copyWith(session: Session, vars: Partial<Env>, path = "/api/account/release") {
     const response = await apiWith(vars, path, { method: path.endsWith("checks") ? "POST" : "GET", headers: as(session) });
@@ -504,7 +504,7 @@ describe("The copy of Ember on GitHub", () => {
     return ((await response.json()) as ReleaseCheck).copy;
   }
 
-  it("names the copy the deploy told the Worker of, with the branch that deploys and whether it has the Update Ember workflow and the beta workflow", async () => {
+  it("names the copy the deploy told the Worker of, with the branch that deploys and whether it has the Update Papaya OS workflow and the beta workflow", async () => {
     const administrator = await setUp();
     latestIs(NEXT);
     for (const path of ["/api/account/release", "/api/account/release_checks"]) {

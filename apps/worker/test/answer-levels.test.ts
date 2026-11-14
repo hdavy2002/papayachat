@@ -16,11 +16,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { api, cookieOf, freshDeploy, shown, WITH_THE_FLAME, workspaceSql, type Session } from "./support";
 
 // How much @ember thinks and how long it answers: the most of each, which administrators set on the
-// Ember AI card for anyone's questions, and each person's own levels, which they pick on their profile.
+// Papaya AI card for anyone's questions, and each person's own levels, which they pick on their profile.
 
 const SETUP = { accountId: "0123456789abcdef0123456789abcdef", apiToken: "an-api-token-with-ai-gateway-run_0123456", model: "anthropic/claude-haiku-5.5" };
 
-/** The models people can pick once Ember AI is on: its own, alone, which took its test question at each level of thinking. */
+/** The models people can pick once Papaya AI is on: its own, alone, which took its test question at each level of thinking. */
 const MODELS: AssistantModel[] = [{ id: SETUP.model, name: "Claude Haiku 5.5", format: "anthropic", thinkingLevels: [...THINKING_LEVELS] }];
 
 /** @ember's answers to someone at `levels`, under `most`, as their profile shows them, who leaves their model to administrators. */
@@ -28,7 +28,7 @@ const yours = (levels: AnswerLevels, most: AnswerLevels): YourAssistant => ({ le
 
 const as = (session?: Session | null): Record<string, string> => (session ? { Cookie: session.cookie } : {});
 
-/** Sets Ember up with Ada as its administrator, signed in. */
+/** Sets Papaya OS up with Ada as its administrator, signed in. */
 async function setUp(): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify({ name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" }) });
   expect(response.status).toBe(201);
@@ -43,7 +43,7 @@ async function joinAsGrace(): Promise<Session> {
   return { user: shown(((await response.json()) as { user: Me }).user), cookie: cookieOf(response) };
 }
 
-/** Turns Ember AI on as `administrator`, its model saying hello to the test question. */
+/** Turns Papaya AI on as `administrator`, its model saying hello to the test question. */
 async function turnOn(administrator: Session): Promise<void> {
   const fetch = vi.spyOn(globalThis, "fetch").mockImplementation(async () =>
     Response.json({ type: "message", role: "assistant", content: [{ type: "text", text: "Hello, team!" }], stop_reason: "end_turn" }),
@@ -53,21 +53,21 @@ async function turnOn(administrator: Session): Promise<void> {
   fetch.mockRestore();
 }
 
-/** Turns Ember AI off as `administrator`. */
+/** Turns Papaya AI off as `administrator`. */
 async function turnOff(administrator: Session): Promise<void> {
   expect((await api("/api/account/assistant", { method: "DELETE", headers: as(administrator) })).status).toBe(200);
 }
 
-/** Changes the most @ember thinks and writes for anyone, as `session`, as the Ember AI card's dials do. */
+/** Changes the most @ember thinks and writes for anyone, as `session`, as the Papaya AI card's dials do. */
 const limit = (session: Session | null, changes: unknown) => api("/api/account/assistant", { method: "PATCH", headers: as(session), body: JSON.stringify(changes) });
 
 /** Changes how much @ember thinks and how long it answers `session`, as their profile's dials do. */
 const pick = (session: Session | null, changes: unknown) => api("/api/users/me/assistant", { method: "PATCH", headers: as(session), body: JSON.stringify(changes) });
 
-/** The most as the AI assistant tab shows it to `administrator`, or undefined while Ember AI is off. */
+/** The most as the AI assistant tab shows it to `administrator`, or undefined while Papaya AI is off. */
 const mostShown = async (administrator: Session) => ((await (await api("/api/account", { headers: as(administrator) })).json()) as WorkspaceSettings).assistant?.most;
 
-/** `person`'s levels as their profile shows them, or null while Ember AI is off. */
+/** `person`'s levels as their profile shows them, or null while Papaya AI is off. */
 const levelsShown = async (person: Session) => ((await (await api("/api/users/me/profile", { headers: as(person) })).json()) as ProfileAnswer).profile.assistant;
 
 /** What a refusal says. */
@@ -77,7 +77,7 @@ beforeEach(freshDeploy);
 afterEach(() => vi.restoreAllMocks());
 
 describe("The most @ember thinks and writes", () => {
-  it("is the top of each dial until an administrator sets less, which saves at once and shows with Ember AI", async () => {
+  it("is the top of each dial until an administrator sets less, which saves at once and shows with Papaya AI", async () => {
     const ada = await setUp();
     await turnOn(ada);
     expect(await mostShown(ada)).toEqual(TOP_LEVELS);
@@ -93,7 +93,7 @@ describe("The most @ember thinks and writes", () => {
     expect((JSON.parse(settings) as Record<string, unknown>).assistant_limits).toEqual({ thinking: "medium", length: "short" });
   });
 
-  it("stays as it was set when Ember AI is turned off and on again", async () => {
+  it("stays as it was set when Papaya AI is turned off and on again", async () => {
     const ada = await setUp();
     await turnOn(ada);
     await limit(ada, { thinking: "off", length: "short" });
@@ -102,7 +102,7 @@ describe("The most @ember thinks and writes", () => {
     expect(await mostShown(ada)).toEqual({ thinking: "off", length: "short" });
   });
 
-  it("is the administrators' to change, to a level a dial has, while Ember AI is on", async () => {
+  it("is the administrators' to change, to a level a dial has, while Papaya AI is on", async () => {
     const ada = await setUp();
     const grace = await joinAsGrace();
     expect((await limit(null, { thinking: "low" })).status).toBe(401);
@@ -118,7 +118,7 @@ describe("The most @ember thinks and writes", () => {
 });
 
 describe("Your levels", () => {
-  it("start at Low thinking and a Medium answer, as your profile shows them with the most allowed, while Ember AI is on", async () => {
+  it("start at Low thinking and a Medium answer, as your profile shows them with the most allowed, while Papaya AI is on", async () => {
     const ada = await setUp();
     expect(await levelsShown(ada)).toBeNull();
     await turnOn(ada);
@@ -145,7 +145,7 @@ describe("Your levels", () => {
     expect(await levelsShown(grace)).toEqual(yours(TOP_LEVELS, TOP_LEVELS));
   });
 
-  it("take a level a dial has, from someone signed in, and none show while Ember AI is off", async () => {
+  it("take a level a dial has, from someone signed in, and none show while Papaya AI is off", async () => {
     const ada = await setUp();
     expect((await pick(null, { thinking: "low" })).status).toBe(401);
     for (const changes of [{}, { thinking: "most" }, { length: "longest" }, "low"]) {

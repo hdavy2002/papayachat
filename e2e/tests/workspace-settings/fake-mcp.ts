@@ -2,9 +2,9 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import type { AddressInfo } from "node:net";
 
 // A stand-in for an app's MCP server, which the apps spec connects: it speaks the Model Context Protocol
-// over Streamable HTTP as far as Ember asks it (apps/worker/src/apps/mcp.ts), answering `initialize`
+// over Streamable HTTP as far as Papaya OS asks it (apps/worker/src/apps/mcp.ts), answering `initialize`
 // with what it calls itself, taking the notification that follows, and listing its tools, to whoever
-// sends its token. It serves on this machine, where Ember asks an app over http.
+// sends its token. It serves on this machine, where Papaya OS asks an app over http.
 
 /** What the server calls itself. */
 export const SERVER_NAME = "Tracker";

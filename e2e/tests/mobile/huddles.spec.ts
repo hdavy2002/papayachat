@@ -94,7 +94,7 @@ test("the preview of a huddle going on, for someone with no microphone to use, f
   await header(page).getByRole("button", { name: "Join huddle, 3 in it" }).tap();
   const preview = page.getByRole("dialog", { name: `Join the huddle in ${room.name}` });
   await expect(preview).toContainText("Ada, Grace, and Linus are in it now.");
-  await expect(preview.getByRole("status")).toContainText("Ember has no microphone to use, so you'll only listen.");
+  await expect(preview.getByRole("status")).toContainText("Papaya OS has no microphone to use, so you'll only listen.");
   await expect(preview.getByRole("button", { name: "Join Huddle" })).toBeEnabled();
   await screenIsFine();
 });

@@ -11,8 +11,8 @@ import {
 import { FIELD_INPUT, Field } from "@/components/field";
 import { cn } from "@/lib/utils";
 
-// The menu of the models @ember can answer with, which Set up Ember AI, Add a model and the agents' pages
-// share: the ones Ember offers, as the Worker lists them, by their makers, then Workers AI's, with what
+// The menu of the models @ember can answer with, which Set up Papaya AI, Add a model and the agents' pages
+// share: the ones Papaya OS offers, as the Worker lists them, by their makers, then Workers AI's, with what
 // they cost, and the one kept already, when it isn't listed. Under it, what the model chosen costs, and
 // where that's paid for, and why Workers AI's models aren't listed, when they aren't.
 
@@ -32,10 +32,10 @@ const aiGatewayDashboard = (accountId: string | null) => dashboard(accountId, "a
 /** Where Workers AI's use of the account's Neurons shows, in the Cloudflare dashboard. */
 const workersAiDashboard = (accountId: string | null) => dashboard(accountId, "ai/workers-ai");
 
-/** What a model kept before Ember stopped offering it is called beside its name. */
+/** What a model kept before Papaya OS stopped offering it is called beside its name. */
 export const NO_LONGER_OFFERED = "no longer offered";
 
-/** Who makes the models Ember offers, by the start of their IDs, as the menu groups them, before Workers AI's, which Cloudflare runs. */
+/** Who makes the models Papaya OS offers, by the start of their IDs, as the menu groups them, before Workers AI's, which Cloudflare runs. */
 const MAKERS = [
   { prefix: "anthropic/", label: "Anthropic" },
   { prefix: "openai/", label: "OpenAI" },
@@ -45,8 +45,8 @@ const MAKERS = [
 /** Who makes `model`, by the start of its ID, or null for a model Cloudflare runs on Workers AI. */
 const makerOf = (model: string) => MAKERS.find(({ prefix }) => model.startsWith(prefix))?.label ?? null;
 
-/** What the menu says while the Worker lists the models Ember offers. */
-export const LISTING_MODELS = "Listing the models Ember offers…";
+/** What the menu says while the Worker lists the models Papaya OS offers. */
+export const LISTING_MODELS = "Listing the models Papaya OS offers…";
 
 /** Why a field is refused, said on it, or else, with no field, under the step's. */
 export interface Refusal {
@@ -54,7 +54,7 @@ export interface Refusal {
   error: string;
 }
 
-/** What the menu starts at: `model`, Ember AI's or an agent's, while Ember offers it, as `offered` lists them, or else the model Ember suggests. */
+/** What the menu starts at: `model`, Papaya AI's or an agent's, while Papaya OS offers it, as `offered` lists them, or else the model Papaya OS suggests. */
 export const startingModelOf = (model: string | null, offered: OfferedModels) => (model !== null && offeredModelOf(model, offered.models) ? model : offered.suggested);
 
 /** `amount` in US dollars, with cents, or fractions of a cent, when it has them. */
@@ -87,9 +87,9 @@ export function FieldRefusal({ id, field, refusal }: { id: string; field: Assist
 }
 
 interface Props {
-  /** The models to list, of those Ember offers, or null while the Worker lists them. */
+  /** The models to list, of those Papaya OS offers, or null while the Worker lists them. */
   models: readonly OfferedModel[] | null;
-  /** The model kept already, when it isn't listed, as Ember no longer offers it, or it's one of Workers AI's, which weren't listed, which the menu lists after the others. */
+  /** The model kept already, when it isn't listed, as Papaya OS no longer offers it, or it's one of Workers AI's, which weren't listed, which the menu lists after the others. */
   kept?: Pick<AssistantModel, "id" | "name"> | null;
   chosen: string;
   onChoose: (model: string) => void;
@@ -102,7 +102,7 @@ interface Props {
 }
 
 /**
- * The menu of `models`, by their makers, then Workers AI's, and of the one `kept`, if Ember no longer
+ * The menu of `models`, by their makers, then Workers AI's, and of the one `kept`, if Papaya OS no longer
  * offers it, and under it what the one chosen costs, or that they're being listed, and why Workers AI's
  * aren't, when they aren't.
  */
@@ -154,15 +154,15 @@ export function ModelPicker({ models, kept = null, chosen, onChoose, refusal, di
 /**
  * What `Cost` says `model` costs from: the model as `models` lists it, or else, for one of Workers AI's
  * while those couldn't be listed, `workersAi` saying why, its format alone, as its price isn't known, or
- * null, as Ember no longer offers it.
+ * null, as Papaya OS no longer offers it.
  */
 function costOf(model: string, models: readonly OfferedModel[], workersAi: string | null): Pick<OfferedModel, "id" | "format" | "price" | "until"> | null {
   return offeredModelOf(model, models) ?? (noLongerOffered(model, models, workersAi) ? null : { id: model, format: "workers" });
 }
 
-/** What `model` costs, and where that's paid for, or that Ember no longer offers it, for null. */
+/** What `model` costs, and where that's paid for, or that Papaya OS no longer offers it, for null. */
 function Cost({ model, accountId }: { model: Pick<OfferedModel, "id" | "format" | "price" | "until"> | null; accountId: string | null }) {
-  if (!model) return "Ember no longer offers this model. It answers as it did until you choose one that Ember offers.";
+  if (!model) return "Papaya OS no longer offers this model. It answers as it did until you choose one that Papaya OS offers.";
   const { id, format, price, until } = model;
   // Cloudflare runs Workers AI's models itself, and the others' makers run theirs.
   const stops = until && ` ${makerOf(id) ?? "Cloudflare"} plans to stop running it on ${dayOf(until)}.`;

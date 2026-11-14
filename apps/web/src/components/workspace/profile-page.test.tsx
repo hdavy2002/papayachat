@@ -36,7 +36,7 @@ const ada = { id: "u1", name: "Ada Lovelace", administrator: false };
 /** Ada's avatar as the profile loads it: her initials, until she uploads one. */
 const INITIALS = "/users/t0k3n/avatar?v=1";
 const profile: Profile = { name: "Ada Lovelace", emailAddress: "ada@example.com", bio: "Wrote the first program", avatarUrl: INITIALS, avatar: false, password: true, membershipNeeded: true, memberful: null, assistant: null };
-/** Ada's levels of @ember's dials while Ember AI is on: where they start, up to Medium thinking, with the one model people can pick, which she leaves to administrators. */
+/** Ada's levels of @ember's dials while Papaya AI is on: where they start, up to Medium thinking, with the one model people can pick, which she leaves to administrators. */
 const LEVELS: YourAssistant = {
   levels: { thinking: "low", length: "medium" },
   most: { thinking: "medium", length: "long" },
@@ -610,13 +610,13 @@ describe("Connect Papaya", () => {
   });
 });
 
-describe("Ember AI on your profile", () => {
-  const section = () => screen.queryByRole("region", { name: "Ember AI" });
+describe("Papaya AI on your profile", () => {
+  const section = () => screen.queryByRole("region", { name: "Papaya AI" });
   const dial = (name: string) => within(section()!).getByRole("group", { name });
   const level = (dialName: string, name: string) => within(dial(dialName)).getByRole("radio", { name });
   const withLevels = () => serve({ loaded: () => Response.json({ profile: { ...profile, assistant: LEVELS }, transferId: LOADED_LINK } satisfies ProfileAnswer) });
 
-  it("has your levels of @ember's dials while Ember AI is on, between the form and your rooms' levels, none above the most allowed", async () => {
+  it("has your levels of @ember's dials while Papaya AI is on, between the form and your rooms' levels, none above the most allowed", async () => {
     withLevels();
     const { showRooms } = showPage();
     await loaded();
@@ -679,7 +679,7 @@ describe("Ember AI on your profile", () => {
     expect(level("Thinking", "Medium")).toBeChecked();
   });
 
-  it("has none once Ember AI is turned off, as a save says", async () => {
+  it("has none once Papaya AI is turned off, as a save says", async () => {
     serve({
       loaded: () => Response.json({ profile: { ...profile, assistant: LEVELS }, transferId: LOADED_LINK } satisfies ProfileAnswer),
       leveled: () => Response.json({ assistant: null } satisfies YourAssistantChanged),
@@ -690,7 +690,7 @@ describe("Ember AI on your profile", () => {
     await waitFor(() => expect(section()).not.toBeInTheDocument());
   });
 
-  it("has none while Ember AI is off", async () => {
+  it("has none while Papaya AI is off", async () => {
     showPage();
     await loaded();
     expect(section()).not.toBeInTheDocument();
@@ -705,7 +705,7 @@ describe("Ember AI on your profile", () => {
 });
 
 describe("Your model on your profile", () => {
-  const section = () => screen.getByRole("region", { name: "Ember AI" });
+  const section = () => screen.getByRole("region", { name: "Papaya AI" });
   const menu = () => within(section()).getByRole("combobox", { name: "Model" });
   /** Ada's model and levels while administrators let people pick from three models, Claude Sonnet 5.5 hers. */
   const PICKING: YourAssistant = {
@@ -800,7 +800,7 @@ describe("Your model on your profile", () => {
     for (const name of ["Off", "Low", "Medium"]) expect(level(name)).toBeEnabled();
     expect(thinking()).toHaveAccessibleDescription("Grok 4.20 Reasoning can't be told how much to think, so it decides for itself, up to about 4,000 tokens.");
 
-    // A model added before Ember asked models at each level is offered at every one.
+    // A model added before Papaya OS asked models at each level is offered at every one.
     await user.selectOptions(menu(), "Default (GLM-4.7 Flash)");
     await waitFor(() => expect(menu()).toBeEnabled());
     for (const name of ["Off", "Low", "Medium"]) expect(level(name)).toBeEnabled();
@@ -819,9 +819,9 @@ describe("Your model on your profile", () => {
 });
 
 describe("Install as an app", () => {
-  const install = () => screen.queryByText("Install Ember as a web app.")?.closest("details");
+  const install = () => screen.queryByText("Install Papaya OS as a web app.")?.closest("details");
 
-  it("says how to install Ember under the page's heading, closed, to a browser that gets install steps", async () => {
+  it("says how to install Papaya OS under the page's heading, closed, to a browser that gets install steps", async () => {
     showPage(account, null, SAFARI_MAC);
     await loaded();
     expect(install()).not.toHaveAttribute("open");
@@ -948,12 +948,12 @@ describe("Upload an avatar", () => {
   });
 
   it("says why a photo couldn't be saved, showing your avatar as it was", async () => {
-    serve({ uploaded: () => Response.json({ error: "Ember isn't set up to store files" }, { status: 503 }) });
+    serve({ uploaded: () => Response.json({ error: "Papaya OS isn't set up to store files" }, { status: 503 }) });
     const { onFailed, user } = showPage();
     await loaded();
     await user.upload(picker(), moon());
 
-    await waitFor(() => expect(onFailed).toHaveBeenCalledWith(expect.objectContaining({ status: 503, message: "Ember isn't set up to store files" })));
+    await waitFor(() => expect(onFailed).toHaveBeenCalledWith(expect.objectContaining({ status: 503, message: "Papaya OS isn't set up to store files" })));
     expect(avatar()).toHaveAttribute("src", INITIALS);
     expect(picker()).toBeEnabled();
   });

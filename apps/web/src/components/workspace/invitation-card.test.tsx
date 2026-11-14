@@ -26,8 +26,8 @@ afterEach(() => {
 describe("Welcome and invite card", () => {
   it("welcomes people with the workspace's join link, labelled for screen readers", () => {
     render(<InvitationCard joinCode={JOIN_CODE} onDismiss={dismiss} />);
-    expect(screen.getByRole("img", { name: "Ember" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { level: 2, name: "Welcome to Ember" })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Papaya OS" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 2, name: "Welcome to Papaya OS" })).toBeInTheDocument();
     expect(screen.getByText("To invite people to chat, share the join link below.")).toBeInTheDocument();
     const link = screen.getByRole("textbox", { name: "Share to invite more people" });
     expect(link).toHaveValue(LINK);
@@ -47,7 +47,7 @@ describe("Welcome card for administrators, until they dismiss it", () => {
     render(<InvitationCard joinCode={JOIN_CODE} onDismiss={onDismiss} />);
     const button = screen.getByRole("button", { name: "Dismiss welcome card" });
     expect(button.parentElement!.lastElementChild).toBe(button);
-    expect(button.parentElement).toContainElement(screen.getByRole("heading", { name: "Welcome to Ember" }));
+    expect(button.parentElement).toContainElement(screen.getByRole("heading", { name: "Welcome to Papaya OS" }));
     expect(button).toHaveClass("size-9", "touch:size-11", "ml-auto");
 
     await userEvent.click(button);
@@ -117,7 +117,7 @@ describe("Join link", () => {
     stubNavigator("share", share);
     render(<InvitationCard joinCode={JOIN_CODE} onDismiss={dismiss} />);
     await userEvent.click(screen.getByRole("button", { name: "Share join link" }));
-    expect(share).toHaveBeenCalledWith({ title: "Link to join Ember", text: "Hit this link to join me in Ember and start chatting.", url: LINK });
+    expect(share).toHaveBeenCalledWith({ title: "Link to join Papaya OS", text: "Hit this link to join me in Papaya OS and start chatting.", url: LINK });
   });
 });
 
@@ -145,7 +145,7 @@ describe("QR codes for links", () => {
 describe("Translation buttons", () => {
   it("has a translation button for its invitation once an administrator shows them", () => {
     render(
-      <AccountContext value={{ name: "Ember", tagline: "", hideTranslationButtons: false, customStyles: "", restrictRoomCreation: false, logo: null, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false }}>
+      <AccountContext value={{ name: "Papaya OS", tagline: "", hideTranslationButtons: false, customStyles: "", restrictRoomCreation: false, logo: null, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false }}>
         <InvitationCard joinCode={JOIN_CODE} onDismiss={dismiss} />
       </AccountContext>,
     );
@@ -155,14 +155,14 @@ describe("Translation buttons", () => {
 });
 
 describe("Workspace logo", () => {
-  it("shows the workspace's logo in place of Ember's flame", () => {
+  it("shows the workspace's logo in place of Papaya OS's flame", () => {
     const logo = "/account/logo?v=20261017120000";
     render(
-      <AccountContext value={{ name: "Ember", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false }}>
+      <AccountContext value={{ name: "Papaya OS", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false }}>
         <InvitationCard joinCode={JOIN_CODE} onDismiss={dismiss} />
       </AccountContext>,
     );
     expect(screen.getByRole("img", { name: "Account logo" })).toHaveAttribute("src", logo);
-    expect(screen.queryByRole("img", { name: "Ember" })).toBeNull();
+    expect(screen.queryByRole("img", { name: "Papaya OS" })).toBeNull();
   });
 });

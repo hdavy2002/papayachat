@@ -115,7 +115,7 @@ test("an administrator's Huddles tab, naming the app huddles run through, fits t
 test("an administrator's custom domain steps, for a domain at another provider, fit the phone", async ({ page, screenIsFine }) => {
   await useOwnAddress(page);
   // As Cloudflare's resolver finds a domain whose DNS is at GoDaddy, whose steps to keep it there are the
-  // most, and which doesn't reach Ember yet.
+  // most, and which doesn't reach Papaya OS yet.
   await page.route("**/api/account/custom_domain_lookups", (route) => route.fulfill({ json: { zone: "example.com", provider: "godaddy" } }));
   await page.route("**/api/account/custom_domain_checks", (route) => route.fulfill({ json: { reaches: "nothing" } }));
   await page.goto("/account/edit#domain-settings");
@@ -124,7 +124,7 @@ test("an administrator's custom domain steps, for a domain at another provider, 
   await section.getByRole("textbox", { name: "Domain" }).fill("chat.example.com");
   await section.getByRole("button", { name: "Set up" }).tap();
   await section.getByRole("textbox", { name: "Domain on Cloudflare" }).fill("example.net");
-  const steps = section.getByRole("list", { name: "Steps to make chat.example.com Ember's address" });
+  const steps = section.getByRole("list", { name: "Steps to make chat.example.com Papaya OS's address" });
   await expect(steps.getByRole("listitem")).toHaveCount(5);
   const provider = section.getByRole("combobox", { name: "DNS provider" });
   await provider.scrollIntoViewIfNeeded();
@@ -143,9 +143,9 @@ test("an administrator's custom domain steps, for a domain at another provider, 
   await screenIsFine({ denseTargets: [SWITCHES] });
 });
 
-test("an administrator's Save, for a domain that already reaches Ember, fits the phone, under Domain settings in view", async ({ page, screenIsFine }) => {
+test("an administrator's Save, for a domain that already reaches Papaya OS, fits the phone, under Domain settings in view", async ({ page, screenIsFine }) => {
   await useOwnAddress(page);
-  // As Set up's check finds Ember at a domain added to the Worker before.
+  // As Set up's check finds Papaya OS at a domain added to the Worker before.
   await page.route("**/api/account/custom_domain_checks", (route) => route.fulfill({ json: { reaches: "ember" } }));
   await page.goto("/account/edit#domain-settings");
   await signInAsAdministrator(page);
@@ -153,7 +153,7 @@ test("an administrator's Save, for a domain that already reaches Ember, fits the
   const section = page.getByRole("region", { name: "Custom domain" });
   await section.getByRole("textbox", { name: "Domain" }).fill("community-chat.analytical-engines.example.com");
   await section.getByRole("button", { name: "Set up" }).tap();
-  await expect(section).toContainText("community-chat.analytical-engines.example.com already reaches Ember.");
+  await expect(section).toContainText("community-chat.analytical-engines.example.com already reaches Papaya OS.");
   await section.getByRole("button", { name: "Save" }).scrollIntoViewIfNeeded();
   await screenIsFine({ denseTargets: [SWITCHES] });
 });
@@ -261,7 +261,7 @@ test("a bot's settings fit the phone", async ({ page, screenIsFine }) => {
   }
 });
 
-/** Ember AI on Claude Sonnet 5.5, with Ember's flame as @ember's avatar. */
+/** Papaya AI on Claude Sonnet 5.5, with Papaya OS's flame as @ember's avatar. */
 const ASSISTANT: AssistantSettings = {
   accountId: "0123456789abcdef0123456789abcdef",
   model: "anthropic/claude-sonnet-5.5",
@@ -276,7 +276,7 @@ const ASSISTANT: AssistantSettings = {
 
 /**
  * An agent named as long as names go, saying as much as it can of what it does, kept to rooms named as
- * long, with what Ember adds around its instructions modified, and last changed by someone named so, as
+ * long, with what Papaya OS adds around its instructions modified, and last changed by someone named so, as
  * the AI assistant tab lists it and its page shows it.
  */
 const AGENT: AgentSettings = {
@@ -319,7 +319,7 @@ const TOOLS: AgentTools = {
   ],
 };
 
-/** Shows `page` Ember AI on, with `AGENT` its only agent, without turning on the test server's, which would put @ember in every other test's rooms. */
+/** Shows `page` Papaya AI on, with `AGENT` its only agent, without turning on the test server's, which would put @ember in every other test's rooms. */
 async function showTheAgents(page: Page): Promise<void> {
   await page.route("**/api/account", async (route) => {
     const response = await route.fetch();
@@ -334,16 +334,16 @@ async function showTheAgents(page: Page): Promise<void> {
 
 /** Scrolls to each of the agent's page's cards in turn, which fit the phone. */
 /**
- * Opens What Ember adds around the instructions and presses Modify, unless what's there is `modified`
+ * Opens What Papaya OS adds around the instructions and presses Modify, unless what's there is `modified`
  * already, checking the screen at the box that asks for care, at the template and at what's under it.
  */
 async function modifyingFits(scope: Page | Locator, screenIsFine: (options?: { denseTargets?: string[] }) => Promise<void>, modified = false) {
-  await scope.getByText("What Ember adds around them").tap();
+  await scope.getByText("What Papaya OS adds around them").tap();
   const caution = scope.getByRole("region", { name: "Modify with caution" });
   await caution.scrollIntoViewIfNeeded();
   await screenIsFine({ denseTargets: [SWITCHES] });
   if (!modified) await caution.getByRole("button", { name: "Modify" }).tap();
-  for (const part of [caution.getByRole("textbox", { name: "What Ember adds around them" }), caution.getByRole("button", { name: "Use Ember's own" })]) {
+  for (const part of [caution.getByRole("textbox", { name: "What Papaya OS adds around them" }), caution.getByRole("button", { name: "Use Papaya OS's own" })]) {
     await part.scrollIntoViewIfNeeded();
     await screenIsFine({ denseTargets: [SWITCHES] });
   }
@@ -368,7 +368,7 @@ test("an administrator's AI assistant tab, listing an agent named as long as nam
   await screenIsFine({ denseTargets: [SWITCHES] });
 });
 
-test("New agent fits the phone, card by card, with what Ember adds around the instructions, modified, and Try it's answer", async ({ page, screenIsFine }) => {
+test("New agent fits the phone, card by card, with what Papaya OS adds around the instructions, modified, and Try it's answer", async ({ page, screenIsFine }) => {
   await useOwnAddress(page);
   await showTheAgents(page);
   await page.goto("/account/agents/new");
@@ -386,7 +386,7 @@ test("New agent fits the phone, card by card, with what Ember adds around the in
   await screenIsFine({ denseTargets: [SWITCHES] });
 });
 
-test("an agent's settings fit the phone, with what Ember adds around its instructions modified, who last changed it and Delete agent", async ({ page, screenIsFine }) => {
+test("an agent's settings fit the phone, with what Papaya OS adds around its instructions modified, who last changed it and Delete agent", async ({ page, screenIsFine }) => {
   await useOwnAddress(page);
   await showTheAgents(page);
   await page.goto("/account/edit#assistant-settings");

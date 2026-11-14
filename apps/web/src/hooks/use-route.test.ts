@@ -261,7 +261,7 @@ describe("Sign up with the join link", () => {
     expect(joinCodeFromPath("/rooms/aB3d-Ef5h-iJ7k")).toBeNull();
   });
 
-  it("reads no join code from the pages that links Ember emails open", () => {
+  it("reads no join code from the pages that links Papaya OS emails open", () => {
     expect(joinCodeFromPath("/join/invitation")).toBeNull();
     expect(joinCodeFromPath("/join/email")).toBeNull();
   });

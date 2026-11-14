@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
 
 // Cloudflare Turnstile's check on the open sign-up page, where someone asks for a link to join with their
-// email address, and where someone asks for a code to reset their password, while Ember has a widget's
+// email address, and where someone asks for a code to reset their password, while Papaya OS has a widget's
 // keys: Turnstile's script, which only those pages' policy lets load, draws the check in a frame of its
 // own and gives the page a token once it passes, which the form sends for the Worker to ask siteverify
 // about (https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/). A token is good

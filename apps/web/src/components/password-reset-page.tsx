@@ -21,16 +21,16 @@ import { ApiError, askForPasswordResetCode, resetPasswordWithCode } from "@/lib/
 import { loadPage } from "@/lib/page";
 import { takeReturnPath } from "@/lib/return-path";
 
-// The page for resetting a forgotten password: someone gives their email address, Ember emails them a
+// The page for resetting a forgotten password: someone gives their email address, Papaya OS emails them a
 // code if it has an account with a password, and they give the code back here with a new password, which
-// signs them in. Asking waits for Turnstile's check while Ember has a widget's keys, as asking for a
+// signs them in. Asking waits for Turnstile's check while Papaya OS has a widget's keys, as asking for a
 // link to join does, and nothing the page says tells who has an account.
 
 const SIGN_IN_PATH = "/session/new";
-const NO_CONNECTION = "Couldn't reach Ember. Check your connection and try again.";
+const NO_CONNECTION = "Couldn't reach Papaya OS. Check your connection and try again.";
 
 /**
- * The address the page asked Ember to email a code to, which it keeps in its history entry, so that it
+ * The address the page asked Papaya OS to email a code to, which it keeps in its history entry, so that it
  * asks for the code still when the browser loads it again, as a phone's may once someone has been to
  * their email, while a new visit asks for an address afresh.
  */
@@ -39,14 +39,14 @@ function askedOnArrival(): string | null {
   return typeof asked === "string" ? asked : null;
 }
 
-/** Keeps the address the page asked Ember to email a code to in its history entry, or forgets it for null (`askedOnArrival`). */
+/** Keeps the address the page asked Papaya OS to email a code to in its history entry, or forgets it for null (`askedOnArrival`). */
 const keepAsked = (emailAddress: string | null) => history.replaceState({ ...(history.state as object | null), passwordResetAsked: emailAddress }, "");
 
-/** Where someone who forgot their password asks for a code, then gives it with a new password, while Ember can send email. */
+/** Where someone who forgot their password asks for a code, then gives it with a new password, while Papaya OS can send email. */
 export function PasswordResetPage({ workspace }: { workspace: SignedOutWorkspace }) {
   const [arrival] = useState(askedOnArrival);
   const [emailAddress, setEmailAddress] = useState(() => arrival ?? new URLSearchParams(location.search).get("email_address") ?? "");
-  /** The address Ember was asked to email a code to, which the page then asks for, or null to ask for one. */
+  /** The address Papaya OS was asked to email a code to, which the page then asks for, or null to ask for one. */
   const [asked, setAsked] = useState(arrival);
 
   useTitle("Reset your password");
@@ -76,11 +76,11 @@ interface CodeRequestProps {
   workspace: SignedOutWorkspace;
   emailAddress: string;
   onChange: (emailAddress: string) => void;
-  /** What happens once Ember has been asked to email a code to `emailAddress`, the address the form sent, whatever the field says by then. */
+  /** What happens once Papaya OS has been asked to email a code to `emailAddress`, the address the form sent, whatever the field says by then. */
   onAsked: (emailAddress: string) => void;
 }
 
-/** The form asking Ember to email a code to `emailAddress`, which draws Turnstile's check afresh for each ask. */
+/** The form asking Papaya OS to email a code to `emailAddress`, which draws Turnstile's check afresh for each ask. */
 function CodeRequest({ workspace, emailAddress, onChange, onAsked }: CodeRequestProps) {
   const { account, turnstileSiteKey: siteKey } = workspace;
   const [busy, setBusy] = useState(false);
@@ -111,7 +111,7 @@ function CodeRequest({ workspace, emailAddress, onChange, onAsked }: CodeRequest
       {problem && <Problem>{problem}</Problem>}
       <AuthCard>
         <AuthHeading title="Reset your password" logo={account.logo}>
-          Enter your email address, and Ember will email you a code to choose a new password with.
+          Enter your email address, and Papaya OS will email you a code to choose a new password with.
         </AuthHeading>
         <form
           className={AUTH_FORM}
@@ -150,9 +150,9 @@ interface NewPasswordProps {
 }
 
 /**
- * The form giving the code Ember emailed to `emailAddress` with a new password, which signs in with it and
+ * The form giving the code Papaya OS emailed to `emailAddress` with a new password, which signs in with it and
  * opens the page this tab was sent to sign in from, or else goes to sign in, as Papaya's members do
- * while it's members only. A code that doesn't work, or a password Ember won't take, is said at the top
+ * while it's members only. A code that doesn't work, or a password Papaya OS won't take, is said at the top
  * of the form, as sign-in's refusals are, keeping what was typed.
  */
 function NewPassword({ workspace, emailAddress, onAskAgain }: NewPasswordProps) {
@@ -188,7 +188,7 @@ function NewPassword({ workspace, emailAddress, onAskAgain }: NewPasswordProps) 
       {problem && <Problem>{problem}</Problem>}
       <AuthCard>
         <AuthHeading title="Check your email" logo={workspace.account.logo}>
-          If {emailAddress} has an account here, Ember emailed it a code that works for {PASSWORD_RESET_CODE_MINUTES} minutes. If it hasn't arrived soon, look in your
+          If {emailAddress} has an account here, Papaya OS emailed it a code that works for {PASSWORD_RESET_CODE_MINUTES} minutes. If it hasn't arrived soon, look in your
           spam folder.
         </AuthHeading>
         <form

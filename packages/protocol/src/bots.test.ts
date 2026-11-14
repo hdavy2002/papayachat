@@ -40,7 +40,7 @@ describe("Add and edit a bot", () => {
 
   it("refuses a new bot the AI assistant's name, which a change leaves to the Worker", () => {
     expect(parseNewBot({ name: " EMBER " })).toBe(NAME_RESERVED);
-    expect(parseBotChanges({ name: "Ember" })).toEqual({ name: "Ember" });
+    expect(parseBotChanges({ name: "Papaya OS" })).toEqual({ name: "Papaya OS" });
   });
 });
 

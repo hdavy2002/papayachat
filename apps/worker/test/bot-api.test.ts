@@ -48,7 +48,7 @@ const grace = { name: "Grace Hopper", emailAddress: "grace@example.com", passwor
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-/** Sets Ember up with Ada as its administrator, signed in. */
+/** Sets Papaya OS up with Ada as its administrator, signed in. */
 async function setUp(): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(ada) });
   expect(response.status).toBe(201);
@@ -77,7 +77,7 @@ async function newKeyFor(administrator: Session, bot: BotSettings): Promise<BotS
   return ((await response.json()) as BotAnswer).bot;
 }
 
-/** Sets Ember up with a bot, which is in first run's general room. */
+/** Sets Papaya OS up with a bot, which is in first run's general room. */
 async function withBot() {
   const administrator = await setUp();
   const bot = await addBot(administrator);

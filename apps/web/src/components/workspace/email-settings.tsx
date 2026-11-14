@@ -4,24 +4,24 @@ import { useMounted } from "@/hooks/use-mounted";
 import { ApiError, changeAccount, isSignedOut, sendTestEmail } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
-// The Email card in Membership, for administrators: what Ember sends email with, and from, and Send me a
-// test email, which says where it went, or why it wasn't sent. Until Ember can send email, it says so,
+// The Email card in Membership, for administrators: what Papaya OS sends email with, and from, and Send me a
+// test email, which says where it went, or why it wasn't sent. Until Papaya OS can send email, it says so,
 // and Set up email opens the steps to it (`EmailSetup`), as Change does once it can, and Stop sending
 // email takes its From address away, as saving the From field blank did before Set up email. Laid out as
 // Custom domain's card is: what it says, then its buttons in a row.
 
-/** What Stop sending email asks first, since what Ember emails stops until email is set up again. */
+/** What Stop sending email asks first, since what Papaya OS emails stops until email is set up again. */
 export const CONFIRM_STOP_EMAIL =
-  "Are you sure you want Ember to stop sending email? It will forget its From address, and won't email invitations, the links people at your email domains join with, or codes to reset a forgotten password, until email is set up again.";
+  "Are you sure you want Papaya OS to stop sending email? It will forget its From address, and won't email invitations, the links people at your email domains join with, or codes to reset a forgotten password, until email is set up again.";
 
 /** The card's buttons, as Custom domain's are. */
 export const BUTTON = "inline-flex min-h-11 items-center justify-center rounded-[9px] border bg-background px-3.5 py-2.5 font-medium disabled:opacity-50";
 const NOTE = "text-[0.8em] text-muted-foreground max-md:text-[12px]";
 
-/** Whether Ember can send email: it has something to send it with, and a From address. */
+/** Whether Papaya OS can send email: it has something to send it with, and a From address. */
 export const sendsEmail = (email: Email) => email.provider !== null && email.from !== null;
 
-/** What the card says Ember sends email with. */
+/** What the card says Papaya OS sends email with. */
 function sentWith({ provider, resendKey }: Email): string {
   if (provider === "cloudflare") return "with Cloudflare Email Service";
   return resendKey === "secret" ? "with Resend, with the API key in RESEND_API_KEY" : "with Resend";
@@ -36,13 +36,13 @@ interface Props {
   askForAccount: () => (account: Account) => void;
   /** Opens Set up email. */
   onSetUp: () => void;
-  /** Shows that Ember has no From address, once Stop sending email has taken it away. */
+  /** Shows that Papaya OS has no From address, once Stop sending email has taken it away. */
   onStopped: () => void;
   /** Says why sending or stopping failed, when it isn't the provider's or the setup's doing, as the workspace's alerts do. */
   onFailed: (error: unknown) => void;
 }
 
-/** How Ember sends email, for administrators: what with, and from, with a test email, or else that it can't yet. */
+/** How Papaya OS sends email, for administrators: what with, and from, with a test email, or else that it can't yet. */
 export function EmailSettings({ email, askForAccount, onSetUp, onStopped, onFailed }: Props) {
   const sends = sendsEmail(email);
   const [stopping, setStopping] = useState(false);
@@ -75,10 +75,10 @@ export function EmailSettings({ email, askForAccount, onSetUp, onStopped, onFail
         <p className={NOTE}>
           {sends ? (
             <>
-              Ember sends email from <span className="wrap-anywhere">{email.from}</span> {sentWith(email)}.
+              Papaya OS sends email from <span className="wrap-anywhere">{email.from}</span> {sentWith(email)}.
             </>
           ) : (
-            "Ember can't send email yet, so it can't email invitations, the links people at your email domains join with, or codes to reset a forgotten password."
+            "Papaya OS can't send email yet, so it can't email invitations, the links people at your email domains join with, or codes to reset a forgotten password."
           )}
         </p>
       </div>

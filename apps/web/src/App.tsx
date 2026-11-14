@@ -25,7 +25,7 @@ import { unsubscribeFromPush } from "@/lib/push";
 import { forgetReturnPath, rememberThisPage, takeReturnPath } from "@/lib/return-path";
 
 const MAX_RETRY_MS = 15_000;
-/** Where the Set up Ember page is. */
+/** Where the Set up Papaya OS page is. */
 const SETUP_PATH = "/first_run";
 /** Where the sign-in page is. */
 const SIGN_IN_PATH = "/session/new";
@@ -49,7 +49,7 @@ const isSameAccount = (a: Account, b: Account) =>
   a.huddles === b.huddles;
 
 export function App() {
-  // Undefined until the server says whether Ember is set up.
+  // Undefined until the server says whether Papaya OS is set up.
   const [workspace, setWorkspace] = useState<Omit<Bootstrap, "user">>();
   const [me, setMe] = useState<Me | null>(null);
   // The sign-in page opens even for someone who's signed in, and so does resetting a password.
@@ -79,12 +79,12 @@ export function App() {
       fetchBootstrap().then(
         ({ user, ...workspace }) => {
           if (stopped) return;
-          // A page opened at any address but Ember's custom domain moves there before anything shows.
+          // A page opened at any address but Papaya OS's custom domain moves there before anything shows.
           const { customDomain } = workspace.account;
           if (movesTo(customDomain)) return void moveTo(customDomain);
           replaceInstallPromptsFor(workspace.platform);
           const atSetup = location.pathname === SETUP_PATH;
-          // Until Ember is set up, every page is setup's, which says what it takes where it isn't open.
+          // Until Papaya OS is set up, every page is setup's, which says what it takes where it isn't open.
           if (workspace.setup === "pending" && !atSetup) return loadPage(SETUP_PATH);
           if (workspace.setup === "complete" && atSetup) history.replaceState(history.state, "", "/");
           // The join page is for someone signed out, and sends anyone else home, as do open sign-up's, an
@@ -112,7 +112,7 @@ export function App() {
           if (!stopped) retry = setTimeout(() => void ask(attempt + 1), Math.min(MAX_RETRY_MS, 1_000 * 2 ** attempt));
         },
       );
-    // A page few visits need loads while Ember says who's signed in, rather than once the workspace shows.
+    // A page few visits need loads while Papaya OS says who's signed in, rather than once the workspace shows.
     void loadPageAhead(location.pathname);
     void ask(0);
     return () => {

@@ -63,13 +63,13 @@ export default defineConfig<MobileOptions>({
     },
     // The same build again, over HTTPS, for the workspace-settings projects, with the keys of the
     // Memberful site the Memberful specs fake, the address of the Resend API the email specs fake,
-    // which Ember sends email with once they give it the API key it takes, as an administrator does in
-    // Set up email, the address of the siteverify the Turnstile spec fakes, which Ember asks about
+    // which Papaya OS sends email with once they give it the API key it takes, as an administrator does in
+    // Set up email, the address of the siteverify the Turnstile spec fakes, which Papaya OS asks about
     // checks once it's given a widget's keys in Set up Turnstile, the address of the AI Gateway the
-    // Ember AI spec fakes, which Ember asks models through once it's given an account in Set up Ember AI,
-    // and which serves the models file too, in place of the one on Ember's main branch, the ID of the
-    // account Ember is deployed to, as `pnpm run deploy` gives it, which Set up Ember AI fills in, and the
-    // address of the Realtime SFU the huddles spec fakes, which Ember asks to start a session with an app's
+    // Papaya AI spec fakes, which Papaya OS asks models through once it's given an account in Set up Papaya AI,
+    // and which serves the models file too, in place of the one on Papaya OS's main branch, the ID of the
+    // account Papaya OS is deployed to, as `pnpm run deploy` gives it, which Set up Papaya AI fills in, and the
+    // address of the Realtime SFU the huddles spec fakes, which Papaya OS asks to start a session with an app's
     // keys before it keeps them in Set up huddles, and then to carry what's said in a huddle. Servers start
     // in turn, so the app is built by then.
     {

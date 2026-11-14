@@ -1,12 +1,12 @@
 /*
  * The editor's styles: Lexxy's own stylesheets, then Campfire's actiontext.css with Campfire's colors as
- * Ember's tokens. Lexxy's rules have no specificity, so Campfire's override them, and none of this is in
+ * Papaya OS's tokens. Lexxy's rules have no specificity, so Campfire's override them, and none of this is in
  * a layer, so it wins over Tailwind's reset of headings, lists and the like inside the editor. So rules
  * for the editor's own elements are here too, rather than in utility classes, which these would beat.
  */
 @import "@37signals/lexxy/stylesheets/lexxy.css";
 
-/* Lexxy's palette resolved to Ember's, so the editor follows the appearance. */
+/* Lexxy's palette resolved to Papaya OS's, so the editor follows the appearance. */
 .lexxy-content {
   --lexxy-color-canvas: transparent;
   --lexxy-color-text: var(--foreground);
@@ -127,7 +127,7 @@ lexxy-toolbar {
 }
 
 /*
- * Iconoir's icons in place of Lexxy's, as the project's owner chose for every icon Ember draws. Lexxy
+ * Iconoir's icons in place of Lexxy's, as the project's owner chose for every icon Papaya OS draws. Lexxy
  * writes its own into each button, so each is painted over: in the button's text color, through the
  * Iconoir file in apps/web/src/components/icons/iconoir/ named for the button, with Lexxy's shapes
  * hidden. The paint is kept in forced colors, which would otherwise turn it the canvas's color.

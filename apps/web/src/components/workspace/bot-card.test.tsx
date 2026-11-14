@@ -64,7 +64,7 @@ describe("Bot cards", () => {
     ]);
   });
 
-  it("draws the bar in Ember's colors for Slack's good, warning and danger, a hex color as it's given, and the border's color without one", () => {
+  it("draws the bar in Papaya OS's colors for Slack's good, warning and danger, a hex color as it's given, and the border's color without one", () => {
     const frames = show(...["good", "warning", "danger", "#36a64f", undefined].map((color) => card([{ kind: "title", text: "Hi" }], color === undefined ? {} : { color })));
     expect(frames.map((frame) => [...barOf(frame).classList].find((name) => name.startsWith("bg-")) ?? barOf(frame).style.backgroundColor)).toEqual([
       "bg-positive",
@@ -158,7 +158,7 @@ describe("Bot cards", () => {
     expect(frame).toHaveTextContent("AdaDeployCI");
   });
 
-  it("loads every image as it nears the screen, and without a referrer, so the site serving it doesn't learn which Ember shows it", () => {
+  it("loads every image as it nears the screen, and without a referrer, so the site serving it doesn't learn which Papaya OS shows it", () => {
     const image = (name: string) => ({ url: `https://example.com/${name}.png`, alt: "" });
     show(
       card(

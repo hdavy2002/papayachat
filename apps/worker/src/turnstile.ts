@@ -4,8 +4,8 @@ import type { Env } from "./env";
 import { isLoopback } from "./loopback";
 import { workspace } from "./workspace";
 
-// Cloudflare Turnstile, on the open sign-up form and the forms that ask Ember to email a link to join or
-// a code to reset a password, while Ember has a widget's keys: the deployment's secrets, or else those
+// Cloudflare Turnstile, on the open sign-up form and the forms that ask Papaya OS to email a link to join or
+// a code to reset a password, while Papaya OS has a widget's keys: the deployment's secrets, or else those
 // an administrator gave it in Set up Turnstile. The page shows Turnstile's check, which gives it a
 // token, and the Worker asks Cloudflare's siteverify whether the token is from a check that passed
 // before it does anything else with the form
@@ -30,7 +30,7 @@ export function turnstileKeysOf(env: Env): TurnstileKeys | null {
   return siteKey && secretKey ? { siteKey, secretKey } : null;
 }
 
-/** The keys Ember checks people with: the deployment's, which take the place of any others, or else those an administrator gave it, or null while it has neither. */
+/** The keys Papaya OS checks people with: the deployment's, which take the place of any others, or else those an administrator gave it, or null while it has neither. */
 export async function turnstileKeysFor(env: Env): Promise<TurnstileKeys | null> {
   return turnstileKeysOf(env) ?? (await workspace(env).savedTurnstileKeys());
 }

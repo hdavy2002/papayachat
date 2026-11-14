@@ -8,7 +8,7 @@ import { HuddlesSteps, useHuddlesKeys } from "./huddles-steps";
 import { DIALOG, DIALOG_BACKDROP, DIALOG_CLOSE, DIALOG_TITLE } from "./unsaved-changes";
 
 // Set up huddles, for administrators: the dialog that the Huddles section's switch opens, around the two
-// steps that give Ember the keys of a Realtime SFU app (`HuddlesSteps`), which huddles run through, and
+// steps that give Papaya OS the keys of a Realtime SFU app (`HuddlesSteps`), which huddles run through, and
 // then that huddles are on. Styled as Set up Turnstile is.
 
 /** What the dialog says first, of what huddles run through and who pays for it. */
@@ -19,7 +19,7 @@ export const HUDDLES_ON = "Cloudflare started a session with the app's keys, so 
 
 interface Props {
   huddles: HuddlesSettings | null;
-  /** The Cloudflare account Ember is deployed to, whose SFU apps the dashboard opens at, if the deploy gave it. */
+  /** The Cloudflare account Papaya OS is deployed to, whose SFU apps the dashboard opens at, if the deploy gave it. */
   deployedAccountId: string | null;
   /** Shows huddles as they're saved. */
   onSaved: (huddles: HuddlesSettings) => void;

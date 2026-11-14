@@ -8,10 +8,10 @@ import { ApiError, fetchWorkspaceSettings, isSignedOut } from "@/lib/api";
 import { HUDDLE_CHAT } from "@/lib/huddle-chat";
 import { cn } from "@/lib/utils";
 
-// First run's last step, once Ember has its administrator and this browser is signed in as them: whether
-// to turn huddles on. Not now opens Ember, where the Huddles tab of community settings turns them on
+// First run's last step, once Papaya OS has its administrator and this browser is signed in as them: whether
+// to turn huddles on. Not now opens Papaya OS, where the Huddles tab of community settings turns them on
 // whenever it's wanted. Set up huddles shows the two steps that tab's dialog has (`HuddlesSteps`), and once
-// Cloudflare has started a session with the app's keys, that huddles are on, from where Ember opens. It
+// Cloudflare has started a session with the app's keys, that huddles are on, from where Papaya OS opens. It
 // loads with the pages few visits need (pages.ts), apart from the rest of the app.
 
 /** What the question asks, as the project's owner worded it (2026-11-12). */
@@ -24,10 +24,10 @@ const FACTS: [string, string][] = [
   ["What it costs", "Cloudflare gives a free monthly allowance, then bills your account for what's sent past it."],
 ];
 
-/** What an alert says about saving that failed: the server's reason, or that Ember couldn't be reached. */
-const reasonFor = (error: unknown) => (error instanceof ApiError ? error.message : "Couldn't reach Ember. Check your connection and try again.");
+/** What an alert says about saving that failed: the server's reason, or that Papaya OS couldn't be reached. */
+const reasonFor = (error: unknown) => (error instanceof ApiError ? error.message : "Couldn't reach Papaya OS. Check your connection and try again.");
 
-/** Asks whether to turn huddles on, sets them up if so, and has `onOpen` open Ember either way. */
+/** Asks whether to turn huddles on, sets them up if so, and has `onOpen` open Papaya OS either way. */
 export function SetupHuddles({ onOpen }: { onOpen: () => void }) {
   const [step, setStep] = useState<"question" | "steps" | "on">("question");
   const deployedAccountId = useDeployedAccountId();
@@ -37,7 +37,7 @@ export function SetupHuddles({ onOpen }: { onOpen: () => void }) {
 }
 
 /**
- * The Cloudflare account Ember is deployed to, which the steps' button opens the dashboard at, once Ember
+ * The Cloudflare account Papaya OS is deployed to, which the steps' button opens the dashboard at, once Papaya OS
  * says, if the deploy gave it. Until then, and without it, the dashboard asks someone with several which.
  */
 function useDeployedAccountId(): string | null {
@@ -95,7 +95,7 @@ function Steps({ deployedAccountId, onBack, onSaved, onOpen }: StepsProps) {
   const keys = useHuddlesKeys({
     huddles: null,
     onSaved,
-    // Whoever's been signed out can't give Ember anything here, so Ember opens, which has them sign in.
+    // Whoever's been signed out can't give Papaya OS anything here, so Papaya OS opens, which has them sign in.
     onFailed: (error) => (isSignedOut(error) ? onOpen() : setProblem(reasonFor(error))),
   });
   const { saving } = keys;
@@ -128,7 +128,7 @@ function Steps({ deployedAccountId, onBack, onSaved, onOpen }: StepsProps) {
   );
 }
 
-/** That huddles are on, and where one starts, before Ember opens. */
+/** That huddles are on, and where one starts, before Papaya OS opens. */
 function HuddlesOn({ onOpen }: { onOpen: () => void }) {
   return (
     <SetupCard startsAtTitle title="Huddles are on" subtitle="Cloudflare accepted the app's keys.">
@@ -143,7 +143,7 @@ function HuddlesOn({ onOpen }: { onOpen: () => void }) {
       </div>
       <footer className="border-t bg-surface p-5">
         <Button type="button" onClick={onOpen} className={cn(STEP_BUTTON, "w-full")}>
-          Open Ember <ArrowRight className="size-[1.125rem]" />
+          Open Papaya OS <ArrowRight className="size-[1.125rem]" />
         </Button>
       </footer>
     </SetupCard>

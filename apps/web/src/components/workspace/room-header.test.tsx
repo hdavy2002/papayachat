@@ -17,7 +17,7 @@ const general: Room = { id: "general", name: "general", kind: "open", icon: null
 /** Ada's DM with Linus, as Linus reads it. */
 const adaDirect: Room = { id: "direct-1", kind: "direct", members: [{ id: "ada", name: "Ada" }, { id: "linus", name: "Linus" }], activeAt: "2026-10-15T12:00:00.000Z" };
 /** @ember, the AI assistant. */
-const ember: User = { id: "ember", name: "Ember" };
+const ember: User = { id: "ember", name: "Papaya OS" };
 
 afterEach(() => history.replaceState(null, "", "/"));
 
@@ -130,9 +130,9 @@ describe("Group DMs and DM names", () => {
   });
 
   it("badges a DM with @ember alone as an agent's after its name", () => {
-    renderHeader({ room: { ...adaDirect, members: [{ id: "ada", name: "Ada" }, ember] }, name: "Ember" });
+    renderHeader({ room: { ...adaDirect, members: [{ id: "ada", name: "Ada" }, ember] }, name: "Papaya OS" });
     const heading = screen.getByRole("heading", { level: 1 });
-    expect(heading).toHaveTextContent(/^Direct message with Ember$/);
+    expect(heading).toHaveTextContent(/^Direct message with Papaya OS$/);
     expect(heading.nextElementSibling).toHaveTextContent(/^Agent$/);
     expect(heading.nextElementSibling).toHaveAttribute("data-slot", "badge");
   });
@@ -167,7 +167,7 @@ describe("Group DMs and DM names", () => {
     renderHeader({ room: adaDirect, name: "Ada" });
     expect(screen.queryByText("Agent")).not.toBeInTheDocument();
     cleanup();
-    renderHeader({ room: { ...adaDirect, members: [...adaDirect.members, ember] }, name: "Ada and Ember" });
+    renderHeader({ room: { ...adaDirect, members: [...adaDirect.members, ember] }, name: "Ada and Papaya OS" });
     expect(screen.queryByText("Agent")).not.toBeInTheDocument();
   });
 

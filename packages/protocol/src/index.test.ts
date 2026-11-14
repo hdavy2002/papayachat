@@ -299,7 +299,7 @@ describe("One live connection per tab outside the open room", () => {
     const welcome: WorkspaceServerFrame = {
       type: "welcome",
       you: { id: "u1", name: "Ada", administrator: true },
-      account: { name: "Ember", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo: null, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false },
+      account: { name: "Papaya OS", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo: null, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false },
     };
     expect(parseServerFrame<WorkspaceServerFrame>(JSON.stringify(welcome))).toEqual(welcome);
     expect(parseServerFrame<WorkspaceServerFrame>('{"type":7}')).toBeNull();
@@ -451,7 +451,7 @@ describe("Suggested people", () => {
 
 describe("Rename the workspace", () => {
   it("takes the workspace's name as typed, even blank, or nothing to change", () => {
-    expect(parseAccountChanges({ name: "  Ember Studio " })).toEqual({ name: "  Ember Studio " });
+    expect(parseAccountChanges({ name: "  Papaya OS Studio " })).toEqual({ name: "  Papaya OS Studio " });
     expect(parseAccountChanges({ name: "" })).toEqual({ name: "" });
     expect(parseAccountChanges({ name: "x".repeat(MAX_ACCOUNT_NAME_LENGTH) })).toEqual({ name: "x".repeat(MAX_ACCOUNT_NAME_LENGTH) });
     expect(parseAccountChanges({})).toEqual({});
@@ -460,7 +460,7 @@ describe("Rename the workspace", () => {
 
   it.each([
     ["no body", null, "Expected a JSON object"],
-    ["a list", [{ name: "Ember Studio" }], "Expected a JSON object"],
+    ["a list", [{ name: "Papaya OS Studio" }], "Expected a JSON object"],
     ["a name that isn't text", { name: 7 }, `Name must be at most ${MAX_ACCOUNT_NAME_LENGTH} characters`],
     ["a name that's too long", { name: "x".repeat(MAX_ACCOUNT_NAME_LENGTH + 1) }, `Name must be at most ${MAX_ACCOUNT_NAME_LENGTH} characters`],
   ])("refuses %s and says why", (_, body, error) => {
@@ -471,7 +471,7 @@ describe("Rename the workspace", () => {
 describe("Workspace tagline", () => {
   it("takes a tagline on one line, with no space at either end, or blank for none, with the name or alone", () => {
     expect(parseAccountChanges({ tagline: "Engines for every occasion" })).toEqual({ tagline: "Engines for every occasion" });
-    expect(parseAccountChanges({ name: "Ember", tagline: " Engines\tfor\r\nevery\u00a0 occasion  " })).toEqual({ name: "Ember", tagline: "Engines for every occasion" });
+    expect(parseAccountChanges({ name: "Papaya OS", tagline: " Engines\tfor\r\nevery\u00a0 occasion  " })).toEqual({ name: "Papaya OS", tagline: "Engines for every occasion" });
     expect(parseAccountChanges({ tagline: "" })).toEqual({ tagline: "" });
     expect(parseAccountChanges({ tagline: " \n " })).toEqual({ tagline: "" });
   });
@@ -489,7 +489,7 @@ describe("Workspace tagline", () => {
     ["null", { tagline: null }],
     ["a number", { tagline: 30 }],
     ["a list", { tagline: ["Engines"] }],
-    ["a good name beside a bad tagline", { name: "Ember Studio", tagline: false }],
+    ["a good name beside a bad tagline", { name: "Papaya OS Studio", tagline: false }],
   ])("refuses %s and says why", (_, body) => {
     expect(parseAccountChanges(body)).toBe(TAGLINE_TOO_LONG);
   });
@@ -498,8 +498,8 @@ describe("Workspace tagline", () => {
 describe("Translation buttons", () => {
   it("takes Hide translation buttons as true or false, with the name or alone", () => {
     expect(parseAccountChanges({ settings: { hideTranslationButtons: false } })).toEqual({ settings: { hideTranslationButtons: false } });
-    expect(parseAccountChanges({ name: "Ember Studio", settings: { hideTranslationButtons: true } })).toEqual({
-      name: "Ember Studio",
+    expect(parseAccountChanges({ name: "Papaya OS Studio", settings: { hideTranslationButtons: true } })).toEqual({
+      name: "Papaya OS Studio",
       settings: { hideTranslationButtons: true },
     });
     expect(parseAccountChanges({ settings: {} })).toEqual({ settings: {} });
@@ -521,8 +521,8 @@ describe("Navigation icons", () => {
     expect(parseAccountChanges({ navigationIcons: { home: "coffee", dark: "iconoir:solid:heart", search: "" } })).toEqual({
       navigationIcons: { home: "coffee", dark: "iconoir:solid:heart", search: "" },
     });
-    expect(parseAccountChanges({ name: "Ember", navigationIcons: {} })).toEqual({ name: "Ember", navigationIcons: {} });
-    expect(parseAccountChanges({ name: "Ember" })).toEqual({ name: "Ember" });
+    expect(parseAccountChanges({ name: "Papaya OS", navigationIcons: {} })).toEqual({ name: "Papaya OS", navigationIcons: {} });
+    expect(parseAccountChanges({ name: "Papaya OS" })).toEqual({ name: "Papaya OS" });
   });
 
   it("takes a slot's own icon as its default", () => {
@@ -563,7 +563,7 @@ describe("Custom domain", () => {
     const longest = `${"a".repeat(63)}.`.repeat(3) + "a".repeat(61);
     expect(parseAccountChanges({ customDomain: `${longest}:65535` })).toEqual({ customDomain: `${longest}:65535` });
     expect(parseAccountChanges({ customDomain: null })).toEqual({ customDomain: null });
-    expect(parseAccountChanges({ name: "Ember Studio", customDomain: null })).toEqual({ name: "Ember Studio", customDomain: null });
+    expect(parseAccountChanges({ name: "Papaya OS Studio", customDomain: null })).toEqual({ name: "Papaya OS Studio", customDomain: null });
   });
 
   it.each([
@@ -583,12 +583,12 @@ describe("Custom domain", () => {
     expect(parseAccountChanges({ customDomain })).toBe(CUSTOM_DOMAIN_NOT_A_HOST);
   });
 
-  it("can't be where a deploy or wrangler dev puts Ember, but can be a name under localhost", () => {
-    for (const hostname of ["ember.kro.workers.dev", "workers.dev", "Ember.Kro.Workers.Dev", "localhost", "127.0.0.1", "127.8.0.1", "[::1]"]) expect([hostname, canBeCustomDomain(hostname)]).toEqual([hostname, false]);
+  it("can't be where a deploy or wrangler dev puts Papaya OS, but can be a name under localhost", () => {
+    for (const hostname of ["ember.kro.workers.dev", "workers.dev", "Papaya OS.Kro.Workers.Dev", "localhost", "127.0.0.1", "127.8.0.1", "[::1]"]) expect([hostname, canBeCustomDomain(hostname)]).toEqual([hostname, false]);
     for (const hostname of ["chat.example.com", "workers.dev.example.com", "chat.localhost", "example.com"]) expect([hostname, canBeCustomDomain(hostname)]).toEqual([hostname, true]);
   });
 
-  it("checks a domain that could be Ember's, as a host, with its port where it has one", () => {
+  it("checks a domain that could be Papaya OS's, as a host, with its port where it has one", () => {
     expect(parseCustomDomainCheck({ domain: "chat.example.com" })).toEqual({ domain: "chat.example.com" });
     expect(parseCustomDomainCheck({ domain: "chat.localhost:8443" })).toEqual({ domain: "chat.localhost:8443" });
     for (const domain of ["ember.kro.workers.dev", "localhost:8787", "127.0.0.1"]) expect(parseCustomDomainCheck({ domain })).toBe(NOT_A_CUSTOM_DOMAIN);
@@ -596,8 +596,8 @@ describe("Custom domain", () => {
       expect(parseCustomDomainCheck(body)).toBe(CUSTOM_DOMAIN_NOT_A_HOST);
   });
 
-  it("remembers the custom domains Ember moves away from, newest first, until it moves to one again", () => {
-    // Going back from chat.example.com, at the workers.dev address, which always reaches Ember.
+  it("remembers the custom domains Papaya OS moves away from, newest first, until it moves to one again", () => {
+    // Going back from chat.example.com, at the workers.dev address, which always reaches Papaya OS.
     expect(othersAfterMove([], ["chat.example.com", "ember.kro.workers.dev"], "ember.kro.workers.dev")).toEqual(["chat.example.com"]);
     // Asked at an older domain, which reaches it too.
     expect(othersAfterMove(["old.example.com"], ["chat.example.com", "team.example.com"], "ember.kro.workers.dev")).toEqual(["chat.example.com", "team.example.com", "old.example.com"]);
@@ -614,22 +614,22 @@ describe("Custom domain", () => {
 describe("Sending email", () => {
   it("reads a From address as an address, or a name, in quotes or not, and an address in angle brackets", () => {
     expect(mailboxOf("ember@example.com")).toEqual({ name: null, address: "ember@example.com" });
-    expect(mailboxOf("  Ember <ember@example.com> ")).toEqual({ name: "Ember", address: "ember@example.com" });
-    expect(mailboxOf("Ember<ember@example.com>")).toEqual({ name: "Ember", address: "ember@example.com" });
+    expect(mailboxOf("  Papaya OS <ember@example.com> ")).toEqual({ name: "Papaya OS", address: "ember@example.com" });
+    expect(mailboxOf("Papaya OS<ember@example.com>")).toEqual({ name: "Papaya OS", address: "ember@example.com" });
     expect(mailboxOf('"Acme, Inc." <chat@acme.example>')).toEqual({ name: "Acme, Inc.", address: "chat@acme.example" });
     expect(mailboxOf("<ember@example.com>")).toEqual({ name: null, address: "ember@example.com" });
-    expect(mailboxOf("Café Ember <o'brien+chat@mail.example.co.uk>")).toEqual({ name: "Café Ember", address: "o'brien+chat@mail.example.co.uk" });
+    expect(mailboxOf("Café Papaya OS <o'brien+chat@mail.example.co.uk>")).toEqual({ name: "Café Papaya OS", address: "o'brien+chat@mail.example.co.uk" });
   });
 
   it.each([
     ["nothing", ""],
-    ["a name alone", "Ember"],
+    ["a name alone", "Papaya OS"],
     ["an address without a domain", "ember@"],
     ["one whose domain has no dot", "ember@localhost"],
     ["one with a space", "em ber@example.com"],
     ["two addresses", "ember@example.com, chat@example.com"],
-    ["a name with a line break, which would add a header", "Ember\nBcc: everyone@example.com <ember@example.com>"],
-    ["a name with a quote inside", 'Ember "Chat" <ember@example.com>'],
+    ["a name with a line break, which would add a header", "Papaya OS\nBcc: everyone@example.com <ember@example.com>"],
+    ["a name with a quote inside", 'Papaya OS "Chat" <ember@example.com>'],
     ["an address too long to deliver", `${"a".repeat(MAX_EMAIL_ADDRESS_LENGTH - 11)}@example.com`],
     ["a name longer than a person's", `${"a".repeat(MAX_USER_NAME_LENGTH + 1)} <ember@example.com>`],
   ])("refuses %s", (_, text) => {
@@ -638,7 +638,7 @@ describe("Sending email", () => {
 
   it("writes a From address with its name in quotes where a From line needs them", () => {
     expect(mailboxText({ name: null, address: "ember@example.com" })).toBe("ember@example.com");
-    expect(mailboxText({ name: "Ember", address: "ember@example.com" })).toBe("Ember <ember@example.com>");
+    expect(mailboxText({ name: "Papaya OS", address: "ember@example.com" })).toBe("Papaya OS <ember@example.com>");
     expect(mailboxText({ name: "Acme, Inc.", address: "chat@acme.example" })).toBe('"Acme, Inc." <chat@acme.example>');
     expect(mailboxText(mailboxOf('"Acme, Inc." <chat@acme.example>')!)).toBe('"Acme, Inc." <chat@acme.example>');
   });
@@ -650,15 +650,15 @@ describe("Sending email", () => {
     expect(mailboxUnder(join, ' The "Best"\nClub <3 ')).toEqual({ name: "The Best Club 3", address: "join@example.com" });
     expect(mailboxUnder(join, "Bcc: everyone@example.com\r\n")).toEqual({ name: "Bcc: everyone@example.com", address: "join@example.com" });
     for (const name of ["", "  ", '"<>"']) expect(mailboxUnder(join, name)).toEqual(join);
-    expect(mailboxUnder({ name: "Ember", address: "ember@example.com" }, "NYLLON")).toEqual({ name: "Ember", address: "ember@example.com" });
+    expect(mailboxUnder({ name: "Papaya OS", address: "ember@example.com" }, "NYLLON")).toEqual({ name: "Papaya OS", address: "ember@example.com" });
   });
 
   it("takes the From address as a workspace change, as it writes it, with null or blank for none", () => {
-    expect(parseAccountChanges({ emailFrom: " Ember <ember@example.com>" })).toEqual({ emailFrom: "Ember <ember@example.com>" });
+    expect(parseAccountChanges({ emailFrom: " Papaya OS <ember@example.com>" })).toEqual({ emailFrom: "Papaya OS <ember@example.com>" });
     expect(parseAccountChanges({ emailFrom: "Acme, Inc. <chat@acme.example>" })).toEqual({ emailFrom: '"Acme, Inc." <chat@acme.example>' });
     expect(parseAccountChanges({ emailFrom: null })).toEqual({ emailFrom: null });
     expect(parseAccountChanges({ emailFrom: "  " })).toEqual({ emailFrom: null });
-    for (const emailFrom of ["Ember", 42, ["ember@example.com"], { address: "ember@example.com" }]) expect(parseAccountChanges({ emailFrom })).toBe(EMAIL_FROM_REFUSED);
+    for (const emailFrom of ["Papaya OS", 42, ["ember@example.com"], { address: "ember@example.com" }]) expect(parseAccountChanges({ emailFrom })).toBe(EMAIL_FROM_REFUSED);
   });
 
   it("takes a Resend API key as Resend writes one, without the spaces pasted around it", () => {
@@ -788,7 +788,7 @@ describe("Invite people by email", () => {
     expect(emailAddressesIn(" \n , ")).toEqual({ emailAddresses: [], refused: [] });
   });
 
-  it("knows an email address Ember can send to", () => {
+  it("knows an email address Papaya OS can send to", () => {
     expect(isEmailAddress("o'brien+chat@mail.example.co.uk")).toBe(true);
     for (const address of ["", "ann", "ann@", "ann@localhost", "an n@example.com", "<ann@example.com>", `${"a".repeat(MAX_EMAIL_ADDRESS_LENGTH - 11)}@example.com`]) {
       expect(isEmailAddress(address), address).toBe(false);
@@ -882,7 +882,7 @@ describe("Join with an email domain", () => {
     ["one that isn't text", [null]],
     ["more than 100", Array.from({ length: 101 }, (_, n) => `team${n}.example`)],
   ])("refuses %s for Email domain's domains", (_, emailDomains) => {
-    expect(parseAccountChanges({ name: "Ember", emailDomains })).toBe(EMAIL_DOMAINS_REFUSED);
+    expect(parseAccountChanges({ name: "Papaya OS", emailDomains })).toBe(EMAIL_DOMAINS_REFUSED);
   });
 
   it("names the domains in words", () => {
@@ -963,7 +963,7 @@ describe("Custom CSS", () => {
     expect(parseCustomStyles({ customStyles: "" })).toEqual({ customStyles: "" });
     expect(parseCustomStyles({ customStyles: "x".repeat(MAX_CUSTOM_STYLES_LENGTH) })).toEqual({ customStyles: "x".repeat(MAX_CUSTOM_STYLES_LENGTH) });
     expect(parseCustomStyles({})).toEqual({});
-    expect(parseCustomStyles({ name: "Ember Studio" })).toEqual({});
+    expect(parseCustomStyles({ name: "Papaya OS Studio" })).toEqual({});
   });
 
   it.each([
@@ -1032,7 +1032,7 @@ describe("Edit your profile", () => {
     expect(parseProfileChanges({})).toEqual({});
   });
 
-  it("takes as long a name and email address as Ember keeps, a password as long as sign-in does, and a bio as long as the form lets anyone type", () => {
+  it("takes as long a name and email address as Papaya OS keeps, a password as long as sign-in does, and a bio as long as the form lets anyone type", () => {
     const longest = {
       name: "x".repeat(MAX_USER_NAME_LENGTH),
       emailAddress: `${"x".repeat(MAX_EMAIL_ADDRESS_LENGTH - "@example.com".length)}@example.com`,
@@ -1050,7 +1050,7 @@ describe("Edit your profile", () => {
     ["an email address that isn't text", { emailAddress: ["ada@example.com"] }, "Email address must be text"],
     ["a password that isn't text", { password: 12345678 }, "Password must be text"],
     ["a bio that isn't text", { bio: false }, "Bio must be text"],
-    ["a name longer than Ember keeps", { name: "x".repeat(MAX_USER_NAME_LENGTH + 1) }, "Name must be at most 100 characters"],
+    ["a name longer than Papaya OS keeps", { name: "x".repeat(MAX_USER_NAME_LENGTH + 1) }, "Name must be at most 100 characters"],
     ["an email address longer than any deliverable one", { emailAddress: `${"x".repeat(MAX_EMAIL_ADDRESS_LENGTH)}@example.com` }, "Email address must be at most 254 characters"],
     ["a password shorter than first run takes", { password: "1234567" }, PASSWORD_TOO_SHORT],
     ["four emoji, which the field's minlength counts as eight", { password: "🔐🔐🔐🔐" }, PASSWORD_TOO_SHORT],
@@ -1211,7 +1211,7 @@ describe("Set up the workspace", () => {
     ["no email address", { name: "Ada", emailAddress: "", password: "12345678" }, "Name, email address and password are required"],
     ["no password", { name: "Ada", emailAddress: "ada@example.com" }, "Name, email address and password are required"],
     ["a password that isn't text", { name: "Ada", emailAddress: "ada@example.com", password: 12345678 }, "Name, email address and password are required"],
-    ["a name longer than Ember keeps", { name: "x".repeat(MAX_USER_NAME_LENGTH + 1), emailAddress: "ada@example.com", password: "secret words" }, "Name must be at most 100 characters"],
+    ["a name longer than Papaya OS keeps", { name: "x".repeat(MAX_USER_NAME_LENGTH + 1), emailAddress: "ada@example.com", password: "secret words" }, "Name must be at most 100 characters"],
     [
       "an email address longer than any deliverable one",
       { name: "Ada", emailAddress: `${"x".repeat(MAX_EMAIL_ADDRESS_LENGTH)}@example.com`, password: "secret words" },
@@ -1233,7 +1233,7 @@ describe("Set up the workspace", () => {
     for (const name of ["Recaps", "Re cap", "Recap Bot", ""]) expect(sameName(name, "Recap"), name).toBe(false);
   });
 
-  it("takes a name and an email address as long as Ember keeps, counting the name once trimmed", () => {
+  it("takes a name and an email address as long as Papaya OS keeps, counting the name once trimmed", () => {
     const name = "x".repeat(MAX_USER_NAME_LENGTH);
     const emailAddress = `${"x".repeat(MAX_EMAIL_ADDRESS_LENGTH - "@example.com".length)}@example.com`;
     expect(parseSignUp({ name: ` ${name} `, emailAddress, password: "secret words" })).toEqual({ name, emailAddress, password: "secret words" });

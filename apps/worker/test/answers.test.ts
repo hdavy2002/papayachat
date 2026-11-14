@@ -20,7 +20,7 @@ import { answerWithKeptModel, api, apiWith, connect, cookieOf, freshDeploy, post
 
 // What @ember answers when someone asks it something: in the room or thread they asked in, having read
 // the conversation there, as rich text, with the pictures it shows in a card and a preview of its first
-// link, at addresses people wrote there, or a note saying why it can't, and only while Ember AI is on.
+// link, at addresses people wrote there, or a note saying why it can't, and only while Papaya AI is on.
 
 const EMBER: User = { id: ASSISTANT_ID, name: ASSISTANT_NAME };
 /**
@@ -34,7 +34,7 @@ const [MESSAGES_MODEL, RESPONSES_MODEL] = ["anthropic/claude-sonnet-5.5", "opena
 const SETUP = { accountId: "0123456789abcdef0123456789abcdef", apiToken: "an-api-token-with-ai-gateway-run_0123456" };
 
 /**
- * Sets Ember up with Ada as its administrator, signed in, and Ember AI on with `model`, answering her
+ * Sets Ember up with Ada as its administrator, signed in, and Papaya AI on with `model`, answering her
  * session and the general room: GLM, kept from before Ember stopped offering it, unless it's one Ember offers.
  */
 async function setUp(model = MODEL): Promise<{ ada: Session; general: RoomId }> {
@@ -49,13 +49,13 @@ async function setUp(model = MODEL): Promise<{ ada: Session; general: RoomId }> 
   return { ada, general };
 }
 
-/** Sets Ember AI up as `administrator` with `model`, one Ember offers, which asks the model its test question at each level of thinking. */
+/** Sets Papaya AI up as `administrator` with `model`, one Ember offers, which asks the model its test question at each level of thinking. */
 async function setUpAgain(administrator: Session, model: string): Promise<void> {
   const saved = await api("/api/account/assistant", { method: "PUT", headers: { Cookie: administrator.cookie }, body: JSON.stringify({ ...SETUP, model }) });
   expect(saved.status, await saved.clone().text()).toBe(200);
 }
 
-/** Turns Ember AI off as `administrator`, as turning off its card's switch does. */
+/** Turns Papaya AI off as `administrator`, as turning off its card's switch does. */
 async function turnOff(administrator: Session): Promise<void> {
   expect((await api("/api/account/assistant", { method: "DELETE", headers: { Cookie: administrator.cookie } })).status).toBe(200);
 }
@@ -90,7 +90,7 @@ async function pickLevels(person: Session, changes: AnswerLevelChanges): Promise
   expect(response.status, await response.clone().text()).toBe(200);
 }
 
-/** Changes the most @ember thinks and writes for anyone as `administrator`, as the Ember AI card's dials do. */
+/** Changes the most @ember thinks and writes for anyone as `administrator`, as the Papaya AI card's dials do. */
 async function limitLevels(administrator: Session, changes: AnswerLevelChanges): Promise<void> {
   const response = await api("/api/account/assistant", { method: "PATCH", headers: { Cookie: administrator.cookie }, body: JSON.stringify(changes) });
   expect(response.status, await response.clone().text()).toBe(200);
@@ -475,7 +475,7 @@ describe("@ember", () => {
     await post(client, `<p>${mention(EMBER)} and the party?</p>`);
     expect(await nextAnswer(client)).toMatchObject({ plainText: "Here's the plan." });
 
-    // Past the test question and its levels each time Ember AI was set up.
+    // Past the test question and its levels each time Papaya AI was set up.
     const answers = [...questions.slice(5, 8), ...questions.slice(13)];
     expect(answers.map(({ body }) => [body.reasoning?.effort, body.max_output_tokens])).toEqual([
       ["low", UNTHINKING_TOKENS + 2_000],
@@ -572,7 +572,7 @@ describe("@ember", () => {
 
     const question = await post(client, `<p>${mention(EMBER)} hello?</p>`);
     expect(await nextAnswer(client)).toMatchObject({ creator: EMBER, plainText: NOTES.credits });
-    expect(errors).toHaveBeenCalledWith(expect.stringMatching(new RegExp(`^Ember AI's model ${MODEL.replaceAll(".", "\\.")} didn't answer message ${question.id}: .*Insufficient credits`)));
+    expect(errors).toHaveBeenCalledWith(expect.stringMatching(new RegExp(`^Papaya AI's model ${MODEL.replaceAll(".", "\\.")} didn't answer message ${question.id}: .*Insufficient credits`)));
     client.close();
   });
 
@@ -593,7 +593,7 @@ describe("@ember", () => {
     client.close();
   });
 
-  it("posts nothing once Ember AI is turned off while the model answers, and stops typing", async () => {
+  it("posts nothing once Papaya AI is turned off while the model answers, and stops typing", async () => {
     const { ada, general } = await setUp();
     const errors = vi.spyOn(console, "error").mockImplementation(() => {});
     const model = waitingModel("Too late.");
@@ -604,7 +604,7 @@ describe("@ember", () => {
     await turnOff(ada);
     model.answer();
     await vi.waitFor(() =>
-      expect(errors).toHaveBeenCalledWith(`Ember AI's answer to message ${question.id} failed:`, "it wasn't posted: Ember AI has been turned off, or @ember is no longer in the room"),
+      expect(errors).toHaveBeenCalledWith(`Papaya AI's answer to message ${question.id} failed:`, "it wasn't posted: Papaya AI has been turned off, or @ember is no longer in the room"),
     );
     await settle(client);
     expect(client.log.filter((frame) => frame.type === "message.created" && frame.message.creator.id === ASSISTANT_ID)).toEqual([]);
@@ -623,7 +623,7 @@ describe("@ember", () => {
     client.send({ type: "message.delete", messageId: question.id });
     await client.next("message.deleted");
     model.answer();
-    await vi.waitFor(() => expect(errors).toHaveBeenCalledWith(`Ember AI's answer to message ${question.id} failed:`, "it wasn't posted: the message is gone"));
+    await vi.waitFor(() => expect(errors).toHaveBeenCalledWith(`Papaya AI's answer to message ${question.id} failed:`, "it wasn't posted: the message is gone"));
     await settle(client);
     expect(client.log.filter((frame) => frame.type === "message.created" && frame.message.creator.id === ASSISTANT_ID)).toEqual([]);
     client.close();

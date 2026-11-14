@@ -220,8 +220,8 @@ describe("Notification levels", () => {
 });
 
 describe("Custom domain", () => {
-  const MOVED: Account = { name: "Ember", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo: null, customDomain: "chat.example.com", joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false };
-  /** The bell in general's header, at this address while Ember's custom domain is `customDomain`. */
+  const MOVED: Account = { name: "Papaya OS", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo: null, customDomain: "chat.example.com", joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false };
+  /** The bell in general's header, at this address while Papaya OS's custom domain is `customDomain`. */
   const bellWhile = (customDomain: string | null) => (
     <AccountContext value={{ ...MOVED, customDomain }}>
       <PushProvider vapidPublicKey={KEY} platform={CHROME_MAC}>
@@ -230,18 +230,18 @@ describe("Custom domain", () => {
     </AccountContext>
   );
 
-  it("doesn't save this browser's subscription again at an address Ember has moved from, where the one saved at its custom domain replaced it", async () => {
+  it("doesn't save this browser's subscription again at an address Papaya OS has moved from, where the one saved at its custom domain replaced it", async () => {
     vi.mocked(isPushOn).mockResolvedValueOnce(true).mockResolvedValueOnce(true);
     const { rerender } = render(bellWhile(MOVED.customDomain));
     expect(await screen.findByRole("checkbox", { name: "Notifying about @ mentions" })).toBeInTheDocument();
     expect(savePushAgain).not.toHaveBeenCalled();
 
-    // Until Ember stops using the domain, which makes this address Ember's again.
+    // Until Papaya OS stops using the domain, which makes this address Papaya OS's again.
     rerender(bellWhile(null));
     await vi.waitFor(() => expect(savePushAgain).toHaveBeenCalledOnce());
   });
 
-  it("saves it again at Ember's custom domain", async () => {
+  it("saves it again at Papaya OS's custom domain", async () => {
     vi.mocked(isPushOn).mockResolvedValueOnce(true);
     render(bellWhile(location.host));
     await screen.findByRole("checkbox", { name: "Notifying about @ mentions" });

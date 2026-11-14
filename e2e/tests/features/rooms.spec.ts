@@ -347,7 +347,7 @@ test.describe("Welcome and invite card", () => {
     const { roomId, joinCode } = await invitation(request, session);
     const ada = await members.signIn("Ada", { path: `/rooms/${roomId}`, serverRooms: true, administrator: true });
     const log = ada.page.getByRole("log", { name: "Messages in general" });
-    await expect(log.getByRole("heading", { level: 2, name: "Welcome to Ember" })).toBeVisible();
+    await expect(log.getByRole("heading", { level: 2, name: "Welcome to Papaya OS" })).toBeVisible();
     await expect(log.getByText("To invite people to chat, share the join link below.")).toBeVisible();
     await expect(log.getByRole("textbox", { name: "Share to invite more people" })).toHaveValue(new URL(`/join/${joinCode}`, baseURL).href);
     // It takes the place of the welcome an empty room has.
@@ -357,7 +357,7 @@ test.describe("Welcome and invite card", () => {
   test("stays in the first room", async ({ members }) => {
     const ada = await members.signIn("Ada", { administrator: true });
     await expect(ada.page.getByRole("heading", { name: "Welcome to #general" })).toBeVisible();
-    await expect(ada.page.getByRole("heading", { name: "Welcome to Ember" })).toHaveCount(0);
+    await expect(ada.page.getByRole("heading", { name: "Welcome to Papaya OS" })).toHaveCount(0);
   });
 });
 
@@ -365,7 +365,7 @@ test.describe("Welcome card for administrators, until they dismiss it", () => {
   test("shows the welcome card to administrators alone, and to a member made one at once", async ({ members, request, session }) => {
     const { roomId } = await invitation(request, session);
     const grace = await members.signIn("Grace", { path: `/rooms/${roomId}`, serverRooms: true });
-    const card = grace.page.getByRole("heading", { level: 2, name: "Welcome to Ember" });
+    const card = grace.page.getByRole("heading", { level: 2, name: "Welcome to Papaya OS" });
     await expect(card).toHaveCount(0);
 
     await makeAdministrator(request, grace.session);
@@ -377,7 +377,7 @@ test.describe("Welcome card for administrators, until they dismiss it", () => {
     const grace = await members.signIn("Grace", { path: `/rooms/${roomId}`, serverRooms: true, administrator: true });
     const otherTab = await grace.page.context().newPage();
     await otherTab.goto(`/rooms/${roomId}`);
-    const cards = [grace.page, otherTab].map((page) => page.getByRole("heading", { level: 2, name: "Welcome to Ember" }));
+    const cards = [grace.page, otherTab].map((page) => page.getByRole("heading", { level: 2, name: "Welcome to Papaya OS" }));
     for (const card of cards) await expect(card).toBeVisible();
 
     const dismissed = grace.page.waitForResponse((response) => response.url().endsWith("/api/sidebar/invitation") && response.request().method() === "DELETE");
@@ -423,8 +423,8 @@ test.describe("Join link", () => {
     await ada.page.getByRole("button", { name: "Share join link" }).click();
     // The stand-in for the system's share sheet kept what the page shared.
     await expect.poll(() => ada.page.evaluate(() => (window as unknown as { shared?: ShareData }).shared)).toEqual({
-      title: "Link to join Ember",
-      text: "Hit this link to join me in Ember and start chatting.",
+      title: "Link to join Papaya OS",
+      text: "Hit this link to join me in Papaya OS and start chatting.",
       url: new URL(`/join/${joinCode}`, baseURL).href,
     });
   });

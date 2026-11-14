@@ -1,11 +1,11 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { MainContent, SkipLink } from "@/components/main-content";
 
-// First run's card, which the steps of setting Ember up share: the form that makes its administrator and
+// First run's card, which the steps of setting Papaya OS up share: the form that makes its administrator and
 // what stands in for it (setup-page.tsx), and then the question about huddles (setup-huddles.tsx).
 
 /** The page's title, which is the card's too unless a step has its own. */
-export const SETUP_TITLE = "Set up Ember";
+export const SETUP_TITLE = "Set up Papaya OS";
 /** A button of the card's footer, 44px tall for fingers as the app's are. */
 export const STEP_BUTTON = "h-10 gap-2 rounded-[0.7rem] text-base font-medium touch:h-11";
 /** basecoat's `.ui-skip-link` (theme.css): with no header to show it under, it shows at the top left, clear of a notch. */
@@ -41,7 +41,7 @@ export function SetupCard({ title = SETUP_TITLE, subtitle, problem = null, start
         )}
         <section aria-label={title} className="w-full min-w-0 overflow-hidden rounded-2xl border bg-card text-card-foreground">
           <header className="flex flex-col items-center px-5 pt-5 text-center">
-            <img src="/ember-icon.png" alt="Ember" width={48} height={48} className="mb-4 block size-12 object-contain" />
+            <img src="/ember-icon.png" alt="Papaya OS" width={48} height={48} className="mb-4 block size-12 object-contain" />
             <h1
               ref={heading}
               tabIndex={startsAtTitle ? -1 : undefined}

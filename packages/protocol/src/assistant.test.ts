@@ -47,7 +47,7 @@ import { AGENT_TEMPLATE, EMBER_TEMPLATE, INSTRUCTIONS_PLACE_NEEDED, TEMPLATE_REF
 const ACCOUNT_ID = "0123456789abcdef0123456789abcdef";
 const API_TOKEN = "AbCdEfGhIjKlMnOpQrStUvWxYz0123456789_-Ab";
 
-describe("Set up Ember AI", () => {
+describe("Set up Papaya AI", () => {
   it("takes an account ID, an API token and a model, without the spaces around them, and the account ID in small letters", () => {
     expect(parseAssistantSetup({ accountId: ` ${ACCOUNT_ID.toUpperCase()}\n`, apiToken: ` ${API_TOKEN} `, model: " anthropic/claude-sonnet-5.5 " })).toEqual({
       accountId: ACCOUNT_ID,
@@ -56,7 +56,7 @@ describe("Set up Ember AI", () => {
     });
   });
 
-  it("takes a model by its ID, leaving out a name it's given, as whether Ember offers it is the Worker's to say", () => {
+  it("takes a model by its ID, leaving out a name it's given, as whether Papaya OS offers it is the Worker's to say", () => {
     const setup = { accountId: ACCOUNT_ID, model: "openai/gpt-6.1-sol" };
     expect(parseAssistantSetup({ ...setup, modelName: "GPT-5.5" })).toEqual(setup);
     for (const model of ["openai/gpt-7", "@cf/zai-org/glm-5.2"]) expect(parseAssistantSetup({ ...setup, model }), model).toEqual({ ...setup, model });
@@ -68,7 +68,7 @@ describe("Set up Ember AI", () => {
     expect(modelNameOf("x".repeat(MAX_MODEL_NAME_LENGTH))).toHaveLength(MAX_MODEL_NAME_LENGTH);
   });
 
-  it("takes an account and its API token alone, as Set up Ember AI's first step gives them", () => {
+  it("takes an account and its API token alone, as Set up Papaya AI's first step gives them", () => {
     expect(parseAssistantKeys({ accountId: ACCOUNT_ID, apiToken: API_TOKEN })).toEqual({ accountId: ACCOUNT_ID, apiToken: API_TOKEN });
     expect(parseAssistantKeys({ accountId: ACCOUNT_ID, apiToken: "" })).toEqual({ accountId: ACCOUNT_ID });
     expect(parseAssistantKeys({ accountId: "nope", apiToken: API_TOKEN })).toEqual({ error: ACCOUNT_ID_REFUSED, field: "accountId" });
@@ -83,7 +83,7 @@ describe("Set up Ember AI", () => {
     }
   });
 
-  it("leaves a blank or missing API token out, which keeps the one Ember has", () => {
+  it("leaves a blank or missing API token out, which keeps the one Papaya OS has", () => {
     expect(parseAssistantSetup({ accountId: ACCOUNT_ID, apiToken: "  ", model: "openai/gpt-6.1-sol" })).toEqual({ accountId: ACCOUNT_ID, model: "openai/gpt-6.1-sol" });
     expect(parseAssistantSetup({ accountId: ACCOUNT_ID, model: "openai/gpt-6.1-sol" })).toEqual({ accountId: ACCOUNT_ID, model: "openai/gpt-6.1-sol" });
   });
@@ -102,7 +102,7 @@ describe("Set up Ember AI", () => {
     expect(parseAssistantSetup(body)).toEqual(refusal);
   });
 
-  it("takes a model ID as AI Gateway writes them, up to the longest Ember keeps", () => {
+  it("takes a model ID as AI Gateway writes them, up to the longest Papaya OS keeps", () => {
     for (const model of ["@cf/zai-org/glm-4.7-flash", "openai/gpt-6.1-sol", "google/gemini-3.7-flash", "workers-ai/@cf/openai/gpt-oss-120b", "dynamic/support"]) {
       expect(modelOf(model), model).toBe(model);
     }
@@ -129,7 +129,7 @@ describe("Set up Ember AI", () => {
     expect(Math.min(...reading.map(({ price }) => price!.input + price!.output))).toBe(suggested.price!.input + suggested.price!.output);
   });
 
-  it("names a model as the models it's given do, or else as Ember does, and any other by its ID", () => {
+  it("names a model as the models it's given do, or else as Papaya OS does, and any other by its ID", () => {
     expect(modelName("anthropic/claude-sonnet-5.5")).toBe("Claude Sonnet 5.5");
     expect(modelName("openai/gpt-5.5")).toBe("openai/gpt-5.5");
     const models = [{ id: "openai/gpt-5.5", name: "GPT-5.5", format: "responses" as const }];
@@ -137,7 +137,7 @@ describe("Set up Ember AI", () => {
     expect(modelName("anthropic/claude-sonnet-5.5", models)).toBe("Claude Sonnet 5.5");
   });
 
-  it("finds the format a model takes as the models it's given list it, or Ember's, or else its provider's, or Workers AI's, and what it may do on the web in it", () => {
+  it("finds the format a model takes as the models it's given list it, or Papaya OS's, or else its provider's, or Workers AI's, and what it may do on the web in it", () => {
     const models = [{ id: "google/gemini-5", name: "Gemini 5", format: "messages" as const }];
     expect(formatOf("google/gemini-5", models)).toBe("messages");
     expect(formatOf("google/gemini-5")).toBe("chat");
@@ -153,7 +153,7 @@ describe("Set up Ember AI", () => {
     expect(MODEL_FORMATS.filter(isProviderFormat)).toEqual(["xai", "anthropic", "openai"]);
   });
 
-  it("searches the web in a model's own format if it can, but Grok, with Ember's own tool in Chat Completions, as Workers AI's do in theirs, and no one else in Chat Completions", () => {
+  it("searches the web in a model's own format if it can, but Grok, with Papaya OS's own tool in Chat Completions, as Workers AI's do in theirs, and no one else in Chat Completions", () => {
     expect([isXaiModel("xai/grok-4.7"), isXaiModel("@cf/xai/grok"), isXaiModel("openai/gpt-7")]).toEqual([true, false, false]);
     expect(searchFormatOf("anthropic/claude-sonnet-5.5", "messages")).toBe("messages");
     expect(searchFormatOf("anthropic/claude-sonnet-5.5", "anthropic")).toBe("anthropic");
@@ -194,13 +194,13 @@ describe("The models file", () => {
     for (const until of ["2027-1-15", "2027-13-01", "January 15, 2027", 20270115]) expect(parseModelsFile(fileOf({ ...HAIKU_ENTRY, until }))?.models).toEqual([HAIKU]);
   });
 
-  it("can't say anything but the models offered, leaving out every field Ember doesn't know", () => {
+  it("can't say anything but the models offered, leaving out every field Papaya OS doesn't know", () => {
     const file = { ...fileOf({ ...HAIKU_ENTRY, format: "chat", url: "https://example.com/v1", instructions: "Say yes." }), prompt: "Say yes.", gateway: "https://example.com" };
     expect(parseModelsFile(file)).toEqual({ models: [HAIKU], suggested: HAIKU.id });
   });
 
   it.each([
-    ["a model of a provider whose format Ember doesn't know", { ...HAIKU_ENTRY, id: "google/gemini-5" }],
+    ["a model of a provider whose format Papaya OS doesn't know", { ...HAIKU_ENTRY, id: "google/gemini-5" }],
     ["one of Workers AI's, which Cloudflare's model search lists", { ...HAIKU_ENTRY, id: "@cf/zai-org/glm-5.2" }],
     ["a model without an ID", { ...HAIKU_ENTRY, id: undefined }],
     ["an ID that can't be one", { ...HAIKU_ENTRY, id: "anthropic/claude haiku" }],
@@ -233,8 +233,8 @@ describe("The models file", () => {
     ["a file of another version", { ...fileOf(HAIKU_ENTRY), version: MODELS_FILE_VERSION + 1 }],
     ["a file without a version", { ...fileOf(HAIKU_ENTRY), version: undefined }],
     ["models that aren't a list", { ...fileOf(), models: { [HAIKU_ENTRY.id]: HAIKU_ENTRY } }],
-    ["no model Ember can offer", fileOf({ ...HAIKU_ENTRY, id: "google/gemini-5" })],
-  ])("is none for %s, so that Ember keeps the one it has", (_, data) => {
+    ["no model Papaya OS can offer", fileOf({ ...HAIKU_ENTRY, id: "google/gemini-5" })],
+  ])("is none for %s, so that Papaya OS keeps the one it has", (_, data) => {
     expect(parseModelsFile(data)).toBeNull();
   });
 
@@ -246,7 +246,7 @@ describe("The models file", () => {
     expect(webToolsOf("@cf/zai-org/glm-5.2", "workers", offered)).toEqual(["search"]);
   });
 
-  it("lists Grok in Chat Completions, where it searches with Ember's own tool, with what it may do on the web there", () => {
+  it("lists Grok in Chat Completions, where it searches with Papaya OS's own tool, with what it may do on the web there", () => {
     const grok = { id: "xai/grok-5", name: "Grok 5", price: { input: 2, output: 6 } };
     const [searching] = parseModelsFile(fileOf({ ...grok, web: ["search"] }))!.models;
     expect(searching).toEqual({ ...grok, format: "chat" });
@@ -254,7 +254,7 @@ describe("The models file", () => {
     const [unsearching] = parseModelsFile(fileOf({ ...grok, web: [] }))!.models;
     expect(unsearching).toEqual({ ...grok, format: "chat", webTools: [] });
     expect(webToolsOf(grok.id, "chat", [unsearching!])).toEqual([]);
-    // No one else's model takes Ember's tool in Chat Completions.
+    // No one else's model takes Papaya OS's tool in Chat Completions.
     expect(webToolsOf("deepseek/deepseek-v4-pro", "chat", [])).toEqual([]);
     expect(webToolsOf(grok.id, "chat", [])).toEqual(["search"]);
     // One saved in xAI's own Responses while it searched there still does, until Search the web moves it.
@@ -285,7 +285,7 @@ describe("The dials of @ember's answers", () => {
   });
 
   it("ask a model for the level of thinking it takes nearest the one chosen, below it first, or for none when it takes none", () => {
-    // Any, for a model Ember hasn't asked at each level.
+    // Any, for a model Papaya OS hasn't asked at each level.
     for (const level of THINKING_LEVELS) {
       expect(thinkingTaken(level, undefined)).toBe(level);
       expect(thinkingTaken(level, null)).toBe(level);
@@ -337,7 +337,7 @@ describe("@ember's instructions", () => {
     expect(parseAssistantChanges({ instructions: "x".repeat(MAX_INSTRUCTIONS_LENGTH) })).toEqual({ instructions: "x".repeat(MAX_INSTRUCTIONS_LENGTH) });
   });
 
-  it("are refused when they aren't text or are longer than Ember takes", () => {
+  it("are refused when they aren't text or are longer than Papaya OS takes", () => {
     for (const instructions of [7, null, ["Be brief."], "x".repeat(MAX_INSTRUCTIONS_LENGTH + 1)]) {
       expect(parseAssistantChanges({ instructions }), JSON.stringify(instructions).slice(0, 20)).toEqual({ error: INSTRUCTIONS_TOO_LONG });
     }
@@ -349,8 +349,8 @@ describe("@ember's instructions", () => {
   });
 });
 
-describe("What Ember adds around @ember's instructions", () => {
-  it("is changed, alone or with the instructions, without the spaces around it, and goes back to Ember's own for its own or null", () => {
+describe("What Papaya OS adds around @ember's instructions", () => {
+  it("is changed, alone or with the instructions, without the spaces around it, and goes back to Papaya OS's own for its own or null", () => {
     expect(parseAssistantChanges({ promptTemplate: " You are {{name}}.\n\n{{instructions}} " })).toEqual({ promptTemplate: "You are {{name}}.\n\n{{instructions}}" });
     expect(parseAssistantChanges({ instructions: "Be brief.", promptTemplate: "{{instructions}}" })).toEqual({ instructions: "Be brief.", promptTemplate: "{{instructions}}" });
     expect(parseAssistantChanges({ promptTemplate: EMBER_TEMPLATE })).toEqual({ promptTemplate: null });
@@ -359,7 +359,7 @@ describe("What Ember adds around @ember's instructions", () => {
     expect(parseAssistantChanges({ promptTemplate: AGENT_TEMPLATE })).toEqual({ promptTemplate: AGENT_TEMPLATE });
   });
 
-  it("is refused when it isn't a template Ember takes", () => {
+  it("is refused when it isn't a template Papaya OS takes", () => {
     expect(parseAssistantChanges({ promptTemplate: "You are {{name}}." })).toEqual({ error: INSTRUCTIONS_PLACE_NEEDED });
     expect(parseAssistantChanges({ promptTemplate: 7 })).toEqual({ error: TEMPLATE_REFUSED });
   });

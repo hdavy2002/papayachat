@@ -7,8 +7,8 @@ import { HUDDLE_CHAT_TITLE } from "@/lib/huddle-chat";
 import { BUTTON } from "./email-settings";
 
 // The card on the Huddles tab, for administrators, named as first run's question names huddles
-// (`HUDDLE_CHAT`): whether Ember has what huddles run through, which is Cloudflare's Realtime SFU, by an
-// SFU app in the Cloudflare account of whoever runs Ember, whose keys an administrator gives it. Its
+// (`HUDDLE_CHAT`): whether Papaya OS has what huddles run through, which is Cloudflare's Realtime SFU, by an
+// SFU app in the Cloudflare account of whoever runs Papaya OS, whose keys an administrator gives it. Its
 // switch says whether it has, as Turnstile's does. Turning it on opens Set up huddles (`HuddlesSetup`),
 // as switches open setup that's missing, as the project's owner asked (2026-10-26), and turning it off
 // forgets the app's keys, which ends any huddle going on once its room next checks, within half a
@@ -19,7 +19,7 @@ export const HUDDLES_EXPLAINED =
   "Huddles let people in a room talk to each other live. They run through Cloudflare's Realtime SFU, with an app in your Cloudflare account.";
 
 /** What turning huddles off asks first. */
-export const CONFIRM_STOP_HUDDLES = "Are you sure you want to turn off huddles? Any huddle going on will end, and Ember will forget the SFU app's keys.";
+export const CONFIRM_STOP_HUDDLES = "Are you sure you want to turn off huddles? Any huddle going on will end, and Papaya OS will forget the SFU app's keys.";
 
 const NOTE = "text-[0.8em] text-muted-foreground max-md:text-[12px]";
 

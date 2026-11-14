@@ -115,7 +115,7 @@ describe("Chat bots page", () => {
   });
 });
 
-describe("Ember AI", () => {
+describe("Papaya AI", () => {
   it("links administrators to AI assistant, after Chat bots, and members not at all", () => {
     const { rerender } = render(<SettingsNavigation section="assistant-settings" administrator />);
     const assistant = screen.getByRole("link", { name: "AI assistant" });

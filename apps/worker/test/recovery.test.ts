@@ -15,7 +15,7 @@ const grace = { name: "Grace Hopper", emailAddress: "grace@example.com", passwor
 const TOKEN = "0123456789abcdef".repeat(4);
 const RESET = "Password updated; existing sessions and live connections for this user were revoked.";
 
-/** Sets Ember up with Ada as its administrator, signed in. */
+/** Sets Papaya OS up with Ada as its administrator, signed in. */
 async function setUp(): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(ada) });
   expect(response.status).toBe(201);

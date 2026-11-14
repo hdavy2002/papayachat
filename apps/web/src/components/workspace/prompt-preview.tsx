@@ -6,12 +6,12 @@ import { WarningTriangle } from "@/components/icons/iconoir";
 import { cn } from "@/lib/utils";
 import { BUTTON } from "./email-settings";
 
-// What Ember adds around the instructions typed on an agent's page, or on @ember's: what its model reads
+// What Papaya OS adds around the instructions typed on an agent's page, or on @ember's: what its model reads
 // before the conversation, as the Worker writes it (`promptAround`), the instructions in their place,
 // for a question the administrator looking writes to it directly, as Try it asks one. Administrators may
 // modify it, as the project's owner asked (2026-11-11), in a box that asks them to take care first, as
-// Custom CSS does: Modify opens the template Ember fills in, with what each placeholder stands for, and
-// Use Ember's own puts back Ember's, which then changes as Ember does.
+// Custom CSS does: Modify opens the template Papaya OS fills in, with what each placeholder stands for, and
+// Use Papaya OS's own puts back Papaya OS's, which then changes as Papaya OS does.
 
 const NOTE = "text-[0.8em] text-muted-foreground max-md:text-[12px]";
 
@@ -20,14 +20,14 @@ const TEMPLATE = cn("w-full resize-y border font-mono disabled:opacity-50", FIEL
 
 /** What the preview says of what it shows, for the agent called `name`. */
 export const aroundExplained = (name: string) =>
-  `Ember tells ${name} who it is, how the chat shows an answer and the cards it can show under one, and where it's asked, then gives it the conversation, each message after its writer's name. Your instructions go after who it is. For a question you write to it directly, it reads:`;
+  `Papaya OS tells ${name} who it is, how the chat shows an answer and the cards it can show under one, and where it's asked, then gives it the conversation, each message after its writer's name. Your instructions go after who it is. For a question you write to it directly, it reads:`;
 
 /** What the box asks care for, of the agent called `name`. */
 export const cautionFor = (name: string) =>
   `Every answer ${name} gives starts from these words. A change here can leave it unsure who it is, where it's asked or what the chat can show, so change only what you need to.`;
 
-/** What the box says Ember does with the placeholders, for the agent called `name`. */
-export const placeholdersExplained = (name: string) => `Ember fills in each of these whenever ${name} is asked:`;
+/** What the box says Papaya OS does with the placeholders, for the agent called `name`. */
+export const placeholdersExplained = (name: string) => `Papaya OS fills in each of these whenever ${name} is asked:`;
 
 /** What each placeholder stands for, as the box lists them. */
 export const PLACEHOLDER_MEANINGS: Record<Placeholder, string> = {
@@ -47,7 +47,7 @@ interface Props {
   name: string;
   /** What it's told around its instructions, from `template`, for a question the administrator writes to it directly. */
   prompt: Prompt;
-  /** What Ember adds around them as the page has it, saved or not, and Ember's own, for whoever answers. */
+  /** What Papaya OS adds around them as the page has it, saved or not, and Papaya OS's own, for whoever answers. */
   template: string;
   ownTemplate: string;
   /** Why the page refused the template, which the box says until it's changed, opening to say it each time it's refused, or null. */
@@ -56,18 +56,18 @@ interface Props {
   onChange: (template: string) => void;
   /** The level of the box's heading, one under its section's. */
   heading: "h3" | "h4";
-  /** What saves the template, on a page that saves it on its own, as @ember's does, beside Use Ember's own. */
+  /** What saves the template, on a page that saves it on its own, as @ember's does, beside Use Papaya OS's own. */
   save?: ReactNode;
 }
 
 /**
- * What Ember adds around them, closed until it's opened, and opened when the page refused what it has:
+ * What Papaya OS adds around them, closed until it's opened, and opened when the page refused what it has:
  * `prompt`, with a mark where the instructions go, and the box that asks for care before the template is
- * modified, which shows the template once Modify is pressed, or while it isn't Ember's own, saying why
- * it can't be saved, if it can't, with what each placeholder stands for, and Use Ember's own.
+ * modified, which shows the template once Modify is pressed, or while it isn't Papaya OS's own, saying why
+ * it can't be saved, if it can't, with what each placeholder stands for, and Use Papaya OS's own.
  */
 export function PromptPreview({ name, prompt, template, ownTemplate, refusal, disabled, onChange, heading: Heading, save }: Props) {
-  // Whether Modify was pressed, after which the template stays, though it's Ember's own again.
+  // Whether Modify was pressed, after which the template stays, though it's Papaya OS's own again.
   const [modifying, setModifying] = useState(false);
   const details = useRef<HTMLDetailsElement>(null);
   const box = useRef<HTMLTextAreaElement>(null);
@@ -89,7 +89,7 @@ export function PromptPreview({ name, prompt, template, ownTemplate, refusal, di
     <details ref={details} className="border-t pt-4">
       {/* 44px tall for fingers, its words where they were. */}
       <summary className="cursor-pointer text-sm font-semibold touch:-mt-3 touch:py-3">
-        <span id={`${id}-title`}>What Ember adds around them</span>
+        <span id={`${id}-title`}>What Papaya OS adds around them</span>
         {modified && <span className="ms-[1ch] rounded-full border border-caution-border bg-caution-background px-2 py-px text-[0.8em] font-medium">Modified</span>}
       </summary>
       <p className={cn(NOTE, "mt-2 touch:mt-0")}>{aroundExplained(name)}</p>
@@ -161,7 +161,7 @@ export function PromptPreview({ name, prompt, template, ownTemplate, refusal, di
                 }}
                 className={BUTTON}
               >
-                Use Ember's own
+                Use Papaya OS's own
               </button>
               {save}
             </div>

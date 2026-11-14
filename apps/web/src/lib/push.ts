@@ -18,7 +18,7 @@ const ALLOW_IN_SETTINGS = "Allow notifications for this site in your browser set
 const NOTICES = {
   unavailable: {
     title: "Notifications aren’t available here",
-    message: "Open Ember in a browser that supports notifications. On iPhone or iPad, add it to your Home Screen first.",
+    message: "Open Papaya OS in a browser that supports notifications. On iPhone or iPad, add it to your Home Screen first.",
     help: true,
   },
   unconfigured: { title: "Notifications aren’t configured", message: "Ask your workspace administrator to configure Web Push on this server.", help: false },
@@ -118,7 +118,7 @@ const REPLACING = "ember:replacing-push";
 
 /**
  * Keeps `key`, the P-256 key of the push subscription this browser had at the address its page moved
- * from to Ember's custom domain, for the next subscription saved here to replace, so that a browser
+ * from to Papaya OS's custom domain, for the next subscription saved here to replace, so that a browser
  * that turns notifications on at both isn't pushed twice. A subscription belongs to an address, and the
  * server can't tell which of someone's are the same browser's.
  */

@@ -108,7 +108,7 @@ describe("Health check", () => {
   const healthWith = (changes: Partial<Env>, init: RequestInit<IncomingRequestCfProperties> = {}) => apiWith(changes, "/api/health", init);
   /** What it tells someone who may hear how the deployment is set up. */
   const detail = { ok: true, storage: bindings.STORAGE_BACKEND, push: { on: true }, files: { on: true } };
-  /** Sets Ember up, answering its first administrator's cookie. */
+  /** Sets Papaya OS up, answering its first administrator's cookie. */
   async function administrator(): Promise<{ headers: { Cookie: string } }> {
     const response = await api("/api/first_run", { method: "POST", body: JSON.stringify({ name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" }) });
     expect(response.status).toBe(201);

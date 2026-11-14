@@ -44,7 +44,7 @@ const WEBHOOK_TOKEN_BYTES = 16;
 
 /**
  * The token a delivery to bot `botId`'s webhook gives it in room `roomId`'s address, in place of the
- * bot's own, which never leaves Ember: the first 16 bytes of an HMAC under `secret` of the room, the
+ * bot's own, which never leaves Papaya OS: the first 16 bytes of an HMAC under `secret` of the room, the
  * bot, its token, and its webhook's URL and when that was saved, in hex, so that it has no "-" in it. It
  * opens the bot API in that room alone, and only until the webhook delivers elsewhere or is removed, or
  * the bot is given a new token, whatever the server it was sent to keeps. Null for a bot without a token,

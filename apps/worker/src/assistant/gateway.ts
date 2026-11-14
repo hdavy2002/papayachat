@@ -18,10 +18,10 @@ import { goingOn, resultsOf, TOOL_CALLS_PER_ANSWER, toolCallsIn, ToolError, tool
 
 export { isObject };
 
-// Asking a model through Cloudflare's AI Gateway: Claude and GPT, of the models Ember offers, through the
+// Asking a model through Cloudflare's AI Gateway: Claude and GPT, of the models Papaya OS offers, through the
 // gateway's endpoints for Anthropic and OpenAI on gateway.ai.cloudflare.com, which pass on each provider's
 // own API as it is (https://developers.cloudflare.com/ai-gateway/usage/providers/anthropic/, …/openai/),
-// and Grok, Workers AI's models and those kept before Ember offered only its own as they were kept,
+// and Grok, Workers AI's models and those kept before Papaya OS offered only its own as they were kept,
 // through the REST API on api.cloudflare.com, in whichever of its three formats the model took
 // (https://developers.cloudflare.com/ai-gateway/usage/rest-api/), which takes Grok's requests only in Chat
 // Completions, where the gateway's credits pay for it as they don't at its xAI endpoint (…/grok/), which
@@ -31,10 +31,10 @@ export { isObject };
 // AI Gateway passes on and the provider runs (https://developers.cloudflare.com/ai-gateway/usage/web-search/):
 // Anthropic's web search and web fetch in Messages, OpenAI's web search in Responses, and xAI's in its
 // own. Chat Completions has none, so Grok, and Workers AI's models that take tools, in Workers AI's
-// format, which is Chat Completions on the REST API too, are given Ember's own for searching the web, and
-// Ember runs their searches with Cloudflare's Web Search API, through the same gateway
+// format, which is Chat Completions on the REST API too, are given Papaya OS's own for searching the web, and
+// Papaya OS runs their searches with Cloudflare's Web Search API, through the same gateway
 // (https://developers.cloudflare.com/web-search/how-to-use/#use-web-search-as-a-tool).
-// A model in any other format may be given tools Ember runs as well (tool-calls.ts).
+// A model in any other format may be given tools Papaya OS runs as well (tool-calls.ts).
 
 /** Where Cloudflare's API is. */
 const CLOUDFLARE_API = "https://api.cloudflare.com/client/v4";
@@ -42,7 +42,7 @@ const CLOUDFLARE_API = "https://api.cloudflare.com/client/v4";
 /** Where AI Gateway's endpoints for each provider are, under an account and a gateway. */
 const PROVIDER_ENDPOINTS = "https://gateway.ai.cloudflare.com/v1";
 
-/** The gateway Ember's requests go through: in the address of each provider's endpoint, and named to Cloudflare's REST API, for a model kept from before. */
+/** The gateway Papaya OS's requests go through: in the address of each provider's endpoint, and named to Cloudflare's REST API, for a model kept from before. */
 const GATEWAY_ID = "default";
 
 /** Where each format's requests go: under the account's `ai/v1` on Cloudflare's API, or, for a provider's own, under the gateway's endpoint for that provider. */
@@ -56,16 +56,16 @@ const PATHS: Record<ModelFormat, string> = {
   openai: "openai/responses",
 };
 
-/** The version of Anthropic's API that Ember's requests to the gateway's Anthropic endpoint are written for. */
+/** The version of Anthropic's API that Papaya OS's requests to the gateway's Anthropic endpoint are written for. */
 const ANTHROPIC_VERSION = "2023-06-01";
 
-/** The most of Cloudflare's own words about a refusal that Ember passes on. */
+/** The most of Cloudflare's own words about a refusal that Papaya OS passes on. */
 const MAX_QUOTED_LENGTH = 200;
 
 /** The most of a page a model reads, in tokens, about as many as the longest conversation @ember reads. */
 const PAGE_TOKENS = 10_000;
 
-/** How many times Ember lets Anthropic's model carry on a turn it paused while it searched, before taking what it said. */
+/** How many times Papaya OS lets Anthropic's model carry on a turn it paused while it searched, before taking what it said. */
 const MAX_CONTINUATIONS = 2;
 
 /** The fewest tokens a request may let its model write, in OpenAI's Responses, so the fewest an answer needs left to go on after a tool's call. */
@@ -81,7 +81,7 @@ const MAX_RESULT_LENGTH = 2_000;
 /** The longest search Cloudflare's Web Search API takes. */
 const MAX_QUERY_LENGTH = 1_024;
 
-/** Ember's own tool for searching the web, which Grok and Workers AI's models take as a function, and Ember runs with Cloudflare's Web Search API (`searchedFor`). */
+/** Papaya OS's own tool for searching the web, which Grok and Workers AI's models take as a function, and Papaya OS runs with Cloudflare's Web Search API (`searchedFor`). */
 const WEB_SEARCH_FUNCTION = {
   type: "function",
   function: {
@@ -96,8 +96,8 @@ const WEB_SEARCH_FUNCTION = {
 };
 
 /**
- * What Ember asks AI Gateway with: a Cloudflare account, an API token of its, a model and the format the
- * model takes, and the levels of thinking it takes, once Ember has asked it at each (`thinkingLevelsOf`).
+ * What Papaya OS asks AI Gateway with: a Cloudflare account, an API token of its, a model and the format the
+ * model takes, and the levels of thinking it takes, once Papaya OS has asked it at each (`thinkingLevelsOf`).
  */
 export interface Gateway {
   accountId: string;
@@ -118,7 +118,7 @@ export interface Turn {
  * the most tokens its answer may take, its thinking among them, how much to think first, if it's told,
  * who asked, if someone did, and who answers, @ember or an agent, if either does, whom AI Gateway's logs
  * and spend limits then know each request by (custom metadata's `user_id` and `agent_id`), what it
- * may do on the web, of what its format has tools for: nothing, unless it's told, and the tools Ember
+ * may do on the web, of what its format has tools for: nothing, unless it's told, and the tools Papaya OS
  * runs for it, if it has any.
  */
 export interface Question {
@@ -162,7 +162,7 @@ export type RefusalReason =
 
 /**
  * Why a model didn't answer, in words an administrator can act on, with what went wrong, the status to
- * answer them with and the field of Set up Ember AI it's about, if one is: `wrongFormat` when the model
+ * answer them with and the field of Set up Papaya AI it's about, if one is: `wrongFormat` when the model
  * was refused in a way another format might not be, with Cloudflare's own word on that, if it gave one,
  * which the refusal ends with, in `cloudflareSays`.
  */
@@ -177,34 +177,34 @@ export interface GatewayRefusal {
 
 export const GATEWAY_UNANSWERED = "AI Gateway didn't answer. Try again in a moment.";
 
-/** Why AI Gateway's xAI endpoint didn't take Ember AI's API token: it takes only one with AI Gateway's Run permission. */
+/** Why AI Gateway's xAI endpoint didn't take Papaya AI's API token: it takes only one with AI Gateway's Run permission. */
 export const XAI_TOKEN_REFUSED =
-  "Ember asks Grok through AI Gateway's xAI endpoint, which didn't take Ember AI's API token. Add the AI Gateway Run permission to the token in the Cloudflare dashboard, then try again.";
+  "Papaya OS asks Grok through AI Gateway's xAI endpoint, which didn't take Papaya AI's API token. Add the AI Gateway Run permission to the token in the Cloudflare dashboard, then try again.";
 
 /** Why nothing paid for asking Grok through AI Gateway's xAI endpoint, where a key of xAI's own, kept by the gateway, can. */
 export const XAI_UNPAID =
   "AI Gateway's credits can't pay for Grok through its xAI endpoint. Add an xAI API key under Provider Keys in the default gateway's settings in AI Gateway, then try again.";
 
-/** Why AI Gateway's endpoint for each provider didn't take Ember AI's API token, which it takes only with AI Gateway Run, or nothing paid there. */
+/** Why AI Gateway's endpoint for each provider didn't take Papaya AI's API token, which it takes only with AI Gateway Run, or nothing paid there. */
 const PROVIDER_REFUSALS: Record<ProviderFormat, { token: string; unpaid: string }> = {
   xai: { token: XAI_TOKEN_REFUSED, unpaid: XAI_UNPAID },
   anthropic: {
     token:
-      "Ember asks Claude through AI Gateway's Anthropic endpoint, which didn't take Ember AI's API token. Add the AI Gateway Run permission to the token in the Cloudflare dashboard, then try again.",
+      "Papaya OS asks Claude through AI Gateway's Anthropic endpoint, which didn't take Papaya AI's API token. Add the AI Gateway Run permission to the token in the Cloudflare dashboard, then try again.",
     unpaid:
       "AI Gateway's credits can't pay for Claude through its Anthropic endpoint. Add an Anthropic API key under Provider Keys in the default gateway's settings in AI Gateway, then try again.",
   },
   openai: {
     token:
-      "Ember asks OpenAI's models through AI Gateway's OpenAI endpoint, which didn't take Ember AI's API token. Add the AI Gateway Run permission to the token in the Cloudflare dashboard, then try again.",
+      "Papaya OS asks OpenAI's models through AI Gateway's OpenAI endpoint, which didn't take Papaya AI's API token. Add the AI Gateway Run permission to the token in the Cloudflare dashboard, then try again.",
     unpaid:
       "AI Gateway's credits can't pay for OpenAI's models through its OpenAI endpoint. Add an OpenAI API key under Provider Keys in the default gateway's settings in AI Gateway, then try again.",
   },
 };
 
-/** Why Cloudflare's Web Search API, which searches the web for Workers AI's models, didn't: it didn't take Ember AI's API token, nothing paid for it, or it didn't answer. */
+/** Why Cloudflare's Web Search API, which searches the web for Workers AI's models, didn't: it didn't take Papaya AI's API token, nothing paid for it, or it didn't answer. */
 export const SEARCH_TOKEN_REFUSED =
-  "Ember searches the web for Workers AI's models with Cloudflare's Web Search API, which didn't take Ember AI's API token. Add the Workers AI Read and AI Gateway Read permissions to it in the Cloudflare dashboard, then try again.";
+  "Papaya OS searches the web for Workers AI's models with Cloudflare's Web Search API, which didn't take Papaya AI's API token. Add the Workers AI Read and AI Gateway Read permissions to it in the Cloudflare dashboard, then try again.";
 export const SEARCH_UNPAID =
   "AI Gateway's credits pay for Cloudflare's Web Search API, which searches the web for Workers AI's models, and there aren't enough. Top them up under Credits Available in AI Gateway, then try again.";
 export const SEARCH_UNANSWERED = "Cloudflare's Web Search API didn't answer. Try again in a moment.";
@@ -220,7 +220,7 @@ export interface Source {
 
 /**
  * A model's answer: its text, whether it was cut short, as it took every token it could, and the pages
- * it came from, when it used the web: those it cites, then those it read, or those Ember's searches found
+ * it came from, when it used the web: those it cites, then those it read, or those Papaya OS's searches found
  * for one of Workers AI's, which can't cite them. When none of those searches found any, as Cloudflare's
  * Web Search API refused them, why it did.
  */
@@ -235,10 +235,10 @@ export interface Answered {
  * What the model `gateway` names answers `question` in its format, or why it didn't, waiting at most
  * `timeoutMs` for it all. The model is told to think as much as the question asks, or as near to that as
  * the levels it takes allow, or not told, when it takes none (`thinkingTaken`). One that doesn't take
- * being told how much to think all the same, as a model Ember hasn't asked at each level might not, is
+ * being told how much to think all the same, as a model Papaya OS hasn't asked at each level might not, is
  * asked again without that, and then, as Search the web tries the web's tools when it's turned on,
  * without the one for reading pages, which AI Gateway may not have for every model, then without them,
- * told it can't use them, and last without the tools Ember runs, which every model Ember gives them
+ * told it can't use them, and last without the tools Papaya OS runs, which every model Papaya OS gives them
  * takes as far as its provider says. One refused only once it has called one of those isn't asked again
  * here: `askOnce` has it answer without them in what's left of the answer's tokens.
  */
@@ -264,7 +264,7 @@ export async function ask(env: Env, gateway: Gateway, question: Question, timeou
     answered = await askOnce(env, gateway, asked, signal);
   }
   if (!isWrongFormat(answered) || !asked.tools || asked.tools.length === 0) return answered;
-  console.error(`Asking ${gateway.model} again without Ember's tools, which it didn't take: ${answered.refusal}`);
+  console.error(`Asking ${gateway.model} again without Papaya OS's tools, which it didn't take: ${answered.refusal}`);
   return askOnce(env, gateway, { ...asked, tools: [] }, signal);
 }
 
@@ -281,7 +281,7 @@ function withThinkingTaken(question: Question, taken: readonly ThinkingLevel[] |
  * (`wrongFormat`), as AI Gateway refuses what the model's provider doesn't, as xAI refuses any level for
  * Grok 4.20 Reasoning, which Cloudflare's catalog lists Low and High for, so that only asking says. One
  * it doesn't answer at for another reason, as when AI Gateway is busy, counts as one it takes, since
- * asking at it is then as it was before Ember asked at each, and `ask` asks again without it if it's
+ * asking at it is then as it was before Papaya OS asked at each, and `ask` asks again without it if it's
  * refused.
  */
 export async function thinkingLevelsOf(env: Env, gateway: Gateway, question: Question, timeoutMs: number): Promise<ThinkingLevel[]> {
@@ -295,10 +295,10 @@ export async function thinkingLevelsOf(env: Env, gateway: Gateway, question: Que
 
 /**
  * What the model `gateway` names answers `question`, asked as it is, until `signal` says it's waited long
- * enough: once, unless it calls tools Ember runs, when it's asked again with what each call came to, for
+ * enough: once, unless it calls tools Papaya OS runs, when it's asked again with what each call came to, for
  * as many calls as an answer may make, and then told to answer. All its turns share the answer's tokens,
  * and its provider's tools the uses an answer allows, and one that calls a tool with too few tokens left
- * to go on took every token it could. One that's refused going on from a call answers without Ember's
+ * to go on took every token it could. One that's refused going on from a call answers without Papaya OS's
  * tools (`withoutTools`).
  */
 export async function askOnce(env: Env, gateway: Gateway, question: Question, signal: AbortSignal): Promise<Answered | GatewayRefusal> {
@@ -332,7 +332,7 @@ export async function askOnce(env: Env, gateway: Gateway, question: Question, si
 }
 
 /**
- * Ember's own tool for searching the web, as one of the tools it runs, for a model in Chat Completions,
+ * Papaya OS's own tool for searching the web, as one of the tools it runs, for a model in Chat Completions,
  * Grok, that may search the web for `question`, and what an answer comes to with the pages its searches
  * found (`withSearches`), as it can't cite them; or null for one in any other format, or that may not.
  */
@@ -369,7 +369,7 @@ const whatWasFound = (result: (Source & { text: string })[]) =>
   result.length > 0 ? result.map(({ url, title, text }, n) => `${n + 1}. ${title || url}\n${url}\n${text}`).join("\n\n") : "The search found nothing.";
 
 /**
- * What the model `gateway` names answers `question` without Ember's tools, once it was `refused` going on
+ * What the model `gateway` names answers `question` without Papaya OS's tools, once it was `refused` going on
  * from a call of one, as a request it can't take. It took the question with everything else it asks, so
  * that's asked as it was, and only once more, with what the answer has left: `tokensLeft` of its tokens,
  * and of its provider's tools the uses `request`, the one refused, left them. `ask` asking it again other
@@ -384,8 +384,8 @@ async function withoutTools(
   refused: GatewayRefusal,
   signal: AbortSignal,
 ): Promise<Answered | GatewayRefusal> {
-  console.error(`Asking ${gateway.model} again without Ember's tools, as it was refused going on from a call of one: ${refused.refusal}`);
-  // Ember's own tool for searching the web, in Chat Completions, is one of the tools it runs too.
+  console.error(`Asking ${gateway.model} again without Papaya OS's tools, as it was refused going on from a call of one: ${refused.refusal}`);
+  // Papaya OS's own tool for searching the web, in Chat Completions, is one of the tools it runs too.
   const asked = { ...question, tools: [], maxTokens: tokensLeft, ...(gateway.format === "chat" && { webTools: [] }) };
   const turn = await turnOf(env, gateway, asked, withUsesOf(gateway.format, requestOf(gateway, asked), request), tokensLeft, signal);
   if (!("refused" in turn)) return answeredIn(gateway.format, turn.body);
@@ -411,7 +411,7 @@ function withUsesOf(format: ModelFormat, fresh: Record<string, unknown>, request
 /**
  * One turn of the model `gateway` names, asked `request`, with `tokensLeft` of its answer's tokens: what
  * it answers, and the tokens left after it. Anthropic's model may pause a turn while it searches, in
- * Messages, which Ember carries on while the turn has tokens left, so its answer is all the turn said.
+ * Messages, which Papaya OS carries on while the turn has tokens left, so its answer is all the turn said.
  * One that paused with none left took every token it could. A turn that's refused says so with the tokens
  * left then, as the parts of it before the refusal wrote some.
  */
@@ -464,7 +464,7 @@ function usesLeft(request: Record<string, unknown>, said: readonly unknown[]): R
 
 /**
  * `request`, in `format`, leaving its provider's tools the uses its answer has left once a turn answered
- * `body`, for the turn that goes on from a call of Ember's tools: Messages' tools by their `max_uses`,
+ * `body`, for the turn that goes on from a call of Papaya OS's tools: Messages' tools by their `max_uses`,
  * and the web searches of OpenAI's Responses, and xAI's, by the cap each puts on a request's. Once they're
  * used up, the model is told to call no tool and answer.
  */
@@ -481,8 +481,8 @@ const listOf = (value: unknown): unknown[] => (Array.isArray(value) ? value : []
 
 /**
  * What the model `gateway` names answers `question` in Workers AI's format, until `signal` says it's waited
- * long enough: Chat Completions, where it may call Ember's tool for searching the web, each time as many
- * times as it likes, which Ember runs (`searchedFor`) and answers it with what was found, until it answers
+ * long enough: Chat Completions, where it may call Papaya OS's tool for searching the web, each time as many
+ * times as it likes, which Papaya OS runs (`searchedFor`) and answers it with what was found, until it answers
  * in words, has taken every token the answer may, thinking among them, or has searched as much as an
  * answer may, when each search it asks for after that is answered with that it can't, and it's asked once
  * more. Its sources are the pages its searches found, as it can't cite them.
@@ -506,7 +506,7 @@ async function askWorkersAi(env: Env, gateway: Gateway, question: Question, sign
     }
     const content = typeof message?.content === "string" ? message.content : "";
     messages.push({ role: "assistant", content, tool_calls: calls.map(({ id, name, query }) => ({ id, type: "function", function: { name, arguments: JSON.stringify({ query }) } })) });
-    // A model given no tool may call one all the same, which Ember doesn't run.
+    // A model given no tool may call one all the same, which Papaya OS doesn't run.
     const searches = calls.map(({ name, query }) => (mayCall && name === WEB_SEARCH_FUNCTION.function.name && query !== "" ? query : null));
     const results = await Promise.all(
       searches.map((query, index) => (query !== null && searched + index < WEB_SEARCHES_PER_ANSWER ? searchedFor(env, gateway, question, query, signal) : null)),
@@ -544,7 +544,7 @@ function messageIn(body: unknown): Record<string, unknown> | null {
 
 /**
  * The call of a tool `call` makes, as Chat Completions writes it: its ID, or one it's given, the tool's
- * name, and what it's to search for, if it's Ember's for searching the web, or "" when it doesn't say.
+ * name, and what it's to search for, if it's Papaya OS's for searching the web, or "" when it doesn't say.
  */
 function toolCallOf(call: unknown, index: number): { id: string; name: string; query: string } {
   const given = isObject(call) ? call : {};
@@ -612,7 +612,7 @@ async function searchedFor(env: Env, { accountId, apiToken }: Gateway, question:
 }
 
 /**
- * Why Cloudflare's Web Search API refused a search with `status`, from its `body`: Ember AI's API token,
+ * Why Cloudflare's Web Search API refused a search with `status`, from its `body`: Papaya AI's API token,
  * which it takes only with Workers AI Read and AI Gateway Read, nothing paying for it, as AI Gateway's
  * credits do, or it turning requests away, or else that it didn't answer, with Cloudflare's own words.
  */
@@ -696,10 +696,10 @@ function standInOf(env: Env): string | null {
  * the format does: Anthropic's adaptive thinking at an effort, whose lowest is as little as their models
  * think, OpenAI's reasoning effort, which xAI's Responses takes too, or Chat Completions'
  * `reasoning_effort`, "none" for no thinking, as Workers AI's format is. A model that may use the web is
- * given the format's tools for what it may do there, and any model the tools Ember runs for it, after
+ * given the format's tools for what it may do there, and any model the tools Papaya OS runs for it, after
  * those. A provider's own format names the model as the provider does (`modelIn`), and OpenAI's and
  * xAI's ask the provider not to keep the conversation, which each keeps for 30 days unless it's told not
- * to, so a model given Ember's tools there is asked for its thinking in a form Ember can send back with
+ * to, so a model given Papaya OS's tools there is asked for its thinking in a form Papaya OS can send back with
  * what a call came to.
  */
 function requestOf({ model, format }: Gateway, { instructions, turns, maxTokens, thinking, webTools, tools: embers = [] }: Question): Record<string, unknown> {
@@ -745,7 +745,7 @@ export function modelIn(format: ModelFormat, model: string): string {
 /**
  * The tools that let a model in `format` do on the web what `webTools` says it may, of what the format
  * has tools for: Anthropic's basic web search and web fetch, which every Claude model takes, each used no
- * more than an answer allows, or OpenAI's web search, or xAI's, which has its name, or Ember's own, in
+ * more than an answer allows, or OpenAI's web search, or xAI's, which has its name, or Papaya OS's own, in
  * Chat Completions and Workers AI's format.
  */
 export function toolsFor(format: ModelFormat, webTools: readonly WebTool[] = []): Record<string, unknown>[] {
@@ -982,5 +982,5 @@ function errorIn(body: unknown): { codes: number[]; message: string | null } {
   return { codes, message: message?.trim() ?? null };
 }
 
-/** `message` cut to what Ember passes on. */
+/** `message` cut to what Papaya OS passes on. */
 const quoted = (message: string) => (message.length > MAX_QUOTED_LENGTH ? `${message.slice(0, MAX_QUOTED_LENGTH - 1).trimEnd()}…` : message);

@@ -98,14 +98,14 @@ function settled(typed: Fields, sent: Fields, saved: Fields): Fields {
 }
 
 /**
- * Your profile: how to install Ember, for the browsers that get steps, then your avatar, which a photo
+ * Your profile: how to install Papaya OS, for the browsers that get steps, then your avatar, which a photo
  * picked saves at once, showing it meanwhile, with the notice "It may take up to 30 minutes to change
  * everywhere.", and Remove avatar takes away, then your name, email address, a new password, unless
  * Papaya signs you in without one, your current password while you have one, which changing your
  * email address or password takes, and your
  * bio, which Save changes saves with the notice "✓", keeping the page, then, while members sign in with
  * Papaya, connecting your Papaya account, or the one you've connected, which Disconnect Papaya
- * unlinks with the notice "Your Papaya account is disconnected.", then, while Ember AI is on, how much @ember thinks and
+ * unlinks with the notice "Your Papaya account is disconnected.", then, while Papaya AI is on, how much @ember thinks and
  * how long it answers you, then your notification level in each of your rooms and DMs, then a sign-in
  * link for you, a new one each time the page loads or saves, and Log out in the top bar. Go Back
  * returns to the page it was opened from. Your avatar, name and bio reach everyone's open pages at
@@ -132,7 +132,7 @@ export function ProfilePage({ me, rooms, askForRoom, onSignOut, onFailed }: Prop
   const [memberful, setMemberful] = useState<MemberfulStatus | null>(null);
   /** Whether you need Papaya to sign in while it's members only, unlike administrators and the people they invite. */
   const [membershipNeeded, setMembershipNeeded] = useState(true);
-  /** Which model @ember answers you with, how much it thinks and how long its answers are, or null while Ember AI is off. */
+  /** Which model @ember answers you with, how much it thinks and how long its answers are, or null while Papaya AI is off. */
   const [assistant, setAssistant] = useState<Profile["assistant"]>(null);
   const [saving, setSaving] = useState(false);
   const passwordInput = useRef<HTMLInputElement>(null);
@@ -155,7 +155,7 @@ export function ProfilePage({ me, rooms, askForRoom, onSignOut, onFailed }: Prop
         setFields(saved.current);
         setHasEmailAddress(answer.profile.emailAddress !== null);
         showAnswer(answer);
-        // Only from here and the Ember AI section's own saves, as a save of the profile or a photo can
+        // Only from here and the Papaya AI section's own saves, as a save of the profile or a photo can
         // answer after a change there, with your model and levels from before it.
         setAssistant(answer.profile.assistant);
       },

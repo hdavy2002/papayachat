@@ -4,17 +4,17 @@ import type { JSHandle, Page } from "@playwright/test";
 import { SFU_APP, SFU_PORT } from "../../projects/workspace-settings";
 
 // Cloudflare's Realtime SFU for the huddles spec, at the address the second test server's REALTIME_SFU_URL
-// names, as Ember asks it (apps/worker/src/huddles/sfu.ts): it knows one app, `SFU_APP`, starts a session
+// names, as Papaya OS asks it (apps/worker/src/huddles/sfu.ts): it knows one app, `SFU_APP`, starts a session
 // for it when asked with its secret, and refuses as Cloudflare does an app it doesn't know, or a secret
 // that isn't the app's. Cloudflare documents that refusal's error code but not its status, so 401 here
-// is a guess, and Ember reads either.
+// is a guess, and Papaya OS reads either.
 //
 // Given a page, it carries what's published as well: each session is a connection of the page's, which
 // answers the offer a browser publishes with, and offers a browser the tracks it pulls, passing on what
 // their publishers send it. Its descriptions name an address of its own, as the SFU's name the SFU's,
 // since a browser in a huddle sends the room none of its own.
 
-/** What Ember asked the SFU: how, where, and with which secret. */
+/** What Papaya OS asked the SFU: how, where, and with which secret. */
 export interface SfuAsked {
   method: string;
   path: string;
@@ -39,13 +39,13 @@ interface Pulled {
   trackName: string;
 }
 
-/** What Ember sends with a request about a session's tracks. */
+/** What Papaya OS sends with a request about a session's tracks. */
 interface AskedOfTracks {
   sessionDescription?: { sdp: string };
   tracks?: Array<Partial<Published & Pulled>>;
 }
 
-/** The page's side of the SFU: its sessions' connections, by what Ember asks of them. */
+/** The page's side of the SFU: its sessions' connections, by what Papaya OS asks of them. */
 type Relay = JSHandle<{
   publish(sessionId: string, offer: string, tracks: Published[]): Promise<unknown>;
   pull(sessionId: string, tracks: Pulled[]): Promise<unknown>;

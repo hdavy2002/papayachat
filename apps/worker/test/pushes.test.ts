@@ -53,7 +53,7 @@ async function people<Names extends string[]>(...names: Names): Promise<{ [K in 
   return sessions as { [K in keyof Names]: Session };
 }
 
-/** Sets Ember up with Ada as its administrator, signed in. */
+/** Sets Papaya OS up with Ada as its administrator, signed in. */
 async function setUp(): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify({ name: "Ada", emailAddress: "ada@example.com", password: "analytical engine" }) });
   expect(response.status).toBe(201);

@@ -8,19 +8,19 @@ import { cn } from "@/lib/utils";
 import { BUTTON } from "./email-settings";
 import { ROUND_BUTTON } from "./link-buttons";
 
-// The Apps card on the AI assistant tab, under Agents, for administrators while Ember AI is on: Connect
-// an app, then each app connected, by name, with where its MCP server is and how many tools Ember read
+// The Apps card on the AI assistant tab, under Agents, for administrators while Papaya AI is on: Connect
+// an app, then each app connected, by name, with where its MCP server is and how many tools Papaya OS read
 // from it, each with a link to its page.
 
 const NOTE = "text-[0.8em] text-muted-foreground max-md:text-[12px]";
 
 /** What the card says of apps. */
-export const APPS_EXPLAINED = `Connect another service by the address of its MCP server, and Ember reads the tools it offers, which you pick for @ember and for each agent on its page. Agents can't call them yet. You can connect up to ${MAX_APPS}.`;
+export const APPS_EXPLAINED = `Connect another service by the address of its MCP server, and Papaya OS reads the tools it offers, which you pick for @ember and for each agent on its page. Agents can't call them yet. You can connect up to ${MAX_APPS}.`;
 
 /** What the card says in place of its list, with no app connected. */
 export const NO_APPS = "No apps are connected yet.";
 
-/** How many tools a row says Ember read from an app. */
+/** How many tools a row says Papaya OS read from an app. */
 export const toolsOf = (count: number) => (count === 1 ? "1 tool" : `${count} tools`);
 
 /** Where an app's server is, as a row names it: its host, and its path unless that's only a slash. */

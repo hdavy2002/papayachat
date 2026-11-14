@@ -1,11 +1,11 @@
 import type { Platform } from "@ember/protocol";
 
-// A browser's offer to install Ember as an app, which Campfire's pwa_install_controller.js keeps for
+// A browser's offer to install Papaya OS as an app, which Campfire's pwa_install_controller.js keeps for
 // Install now. The browser makes it once a page load, perhaps before anything with Install now has
 // shown, so the app listens for it from the start.
 
 /**
- * Whether this browser is given the steps to install Ember, and Install now with them, as Campfire's
+ * Whether this browser is given the steps to install Papaya OS, and Install now with them, as Campfire's
  * app/views/pwa/_install_instructions.html.erb gives them: not Chrome, which is what Chromium Edge and
  * Brave are too by their user agents, nor Firefox but on Android.
  */
@@ -28,7 +28,7 @@ function setOffer(event: InstallPromptEvent | null) {
 
 /**
  * Keeps the browser's offer for Install now, as Campfire does wherever there are service workers and
- * Ember isn't installed already. It takes the place of the browser's own, such as its banner on Android,
+ * Papaya OS isn't installed already. It takes the place of the browser's own, such as its banner on Android,
  * once `replaceInstallPromptsFor` says to.
  */
 export function listenForInstallPrompt(): void {
@@ -42,24 +42,24 @@ export function listenForInstallPrompt(): void {
 
 /**
  * Has Install now take the place of the browser's own offer from now on where `platform` is given the
- * steps to install Ember, as Campfire's controller does on the pages that show them, here every room's
+ * steps to install Papaya OS, as Campfire's controller does on the pages that show them, here every room's
  * and your profile. Any other browser keeps its own, as there.
  */
 export function replaceInstallPromptsFor(platform: Platform): void {
   replacing = givesInstallSteps(platform);
 }
 
-/** Calls `listener` whenever the browser offers to install Ember, or stops offering. */
+/** Calls `listener` whenever the browser offers to install Papaya OS, or stops offering. */
 export function subscribeToInstallPrompt(listener: () => void): () => void {
   listeners.add(listener);
   return () => listeners.delete(listener);
 }
 
-/** Whether the browser has offered to install Ember. */
+/** Whether the browser has offered to install Papaya OS. */
 export const canInstall = () => offer !== null;
 
 /**
- * Shows the browser's prompt to install Ember. A prompt shows only once, so the offer goes with it,
+ * Shows the browser's prompt to install Papaya OS. A prompt shows only once, so the offer goes with it,
  * until the browser makes another, where Campfire's Install now stays and does nothing when pressed again.
  */
 export function promptInstall(): void {

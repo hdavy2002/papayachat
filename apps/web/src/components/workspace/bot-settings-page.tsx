@@ -198,7 +198,7 @@ const SELECT = cn("w-full min-w-0 border outline-none dark:bg-input/30", FIELD_I
 
 /**
  * The bot form: Chat bot setup, the bot's avatar and name, then the bot's two ways of talking, Incoming,
- * the addresses its rooms give it to post at, and Outgoing, the webhook URL Ember sends what people say
+ * the addresses its rooms give it to post at, and Outgoing, the webhook URL Papaya OS sends what people say
  * to it, and Save changes, which saves a picture chosen for its avatar too. The name and the webhook URL
  * have translation buttons.
  */
@@ -233,7 +233,7 @@ function BotForm({ avatar, saved, photo, fields, onChange, saving, onSave }: For
             Outgoing
           </h2>
           <p id="bot-outgoing-description" className={NOTE}>
-            Optional. Ember sends every message that @mentions the bot or is sent to it in a DM to this webhook URL, then posts whatever it answers within 30 seconds.
+            Optional. Papaya OS sends every message that @mentions the bot or is sent to it in a DM to this webhook URL, then posts whatever it answers within 30 seconds.
           </p>
         </div>
         <Field id="user_webhook_url" label="Webhook URL" translation="webhook_url">
@@ -302,7 +302,7 @@ function Incoming({ saved }: { saved: FormProps["saved"] }) {
  * `.btn` the file field fills, unseen, beside the bot's avatar, which shows a picture as it's chosen, as
  * Campfire's upload_preview_controller.js shows it. They're the middle columns of three, the last empty and
  * as wide as the first, so the avatar is centered over the form, and both are 36px, or 44px for fingers.
- * Pressing any of it picks a picture, as it's all one label, but not while the form is sent with it. Ember
+ * Pressing any of it picks a picture, as it's all one label, but not while the form is sent with it. Papaya OS
  * says why a picture over 16 MB isn't kept.
  */
 function AvatarField({ src, photo, disabled }: { src: string; photo: PhotoChoice; disabled: boolean }) {

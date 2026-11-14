@@ -35,18 +35,18 @@ async function signedOut(browser: Browser, baseURL: string): Promise<Page> {
   return page;
 }
 
-/** Asks for a link to join with `emailAddress` on the page `page` shows, answering the email Ember sent. */
+/** Asks for a link to join with `emailAddress` on the page `page` shows, answering the email Papaya OS sent. */
 async function askForLink(page: Page, emailAddress: string): Promise<SentEmail> {
   const sent = resend.sent.length;
   await page.getByRole("textbox", { name: "Email address" }).fill(emailAddress);
   await page.getByRole("button", { name: "Email me a link" }).click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Check your email");
-  await expect(page.getByText(`Ember emailed ${emailAddress}.`, { exact: false })).toBeVisible();
+  await expect(page.getByText(`Papaya OS emailed ${emailAddress}.`, { exact: false })).toBeVisible();
   await expect.poll(() => resend.sent.length).toBe(sent + 1);
   return resend.sent.at(-1)!;
 }
 
-/** The link in an email Ember sent to join or sign in with. */
+/** The link in an email Papaya OS sent to join or sign in with. */
 const linkIn = (email: SentEmail) => /(?:Join|Sign in) here: (\S+)/.exec(email.text)![1]!;
 
 test.describe("Join with an email domain", () => {
@@ -58,9 +58,9 @@ test.describe("Join with an email domain", () => {
     const emailDomain = card.getByRole("switch", { name: "Email domain" });
     await expect(emailDomain).not.toBeChecked();
     await expect(emailDomain).toHaveAccessibleDescription(
-      "People with an email address at your domains join with a link Ember emails them. Ember can't send email yet, so turning this on sets that up first.",
+      "People with an email address at your domains join with a link Papaya OS emails them. Papaya OS can't send email yet, so turning this on sets that up first.",
     );
-    // Ember can't send email yet, so turning it on sets that up first.
+    // Papaya OS can't send email yet, so turning it on sets that up first.
     await emailDomain.click();
     const setup = page.getByRole("dialog", { name: "Set up email" });
     await setup.getByRole("radio", { name: "Resend" }).check();

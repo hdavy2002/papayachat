@@ -1,4 +1,4 @@
-/** Campfire's `btn--success` (buttons.css) in Ember's colors: Copy link turns green as it copies. */
+/** Campfire's `btn--success` (buttons.css) in Papaya OS's colors: Copy link turns green as it copies. */
 const COPIED = ["text-positive", "motion-safe:animate-success"];
 
 /**

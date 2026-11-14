@@ -32,7 +32,7 @@ const CODE = /`([^`\n]+)`/y;
 /** Slack's own markup, which starts with something other than a space, so `a < b > c` is text. */
 const SPECIAL = /<([^<>\s][^<>\n]*)>/y;
 const ESCAPE = /&(amp|lt|gt);/y;
-/** A web address written out, which Ember links as it shows, and whose underscores and colons are its own. */
+/** A web address written out, which Papaya OS links as it shows, and whose underscores and colons are its own. */
 const WEB_ADDRESS = /https?:\/\/[^\s<>]+/iy;
 const SHORTCODE = /:([a-z0-9_+-]+):(?::skin-tone-([2-6]):)?/y;
 

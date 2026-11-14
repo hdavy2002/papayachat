@@ -32,7 +32,7 @@ import { modelsFileOf, offeredModel, searchingFormatOf } from "./offered";
 import { administratorOf, greetingFrom, searchedBy, WEB_TEST_QUESTION } from "./settings";
 
 // AI agents, as administrators make, change and delete them beside @ember on the AI assistant tab of
-// workspace settings, each with its own instructions and the model it answers with, which Ember AI asks
+// workspace settings, each with its own instructions and the model it answers with, which Papaya AI asks
 // AI Gateway for. They answer JSON for the tab and each agent's page.
 
 const problem = (status: number, message: string) => Response.json({ error: message }, { status });
@@ -45,7 +45,7 @@ const PRIVATE = { "Cache-Control": "no-store" };
 export const agentAnsweredUnsearched = (name: string) =>
   `${name} answered without searching the web, so Search the web is still off. Try again, or choose another model.`;
 
-/** What making the agent called `name`, or giving it a model, asks the model first, as Set up Ember AI asks @ember's. */
+/** What making the agent called `name`, or giving it a model, asks the model first, as Set up Papaya AI asks @ember's. */
 const testQuestionFor = (name: string) => ({
   ...TEST_QUESTION,
   instructions: `You are ${name}, an AI agent in a team's chat, where people ask you things by mentioning @${name}. An administrator has just set you up.`,
@@ -60,7 +60,7 @@ const webTestQuestionFor = (name: string) => ({
 /**
  * An agent's settings page, `/account/agents/<id>/edit`: Campfire's 404 page for an administrator when
  * `id` isn't an active agent's, or @ember's, whose page is always there, and otherwise the app's page,
- * which sends anyone signed out to sign in, anyone else to workspace settings, and anyone while Ember AI
+ * which sends anyone signed out to sign in, anyone else to workspace settings, and anyone while Papaya AI
  * is off to the AI assistant tab.
  */
 export async function agentPage(request: Request, env: Env, pathname: string, agentId: UserId): Promise<Response> {
@@ -69,7 +69,7 @@ export async function agentPage(request: Request, env: Env, pathname: string, ag
   return found === "not found" ? notFound(request) : anyOtherPage(request, env, pathname);
 }
 
-/** `GET /api/account/agents`: the agents, by name, as the AI assistant tab lists them while Ember AI is on. */
+/** `GET /api/account/agents`: the agents, by name, as the AI assistant tab lists them while Papaya AI is on. */
 export async function listAgents(request: Request, env: Env): Promise<Response> {
   const credentials = await credentialsOf(request, env);
   const agents = credentials && (await workspace(env).agents(credentials));
@@ -87,12 +87,12 @@ export async function showAgent(request: Request, env: Env, agentId: UserId): Pr
 
 /**
  * `POST /api/account/agents`, `{ name, description, instructions, promptTemplate?, model, thinking,
- * length, webSearch, rooms }`: makes an agent with a model Ember offers, once that has answered a test
- * question through Ember AI's account, and searched the web, if it's to, answering 201 with the agent as its page
+ * length, webSearch, rooms }`: makes an agent with a model Papaya OS offers, once that has answered a test
+ * question through Papaya AI's account, and searched the web, if it's to, answering 201 with the agent as its page
  * shows it. With an avatar, it's a form whose `user` part is that JSON and whose `avatar` and `variant`
  * parts are the picture, as a bot's is. Someone who isn't an administrator hears so before anything they
  * sent is read, and a field that can't be what it's for, or that AI Gateway refuses, is refused on that
- * field. Ember AI being off, as many agents as there can be and a name someone has are refused before
+ * field. Papaya AI being off, as many agents as there can be and a name someone has are refused before
  * the model is asked, so that nobody waits for it to hear so.
  */
 export async function createAgent(request: Request, env: Env): Promise<Response> {
@@ -117,10 +117,10 @@ export async function createAgent(request: Request, env: Env): Promise<Response>
 /**
  * `PATCH /api/account/agents/:id`, with any of what `POST /api/account/agents` takes: changes agent `id`,
  * answering it as its page then shows it, with a new avatar as `createAgent` takes one. Its model answers
- * the test question first when it's another, which has to be one Ember offers (`offeredModel`), though
+ * the test question first when it's another, which has to be one Papaya OS offers (`offeredModel`), though
  * the one it has needn't be, and searches the web when Search the web is to be on and wasn't, or it's
  * another model, though a name someone has is refused before it's asked. As there, someone who isn't an administrator
- * hears so first, then that Ember AI is off, then an agent there isn't isn't found, before anything that
+ * hears so first, then that Papaya AI is off, then an agent there isn't isn't found, before anything that
  * was sent is read.
  */
 export async function changeAgent(request: Request, env: Env, agentId: UserId): Promise<Response> {
@@ -153,12 +153,12 @@ export async function changeAgent(request: Request, env: Env, agentId: UserId): 
  * `POST /api/account/agents/trials`, `{ name, instructions, promptTemplate?, model, thinking, length,
  * webSearch, question }`, and `POST /api/account/agents/:id/trials` for agent `id`: Try it, which asks
  * the agent, as its page sets it up, saved or not, the administrator's question, as if they'd written it
- * to the agent directly, through Ember AI's account, answering what it said, as a message of its would
+ * to the agent directly, through Papaya AI's account, answering what it said, as a message of its would
  * show it, but for a preview of its first link, and how long its model took. Nobody else sees either,
  * and nothing is saved. A saved agent with the same model answers in the format, and with the web tools,
  * its tests found, but for one that searches the web in another format, as Grok saved in xAI's own
- * Responses does in Chat Completions now, and any other model, which has to be one Ember offers, in the format Ember asks it in (`triedAnswer`). As with
- * changing an agent, someone who isn't an administrator hears so first, then that Ember AI is off, then
+ * Responses does in Chat Completions now, and any other model, which has to be one Papaya OS offers, in the format Papaya OS asks it in (`triedAnswer`). As with
+ * changing an agent, someone who isn't an administrator hears so first, then that Papaya AI is off, then
  * that the agent isn't there, before anything that was sent is read, and a field that can't be what it's
  * for, or that AI Gateway refuses, is refused on that field, as Search the web is for a model that can't
  * search.
@@ -189,10 +189,10 @@ export async function tryAgent(request: Request, env: Env, agentId: UserId | nul
 /**
  * What the agent `trial` sets up answers its question, asked through `access` as a direct message from
  * the administrator who tries it, in the format of the agent as it's saved, while it has the same model,
- * or else the one Ember offers the model in, `offered`, at the levels of thinking Cloudflare's model
+ * or else the one Papaya OS offers the model in, `offered`, at the levels of thinking Cloudflare's model
  * search lists for one of Workers AI's, and what it may do on the web there, or why it didn't answer.
  * One that searches the web in another format while it's to is asked there, as a Grok saved in xAI's own
- * Responses is in Chat Completions, and one of Workers AI's saved before Ember gave them its tool for
+ * Responses is in Chat Completions, and one of Workers AI's saved before Papaya OS gave them its tool for
  * searching the web is in Workers AI's format.
  */
 async function triedAnswer(
@@ -236,9 +236,9 @@ export async function deleteAgent(request: Request, env: Env, agentId: UserId): 
 }
 
 /**
- * What asking a model through Ember AI's gateway finds for the agent called `name`: the format it takes
+ * What asking a model through Papaya AI's gateway finds for the agent called `name`: the format it takes
  * the test question in and the levels of thinking it takes, unless that's `known` already, as it is for
- * the model an agent has, or else for one Ember `offered`, in the format Ember offers it in, at the
+ * the model an agent has, or else for one Papaya OS `offered`, in the format Papaya OS offers it in, at the
  * levels Cloudflare's model search lists for one of Workers AI's, and, while it's to search the web
  * (`webSearch`), what it may do there, in the format it searches in, which it's asked in from then on, as
  * one of Workers AI's kept in Chat Completions is in theirs (`searchingFormatOf`), with the levels of thinking it takes there, or else
@@ -277,8 +277,8 @@ async function askedModel(
 
 /**
  * What to answer when the model didn't answer its test question: why, on `about`, the field of the
- * agent's page for the test it failed, when it's the model's doing, and not Ember AI's API token or
- * account's, which Ember AI's card changes, or AI Gateway's.
+ * agent's page for the test it failed, when it's the model's doing, and not Papaya AI's API token or
+ * account's, which Papaya AI's card changes, or AI Gateway's.
  */
 const refused = ({ refusal, reason, field, status }: GatewayRefusal, about: "model" | "webSearch") =>
   formAnswer({ error: refusal, ...((field === "model" || reason === "model") && { field: about }) }, status);

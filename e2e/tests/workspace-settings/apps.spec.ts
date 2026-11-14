@@ -7,7 +7,7 @@ import { MCP_TOKEN, SERVER_NAME, startFakeMcp, TOOLS, type FakeMcp } from "./fak
 
 // The Apps card on the AI assistant tab, Connect an app, a connected app's page, and the Tools card on
 // @ember's page, on the second test server, with an MCP server this spec fakes on this machine. Each test
-// leaves the workspace as a new one is: no apps, and Ember AI off.
+// leaves the workspace as a new one is: no apps, and Papaya AI off.
 
 const SONNET = "anthropic/claude-sonnet-5.5";
 
@@ -21,7 +21,7 @@ test.beforeEach(async ({ request }) => {
 });
 test.afterEach(async ({ request }) => {
   const headers = await asAdministrator(request);
-  // Apps are removed while Ember AI is on, which keeps them while it's off.
+  // Apps are removed while Papaya AI is on, which keeps them while it's off.
   const listed = await request.get("/api/account/apps", { headers });
   expect(listed.status(), await listed.text()).toBe(200);
   for (const { id } of ((await listed.json()) as Apps).apps) {
@@ -57,14 +57,14 @@ test.describe("Apps", () => {
     await page.getByRole("textbox", { name: "Server address" }).fill(mcp.url);
     await page.getByRole("button", { name: "Connect" }).click();
     const token = page.getByLabel("Token", { exact: true });
-    await expect(token).toHaveAccessibleDescription(`${host} asks for a sign-in. Give a token for it, if it has one: Ember can't sign in to an app any other way yet.`);
+    await expect(token).toHaveAccessibleDescription(`${host} asks for a sign-in. Give a token for it, if it has one: Papaya OS can't sign in to an app any other way yet.`);
     await expect(page).toHaveURL(/\/account\/apps\/new$/);
 
-    // With it, Ember reads the server's tools and goes to the app's page, which lists them.
+    // With it, Papaya OS reads the server's tools and goes to the app's page, which lists them.
     await token.fill(MCP_TOKEN);
     await page.getByRole("button", { name: "Connect" }).click();
     await expect(page).toHaveURL(/\/account\/apps\/[^/]+\/edit$/);
-    await expect(page.getByRole("alert")).toHaveText("Tracker is connected. Ember read 2 tools from it.");
+    await expect(page.getByRole("alert")).toHaveText("Tracker is connected. Papaya OS read 2 tools from it.");
     await expect(page).toHaveTitle("Edit app");
     const tools = page.getByRole("region", { name: /^Tools/ });
     await expect(tools.getByRole("heading", { name: "Tools (2)" })).toBeVisible();
@@ -148,7 +148,7 @@ test.describe("Apps", () => {
     // Picking a tool doesn't call it.
     expect(mcp.asked).not.toContain("tools/call");
 
-    // The server says something else of a tool, which Ember finds when it reads its tools again.
+    // The server says something else of a tool, which Papaya OS finds when it reads its tools again.
     mcp.tools[1]!.description = "Opens an issue, and emails everyone.";
     const read = await request.post(`/api/account/apps/${app.id}/tools`, { headers });
     expect(read.status(), await read.text()).toBe(200);

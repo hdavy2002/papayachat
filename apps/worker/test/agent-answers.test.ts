@@ -8,7 +8,7 @@ import { AGENT_NOTES, NOTES } from "../src/assistant/answers";
 import { agentWithKeptModel, answerWithKeptModel, api, connect, cookieOf, createRoom, freshDeploy, post, roomSql, settle, shown, startDirect, workspaceSql, type Client, type KeptModel, type Session } from "./support";
 
 // What AI agents answer when someone mentions them in a room they're in, or writes to them directly: as
-// their instructions say, with their own model and levels, through Ember AI's account, never to a bot,
+// their instructions say, with their own model and levels, through Papaya AI's account, never to a bot,
 // and what Try it answers an administrator setting one up. And @ember, which now answers with the
 // instructions administrators add to its own.
 
@@ -17,18 +17,18 @@ const SETUP = { accountId: "0123456789abcdef0123456789abcdef", apiToken: "an-api
 const CLOUDFLARE_API = `https://api.cloudflare.com/client/v4/accounts/${SETUP.accountId}/ai/v1`;
 /** Where the account's default gateway passes requests on to Anthropic's own Messages. */
 const ANTHROPIC_ENDPOINT = `https://gateway.ai.cloudflare.com/v1/${SETUP.accountId}/default/anthropic/v1/messages`;
-/** Cloudflare's Web Search API, which Ember searches with for a model given its own tool. */
+/** Cloudflare's Web Search API, which Papaya OS searches with for a model given its own tool. */
 const WEB_SEARCH = `https://api.cloudflare.com/client/v4/accounts/${SETUP.accountId}/ai/websearch/`;
 /** Workers AI's models, which take Chat Completions, whose turns AI Gateway is sent as they are, and Anthropic's, which take Messages and can search the web. */
 const [GLM, GEMMA, GPT_OSS, HAIKU, SONNET] = ["@cf/zai-org/glm-4.7-flash", "@cf/google/gemma-4-26b-a4b-it", "@cf/openai/gpt-oss-120b", "anthropic/claude-haiku-5.5", "anthropic/claude-sonnet-5.5"];
 /** xAI's model that takes Chat Completions but no thinking level. */
 const GROK = "xai/grok-4.20-0309-reasoning";
-/** DeepSeek's, which takes Chat Completions and has no tools for the web there, nor Ember's, as Workers AI's do. */
+/** DeepSeek's, which takes Chat Completions and has no tools for the web there, nor Papaya OS's, as Workers AI's do. */
 const DEEPSEEK = "deepseek/deepseek-v4-pro";
 
 /**
- * The models Ember no longer offers that @ember and the agents answer with here, as a copy set up before
- * Ember stopped offering them keeps them, asked through Cloudflare's REST API in Chat Completions.
+ * The models Papaya OS no longer offers that @ember and the agents answer with here, as a copy set up before
+ * Papaya OS stopped offering them keeps them, asked through Cloudflare's REST API in Chat Completions.
  */
 const KEPT: Record<string, KeptModel> = {
   [GLM]: { id: GLM, name: "GLM-4.7 Flash", format: "chat", thinkingLevels: [...THINKING_LEVELS] },
@@ -38,7 +38,7 @@ const KEPT: Record<string, KeptModel> = {
   [DEEPSEEK]: { id: DEEPSEEK, name: "DeepSeek V4 Pro", format: "chat", thinkingLevels: [...THINKING_LEVELS] },
 };
 
-/** An agent: Scout, on Gemma, made before Ember stopped offering it (`makeAgent`), in every open room, thinking not at all and answering briefly. */
+/** An agent: Scout, on Gemma, made before Papaya OS stopped offering it (`makeAgent`), in every open room, thinking not at all and answering briefly. */
 const SCOUT: NewAgent = {
   name: "Scout",
   description: "Finds what's current",
@@ -55,7 +55,7 @@ const RECAP: NewAgent = { ...SCOUT, name: "Recap", description: "Sums up long th
 
 /** Scout as Try it sends it, with a question. */
 const TRIAL = { name: SCOUT.name, instructions: SCOUT.instructions, model: SCOUT.model, thinking: SCOUT.thinking, length: SCOUT.length, webSearch: false, question: "Is it sunny?" };
-/** The same for an agent that isn't saved yet, which has a model Ember offers. */
+/** The same for an agent that isn't saved yet, which has a model Papaya OS offers. */
 const NEW_TRIAL = { ...TRIAL, model: HAIKU };
 
 /** A forecast's Slack payload, which an agent writes in a ```slack block for a card under its answer, and the card it posts. */
@@ -126,7 +126,7 @@ const unthinkingGrok = (text: string) => ({ body }: Asked) =>
 /**
  * Stands in for AI Gateway, whose model answers each question with what `answer` makes of it, keeping the
  * questions in the order they came: through Cloudflare's REST API, and through the gateway's endpoints for
- * each provider too, where Ember asks Grok, only `throughProviders`.
+ * each provider too, where Papaya OS asks Grok, only `throughProviders`.
  */
 function internet(answer: (asked: Asked) => Response | Promise<Response>, throughProviders = false): Asked[] {
   const questions: Asked[] = [];
@@ -142,8 +142,8 @@ function internet(answer: (asked: Asked) => Response | Promise<Response>, throug
 }
 
 /**
- * Sets Ember up with Ada as its administrator, signed in, and Ember AI on with GLM, which it kept from
- * before Ember stopped offering it, answering her session and the general room.
+ * Sets Papaya OS up with Ada as its administrator, signed in, and Papaya AI on with GLM, which it kept from
+ * before Papaya OS stopped offering it, answering her session and the general room.
  */
 async function setUp(): Promise<{ ada: Session; general: RoomId }> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify({ name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" }) });
@@ -167,8 +167,8 @@ const refusedReading = (text: string) => (asked: Asked) =>
 /**
  * Makes `agent` as `administrator`, its model answering its test question, and searching the web when
  * it's given a tool for it, but refused the tool for reading pages (`refusedReading`), or as `answer` has
- * it, answering it as its page shows it. One with a model Ember no longer offers is made as an agent made
- * before Ember stopped offering it keeps it (`KEPT`), at the levels of thinking `kept` says it took.
+ * it, answering it as its page shows it. One with a model Papaya OS no longer offers is made as an agent made
+ * before Papaya OS stopped offering it keeps it (`KEPT`), at the levels of thinking `kept` says it took.
  */
 async function makeAgent(administrator: Session, agent: NewAgent, answer = refusedReading("Hello, team!"), kept = KEPT[agent.model]): Promise<AgentSettings> {
   internet(kept ? (asked) => answerTo(asked, "Hello, team!") : answer, true);
@@ -187,7 +187,7 @@ async function deleteAgent(administrator: Session, agent: Pick<User, "id">): Pro
   expect((await api(`/api/account/agents/${agent.id}`, { method: "DELETE", headers: { Cookie: administrator.cookie } })).status).toBe(204);
 }
 
-/** Turns Ember AI off as `administrator`, as turning off its card's switch does. */
+/** Turns Papaya AI off as `administrator`, as turning off its card's switch does. */
 async function turnOff(administrator: Session): Promise<void> {
   expect((await api("/api/account/assistant", { method: "DELETE", headers: { Cookie: administrator.cookie } })).status).toBe(200);
 }
@@ -262,7 +262,7 @@ beforeEach(freshDeploy);
 afterEach(() => vi.restoreAllMocks());
 
 describe("An AI agent", () => {
-  it("answers a mention in a room it's in, there, as its instructions say, with its own model and levels, through Ember AI's account", async () => {
+  it("answers a mention in a room it's in, there, as its instructions say, with its own model and levels, through Papaya AI's account", async () => {
     const { ada, general } = await setUp();
     const scout = await makeAgent(ada, SCOUT);
     const questions = internet(() => chatAnswer("Sunny, then **rain** by six."));
@@ -295,7 +295,7 @@ describe("An AI agent", () => {
     client.close();
   });
 
-  it("is told what an administrator changed what Ember adds around its instructions to, each placeholder filled in", async () => {
+  it("is told what an administrator changed what Papaya OS adds around its instructions to, each placeholder filled in", async () => {
     const { ada, general } = await setUp();
     const template = "You are {{name}} of {{community}}, asked in {{where}} by {{asker}}.\n\n{{instructions}}\n\nWrite at most {{words}} words. {{web}} Today is {{today}}.";
     const scout = await makeAgent(ada, { ...SCOUT, promptTemplate: template });
@@ -429,7 +429,7 @@ describe("An AI agent", () => {
     client.close();
   });
 
-  it("answers only in the rooms it's in, and nothing once it's deleted, or Ember AI is off", async () => {
+  it("answers only in the rooms it's in, and nothing once it's deleted, or Papaya AI is off", async () => {
     const { ada, general } = await setUp();
     const launch = await createRoom("launch", { as: ada });
     const scout = await makeAgent(ada, { ...SCOUT, rooms: [launch.id] });
@@ -475,7 +475,7 @@ describe("An AI agent", () => {
     await vi.waitFor(() =>
       expect(errors).toHaveBeenCalledWith(
         `Agent ${scout.id}'s answer to message ${question.id} failed:`,
-        "it wasn't posted: Ember AI has been turned off, or the agent has been deleted or is no longer in the room",
+        "it wasn't posted: Papaya AI has been turned off, or the agent has been deleted or is no longer in the room",
       ),
     );
     await settle(client);
@@ -518,7 +518,7 @@ describe("An AI agent", () => {
     client.close();
   });
 
-  it("asks its model again without a thinking level when the model's provider refuses one it took when the agent was made, rather than saying Ember AI's account is gone", async () => {
+  it("asks its model again without a thinking level when the model's provider refuses one it took when the agent was made, rather than saying Papaya AI's account is gone", async () => {
     const { ada, general } = await setUp();
     const grok = await makeAgent(ada, { ...SCOUT, name: "Grok", model: GROK, thinking: "low" });
     const errors = vi.spyOn(console, "error").mockImplementation(() => {});
@@ -554,7 +554,7 @@ describe("@ember", () => {
     client.close();
   });
 
-  it("answers within what administrators changed what Ember adds around its instructions to", async () => {
+  it("answers within what administrators changed what Papaya OS adds around its instructions to", async () => {
     const { ada, general } = await setUp();
     const promptTemplate = "{{instructions}}\n\nYou are {{name}}. Answer {{asker}}, in {{where}}.";
     const changed = await api("/api/account/assistant", { method: "PATCH", headers: { Cookie: ada.cookie }, body: JSON.stringify({ instructions: "Be brief.", promptTemplate }) });
@@ -605,14 +605,14 @@ describe("Try it", () => {
     expect(await response.json()).toEqual({ body: "<p>Mostly sunny.</p>", cards: [FORECAST_CARD], ms: expect.any(Number) } satisfies AgentTrialAnswer);
   });
 
-  it("asks the agent with what Ember adds around its instructions as the page has it, saved or not", async () => {
+  it("asks the agent with what Papaya OS adds around its instructions as the page has it, saved or not", async () => {
     const { ada } = await setUp();
     const scout = await makeAgent(ada, { ...SCOUT, promptTemplate: "Saved. {{instructions}}" });
     const questions = internet(() => chatAnswer("Sunny."));
 
     expect((await tryIt(ada, scout.id, { ...TRIAL, promptTemplate: "You are {{name}}, in {{where}}. {{instructions}}" })).status).toBe(200);
     expect(questions[0]!.body.messages[0]!.content).toBe(`You are Scout, in a direct message. ${SCOUT.instructions}`);
-    // Ember's own, for none.
+    // Papaya OS's own, for none.
     expect((await tryIt(ada, scout.id, TRIAL)).status).toBe(200);
     expect(questions[1]!.body.messages[0]!.content).toMatch(/^You are Scout, an AI agent in the team chat/);
     const refused = await tryIt(ada, scout.id, { ...TRIAL, promptTemplate: "{{instructions}} in {{room}}" });
@@ -635,7 +635,7 @@ describe("Try it", () => {
     expect(questions[0]!.body.tools!.map(({ name }) => name)).toEqual(["web_search"]);
     expect(JSON.parse(questions[0]!.metadata!)).toEqual({ user_id: ada.user.id, agent_id: scout.id });
 
-    // Another model is asked in the format Ember asks it in, with every tool that format has.
+    // Another model is asked in the format Papaya OS asks it in, with every tool that format has.
     const another = await tryIt(ada, scout.id, { ...TRIAL, model: SONNET, webSearch: true, question: "What's AI Gateway?" });
     expect(another.status, await another.clone().text()).toBe(200);
     expect(questions[1]!.body.tools!.map(({ name }) => name)).toEqual(["web_search", "web_fetch"]);
@@ -660,7 +660,7 @@ describe("Try it", () => {
     expect(questions[2]!.body.system).toContain("You can search the web when a question needs what's current");
   });
 
-  it("tries no model Ember doesn't offer, refusing it on its field before AI Gateway is asked anything, but for the one a saved agent kept", async () => {
+  it("tries no model Papaya OS doesn't offer, refusing it on its field before AI Gateway is asked anything, but for the one a saved agent kept", async () => {
     const { ada } = await setUp();
     const scout = await makeAgent(ada, SCOUT);
     const questions = internet(() => chatAnswer("Sunny."));
@@ -686,7 +686,7 @@ describe("Try it", () => {
     expect(questions.map(({ body }) => body.reasoning_effort)).toEqual(["low", undefined]);
   });
 
-  it("tries Grok searching the web with Ember's own tool in Chat Completions, which Ember runs with Cloudflare's Web Search API", async () => {
+  it("tries Grok searching the web with Papaya OS's own tool in Chat Completions, which Papaya OS runs with Cloudflare's Web Search API", async () => {
     const { ada } = await setUp();
     const trial = { ...TRIAL, name: "Grok", model: "xai/grok-4.7", thinking: "low", webSearch: true, question: "who won the latest Packers game?" };
     const questions = internet((asked) => {
@@ -716,7 +716,7 @@ describe("Try it", () => {
     expect(await refused.json()).toMatchObject({ error: expect.stringContaining("Cloudflare won't run that model for this account."), field: "model" });
   });
 
-  it("is for administrators only, while Ember AI is on, for agents there are, and refuses a field that can't be what it's for, asking nothing", async () => {
+  it("is for administrators only, while Papaya AI is on, for agents there are, and refuses a field that can't be what it's for, asking nothing", async () => {
     const { ada } = await setUp();
     const scout = await makeAgent(ada, SCOUT);
     const questions = internet(() => chatAnswer("Sunny."));

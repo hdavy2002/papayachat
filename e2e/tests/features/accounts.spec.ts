@@ -13,7 +13,7 @@ test.describe("Community settings page", () => {
     await grace.page.getByRole("navigation", { name: "Workspace" }).getByRole("link", { name: "Workspace" }).click();
     await expect(grace.page).toHaveTitle("Community settings");
     await expect(grace.page.getByRole("heading", { level: 1, name: "Basic community settings" })).toBeVisible();
-    await expect(grace.page.getByRole("main").getByRole("heading", { level: 2, name: "Ember", exact: true })).toBeVisible();
+    await expect(grace.page.getByRole("main").getByRole("heading", { level: 2, name: "Papaya OS", exact: true })).toBeVisible();
     await expect(grace.page.getByRole("textbox", { name: "Community name" })).toHaveCount(0);
   });
 });
@@ -27,7 +27,7 @@ test.describe("Rename the workspace", () => {
     await page.getByRole("navigation", { name: "Workspace" }).getByRole("link", { name: "Admin" }).click();
 
     const name = page.getByRole("textbox", { name: "Community name" });
-    await expect(name).toHaveValue("Ember");
+    await expect(name).toHaveValue("Papaya OS");
     await expect(name).not.toBeFocused();
     const saved = page.waitForResponse((response) => response.url().endsWith("/api/account") && response.request().method() === "PATCH");
     await name.press("Enter");
@@ -89,7 +89,7 @@ test.describe("Reset a password from the server", () => {
     expect(await reset.json()).toEqual({ message: "Password updated; existing sessions and live connections for this user were revoked." });
 
     // Without being loaded again.
-    await expect(page.getByRole("heading", { level: 1, name: "Sign in to Ember" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Sign in to Papaya OS" })).toBeVisible();
     await page.getByLabel("Email address").fill(emailAddress);
     await page.getByLabel("Password").fill("compiler");
     await page.getByRole("button", { name: "Sign in" }).click();

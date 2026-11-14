@@ -10,7 +10,7 @@ vi.mock("@/lib/api", () => ({ checkForRelease: vi.fn(), checkForReleaseAfresh: v
 /** When GitHub named a release to the Worker, minutes past 4 PM. */
 const minutesPast = (minutes: number) => new Date(Date.UTC(2026, 10, 11, 16, minutes)).toISOString();
 
-/** What the Worker says of releases while `newest` is GitHub's newest, after this Ember's 0.1, as GitHub named it `checkedAt`. */
+/** What the Worker says of releases while `newest` is GitHub's newest, after this Papaya OS's 0.1, as GitHub named it `checkedAt`. */
 const newestIs = (newest: string, checkedAt = minutesPast(Number(newest.split(".")[1]))): ReleaseCheck => ({
   release: "0.1",
   beta: false,
@@ -20,13 +20,13 @@ const newestIs = (newest: string, checkedAt = minutesPast(Number(newest.split(".
   copy: null,
 });
 
-/** And with Ember's tags naming 0.4's `beta`th beta, ahead of that release. */
+/** And with Papaya OS's tags naming 0.4's `beta`th beta, ahead of that release. */
 const withBeta = (check: ReleaseCheck, beta: number): ReleaseCheck => ({
   ...check,
   newestBeta: { release: `0.4 beta ${beta}`, version: `0.4.0-beta.${beta}`, notes: `https://github.com/NYLLON-SOFTWARE/ember-cloudflare/releases/tag/v0.4.0-beta.${beta}`, newer: true },
 });
 
-/** And while this Ember is 0.5's `release`th beta, its tags name the `newestBeta`th, and GitHub named 0.4, the newest release, `checkedAt`. */
+/** And while this Papaya OS is 0.5's `release`th beta, its tags name the `newestBeta`th, and GitHub named 0.4, the newest release, `checkedAt`. */
 const onBeta = (release: number, newestBeta: number, checkedAt: string): ReleaseCheck => ({
   release: `0.5 beta ${release}`,
   beta: true,
@@ -171,7 +171,7 @@ describe("Check for updates", () => {
     await act(() => result.current.checkAgain());
     expect(result.current.check).toEqual(onBeta(release, 3, minutesPast(15)));
 
-    // Once beta 3 is deployed, this Ember is it, and nothing's newer.
+    // Once beta 3 is deployed, this Papaya OS is it, and nothing's newer.
     vi.mocked(checkForReleaseAfresh).mockResolvedValue(onBeta(3, 3, minutesPast(20)));
     await act(() => result.current.checkAgain());
     expect(result.current.check).toEqual(onBeta(3, 3, minutesPast(20)));

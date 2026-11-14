@@ -8,7 +8,7 @@ import { byMagic, identify } from "./marcel";
 // from workspace settings. R2 keeps the file as it came, whatever it is, under a key of its own, and
 // beside it the variants that are served, which the uploader's browser makes: an avatar's within 512×512
 // and a logo's within 512×512 and 192×192, keeping its proportions, as `resize_to_limit` scales it. A
-// file Campfire doesn't resize keeps no variants, and its owner's initials or Ember's stock icon are
+// file Campfire doesn't resize keeps no variants, and its owner's initials or Papaya OS's stock icon are
 // served.
 
 /**
@@ -95,7 +95,7 @@ export async function avatarOf(form: FormData): Promise<PictureUpload | PictureR
  * The logo a form brings as its `logo`, `large` and `small` parts, or why it's refused: any file up to
  * 16 MB, and PNGs within 512×512 and 192×192 as its variants. They're kept only for a file Campfire
  * resizes, as an avatar's variant is, and only both of them, so a logo of a type Campfire doesn't
- * resize, such as an SVG or an ICO, is served as Ember's stock icon.
+ * resize, such as an SVG or an ICO, is served as Papaya OS's stock icon.
  */
 export async function logoOf(form: FormData): Promise<PictureUpload | PictureRefusal> {
   const file = form.get("logo");

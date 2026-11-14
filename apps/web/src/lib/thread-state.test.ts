@@ -101,7 +101,7 @@ describe("Open a thread", () => {
 
 describe("Follow a thread as it changes", () => {
   it("shows who types in it, as @ember does while it answers there, until their reply comes, they stop, or the thread stops hearing of it", () => {
-    const ember: User = { id: "ember", name: "Ember" };
+    const ember: User = { id: "ember", name: "Papaya OS" };
     const state = opened(initialThreadState({ parentId: "m1" }), [reply("r1")]);
     const typing = threadReducer(state, { type: "frame", frame: { type: "typing", user: ember, typing: true, threadId: "m1" }, now: 1_000 });
     expect(typing.replies.typing).toEqual({ ember: { user: ember, at: 1_000 } });

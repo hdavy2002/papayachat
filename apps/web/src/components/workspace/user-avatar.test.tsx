@@ -119,7 +119,7 @@ describe("Bots' avatars are circles", () => {
   });
 
   it("draws @ember as a circle before the directory lists anyone", () => {
-    expect(picture(<UserAvatar user={{ id: ASSISTANT_ID, name: "Ember" }} square />, new Map()).image).toHaveClass("rounded-full");
+    expect(picture(<UserAvatar user={{ id: ASSISTANT_ID, name: "Papaya OS" }} square />, new Map()).image).toHaveClass("rounded-full");
   });
 
   it("rounds the link to a bot's page as well, so the circle darkens under a mouse", () => {

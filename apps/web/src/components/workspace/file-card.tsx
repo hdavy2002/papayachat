@@ -10,7 +10,7 @@ const ACTION =
 
 /**
  * The card for a file a message doesn't show as a picture or a video: the file's icon on a tile, its
- * name, which wraps anywhere rather than overflow, Download, which Ember added to an iPhone's or iPad's
+ * name, which wraps anywhere rather than overflow, Download, which Papaya OS added to an iPhone's or iPad's
  * home screen hides, as Campfire's `.hide-in-ios-pwa` does, since it can't download, and Share, where
  * the browser can share, which shares the file untitled.
  */

@@ -1,8 +1,8 @@
 import { useState, type ReactNode } from "react";
 import { TRYING_BETAS, UPDATING_EMBER, type CopyOnGitHub, type ReleaseCheck } from "@ember/protocol";
-// Ember's beta workflow, which the card offers a copy without one.
+// Papaya OS's beta workflow, which the card offers a copy without one.
 import BETA_WORKFLOW from "../../../../worker/scripts/update-ember-beta.yml?raw";
-// Ember's Update Ember workflow, as the deploy offers it to a copy without one (apps/worker/scripts/deploy.ts).
+// Papaya OS's Update Papaya OS workflow, as the deploy offers it to a copy without one (apps/worker/scripts/deploy.ts).
 import UPDATE_WORKFLOW from "../../../../worker/scripts/update-ember.yml?raw";
 import { useMounted } from "@/hooks/use-mounted";
 import { isSignedOut } from "@/lib/api";
@@ -11,17 +11,17 @@ import { betaToTryOf, updateOf, type NamedRelease } from "@/lib/release-check";
 import { cn } from "@/lib/utils";
 import { BUTTON } from "./email-settings";
 
-// The Ember version card at the end of General, for administrators: the release this Ember is, and once
+// The Version card at the end of General, for administrators: the release this Papaya OS is, and once
 // GitHub names a newer one, that it's out, with its notes and how to update, as the project's owner
 // asked (2026-10-31), while the rail's Admin has a dot. A copy made with Deploy to Cloudflare gets a pull
-// request for each release once it has the Update Ember workflow, which Cloudflare's copy leaves out
+// request for each release once it has the Update Papaya OS workflow, which Cloudflare's copy leaves out
 // (docs/self-hosting.md#updating), and the docs say how anything else updates. Where the deploy told the
 // Worker which copy on GitHub this is, the card links straight to running its workflow, as the project's
 // owner asked (2026-11-05), or to adding it. A beta says it's one, ahead of the newest release, until its
 // release is out, and is told of the beta after it as of an update (docs/self-hosting.md#betas). A release
 // with nothing newer to update to is offered the newest beta to try, while one is out ahead of it, which it
 // takes only when asked: a box of its own under the card links to running the copy's beta workflow, Update
-// Ember to its newest beta, or to adding it, as the project's owner chose (2026-11-10), and the rail's Admin
+// Papaya OS to its newest beta, or to adding it, as the project's owner chose (2026-11-10), and the rail's Admin
 // has no dot for it. The box is a little red, as he asked the same day, so the beta reads as experimental.
 // Check for updates, which he asked for (2026-11-11), has the Worker ask GitHub again, as opening Admin
 // does, and under it the card says when GitHub last named the newest release.
@@ -30,26 +30,26 @@ const NOTE = "text-[0.8em] text-muted-foreground max-md:text-[12px]";
 
 /** How a copy made with Deploy to Cloudflare updates, which the card says while a newer release is out. */
 export const HOW_COPIES_UPDATE =
-  "A copy made with Deploy to Cloudflare gets a pull request for each release from its Update Ember workflow, every Monday or when it's run from the repository's Actions tab, once the workflow is added to the copy, as How to update says. Merging it updates Ember.";
+  "A copy made with Deploy to Cloudflare gets a pull request for each release from its Update Papaya OS workflow, every Monday or when it's run from the repository's Actions tab, once the workflow is added to the copy, as How to update says. Merging it updates Papaya OS.";
 /** Where the workflow's update goes instead of a pull request, as update-ember.ts files it. */
 const UNLESS_IT_CANT =
   "Where GitHub doesn't yet let it open pull requests, as in a new repository, it opens an issue instead, with a link that opens the pull request for you to merge.";
 /** And how this copy updates, where the Worker knows it has the workflow, or that it hasn't. */
-export const HOW_THIS_COPY_UPDATES = `This copy gets a pull request for each release from its Update Ember workflow every Monday. To update now, open the workflow on GitHub, choose Run workflow, and merge the pull request it opens. ${UNLESS_IT_CANT}`;
-export const HOW_TO_ADD_THE_WORKFLOW = `This copy has no Update Ember workflow yet, which brings each release as a pull request. Add it on GitHub, where it's filled in for you to commit, then run it from the repository's Actions tab and merge the pull request it opens. ${UNLESS_IT_CANT}`;
+export const HOW_THIS_COPY_UPDATES = `This copy gets a pull request for each release from its Update Papaya OS workflow every Monday. To update now, open the workflow on GitHub, choose Run workflow, and merge the pull request it opens. ${UNLESS_IT_CANT}`;
+export const HOW_TO_ADD_THE_WORKFLOW = `This copy has no Update Papaya OS workflow yet, which brings each release as a pull request. Add it on GitHub, where it's filled in for you to commit, then run it from the repository's Actions tab and merge the pull request it opens. ${UNLESS_IT_CANT}`;
 
 /** How a copy made with Deploy to Cloudflare tries a beta, which the card says while one's out to try. */
 export const HOW_COPIES_TRY_BETAS =
-  "A copy made with Deploy to Cloudflare takes a beta only when asked, from its beta workflow, Update Ember to its newest beta, once that's added to the copy, as How to try a beta says. Once the beta's release is out, Update Ember brings that, and releases alone after it.";
+  "A copy made with Deploy to Cloudflare takes a beta only when asked, from its beta workflow, Update Papaya OS to its newest beta, once that's added to the copy, as How to try a beta says. Once the beta's release is out, Update Papaya OS brings that, and releases alone after it.";
 /** And how this copy tries one, where the Worker knows it has the beta workflow, or that it hasn't. */
-export const HOW_THIS_COPY_TRIES_BETAS = `This copy takes a beta only when asked. To try this one, open the beta workflow on GitHub, choose Run workflow, and merge the pull request it opens. Update Ember then brings the betas after it, then its release, and releases alone after that. ${UNLESS_IT_CANT}`;
-export const HOW_TO_ADD_THE_BETA_WORKFLOW = `This copy takes a beta only when asked, from its beta workflow, Update Ember to its newest beta, which it hasn't yet. Add it on GitHub, where it's filled in for you to commit, then run it from the repository's Actions tab and merge the pull request it opens. ${UNLESS_IT_CANT}`;
+export const HOW_THIS_COPY_TRIES_BETAS = `This copy takes a beta only when asked. To try this one, open the beta workflow on GitHub, choose Run workflow, and merge the pull request it opens. Update Papaya OS then brings the betas after it, then its release, and releases alone after that. ${UNLESS_IT_CANT}`;
+export const HOW_TO_ADD_THE_BETA_WORKFLOW = `This copy takes a beta only when asked, from its beta workflow, Update Papaya OS to its newest beta, which it hasn't yet. Add it on GitHub, where it's filled in for you to commit, then run it from the repository's Actions tab and merge the pull request it opens. ${UNLESS_IT_CANT}`;
 
 /** Where the workflows are in a copy. */
 const WORKFLOW_FILE = ".github/workflows/update-ember.yml";
 const BETA_WORKFLOW_FILE = ".github/workflows/update-ember-beta.yml";
 
-/** The page of `copy`'s Update Ember workflow on GitHub, whose Run workflow runs it. */
+/** The page of `copy`'s Update Papaya OS workflow on GitHub, whose Run workflow runs it. */
 export const workflowPageOf = ({ repository }: CopyOnGitHub) => `https://github.com/${repository}/actions/workflows/update-ember.yml`;
 /** And of its beta workflow. */
 export const betaWorkflowPageOf = ({ repository }: CopyOnGitHub) => `https://github.com/${repository}/actions/workflows/update-ember-beta.yml`;
@@ -61,7 +61,7 @@ function newFileLinkOf({ repository, branch }: CopyOnGitHub, filename: string, v
   return `https://github.com/${repository}/new/${encoded}?${new URLSearchParams({ filename, value })}`;
 }
 
-/** GitHub's editor with Ember's Update Ember workflow filled in for `copy`, as the deploy's log links to it. */
+/** GitHub's editor with Papaya OS's Update Papaya OS workflow filled in for `copy`, as the deploy's log links to it. */
 export const addWorkflowLinkOf = (copy: CopyOnGitHub) => newFileLinkOf(copy, WORKFLOW_FILE, UPDATE_WORKFLOW);
 /** And with its beta workflow. */
 export const addBetaWorkflowLinkOf = (copy: CopyOnGitHub) => newFileLinkOf(copy, BETA_WORKFLOW_FILE, BETA_WORKFLOW);
@@ -81,14 +81,14 @@ function trying(copy: CopyOnGitHub | null): { says: string; link: string; href: 
 }
 
 /**
- * What the card says of this Ember under its heading: which release it is while a newer one is out, else
+ * What the card says of this Papaya OS under its heading: which release it is while a newer one is out, else
  * whether it's the newest, or a beta ahead of it, which is the newest beta where the tags name one that
  * isn't newer.
  */
 function noteOf(check: ReleaseCheck): string {
   const { release, beta, newest, newestBeta } = check;
-  if (updateOf(check)) return `This is Ember ${release}.`;
-  if (beta) return newest ? `This is ${newestBeta ? "the newest beta" : "a beta"}, ahead of Ember ${newest.release}, the newest release.` : "This is a beta. GitHub didn't say whether its release is out.";
+  if (updateOf(check)) return `This is Papaya OS ${release}.`;
+  if (beta) return newest ? `This is ${newestBeta ? "the newest beta" : "a beta"}, ahead of Papaya OS ${newest.release}, the newest release.` : "This is a beta. GitHub didn't say whether its release is out.";
   return newest ? "This is the newest release." : "GitHub didn't say whether a newer release is out.";
 }
 
@@ -100,7 +100,7 @@ interface Props {
   onFailed: (error: unknown) => void;
 }
 
-/** The release this Ember is, and whether a newer one is out, or a beta to try, once the Worker has said, as it does only for administrators. */
+/** The release this Papaya OS is, and whether a newer one is out, or a beta to try, once the Worker has said, as it does only for administrators. */
 export function EmberVersion({ check, onCheckForUpdates, onFailed }: Props) {
   if (!check) return null;
   const { release, copy } = check;
@@ -112,7 +112,7 @@ export function EmberVersion({ check, onCheckForUpdates, onFailed }: Props) {
       <section aria-labelledby="ember-version-heading" className="flex flex-col gap-3 rounded-[10px] border bg-surface px-[2ch] py-4 text-start max-md:px-3">
         <div>
           <h2 id="ember-version-heading" className="text-base font-semibold">
-            {newer ? `Ember ${newer.release} is available` : `Ember ${release}`}
+            {newer ? `Papaya OS ${newer.release} is available` : `Papaya OS ${release}`}
           </h2>
           <p className={NOTE}>{noteOf(check)}</p>
         </div>
@@ -181,7 +181,7 @@ function BetaToTry({ beta, copy }: { beta: NamedRelease; copy: CopyOnGitHub | nu
   return (
     <section aria-labelledby="ember-beta-heading" className="flex flex-col gap-3 rounded-[10px] border border-beta-border bg-beta-background px-[2ch] py-4 text-start max-md:px-3">
       <div>
-        <h2 id="ember-beta-heading" className="text-base font-semibold">{`Ember ${beta.release} is out to try`}</h2>
+        <h2 id="ember-beta-heading" className="text-base font-semibold">{`Papaya OS ${beta.release} is out to try`}</h2>
         <p className={NOTE}>{tryBeta.says}</p>
       </div>
       <div className="flex flex-wrap gap-[1ch]">

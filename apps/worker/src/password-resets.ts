@@ -22,15 +22,15 @@ import { passwordHasher } from "./passwords";
 import { passedTurnstile, turnstileKeysFor } from "./turnstile";
 import { workspace, type NewResetCode } from "./workspace";
 
-// Resetting a forgotten password with a code Ember emails: someone asks for a code with their email
-// address, which Ember emails them if they have an account and a password, and gives the code back with
-// a new password, which signs them in. Asking checks Turnstile while Ember has a widget's keys, and
+// Resetting a forgotten password with a code Papaya OS emails: someone asks for a code with their email
+// address, which Papaya OS emails them if they have an account and a password, and gives the code back with
+// a new password, which signs them in. Asking checks Turnstile while Papaya OS has a widget's keys, and
 // neither answer, nor how soon it comes, says who has an account. Like the sign-in page, the page and
 // its forms are for anyone, signed in or not.
 
 /**
  * `GET /passwords/new`: the app's page for resetting a password, which no cache keeps, since its policy
- * lets Turnstile's check load while Ember has a widget's keys.
+ * lets Turnstile's check load while Papaya OS has a widget's keys.
  */
 export async function passwordResetPage(request: Request, env: Env): Promise<Response> {
   if (request.method !== "GET" && request.method !== "HEAD") return empty(404);
@@ -45,7 +45,7 @@ export async function passwordResetPage(request: Request, env: Env): Promise<Res
  */
 const resetCodeDigest = (code: string, env: Env) => tokenDigest(`password reset code ${code}`, env.SESSION_SECRET);
 
-/** A new code for Ember to email: `PASSWORD_RESET_CODE_DIGITS` random digits, and its digest. */
+/** A new code for Papaya OS to email: `PASSWORD_RESET_CODE_DIGITS` random digits, and its digest. */
 async function newResetCode(env: Env): Promise<NewResetCode> {
   const code = digits(PASSWORD_RESET_CODE_DIGITS);
   return { code, digest: await resetCodeDigest(code, env) };
@@ -54,8 +54,8 @@ async function newResetCode(env: Env): Promise<NewResetCode> {
 /**
  * `POST /api/password_resets`, `{ emailAddress, turnstileToken? }`: emails a code to reset their password
  * to whoever has the address, if anyone, answering 202 before it's emailed, and whether or not anyone has
- * it. Turnstile's check comes first, while Ember has a widget's keys, and else the network's limit,
- * which stands in for it. It answers 503 while Ember can't send email.
+ * it. Turnstile's check comes first, while Papaya OS has a widget's keys, and else the network's limit,
+ * which stands in for it. It answers 503 while Papaya OS can't send email.
  */
 export async function askForPasswordReset(request: Request, env: Env): Promise<Response> {
   const asked = parsePasswordResetRequest(await jsonBodyOf(request));
@@ -77,7 +77,7 @@ const codeWrong = () => formAnswer({ error: PASSWORD_RESET_CODE_WRONG, field: "c
 
 /**
  * `PUT /api/password_resets`, `{ emailAddress, code, password }`: gives whoever has the address the new
- * password, with the code Ember emailed them, spending it, ending all their sessions, and signs this
+ * password, with the code Papaya OS emailed them, spending it, ending all their sessions, and signs this
  * browser in as them (201), unless they sign in themselves (200). The code is checked, counting against
  * sign-in's limit, before the password is hashed, and one that doesn't work answers 422 on its field,
  * the same whether or not anyone has the address.

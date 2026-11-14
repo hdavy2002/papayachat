@@ -249,7 +249,7 @@ const slackReason = (reason: string): SlackError => (reason === MESSAGE_TOO_LONG
 /** What Slack's webhooks answer, `ok` or what's wrong, as text. */
 const slackAnswer = (status: number, text: string) => new Response(text, { status, headers: { "Content-Type": "text/plain; charset=utf-8" } });
 
-/** What posting `message` answers: 201 with where it is, at Ember's address. */
+/** What posting `message` answers: 201 with where it is, at Papaya OS's address. */
 const createdAt = (request: Request, { customDomain }: BotKeyAccess, message: Message) =>
   new Response(null, { status: 201, headers: { Location: permalink(originFor(request, customDomain), message), "Content-Type": JSON_TYPE } });
 
@@ -511,7 +511,7 @@ function nextPage({ messages, hasMore, hasNewer }: BotPage, { after }: PageCurso
 
 /**
  * Messages as `messages/_message.json.jbuilder` writes them, in its order of keys, each with its writer
- * as they are now and its addresses on `origin`, Ember's address (`originFor`), and a file message with
+ * as they are now and its addresses on `origin`, Papaya OS's address (`originFor`), and a file message with
  * its file after its body, which Campfire leaves out.
  */
 async function messagesJson(env: Env, origin: string, messages: Message[]) {
@@ -519,7 +519,7 @@ async function messagesJson(env: Env, origin: string, messages: Message[]) {
   return messages.map((message) => ({
     id: message.id,
     created_at: message.createdAt,
-    // `message.body.to_s`, in Ember's layout for rich text, with mentions and link previews as they're
+    // `message.body.to_s`, in Papaya OS's layout for rich text, with mentions and link previews as they're
     // stored, or nothing for a file message, which has no rich text.
     body: { plain_text: message.plainText, html: message.body === "" ? "" : `<div class="lexxy-content">\n  ${message.body}\n</div>\n` },
     ...(message.attachment && { attachment: attachmentJson(origin, message.attachment) }),

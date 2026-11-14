@@ -23,12 +23,12 @@ import { cn } from "@/lib/utils";
 import { dashboard, FieldRefusal, ModelPicker, NOTE, Out, startingModelOf, type Refusal } from "./model-picker";
 import { DIALOG, DIALOG_BACKDROP, DIALOG_CLOSE, DIALOG_TITLE, MAIN_ACTION, OTHER_ACTION } from "./unsaved-changes";
 
-// Set up Ember AI, for administrators: the steps to give @ember a model through Cloudflare AI Gateway, in
-// a dialog that the AI assistant tab's Ember AI card opens. First the Cloudflare account's ID, filled in
-// with the account Ember is deployed to when the deploy gave it, and an API token of its with AI Gateway's
+// Set up Papaya AI, for administrators: the steps to give @ember a model through Cloudflare AI Gateway, in
+// a dialog that the AI assistant tab's Papaya AI card opens. First the Cloudflare account's ID, filled in
+// with the account Papaya OS is deployed to when the deploy gave it, and an API token of its with AI Gateway's
 // Run permission, which AI Gateway's endpoint for each model's provider takes, and Workers AI Read and AI
 // Gateway Read, which Workers AI's models and Cloudflare's Web Search API take. Then the model, of those
-// Ember offers through that account, which the Worker asks a test question through AI Gateway before
+// Papaya OS offers through that account, which the Worker asks a test question through AI Gateway before
 // keeping all three, saying on the field it's about why it didn't answer, if it didn't, and which answers
 // everyone who hasn't picked another. Then what the model said, and that Search the web is off, when a
 // change of model turned it off. Styled as Set up Turnstile is.
@@ -44,41 +44,41 @@ const accountApiTokens = (accountId: string | null) => dashboard(accountId, "api
 export const searchTurnedOff = (webTools: WebTool[] | null, changed: "model" | "account" = "model") =>
   webTools === null ? "Search the web is off, as this model can't search the web through AI Gateway." : `Search the web is off for the new ${changed}. Turn it on again to try it.`;
 
-/** What Set up Ember AI changed of `before` in saving `after`, which turns Search the web off: the account, if only that. */
+/** What Set up Papaya AI changed of `before` in saving `after`, which turns Search the web off: the account, if only that. */
 const changeOf = (before: AssistantSettings, after: AssistantSettings) => (before.accountId !== after.accountId && before.model === after.model ? "account" : "model");
 
 /** Where it's at: the account and its API token, the model, or done. */
 type Step = "keys" | "model" | "done";
 
-const TITLES: Record<Step, string> = { keys: "Set up Ember AI", model: "Choose a model", done: "Ember AI is set up" };
+const TITLES: Record<Step, string> = { keys: "Set up Papaya AI", model: "Choose a model", done: "Papaya AI is set up" };
 
 /** The fields of the first step. */
 type KeyField = Exclude<AssistantField, "model">;
 
 interface Props {
   assistant: AssistantSettings | null;
-  /** The Cloudflare account Ember is deployed to, which the account's ID starts as while Ember AI is off, if the deploy gave it. */
+  /** The Cloudflare account Papaya OS is deployed to, which the account's ID starts as while Papaya AI is off, if the deploy gave it. */
   deployedAccountId: string | null;
-  /** Shows Ember AI as it's saved. */
+  /** Shows Papaya AI as it's saved. */
   onSaved: (assistant: AssistantSettings) => void;
   onClose: () => void;
   /** Says why saving failed, when it isn't the setup's or AI Gateway's doing, as the workspace's alerts do. */
   onFailed: (error: unknown) => void;
 }
 
-/** Set up Ember AI: the account and its API token, then the model, which saves them once it answers a test question. */
+/** Set up Papaya AI: the account and its API token, then the model, which saves them once it answers a test question. */
 export function AssistantSetup({ assistant, deployedAccountId, onSaved, onClose, onFailed }: Props) {
   const [step, setStep] = useState<Step>("keys");
-  // The account's ID as Ember AI has it, or else as the deploy gave it, which the steps then needn't say where to copy from.
+  // The account's ID as Papaya AI has it, or else as the deploy gave it, which the steps then needn't say where to copy from.
   const [filledIn] = useState(() => assistant?.accountId ?? deployedAccountId);
   const [typed, setTyped] = useState<Record<KeyField, string>>({ accountId: filledIn ?? "", apiToken: "" });
-  // The model chosen, once one is, while Ember offers it through the account typed.
+  // The model chosen, once one is, while Papaya OS offers it through the account typed.
   const [chosen, setChosen] = useState<string | null>(null);
   const [refusal, setRefusal] = useState<Refusal | null>(null);
   // Asking the model a test question holds the dialog open until it's answered.
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState<{ assistant: AssistantSettings; greeting: string } | null>(null);
-  // Ember AI as it was when the dialog opened, which saving it replaces: whether @ember searched the web then,
+  // Papaya AI as it was when the dialog opened, which saving it replaces: whether @ember searched the web then,
   // which another model or account may not do with the same tools, and so doesn't until it's tried.
   const [opened] = useState(assistant);
   const title = useRef<HTMLHeadingElement>(null);
@@ -97,13 +97,13 @@ export function AssistantSetup({ assistant, deployedAccountId, onSaved, onClose,
     if (field === "accountId" || field === "apiToken") setStep("keys");
   };
 
-  /** The account and API token as typed, a blank token keeping the one Ember has. */
+  /** The account and API token as typed, a blank token keeping the one Papaya OS has. */
   const keys = (): AssistantKeys => {
     const apiToken = apiTokenOf(typed.apiToken);
     return { accountId: accountIdOf(typed.accountId) ?? "", ...(apiToken && { apiToken }) };
   };
 
-  // The models Ember offers through the account typed, listed once the model's step opens, with the API token typed, or Ember AI's.
+  // The models Papaya OS offers through the account typed, listed once the model's step opens, with the API token typed, or Papaya AI's.
   const offered = useOfferedModels(step !== "keys", keys(), onFailed);
   const model = offered === null ? (chosen ?? assistant?.model ?? "") : chosenOf(chosen, assistant, offered);
 
@@ -204,11 +204,11 @@ export function AssistantSetup({ assistant, deployedAccountId, onSaved, onClose,
   );
 }
 
-/** The model the menu shows chosen of those `offered`: the one `chosen`, or else Ember AI's, while it's offered, or else the one Ember suggests. */
+/** The model the menu shows chosen of those `offered`: the one `chosen`, or else Papaya AI's, while it's offered, or else the one Papaya OS suggests. */
 const chosenOf = (chosen: string | null, assistant: AssistantSettings | null, offered: OfferedModels) =>
   chosen !== null && offeredModelOf(chosen, offered.models) ? chosen : startingModelOf(assistant?.model ?? null, offered);
 
-/** The field of Set up Ember AI a refusal names, if it names one. */
+/** The field of Set up Papaya AI a refusal names, if it names one. */
 function fieldOf(field: string | undefined): AssistantField | null {
   return field === "accountId" || field === "apiToken" || field === "model" ? field : null;
 }
@@ -246,7 +246,7 @@ export function Actions({
 
 /**
  * The first step: the Cloudflare account's ID and an API token of its, with AI Gateway's Run permission,
- * which go on to the model once they can be an account's, a token left blank keeping the one Ember has.
+ * which go on to the model once they can be an account's, a token left blank keeping the one Papaya OS has.
  * The dashboard opens at the account typed, once it can be one.
  */
 function KeysStep({
@@ -285,8 +285,8 @@ function KeysStep({
   return (
     <form onSubmit={next}>
       <DialogDescription className="mb-4 leading-[1.65]">
-        Ember AI asks Claude, GPT or Grok through your Cloudflare account's AI Gateway, paid for with AI Gateway's credits, or a model Cloudflare runs on Workers
-        AI. Ember keeps the API token encrypted.
+        Papaya AI asks Claude, GPT or Grok through your Cloudflare account's AI Gateway, paid for with AI Gateway's credits, or a model Cloudflare runs on Workers
+        AI. Papaya OS keeps the API token encrypted.
       </DialogDescription>
       <ol aria-label="Steps to make an API token" className="mb-4 flex list-decimal flex-col gap-2 ps-5">
         <li>
@@ -327,7 +327,7 @@ function KeysStep({
           ) : (
             deployedTo && (
               <p id="assistant-account-id-description" className={cn(NOTE, "mt-2")}>
-                Ember is deployed to this account. To ask through another, paste that account's ID.
+                Papaya OS is deployed to this account. To ask through another, paste that account's ID.
               </p>
             )
           )}
@@ -351,7 +351,7 @@ function KeysStep({
           ) : (
             hasToken && (
               <p id="assistant-api-token-description" className={cn(NOTE, "mt-2")}>
-                Ember has an API token already. Leave this blank to keep it, or paste another to ask with it instead. Either needs the AI Gateway Run and Read and the
+                Papaya OS has an API token already. Leave this blank to keep it, or paste another to ask with it instead. Either needs the AI Gateway Run and Read and the
                 Workers AI Read permissions.
               </p>
             )
@@ -364,7 +364,7 @@ function KeysStep({
 }
 
 /**
- * The second step: the model @ember runs on, of those Ember offers, `offered`, once the Worker lists them,
+ * The second step: the model @ember runs on, of those Papaya OS offers, `offered`, once the Worker lists them,
  * which Save asks a test question. AI Gateway's credits are topped up in the account given, `accountId`.
  */
 function ModelStep({
@@ -394,7 +394,7 @@ function ModelStep({
   return (
     <form onSubmit={save}>
       <DialogDescription className="mb-4 leading-[1.65]">
-        Choose the model @ember answers everyone with. Ember asks it a test question through AI Gateway before keeping it. You can let people pick other models
+        Choose the model @ember answers everyone with. Papaya OS asks it a test question through AI Gateway before keeping it. You can let people pick other models
         later.
       </DialogDescription>
       <ModelPicker

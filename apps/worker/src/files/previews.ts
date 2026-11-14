@@ -33,7 +33,7 @@ export async function keepPreview(files: R2Bucket, key: string, filename: string
 }
 
 /**
- * The pictures Ember previews that Cloudflare Images reads (https://developers.cloudflare.com/images/get-started/limits/):
+ * The pictures Papaya OS previews that Cloudflare Images reads (https://developers.cloudflare.com/images/get-started/limits/):
  * all but TIFF, and AVIF, which it reads only on an Enterprise plan.
  */
 const READ_BY_IMAGES = new Set(["image/png", "image/jpeg", "image/gif", "image/webp", "image/heic", "image/heif"]);

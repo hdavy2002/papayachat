@@ -307,7 +307,7 @@ describe("Take back a reaction", () => {
 
 describe("Welcome and invite card", () => {
   const invitation = { roomId: "general", joinCode: "aB3d-Ef5h-iJ7k" };
-  const card = () => screen.queryByRole("heading", { name: "Welcome to Ember" });
+  const card = () => screen.queryByRole("heading", { name: "Welcome to Papaya OS" });
 
   it("welcomes people to the workspace's first room with the card instead, while it's new", () => {
     render(list({ messages: [], paged: false }, vi.fn(), invitation));
@@ -338,21 +338,21 @@ describe("Welcome and invite card", () => {
 
 describe("Sign in with Papaya", () => {
   it("shows no welcome card while Papaya is members only, since its join link is off", () => {
-    const account = { name: "Ember", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo: null, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: true, memberfulSignIn: true, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false };
+    const account = { name: "Papaya OS", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo: null, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: true, memberfulSignIn: true, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false };
     render(<AccountContext value={account}>{list({ messages: [], paged: false }, vi.fn(), { roomId: "general", joinCode: "aB3d-Ef5h-iJ7k" })}</AccountContext>);
-    expect(screen.queryByRole("heading", { name: "Welcome to Ember" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Welcome to Papaya OS" })).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Welcome to #general" })).toBeInTheDocument();
   });
 });
 
 describe("Ways to join", () => {
   it("shows no welcome card while the join link is off, but shows it again once it's on", () => {
-    const account = { name: "Ember", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo: null, customDomain: null, joinLink: false, openSignUp: true, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false };
+    const account = { name: "Papaya OS", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo: null, customDomain: null, joinLink: false, openSignUp: true, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false };
     const welcome = (joinLink: boolean) => <AccountContext value={{ ...account, joinLink }}>{list({ messages: [], paged: false }, vi.fn(), { roomId: "general", joinCode: "aB3d-Ef5h-iJ7k" })}</AccountContext>;
     const { rerender } = render(welcome(false));
-    expect(screen.queryByRole("heading", { name: "Welcome to Ember" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Welcome to Papaya OS" })).not.toBeInTheDocument();
     rerender(welcome(true));
-    expect(screen.getByRole("heading", { name: "Welcome to Ember" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Welcome to Papaya OS" })).toBeInTheDocument();
   });
 });
 

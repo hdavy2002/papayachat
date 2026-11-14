@@ -10,10 +10,10 @@ import { ApiError, isSignedOut, saveTurnstileKeys } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { DIALOG, DIALOG_BACKDROP, DIALOG_CLOSE, DIALOG_TITLE, MAIN_ACTION, OTHER_ACTION } from "./unsaved-changes";
 
-// Set up Turnstile, for administrators: the steps to give Ember a Cloudflare Turnstile widget's keys, in
+// Set up Turnstile, for administrators: the steps to give Papaya OS a Cloudflare Turnstile widget's keys, in
 // a dialog that Membership's Turnstile card opens, as do the ways to join whose limits stand in for its
 // check, as the project's owner asked (2026-10-30). First the widget, which Cloudflare's dashboard makes
-// for Ember's hostname, and its keys; then its check, drawn with the site key by a page of Ember's own
+// for Papaya OS's hostname, and its keys; then its check, drawn with the site key by a page of Papaya OS's own
 // in a frame, since only that page's policy lets Turnstile load, which says what came of it. Once it
 // passes, the Worker asks siteverify about its token with the secret key, which says that the keys are
 // one widget's and that it checks people here, and keeps them. Styled as Set up email is.
@@ -49,7 +49,7 @@ const CHECK_UNAVAILABLE = "Turnstile's check didn't load. Make sure nothing in t
 
 interface Props {
   turnstile: WorkspaceSettings["turnstile"];
-  /** Shows where Ember's Turnstile keys come from once the ones given are saved. */
+  /** Shows where Papaya OS's Turnstile keys come from once the ones given are saved. */
   onSaved: (turnstile: WorkspaceSettings["turnstile"]) => void;
   onClose: () => void;
   /** Says why saving failed, when it isn't the keys' or the check's doing, as the workspace's alerts do. */
@@ -111,7 +111,7 @@ export function TurnstileSetup({ turnstile, onSaved, onClose, onFailed }: Props)
     done: (
       <>
         <DialogDescription className="mb-4 leading-[1.65]">
-          Turnstile now checks that whoever signs up, or asks Ember to email them a link to join or a code to reset a password, is a person, in place of the
+          Turnstile now checks that whoever signs up, or asks Papaya OS to email them a link to join or a code to reset a password, is a person, in place of the
           limits on each network.
         </DialogDescription>
         <Actions back={null} next={onClose} nextLabel="Done" />
@@ -185,7 +185,7 @@ function Out({ href, children }: { href: string; children: ReactNode }) {
   );
 }
 
-/** The first step: making the widget for Ember's hostname, and its keys, which go on to its check once they can be a widget's. */
+/** The first step: making the widget for Papaya OS's hostname, and its keys, which go on to its check once they can be a widget's. */
 function KeysStep({
   turnstile,
   typed,
@@ -214,7 +214,7 @@ function KeysStep({
   return (
     <form onSubmit={next}>
       <DialogDescription className="mb-4 leading-[1.65]">
-        Cloudflare Turnstile checks that whoever signs up, or asks Ember to email them, is a person, mostly without asking them anything. It's free, and Ember
+        Cloudflare Turnstile checks that whoever signs up, or asks Papaya OS to email them, is a person, mostly without asking them anything. It's free, and Papaya OS
         keeps the widget's secret key encrypted.
       </DialogDescription>
       <ol aria-label="Steps to make a Turnstile widget" className="mb-4 flex list-decimal flex-col gap-2 ps-5">
@@ -228,7 +228,7 @@ function KeysStep({
         <KeyInput field="siteKey" id="turnstile_site_key" label="Site key" typed={typed.siteKey} onType={onType} refusal={refusal} />
         <KeyInput field="secretKey" id="turnstile_secret_key" label="Secret key" typed={typed.secretKey} onType={onType} refusal={refusal} />
       </div>
-      {turnstile === "saved" && <p className={cn(NOTE, "mt-2")}>Ember has a widget's keys already. Give another widget's to check people with it instead.</p>}
+      {turnstile === "saved" && <p className={cn(NOTE, "mt-2")}>Papaya OS has a widget's keys already. Give another widget's to check people with it instead.</p>}
       <Actions back={onCancel} backLabel="Cancel" next={null} disabled={typed.siteKey.trim() === "" || typed.secretKey.trim() === ""} />
     </form>
   );
@@ -357,7 +357,7 @@ function CheckStep({
   return (
     <>
       <DialogDescription className="mb-4 leading-[1.65]">
-        Ember draws the widget's check with its site key. Once it passes, Ember asks Cloudflare whether the secret key is the same widget's, then keeps both.
+        Papaya OS draws the widget's check with its site key. Once it passes, Papaya OS asks Cloudflare whether the secret key is the same widget's, then keeps both.
       </DialogDescription>
       <CheckFrame key={drawn} siteKey={siteKey} onSaid={heard} />
       <p role="status" className={cn(NOTE, "mt-2 wrap-anywhere empty:mt-0", stuck?.problem && "text-negative")}>
@@ -393,7 +393,7 @@ function CheckFrame({ siteKey, onSaid }: { siteKey: string; onSaid: (said: Check
 
   useEffect(() => {
     const listen = (event: MessageEvent) => {
-      // Only the check page, in this frame, at Ember's own origin, says what came of the check.
+      // Only the check page, in this frame, at Papaya OS's own origin, says what came of the check.
       if (event.origin !== location.origin || event.source !== frame.current?.contentWindow) return;
       const said: unknown = (event.data as { turnstileCheck?: unknown } | null)?.turnstileCheck;
       if (isCheckSaid(said)) heard.current(said);

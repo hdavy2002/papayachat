@@ -6,7 +6,7 @@ import { TOP_LEVELS, type AssistantSettings as Assistant } from "@ember/protocol
 import { ApiError } from "@/lib/api";
 import { AGENTS_ANSWER, ASSISTANT_EXPLAINED, AssistantSettings, CONFIRM_STOP_ASSISTANT, WHAT_AGENTS_SEND } from "./assistant-settings";
 
-/** Ember AI on GLM-4.7 Flash. */
+/** Papaya AI on GLM-4.7 Flash. */
 const ON: Assistant = {
   accountId: "0123456789abcdef0123456789abcdef",
   model: "@cf/zai-org/glm-4.7-flash",
@@ -19,27 +19,27 @@ const ON: Assistant = {
   avatar: false,
 };
 
-/** Answers turning Ember AI off as `stopped` says. */
+/** Answers turning Papaya AI off as `stopped` says. */
 const serve = (stopped: () => Response | Promise<Response> = () => Response.json({ assistant: null })) =>
   vi.spyOn(globalThis, "fetch").mockImplementation(async (input, init) => {
     if (`${init?.method} ${String(input)}` === "DELETE /api/account/assistant") return stopped();
     throw new Error(`Unexpected request for ${init?.method} ${String(input)}`);
   });
 
-/** The card, for a workspace whose Ember AI is `assistant`. */
+/** The card, for a workspace whose Papaya AI is `assistant`. */
 function showCard(assistant: WorkspaceSettings["assistant"]) {
   const callbacks = { onSetUp: vi.fn(), onStopped: vi.fn(), onFailed: vi.fn() };
   render(<AssistantSettings assistant={assistant} {...callbacks} />);
   return { ...callbacks, user: userEvent.setup() };
 }
 
-const card = () => screen.getByRole("region", { name: "Ember AI" });
-const assistantSwitch = () => within(card()).getByRole("switch", { name: "Ember AI" });
+const card = () => screen.getByRole("region", { name: "Papaya AI" });
+const assistantSwitch = () => within(card()).getByRole("switch", { name: "Papaya AI" });
 
 afterEach(() => vi.restoreAllMocks());
 
-describe("Ember AI", () => {
-  it("says what Ember AI adds while its switch is off, which turning on opens Set up Ember AI", async () => {
+describe("Papaya AI", () => {
+  it("says what Papaya AI adds while its switch is off, which turning on opens Set up Papaya AI", async () => {
     serve();
     const { user, onSetUp } = showCard(null);
     expect(card()).toHaveTextContent(ASSISTANT_EXPLAINED);
@@ -66,7 +66,7 @@ describe("Ember AI", () => {
     expect(onSetUp).toHaveBeenCalledOnce();
   });
 
-  it("turns Ember AI off once the administrator confirms turning its switch off", async () => {
+  it("turns Papaya AI off once the administrator confirms turning its switch off", async () => {
     let answer = () => {};
     const fetch = serve(() => new Promise((resolve) => (answer = () => resolve(Response.json({ assistant: null })))));
     const sure = vi.spyOn(window, "confirm").mockReturnValueOnce(false).mockReturnValueOnce(true);
@@ -87,11 +87,11 @@ describe("Ember AI", () => {
   });
 
   it("leaves turning it off that failed to the page's alerts, its switch back on", async () => {
-    serve(() => Response.json({ error: "Only administrators can set up Ember AI" }, { status: 403 }));
+    serve(() => Response.json({ error: "Only administrators can set up Papaya AI" }, { status: 403 }));
     vi.spyOn(window, "confirm").mockReturnValue(true);
     const { user, onStopped, onFailed } = showCard(ON);
     await user.click(assistantSwitch());
-    await waitFor(() => expect(onFailed).toHaveBeenCalledWith(new ApiError(403, "Only administrators can set up Ember AI")));
+    await waitFor(() => expect(onFailed).toHaveBeenCalledWith(new ApiError(403, "Only administrators can set up Papaya AI")));
     expect(onStopped).not.toHaveBeenCalled();
     expect(assistantSwitch()).toBeChecked();
     expect(assistantSwitch()).toBeEnabled();

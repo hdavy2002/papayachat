@@ -19,17 +19,17 @@ import { DeleteButton, isMissing } from "./room-settings-page";
 import { CHANGES_SAVED, PageHeading, Panel, SettingsPage } from "./settings-page";
 
 // The pages for connecting an app and changing one, which share the app form. Connecting one goes on to
-// its page, which lists the tools Ember read from its server, and can read them again.
+// its page, which lists the tools Papaya OS read from its server, and can read them again.
 
 /** What Remove app asks first, in the browser's own dialog. */
-export const CONFIRM_REMOVE_APP = "Are you sure you want to remove this app? Ember forgets its token and the tools it read.";
+export const CONFIRM_REMOVE_APP = "Are you sure you want to remove this app? Papaya OS forgets its token and the tools it read.";
 
-/** What the form says while Ember asks an app's server for its tools, which can take a while. */
+/** What the form says while Papaya OS asks an app's server for its tools, which can take a while. */
 export const READING_TOOLS = "Reading its tools…";
 
 /** What each field is for. */
 export const URL_EXPLAINED = "Where its MCP server is, which the app's documentation gives. It often ends in /mcp.";
-export const TOKEN_EXPLAINED = "Optional. Ember sends it to the server with every request, keeps it encrypted, and never shows it again.";
+export const TOKEN_EXPLAINED = "Optional. Papaya OS sends it to the server with every request, keeps it encrypted, and never shows it again.";
 export const TOKEN_KEPT = "It has a token. Leave this blank to keep it, or type another.";
 
 const NOTE = "text-[0.8em] text-muted-foreground max-md:text-[12px]";
@@ -63,12 +63,12 @@ const APP_FIELDS: readonly string[] = ["name", "url", "token"] satisfies AppFiel
 const refusalOf = (error: unknown): Refusal | null =>
   error instanceof ApiError && error.status === 422 ? { field: error.field !== undefined && APP_FIELDS.includes(error.field) ? (error.field as AppField) : null, error: error.message } : null;
 
-/** The app the form asks Ember to connect. */
+/** The app the form asks Papaya OS to connect. */
 const newAppOf = ({ name, url, token }: Fields): NewApp => ({ name, url, ...(token.trim() !== "" && { token }) });
 
 /**
  * The fields typed differently from `app` as it loaded. Only they're sent, so a save doesn't put back
- * what another administrator has saved since, and Ember reads the server's tools again only for another
+ * what another administrator has saved since, and Papaya OS reads the server's tools again only for another
  * address or token.
  */
 export function changesOf(app: App, typed: Fields): AppChanges {
@@ -86,7 +86,7 @@ interface PageProps {
   onFailed: (error: unknown) => void;
 }
 
-/** Connect an app, which only administrators may open while Ember AI is on: anyone else is sent away at once, as from the agents' pages. */
+/** Connect an app, which only administrators may open while Papaya AI is on: anyone else is sent away at once, as from the agents' pages. */
 export function NewAppPage({ me, onFailed }: PageProps) {
   const [ready, setReady] = useState(false);
   const [fields, setFields] = useState(NO_FIELDS);
@@ -102,7 +102,7 @@ export function NewAppPage({ me, onFailed }: PageProps) {
     if (!me.administrator) forbidden(APPS_FORBIDDEN);
   }, [me.administrator, forbidden]);
 
-  // Listing the apps says whether Ember AI is on, before anything is typed.
+  // Listing the apps says whether Papaya AI is on, before anything is typed.
   useEffect(() => {
     if (!me.administrator) return;
     let stopped = false;
@@ -122,7 +122,7 @@ export function NewAppPage({ me, onFailed }: PageProps) {
       (app) => {
         if (!mounted.current) return;
         navigate(appSettingsPath(app.id));
-        flash("notice", `${app.name} is connected. Ember read ${toolsOf(app.tools.length)} from it.`);
+        flash("notice", `${app.name} is connected. Papaya OS read ${toolsOf(app.tools.length)} from it.`);
       },
       (error: unknown) => {
         if (!mounted.current && !isSignedOut(error)) return;
@@ -161,8 +161,8 @@ export function NewAppPage({ me, onFailed }: PageProps) {
 type Busy = "saving" | "reading" | "removing" | null;
 
 /**
- * A connected app's page, which only administrators may open while Ember AI is on, as Connect an app: the
- * app form, then the tools Ember read from its server, with Read its tools again, and Remove app, which
+ * A connected app's page, which only administrators may open while Papaya AI is on, as Connect an app: the
+ * app form, then the tools Papaya OS read from its server, with Read its tools again, and Remove app, which
  * asks first. An id that isn't a connected app's gets the 404 page.
  */
 export function AppSettingsPage({ appId, me, onMissing, onFailed }: PageProps & { appId: AppId; onMissing: () => void }) {
@@ -228,7 +228,7 @@ export function AppSettingsPage({ appId, me, onMissing, onFailed }: PageProps & 
       () => changeApp(appId, changes),
       (saved) => {
         show(saved);
-        flash("notice", rereads ? `Changes saved. Ember read ${toolsOf(saved.tools.length)} from ${saved.name}.` : CHANGES_SAVED);
+        flash("notice", rereads ? `Changes saved. Papaya OS read ${toolsOf(saved.tools.length)} from ${saved.name}.` : CHANGES_SAVED);
       },
       setRefusal,
     );
@@ -285,7 +285,7 @@ interface FormProps {
   refusal: Refusal | null;
   /** Whether the form or one of the page's buttons is on its way to the server, which the form's button waits for, its fields kept as they were sent: what it answers would replace anything typed since. */
   busy: boolean;
-  /** Whether Ember is asking the app's server for its tools as the form is sent. */
+  /** Whether Papaya OS is asking the app's server for its tools as the form is sent. */
   reading: boolean;
   /** Whether there's anything to send. */
   canSave: boolean;
@@ -293,8 +293,8 @@ interface FormProps {
 }
 
 /**
- * The app form: the app's name, its server's address and the token Ember sends it, each with what it's
- * for under it, or why it was refused, and Connect, or Save changes, which says so while Ember reads the
+ * The app form: the app's name, its server's address and the token Papaya OS sends it, each with what it's
+ * for under it, or why it was refused, and Connect, or Save changes, which says so while Papaya OS reads the
  * server's tools.
  */
 function AppForm({ saved, fields, onChange, refusal, busy, reading, canSave, onSave }: FormProps) {
@@ -309,7 +309,7 @@ function AppForm({ saved, fields, onChange, refusal, busy, reading, canSave, onS
   return (
     <form onSubmit={save} className={AUTH_FORM}>
       <PageHeading title={saved ? "Edit app" : "Connect an app"}>
-        An app is another service's MCP server. Ember reads the tools it offers when you connect it, and again whenever you ask.
+        An app is another service's MCP server. Papaya OS reads the tools it offers when you connect it, and again whenever you ask.
       </PageHeading>
       <Field id="app_name" label="Name">
         <Input
@@ -406,11 +406,11 @@ function Under({ id, field, refusal, children }: { id: string; field: AppField; 
   );
 }
 
-/** What the Tools card says of how many of an app's tools Ember keeps, when it has more. */
-export const toolsLeftOut = (count: number) => `It has ${count} more that Ember leaves out: it keeps ${MAX_APP_TOOLS} at most, and none whose name or inputs it can't give a model.`;
+/** What the Tools card says of how many of an app's tools Papaya OS keeps, when it has more. */
+export const toolsLeftOut = (count: number) => `It has ${count} more that Papaya OS leaves out: it keeps ${MAX_APP_TOOLS} at most, and none whose name or inputs it can't give a model.`;
 
 /**
- * The Tools card: what the app's server calls itself, when Ember last read its tools and who connected
+ * The Tools card: what the app's server calls itself, when Papaya OS last read its tools and who connected
  * it, Read its tools again, with why that failed, if it did, and each tool by its name there, with what
  * it's called, if that's something else, and what its server says it does, which is the server's word.
  */

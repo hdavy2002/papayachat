@@ -12,8 +12,8 @@ import { ApiError, askForEmailLink } from "@/lib/api";
 import { loadPage } from "@/lib/page";
 
 // The page for joining with an email address at the workspace's email domains: someone asks there for a
-// link, which Ember emails them, and the link opens the page again, holding its secret in the fragment,
-// to show the join form with the address it's for. Asking waits for Turnstile's check while Ember has a
+// link, which Papaya OS emails them, and the link opens the page again, holding its secret in the fragment,
+// to show the join form with the address it's for. Asking waits for Turnstile's check while Papaya OS has a
 // widget's keys, as open sign-up does.
 
 interface Props {
@@ -44,9 +44,9 @@ function EmailLinkLookup({ workspace, onJoined }: Props) {
 }
 
 /**
- * The form asking Ember to email a link to join with an address at the workspace's email domains,
+ * The form asking Papaya OS to email a link to join with an address at the workspace's email domains,
  * while Email domain is on, under why the link that opened the page doesn't work, if it's `gone`. Once
- * Ember has emailed the address, it says to look there. It draws Turnstile's check afresh for each ask.
+ * Papaya OS has emailed the address, it says to look there. It draws Turnstile's check afresh for each ask.
  */
 function LinkRequest({ workspace, gone }: { workspace: SignedOutWorkspace; gone: boolean }) {
   const { account, turnstileSiteKey: siteKey } = workspace;
@@ -67,7 +67,7 @@ function LinkRequest({ workspace, gone }: { workspace: SignedOutWorkspace; gone:
       await askForEmailLink(siteKey === null ? { emailAddress } : { emailAddress, turnstileToken: turnstileToken ?? "" });
       setEmailed(emailAddress.trim());
     } catch (error) {
-      if (!(error instanceof ApiError)) setProblem("Couldn't reach Ember. Check your connection and try again.");
+      if (!(error instanceof ApiError)) setProblem("Couldn't reach Papaya OS. Check your connection and try again.");
       // Email domain turned off meanwhile goes to sign in, which says so, and someone who signed in
       // elsewhere goes home.
       else if (error.redirect) loadPage(error.redirect);
@@ -86,7 +86,7 @@ function LinkRequest({ workspace, gone }: { workspace: SignedOutWorkspace; gone:
       <AuthPage workspace={workspace}>
         <AuthCard>
           <AuthHeading title="Check your email" logo={account.logo}>
-            Ember emailed {emailed}. Open the link in that email to go on. If it hasn't arrived in a few minutes, look in your spam folder.
+            Papaya OS emailed {emailed}. Open the link in that email to go on. If it hasn't arrived in a few minutes, look in your spam folder.
           </AuthHeading>
           <AuthAlternative question="Didn't get it?" action="Ask again" onClick={() => setEmailed(null)} />
         </AuthCard>
@@ -100,7 +100,7 @@ function LinkRequest({ workspace, gone }: { workspace: SignedOutWorkspace; gone:
       {problem && <Problem>{problem}</Problem>}
       <AuthCard>
         <AuthHeading title={`Join ${account.name}`} logo={account.logo}>
-          {gone ? EMAIL_LINK_GONE : "Enter your email address, and Ember will email you a link to join with it."}
+          {gone ? EMAIL_LINK_GONE : "Enter your email address, and Papaya OS will email you a link to join with it."}
         </AuthHeading>
         {on && (
           <form

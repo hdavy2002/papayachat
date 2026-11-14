@@ -61,13 +61,13 @@ import { DeleteButton, isMissing } from "./room-settings-page";
 import { PageHeading, Panel, SettingsPage } from "./settings-page";
 import { UnsavedChanges } from "./unsaved-changes";
 
-// New agent and an agent's settings, for administrators while Ember AI is on, which the Agents card on
+// New agent and an agent's settings, for administrators while Papaya AI is on, which the Agents card on
 // the AI assistant tab links to, as the project's owner chose in the mock-ups (2026-11-10): the agent's
-// avatar, name and what it does, its Instructions, with what Ember adds around them, which administrators
+// avatar, name and what it does, its Instructions, with what Papaya OS adds around them, which administrators
 // may modify with caution, as the project's owner asked (2026-11-11), How it answers, its
 // model and dials, with the most an answer costs at the model's prices, Search the web, its Rooms, and
 // Try it, which asks it something as the page sets it up, saved or not. Create agent and Save changes
-// ask its model a test question first when it's new, as Set up Ember AI does, and go back to the tab once
+// ask its model a test question first when it's new, as Set up Papaya AI does, and go back to the tab once
 // the agent's saved. Leaving with changes asks first. An agent's settings say who last changed it, and
 // when, and end with Delete agent, which asks first.
 
@@ -88,7 +88,7 @@ export const CONFIRM_DELETE_AGENT = "Are you sure you want to delete this agent?
 export const tryExplained = (name: string) => `Ask ${name} something, as it's set up above, before you save. Nobody else sees what it says.`;
 
 /** What Search the web says for a model, called `name`, that can't search. */
-export const cannotSearch = (name: string) => `${name} can't search the web through AI Gateway, but the other models Ember offers can.`;
+export const cannotSearch = (name: string) => `${name} can't search the web through AI Gateway, but the other models Papaya OS offers can.`;
 
 const NOTE = "text-[0.8em] text-muted-foreground max-md:text-[12px]";
 
@@ -104,7 +104,7 @@ const CHOICE = "flex min-h-11 cursor-pointer items-center gap-2.5 has-disabled:c
 /** Where leaving an agent's page goes, which is always away from what's typed there. */
 const leaves = () => false;
 
-/** What the page needs of Ember AI: its settings, whose account the agents' models answer through, and the models Ember offers through it. */
+/** What the page needs of Papaya AI: its settings, whose account the agents' models answer through, and the models Papaya OS offers through it. */
 interface Setup {
   assistant: Assistant;
   offered: OfferedModels;
@@ -115,7 +115,7 @@ interface Fields {
   name: string;
   description: string;
   instructions: string;
-  /** What Ember adds around the instructions, as the page shows it: Ember's own until it's modified. */
+  /** What Papaya OS adds around the instructions, as the page shows it: Papaya OS's own until it's modified. */
   promptTemplate: string;
   model: string;
   levels: AnswerLevels;
@@ -136,7 +136,7 @@ const AGENT_FIELDS: readonly string[] = ["name", "description", "instructions", 
 const fieldOf = (field: string | undefined) => (field !== undefined && AGENT_FIELDS.includes(field) ? (field as AgentField) : null);
 
 /**
- * A new agent's page: nothing typed, Ember's own around it, @ember's model chosen, or the one Ember
+ * A new agent's page: nothing typed, Papaya OS's own around it, @ember's model chosen, or the one Papaya OS
  * suggests if it no longer offers that, at the levels people start at, without the web, in every open room.
  */
 const newFields = ({ assistant, offered }: Setup): Fields => ({
@@ -181,7 +181,7 @@ function roomsToPick(rooms: readonly SidebarRoom[] | null, kept: readonly AgentR
   return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name));
 }
 
-/** What Ember adds around the instructions as `template` has it, as the page sends it: null for Ember's own. */
+/** What Papaya OS adds around the instructions as `template` has it, as the page sends it: null for Papaya OS's own. */
 const templateSent = (template: string) => (template.trim() === AGENT_TEMPLATE ? null : template);
 
 /** The agent `fields` set up, as New agent sends it. */
@@ -238,7 +238,7 @@ function secondsOf(ms: number): string {
   return `${seconds < 10 ? seconds.toFixed(1) : Math.round(seconds)} seconds`;
 }
 
-/** Reads Ember AI, and the models Ember offers through its account, once, for an administrator, sending the page away while Ember AI is off. */
+/** Reads Papaya AI, and the models Papaya OS offers through its account, once, for an administrator, sending the page away while Papaya AI is off. */
 function useSetup(administrator: boolean, off: () => void, failed: (error: unknown) => void): Setup | null {
   const [setup, setSetup] = useState<Setup | null>(null);
   useEffect(() => {
@@ -253,7 +253,7 @@ function useSetup(administrator: boolean, off: () => void, failed: (error: unkno
           else off();
         },
         (error: unknown) => {
-          // A page left before Ember AI loads only reports a session that's ended, which goes to sign in.
+          // A page left before Papaya AI loads only reports a session that's ended, which goes to sign in.
           if (!stopped || isSignedOut(error)) failed(error);
         },
       );
@@ -270,7 +270,7 @@ interface PageProps {
   onFailed: (error: unknown) => void;
 }
 
-/** New agent, which only administrators may open while Ember AI is on: anyone else is sent away at once, reading nothing, saying why. */
+/** New agent, which only administrators may open while Papaya AI is on: anyone else is sent away at once, reading nothing, saying why. */
 export function NewAgentPage({ me, rooms, onFailed }: PageProps) {
   const { forbidden, off, failed } = useAgentsOnly(onFailed);
   const setup = useSetup(me.administrator, off, failed);
@@ -288,7 +288,7 @@ export function NewAgentPage({ me, rooms, onFailed }: PageProps) {
   );
 }
 
-/** An agent's settings, which only administrators may open while Ember AI is on, as New agent; an id that isn't an agent's gets the 404 page. */
+/** An agent's settings, which only administrators may open while Papaya AI is on, as New agent; an id that isn't an agent's gets the 404 page. */
 export function AgentSettingsPage({ agentId, me, rooms, onMissing, onFailed }: PageProps & { agentId: UserId; onMissing: () => void }) {
   const [agent, setAgent] = useState<AgentSettings | null>(null);
   const { forbidden, off, failed: agentsOnly } = useAgentsOnly(onFailed);
@@ -321,7 +321,7 @@ export function AgentSettingsPage({ agentId, me, rooms, onMissing, onFailed }: P
 }
 
 interface FormProps {
-  /** Who's looking, whom What Ember adds around them and Try it show asking the agent. */
+  /** Who's looking, whom What Papaya OS adds around them and Try it show asking the agent. */
   me: Me;
   /** The agent as it's saved, or null for one not made yet. */
   saved: AgentSettings | null;
@@ -380,7 +380,7 @@ function AgentForm({ me, saved, setup, rooms, onFailed }: FormProps) {
   };
 
   /**
-   * Why the page can't be sent as it's filled in, before it is: what Ember adds around the instructions
+   * Why the page can't be sent as it's filled in, before it is: what Papaya OS adds around the instructions
    * a template it doesn't take, or Search the web on for a model that can't search.
    */
   const refusalBefore = (): Refusal | null => {
@@ -574,7 +574,7 @@ function AgentForm({ me, saved, setup, rooms, onFailed }: FormProps) {
           <div>
             <ModelPicker
               models={setup.offered.models}
-              // The model it answers with stays in the menu once Ember no longer offers it, until another is chosen.
+              // The model it answers with stays in the menu once Papaya OS no longer offers it, until another is chosen.
               kept={saved && !offeredModelOf(saved.model, setup.offered.models) ? { id: saved.model, name: saved.modelName } : null}
               chosen={fields.model}
               onChoose={(model) => change("model", { model })}
@@ -866,7 +866,7 @@ function TryIt({
       </p>
       {answer && (
         <div className="flex flex-col gap-2 rounded-[9px] border bg-background px-[1.5ch] py-3">
-          {nodes ? <MessageBody nodes={nodes} mentions={[]} className="text-message-ink" /> : <p className={NOTE}>Ember couldn't show this answer.</p>}
+          {nodes ? <MessageBody nodes={nodes} mentions={[]} className="text-message-ink" /> : <p className={NOTE}>Papaya OS couldn't show this answer.</p>}
           {answer.cards.length > 0 && <BotCards cards={answer.cards} />}
           <p className={NOTE}>Answered in {secondsOf(answer.ms)}.</p>
         </div>

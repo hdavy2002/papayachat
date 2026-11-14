@@ -53,25 +53,25 @@ import { CHANGES_SAVED, PageHeading, Panel, SettingsPage } from "./settings-page
 import { UnsavedChanges } from "./unsaved-changes";
 import { avatarVersionOf } from "./user-avatar";
 
-// @ember's page, for administrators while Ember AI is on, which the Agents card links to as it does each
-// agent's: what the Ember AI card held before there were agents, as the project's owner chose in the
+// @ember's page, for administrators while Papaya AI is on, which the Agents card links to as it does each
+// agent's: what the Papaya AI card held before there were agents, as the project's owner chose in the
 // mock-ups (2026-11-10). It shows @ember's avatar, which a picture picked replaces, as the project's
-// owner asked (2026-11-05), and Use Ember's flame takes away again, the Instructions administrators add
-// to Ember's own, with what Ember adds around them, which they may modify with caution, as the project's
+// owner asked (2026-11-05), and Use Papaya OS's flame takes away again, the Instructions administrators add
+// to Papaya OS's own, with what Papaya OS adds around them, which they may modify with caution, as the project's
 // owner asked (2026-11-11), the models people can pick on their profile, the one
 // that answers everyone else chosen, with Add a model and each other's Remove, Search the web's switch,
 // which turns on once the model that answers everyone has searched the web for a test question, saying
-// what it found, or opens Set up Ember AI for a model that can't search, and the dials of the most
+// what it found, or opens Set up Papaya AI for a model that can't search, and the dials of the most
 // @ember may think and write for anyone's question. Each change saves at once, but the instructions and
-// what Ember adds around them, which Save instructions saves, or Save beside what's modified. While one
-// saves, nothing else can change, so that the save's answer can't show Ember AI as it was.
+// what Papaya OS adds around them, which Save instructions saves, or Save beside what's modified. While one
+// saves, nothing else can change, so that the save's answer can't show Papaya AI as it was.
 
 /** What @ember's page says of it. */
-export const EMBER_EXPLAINED = "Ember's own agent, @ember, which answers anything people ask in every room open to everyone.";
+export const EMBER_EXPLAINED = "Papaya OS's own agent, @ember, which answers anything people ask in every room open to everyone.";
 
 /** What the page says of @ember's instructions. */
 export const INSTRUCTIONS_EXPLAINED =
-  "@ember follows Ember's own instructions. Add yours to them, such as how your team likes answers written, or what to leave to people.";
+  "@ember follows Papaya OS's own instructions. Add yours to them, such as how your team likes answers written, or what to leave to people.";
 
 /** What leaving the page with instructions unsaved asks. */
 export const INSTRUCTIONS_UNSAVED = "You’ve changed @ember’s instructions. Save them before you leave, or discard them to keep things as they were.";
@@ -79,8 +79,8 @@ export const INSTRUCTIONS_UNSAVED = "You’ve changed @ember’s instructions. S
 /** What the page says of its models. */
 export const MODELS_EXPLAINED = "People can pick any of these on their profile for @ember to answer them with. The one chosen here answers everyone else.";
 
-/** What it says under Add a model once people can pick every model Ember offers. */
-export const EVERY_MODEL_ADDED = "People can pick every model Ember offers.";
+/** What it says under Add a model once people can pick every model Papaya OS offers. */
+export const EVERY_MODEL_ADDED = "People can pick every model Papaya OS offers.";
 
 /** What the page says of its dials. */
 export const LIMITS_EXPLAINED =
@@ -99,11 +99,11 @@ export function webSearchOn(webTools: WebTool[], models: readonly AssistantModel
 /** What the page says while the model called `name` searches the web for Search the web's test question. */
 export const searchingWith = (name: string) => `Asking ${name} something it has to search the web for…`;
 
-/** What the page says of @ember's avatar while it's Ember's flame. */
-export const AVATAR_EXPLAINED = "Everyone sees it beside @ember's answers. Choose a picture of your own in place of Ember's flame.";
+/** What the page says of @ember's avatar while it's Papaya OS's flame. */
+export const AVATAR_EXPLAINED = "Everyone sees it beside @ember's answers. Choose a picture of your own in place of Papaya OS's flame.";
 
 /** What it says once an administrator has uploaded one. */
-export const UPLOADED_AVATAR_EXPLAINED = "Everyone sees it beside @ember's answers. Choose another picture, or go back to Ember's flame.";
+export const UPLOADED_AVATAR_EXPLAINED = "Everyone sees it beside @ember's answers. Choose another picture, or go back to Papaya OS's flame.";
 
 const NOTE = "text-[0.8em] text-muted-foreground max-md:text-[12px]";
 
@@ -117,9 +117,9 @@ export const TEXTAREA = cn("w-full border placeholder:text-muted-foreground disa
 export const lengthOf = (text: string) => `${text.length.toLocaleString("en-US")} of ${MAX_INSTRUCTIONS_LENGTH.toLocaleString("en-US")} characters`;
 
 /**
- * @ember's page, which only administrators may open while Ember AI is on: anyone else is sent to
+ * @ember's page, which only administrators may open while Papaya AI is on: anyone else is sent to
  * workspace settings at once, reading nothing, and an administrator to the AI assistant tab while it's
- * off, each saying why. Set up Ember AI opens over it for Search the web with a model that can't search.
+ * off, each saying why. Set up Papaya AI opens over it for Search the web with a model that can't search.
  */
 export function EmberPage({ me, onFailed }: { me: Me; onFailed: (error: unknown) => void }) {
   const [settings, setSettings] = useState<WorkspaceSettings | null>(null);
@@ -142,7 +142,7 @@ export function EmberPage({ me, onFailed }: { me: Me; onFailed: (error: unknown)
         else setSettings(read);
       },
       (error: unknown) => {
-        // A page left before Ember AI loads only reports a session that's ended, which goes to sign in.
+        // A page left before Papaya AI loads only reports a session that's ended, which goes to sign in.
         if (!stopped || isSignedOut(error)) failed(error);
       },
     );
@@ -172,14 +172,14 @@ export function EmberPage({ me, onFailed }: { me: Me; onFailed: (error: unknown)
 }
 
 interface Props {
-  /** Who's looking, whom What Ember adds around them shows asking @ember. */
+  /** Who's looking, whom What Papaya OS adds around them shows asking @ember. */
   me: Me;
   assistant: Assistant;
-  /** Opens Set up Ember AI. */
+  /** Opens Set up Papaya AI. */
   onSetUp: () => void;
-  /** Shows that Ember AI is off, once it's found to be. */
+  /** Shows that Papaya AI is off, once it's found to be. */
   onStopped: () => void;
-  /** Shows Ember AI as a change to @ember leaves it, or as it was again when the change fails. */
+  /** Shows Papaya AI as a change to @ember leaves it, or as it was again when the change fails. */
   onChanged: (assistant: Assistant) => void;
   /** Says why a change failed, as the workspace's alerts do. */
   onFailed: (error: unknown) => void;
@@ -191,7 +191,7 @@ interface Props {
  */
 type WebTest = "searching" | { found: string } | { refusal: string } | { off: string };
 
-/** Whether Ember AI, as `assistant` has it, searches the web. */
+/** Whether Papaya AI, as `assistant` has it, searches the web. */
 const searchesIn = (assistant: Assistant) => assistant.webTools?.includes("search") ?? false;
 
 /**
@@ -215,7 +215,7 @@ export function EmberSettings({ me, assistant, onSetUp, onStopped, onChanged, on
   const [pickedAvatar, setPickedAvatar] = useState<string | null>(null);
   const [savingAvatar, setSavingAvatar] = useState(false);
   const busy = saving || savingAvatar || turningWeb !== null;
-  // The models Ember offers through Ember AI's account, for Add a model and for saying which people can pick that it no longer offers.
+  // The models Papaya OS offers through Papaya AI's account, for Add a model and for saying which people can pick that it no longer offers.
   const offered = useOfferedModels(true, { accountId: assistant.accountId }, onFailed);
   const people = useContext(PeopleContext);
   const community = useAccount().name;
@@ -225,10 +225,10 @@ export function EmberSettings({ me, assistant, onSetUp, onStopped, onChanged, on
   // The picked picture's address is let go of once the saved one takes its place.
   useEffect(() => () => void (pickedAvatar && URL.revokeObjectURL(pickedAvatar)), [pickedAvatar]);
 
-  // Another tab may change @ember's avatar, which the people directory hears of: Ember AI is read again
+  // Another tab may change @ember's avatar, which the people directory hears of: Papaya AI is read again
   // then, for whether an administrator uploaded the one it has now, but not while a change of the page's
-  // own saves. That drops a read begun before, which could answer after the change and show Ember AI as
-  // it was. The change's answer has the avatar, or else Ember AI is read again once it's done.
+  // own saves. That drops a read begun before, which could answer after the change and show Papaya AI as
+  // it was. The change's answer has the avatar, or else Papaya AI is read again once it's done.
   const listedAvatarUrl = people.get(ASSISTANT_ID)?.avatarUrl;
   const changedElsewhere = !busy && listedAvatarUrl !== undefined && avatarVersionOf(listedAvatarUrl) > avatarVersionOf(assistant.avatarUrl);
   const showRead = useEffectEvent(({ assistant: read }: WorkspaceSettings) => (read ? onChanged(read) : onStopped()));
@@ -248,7 +248,7 @@ export function EmberSettings({ me, assistant, onSetUp, onStopped, onChanged, on
     return () => void (stopped = true);
   }, [changedElsewhere, listedAvatarUrl]);
 
-  /** Shows Ember AI as `changed` at once, and saves it with `save`, showing it as it was, `shown`, again if it isn't saved. */
+  /** Shows Papaya AI as `changed` at once, and saves it with `save`, showing it as it was, `shown`, again if it isn't saved. */
   const saveShown = (shown: Assistant, changed: Assistant, save: () => Promise<Assistant>) => {
     setSaving(true);
     onChanged(changed);
@@ -282,7 +282,7 @@ export function EmberSettings({ me, assistant, onSetUp, onStopped, onChanged, on
     saveShown(shown, { ...shown, models: shown.models.filter(({ id }) => id !== model) }, () => removeAssistantModel(model));
 
   /**
-   * Saves `changes` to what Ember adds to @ember's own instructions, or around them, settling with Ember AI
+   * Saves `changes` to what Papaya OS adds to @ember's own instructions, or around them, settling with Papaya AI
    * once they're saved, or failing, leaving what's typed as it is.
    */
   const saveInstructions = async (changes: InstructionChanges) => {
@@ -311,7 +311,7 @@ export function EmberSettings({ me, assistant, onSetUp, onStopped, onChanged, on
       (error: unknown) => {
         if (!mounted.current && !isSignedOut(error)) return;
         setTurningWeb(null);
-        // What AI Gateway or the model made of searching, or that Ember AI changed meanwhile, which the page says itself,
+        // What AI Gateway or the model made of searching, or that Papaya AI changed meanwhile, which the page says itself,
         // though not that it was turned off, which takes the page away.
         if (error instanceof ApiError && ([422, 429, 502].includes(error.status) || (error.status === 409 && error.message !== ASSISTANT_OFF))) return setWebTest({ refusal: error.message });
         setWebTest(null);
@@ -360,7 +360,7 @@ export function EmberSettings({ me, assistant, onSetUp, onStopped, onChanged, on
         uploaded={assistant.avatar}
         disabled={busy}
         onChoose={saveAvatar}
-        // Use Ember's flame: no confirmation first, and no notice after, as Remove icon.
+        // Use Papaya OS's flame: no confirmation first, and no notice after, as Remove icon.
         onRemove={() => showAvatar(removeAssistantAvatar())}
       />
       <Instructions
@@ -392,12 +392,12 @@ export function EmberSettings({ me, assistant, onSetUp, onStopped, onChanged, on
   );
 }
 
-/** What @ember's Instructions save: what Ember adds to its own instructions, and around them, null for Ember's own. */
+/** What @ember's Instructions save: what Papaya OS adds to its own instructions, and around them, null for Papaya OS's own. */
 type InstructionChanges = Pick<AssistantChanges, "instructions" | "promptTemplate">;
 
 /**
- * @ember's Instructions: what administrators add to Ember's own, `saved`, in a box that Save instructions
- * saves once what's typed differs, and What Ember adds around them, as `promptOf` has it from the template,
+ * @ember's Instructions: what administrators add to Papaya OS's own, `saved`, in a box that Save instructions
+ * saves once what's typed differs, and What Papaya OS adds around them, as `promptOf` has it from the template,
  * `savedTemplate` until it's modified, which Save instructions saves too, as does Save beside it. Leaving
  * the page with either unsaved asks first, even while another change on the page saves.
  */
@@ -416,10 +416,10 @@ function Instructions({
   onSave: (changes: InstructionChanges) => Promise<Assistant>;
   onFailed: (error: unknown) => void;
 }) {
-  // What's typed in each box, or null while it's as Ember AI has it, when it follows what another tab saves.
+  // What's typed in each box, or null while it's as Papaya AI has it, when it follows what another tab saves.
   const [typed, setTyped] = useState<string | null>(null);
   const [typedTemplate, setTypedTemplate] = useState<string | null>(null);
-  // Why the template was refused, which What Ember adds around them opens to say.
+  // Why the template was refused, which What Papaya OS adds around them opens to say.
   const [refusal, setRefusal] = useState<{ error: string } | null>(null);
   const instructions = typed ?? saved;
   const template = typedTemplate ?? savedTemplate;
@@ -428,7 +428,7 @@ function Instructions({
   const changed = instructionsChanged || templateChanged;
   const mounted = useMounted();
 
-  /** Why the template typed can't be saved, which What Ember adds around them opens to say, or null. */
+  /** Why the template typed can't be saved, which What Papaya OS adds around them opens to say, or null. */
   const refused = () => {
     const error = templateChanged ? templateRefusal(template.trim()) : null;
     if (error !== null) setRefusal({ error });
@@ -437,7 +437,7 @@ function Instructions({
 
   /**
    * Saves what's changed, which the boxes then show as saved, but for anything typed while it saves, which
-   * stays unsaved, unless the template is one Ember doesn't take.
+   * stays unsaved, unless the template is one Papaya OS doesn't take.
    */
   const save = () => {
     const error = refused();
@@ -519,8 +519,8 @@ function Instructions({
 const latestAvatarUrl = (shown: string, listed: string | undefined) => (listed && avatarVersionOf(listed) > avatarVersionOf(shown) ? listed : shown);
 
 /**
- * @ember's avatar, while Ember AI is on: the picture `src` in a circle with a camera on its corner, which
- * picks a picture to replace it at once, as your avatar on your profile, and Use Ember's flame, which
+ * @ember's avatar, while Papaya AI is on: the picture `src` in a circle with a camera on its corner, which
+ * picks a picture to replace it at once, as your avatar on your profile, and Use Papaya OS's flame, which
  * takes away the picture an administrator `uploaded`, where one did.
  */
 function Avatar({ src, uploaded, disabled, onChoose, onRemove }: { src: string; uploaded: boolean; disabled: boolean; onChoose: (file: File) => void; onRemove: () => void }) {
@@ -536,7 +536,7 @@ function Avatar({ src, uploaded, disabled, onChoose, onRemove }: { src: string; 
         </div>
         {uploaded && (
           <button type="button" disabled={disabled} onClick={onRemove} className={BUTTON}>
-            Use Ember's flame
+            Use Papaya OS's flame
           </button>
         )}
       </div>
@@ -546,9 +546,9 @@ function Avatar({ src, uploaded, disabled, onChoose, onRemove }: { src: string; 
 
 /**
  * The models people can pick, in the order they were added, each a radio button that chooses it to
- * answer everyone else, with a Remove for each but that one, and saying so of one Ember no longer
+ * answer everyone else, with a Remove for each but that one, and saying so of one Papaya OS no longer
  * offers (`noLongerOffered`), as the Worker lists them, `offered`, once it has, and Add a model under them,
- * until there are as many as there can be, or people can pick every model Ember offers.
+ * until there are as many as there can be, or people can pick every model Papaya OS offers.
  */
 function Models({
   assistant,
@@ -625,7 +625,7 @@ function Models({
 }
 
 /**
- * Search the web, while Ember AI is on: what @ember does on the web, its switch, shown as it's `turning`
+ * Search the web, while Papaya AI is on: what @ember does on the web, its switch, shown as it's `turning`
  * while it saves, and what came of turning it on, or of choosing another model, its `test`. For a model
  * that can't search, it says so, and its switch opens the setup, where another can be chosen.
  */

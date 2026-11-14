@@ -9,7 +9,7 @@ import { api, connect, cookieOf, freshDeploy, roomStub, settle, shown, signIn, w
 
 const WEBHOOK = "https://bots.example.com/hook";
 
-/** Sets Ember up with Ada as its administrator, and a bot in first run's general room, whose webhook delivers to `webhookUrl`, if it's given. */
+/** Sets Papaya OS up with Ada as its administrator, and a bot in first run's general room, whose webhook delivers to `webhookUrl`, if it's given. */
 async function withBot(webhookUrl: string | undefined = WEBHOOK): Promise<{ ada: Session; bot: BotSettings; general: RoomId }> {
   const setUp = await api("/api/first_run", { method: "POST", body: JSON.stringify({ name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" }) });
   expect(setUp.status).toBe(201);

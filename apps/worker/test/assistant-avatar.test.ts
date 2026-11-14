@@ -6,15 +6,15 @@ import type { Env } from "../src/env";
 import { NO_STORAGE } from "../src/files/uploads";
 import { api, apiWith, avatarVersionOf, cookieOf, freshDeploy, openWorkspaceSocket, origin, recordedImage, shown, stopTheClock, WITH_THE_FLAME, workspaceSql, type Session } from "./support";
 
-// @ember's avatar, which administrators replace on the Ember AI card while it's on, and take away again
-// to bring back Ember's flame.
+// @ember's avatar, which administrators replace on the Papaya AI card while it's on, and take away again
+// to bring back Papaya OS's flame.
 
 const files = (env as unknown as Env).FILES!;
 
 const SETUP = { accountId: "0123456789abcdef0123456789abcdef", apiToken: "an-api-token-with-ai-gateway-run_0123456", model: "anthropic/claude-haiku-5.5" };
 const PATH = "/api/account/assistant/avatar";
 
-/** Ember's flame, as the built app's files have it, which these tests stand in for. */
+/** Papaya OS's flame, as the built app's files have it, which these tests stand in for. */
 const FLAME = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><rect width="36" height="36" fill="#FF5F0F"/></svg>';
 const builtFiles = {
   fetch: async (input: Request | string | URL) =>
@@ -23,7 +23,7 @@ const builtFiles = {
 
 const as = (session?: Session | null): Record<string, string> => (session ? { Cookie: session.cookie } : {});
 
-/** Sets Ember up with Ada as its administrator, signed in. */
+/** Sets Papaya OS up with Ada as its administrator, signed in. */
 async function setUp(): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify({ name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" }) });
   expect(response.status).toBe(201);
@@ -38,7 +38,7 @@ async function joinAsGrace(): Promise<Session> {
   return { user: shown(((await response.json()) as { user: Me }).user), cookie: cookieOf(response) };
 }
 
-/** Turns Ember AI on as `administrator`, its model saying hello to the test question. */
+/** Turns Papaya AI on as `administrator`, its model saying hello to the test question. */
 async function turnOn(administrator: Session): Promise<void> {
   const fetch = vi.spyOn(globalThis, "fetch").mockImplementation(async () =>
     Response.json({ type: "message", role: "assistant", content: [{ type: "text", text: "Hello, team!" }], stop_reason: "end_turn" }),
@@ -48,7 +48,7 @@ async function turnOn(administrator: Session): Promise<void> {
   fetch.mockRestore();
 }
 
-/** Turns Ember AI off as `administrator`. */
+/** Turns Papaya AI off as `administrator`. */
 async function turnOff(administrator: Session): Promise<void> {
   expect((await api("/api/account/assistant", { method: "DELETE", headers: as(administrator) })).status).toBe(200);
 }
@@ -68,23 +68,23 @@ async function encoded(form: FormData): Promise<{ body: ArrayBuffer; headers: Re
   return { body, headers: { "Content-Type": request.headers.get("Content-Type")!, "Content-Length": String(body.byteLength) } };
 }
 
-/** Uploads `form` as @ember's avatar, as `session`, as a picture chosen on the Ember AI card does. */
+/** Uploads `form` as @ember's avatar, as `session`, as a picture chosen on the Papaya AI card does. */
 async function upload(session: Session | null, form = moonForm(), changes: Partial<Env> = {}): Promise<Response> {
   const { body, headers } = await encoded(form);
   return apiWith(changes, PATH, { method: "PUT", headers: { ...as(session), ...headers }, body });
 }
 
-/** Uploads moon.jpg as @ember's avatar, as `administrator`, answering Ember AI then. */
+/** Uploads moon.jpg as @ember's avatar, as `administrator`, answering Papaya AI then. */
 async function uploadMoon(administrator: Session): Promise<AssistantSettings> {
   const response = await upload(administrator);
   expect(response.status, await response.clone().text()).toBe(200);
   return ((await response.json()) as AssistantChanged).assistant;
 }
 
-/** Takes away @ember's avatar, as `session`, as Use Ember's flame does. */
+/** Takes away @ember's avatar, as `session`, as Use Papaya OS's flame does. */
 const useTheFlame = (session: Session | null) => api(PATH, { method: "DELETE", headers: as(session) });
 
-/** Ember AI as the workspace's settings show it to `session`. */
+/** Papaya AI as the workspace's settings show it to `session`. */
 const assistantSettings = async (session: Session) => ((await (await api("/api/account", { headers: as(session) })).json()) as WorkspaceSettings).assistant;
 
 /** @ember as the people directory lists it to `viewer`. */
@@ -93,7 +93,7 @@ async function listedEmber(viewer: Session): Promise<DirectoryUser> {
   return users.find(({ id }) => id === ASSISTANT_ID)!;
 }
 
-/** The picture at `avatarUrl`, as `viewer` is served it, from the built app's files for Ember's flame. */
+/** The picture at `avatarUrl`, as `viewer` is served it, from the built app's files for Papaya OS's flame. */
 const served = (avatarUrl: string, viewer: Session) => apiWith({ ASSETS: builtFiles }, avatarUrl, { headers: as(viewer) });
 
 /** @ember's avatar as the database keeps it. */
@@ -115,7 +115,7 @@ afterEach(() => {
 });
 
 describe("@ember's avatar", () => {
-  it("is Ember's flame until an administrator uploads one, which everyone's served as its variant, at a new address every open page hears of", async () => {
+  it("is Papaya OS's flame until an administrator uploads one, which everyone's served as its variant, at a new address every open page hears of", async () => {
     const ada = await setUp();
     const grace = await joinAsGrace();
     await turnOn(ada);
@@ -142,7 +142,7 @@ describe("@ember's avatar", () => {
     expect(await pendingDeletions()).toEqual([]);
   });
 
-  it("has R2 delete the picture a new one replaces, and the one Use Ember's flame takes away, bringing back the flame", async () => {
+  it("has R2 delete the picture a new one replaces, and the one Use Papaya OS's flame takes away, bringing back the flame", async () => {
     const ada = await setUp();
     await turnOn(ada);
     await uploadMoon(ada);
@@ -169,7 +169,7 @@ describe("@ember's avatar", () => {
     await deleted();
     expect(await storedAvatars()).toEqual([]);
 
-    // Ember's flame already, it changes nothing.
+    // Papaya OS's flame already, it changes nothing.
     const unchanged = await storedAvatar();
     expect(await (await useTheFlame(ada)).json()).toEqual({ assistant });
     expect(await storedAvatar()).toEqual(unchanged);
@@ -177,7 +177,7 @@ describe("@ember's avatar", () => {
 
   it("has a later address after each change, even one in the same second as the last, which nothing after takes back, as browsers keep the picture they have at one", async () => {
     const ada = await setUp();
-    // Turning Ember AI on, uploading a picture, turning Ember AI off and on again and taking the picture away, all at once.
+    // Turning Papaya AI on, uploading a picture, turning Papaya AI off and on again and taking the picture away, all at once.
     stopTheClock();
     await turnOn(ada);
     const flame = (await listedEmber(ada)).avatarUrl;
@@ -197,7 +197,7 @@ describe("@ember's avatar", () => {
     expect((await served(assistant.avatarUrl, ada)).headers.get("Content-Type")).toBe("image/svg+xml");
   });
 
-  it("stays while Ember AI is off, as @ember's messages do, and can't be changed until it's on again", async () => {
+  it("stays while Papaya AI is off, as @ember's messages do, and can't be changed until it's on again", async () => {
     const ada = await setUp();
     await turnOn(ada);
     await uploadMoon(ada);
@@ -218,7 +218,7 @@ describe("@ember's avatar", () => {
     expect((await storedAvatar()).avatar_key).toBe(key);
   });
 
-  it("can't be uploaded before Ember AI is first turned on, when there's no @ember", async () => {
+  it("can't be uploaded before Papaya AI is first turned on, when there's no @ember", async () => {
     const ada = await setUp();
     const refused = await upload(ada);
     expect([refused.status, await refused.json()]).toEqual([409, { error: ASSISTANT_OFF }]);

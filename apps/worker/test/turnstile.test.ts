@@ -34,7 +34,7 @@ const SITEVERIFY = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 /** Where Turnstile's script and frame come from, which a page's policy names to let its check load. */
 const TURNSTILE = "https://challenges.cloudflare.com";
 
-/** Sets Ember up with Ada as its administrator, signed in, and Open on, so that the check guards signing up. */
+/** Sets Papaya OS up with Ada as its administrator, signed in, and Open on, so that the check guards signing up. */
 async function setUp(): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(ada) });
   expect(response.status).toBe(201);
@@ -46,21 +46,21 @@ async function setUp(): Promise<Session> {
 
 const as = (session?: Session | null): Record<string, string> => (session ? { Cookie: session.cookie } : {});
 
-/** Gives Ember a widget's keys as `session`, as Set up Turnstile does, on a deployment whose bindings differ from this suite's by `changes`. */
+/** Gives Papaya OS a widget's keys as `session`, as Set up Turnstile does, on a deployment whose bindings differ from this suite's by `changes`. */
 const giveKeys = (session: Session | null, keys: unknown, changes: Partial<Env> = {}) =>
   apiWith(changes, "/api/account/turnstile_keys", { method: "PUT", headers: { ...as(session), "CF-Connecting-IP": "203.0.113.30" }, body: JSON.stringify(keys) });
 
-/** Gives Ember `KEYS` as `administrator`, which has to work. */
+/** Gives Papaya OS `KEYS` as `administrator`, which has to work. */
 async function saveKeys(administrator: Session): Promise<void> {
   const response = await giveKeys(administrator, CHECKED);
   expect(response.status, await response.clone().text()).toBe(200);
 }
 
-/** Takes Ember's widget's keys away as `session`, as turning off the Turnstile card's switch does. */
+/** Takes Papaya OS's widget's keys away as `session`, as turning off the Turnstile card's switch does. */
 const forgetKeys = (session: Session | null, changes: Partial<Env> = {}) =>
   apiWith(changes, "/api/account/turnstile_keys", { method: "DELETE", headers: as(session) });
 
-/** Where the workspace's settings say Ember's Turnstile keys come from. */
+/** Where the workspace's settings say Papaya OS's Turnstile keys come from. */
 const turnstileSettings = async (session: Session, changes: Partial<Env> = {}) =>
   ((await (await apiWith(changes, "/api/account", { headers: as(session) })).json()) as WorkspaceSettings).turnstile;
 
@@ -207,7 +207,7 @@ describe("Check that people are people with Cloudflare Turnstile", () => {
   });
 
   describe("with the keys given", () => {
-    it("checks whoever signs up, or asks Ember to email them, with them, once the Workspace starts afresh", async () => {
+    it("checks whoever signs up, or asks Papaya OS to email them, with them, once the Workspace starts afresh", async () => {
       const administrator = await setUp();
       const checks = fakeSiteverify();
       await saveKeys(administrator);
@@ -265,13 +265,13 @@ describe("Check that people are people with Cloudflare Turnstile", () => {
         expect((await signUp()).status).toBe(201);
       });
       expect(checks).toHaveLength(1);
-      expect(logged).toHaveBeenCalledWith("The Turnstile secret key Ember was given doesn't open under SESSION_SECRET, so it isn't used.");
+      expect(logged).toHaveBeenCalledWith("The Turnstile secret key Papaya OS was given doesn't open under SESSION_SECRET, so it isn't used.");
       expect(await turnstileSettings(administrator)).toBe("saved");
     });
   });
 
   describe("the check page", () => {
-    it("draws a widget's check from a page of its own, whose policy alone lets Turnstile load, framed by Ember's pages alone", async () => {
+    it("draws a widget's check from a page of its own, whose policy alone lets Turnstile load, framed by Papaya OS's pages alone", async () => {
       const response = await api(TURNSTILE_CHECK_PATH);
       expect(response.status).toBe(200);
       expect(response.headers.get("Content-Type")).toBe("text/html; charset=utf-8");

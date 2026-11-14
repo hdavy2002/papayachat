@@ -139,10 +139,10 @@ describe("Initials avatars", () => {
     expect(await sha256(DEFAULT_BOT_AVATAR)).toBe("aefe43e21cd8423e5b29ee6e3088db788090bc715f52863eaddc0efdb92c9062");
   });
 
-  it("names the release in @ember's address too, since its picture comes with Ember", async () => {
+  it("names the release in @ember's address too, since its picture comes with Papaya OS", async () => {
     const ada = await signIn("Ada Lovelace");
     const changed = "2026-10-14T21:24:45.804Z";
-    await workspaceSql("INSERT INTO users (id, name, role, created_at, updated_at) VALUES (?, 'Ember', 2, ?, ?)", ASSISTANT_ID, changed, changed);
+    await workspaceSql("INSERT INTO users (id, name, role, created_at, updated_at) VALUES (?, 'Papaya OS', 2, ?, ?)", ASSISTANT_ID, changed, changed);
     const address = new URL((await listed(ada, ASSISTANT_ID)).avatarUrl, origin);
     expect(address.pathname).toMatch(new RegExp(`^/users/${ASSISTANT_ID}\\.[\\w-]{22}/avatar$`));
     expect([...address.searchParams]).toEqual([

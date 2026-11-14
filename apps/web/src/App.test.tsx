@@ -19,13 +19,13 @@ const JOIN_CODE = "aB3d-Ef5h-iJ7k";
 const TRANSFER_ID = "u2.mgk3x2a9.Ab-_9z";
 /** The secret in Grace's invitation's link. */
 const INVITATION_TOKEN = "Gr-_ce".repeat(7) + "H";
-/** The secret in the link Ember emailed Grace to join with her address at the email domains. */
+/** The secret in the link Papaya OS emailed Grace to join with her address at the email domains. */
 const EMAIL_LINK_TOKEN = "Gr-_em".repeat(7) + "D";
 /** Where joining with Ada's email address sends the browser. */
 const ADA_SIGNS_IN = "/session/new?email_address=ada%40example.com";
 /** The workspace as it's set up. */
-const EMBER: Account = { name: "Ember", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo: null, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false };
-/** What the deployment's Set up Ember form suggests. */
+const EMBER: Account = { name: "Papaya OS", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo: null, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false };
+/** What the deployment's Set up Papaya OS form suggests. */
 const PLACEHOLDERS = { name: "Grace Hopper", emailAddress: "grace@example.com" };
 const general = { id: "general", name: "general", kind: "open", icon: null };
 /** The rooms first run makes, general first. */
@@ -111,10 +111,10 @@ function serve({
 }: {
   signedIn: boolean;
   setup?: "pending" | "complete";
-  /** What setting Ember up takes, until it's set up. */
+  /** What setting Papaya OS up takes, until it's set up. */
   setupAccess?: Bootstrap["setupAccess"];
   guestSignIn?: boolean;
-  /** Whether Ember can email a code to reset a password. */
+  /** Whether Papaya OS can email a code to reset a password. */
   passwordResetCodes?: boolean;
   /** The workspace as it's set up, rather than `EMBER`. */
   account?: Account;
@@ -217,8 +217,8 @@ async function roomSocket(): Promise<RoomSocket> {
   await waitFor(() => expect(RoomSocket.all).not.toHaveLength(0));
   return RoomSocket.all[0]!;
 }
-const signInPage = () => screen.findByRole("heading", { name: "Sign in to Ember" });
-/** What first run asks about huddles, once the workspace is made, before it opens Ember. */
+const signInPage = () => screen.findByRole("heading", { name: "Sign in to Papaya OS" });
+/** What first run asks about huddles, once the workspace is made, before it opens Papaya OS. */
 const huddlesQuestion = () => screen.findByRole("heading", { level: 1, name: QUESTION });
 
 async function signInAsAda(password = "correct horse") {
@@ -249,7 +249,7 @@ afterEach(() => {
 });
 
 describe("Set up the workspace", () => {
-  it("sends every page to Set up Ember until Ember is set up", async () => {
+  it("sends every page to Set up Papaya OS until Papaya OS is set up", async () => {
     history.replaceState(null, "", "/rooms/general");
     serve({ signedIn: false, setup: "pending" });
     render(<App />);
@@ -257,7 +257,7 @@ describe("Set up the workspace", () => {
     expect(screen.queryByRole("heading")).not.toBeInTheDocument();
   });
 
-  it("sets up Ember at /first_run, asks about huddles, then opens general signed in as its administrator", async () => {
+  it("sets up Papaya OS at /first_run, asks about huddles, then opens general signed in as its administrator", async () => {
     history.replaceState(null, "", "/first_run");
     const fetch = serve({ signedIn: false, setup: "pending" });
     render(<App />);
@@ -270,7 +270,7 @@ describe("Set up the workspace", () => {
     await user.type(screen.getByLabelText("Email address"), "ada@example.com");
     await user.type(screen.getByLabelText("Password"), "correct horse{Enter}");
 
-    // The question comes before Ember opens, still at setup's address.
+    // The question comes before Papaya OS opens, still at setup's address.
     expect(await huddlesQuestion()).toHaveFocus();
     expect(location.pathname).toBe("/first_run");
     await user.click(screen.getByRole("button", { name: "Not now" }));
@@ -282,7 +282,7 @@ describe("Set up the workspace", () => {
     expect(loadPage).not.toHaveBeenCalled();
   });
 
-  it("turns huddles on as Ember is set up, with an SFU app's keys, which gives general's header its huddle button", async () => {
+  it("turns huddles on as Papaya OS is set up, with an SFU app's keys, which gives general's header its huddle button", async () => {
     WorkspaceSocket.all = [];
     vi.stubGlobal("WebSocket", WorkspaceSocket);
     history.replaceState(null, "", "/first_run");
@@ -304,10 +304,10 @@ describe("Set up the workspace", () => {
     expect(await screen.findByRole("heading", { level: 1, name: "Huddles are on" })).toHaveFocus();
     const [, saved] = fetch.mock.calls.find(([path]) => path === "/api/account/huddles")!;
     expect([saved!.method, JSON.parse(String(saved!.body))]).toEqual(["PUT", app]);
-    // Nothing has opened Ember yet.
+    // Nothing has opened Papaya OS yet.
     expect(location.pathname).toBe("/first_run");
     expect(WorkspaceSocket.all).toEqual([]);
-    await user.click(screen.getByRole("button", { name: "Open Ember" }));
+    await user.click(screen.getByRole("button", { name: "Open Papaya OS" }));
 
     expect(await screen.findByRole("heading", { level: 1, name: "general" })).toBeInTheDocument();
     expect(location.pathname).toBe("/rooms/r1");
@@ -318,7 +318,7 @@ describe("Set up the workspace", () => {
     expect(screen.getByRole("button", { name: "Start huddle" })).toBeInTheDocument();
   });
 
-  it("sets up Ember through its setup link, sending the link's token and taking it out of the address", async () => {
+  it("sets up Papaya OS through its setup link, sending the link's token and taking it out of the address", async () => {
     const token = "e2e1".repeat(16);
     history.replaceState(null, "", `/first_run#token=${token}`);
     const fetch = serve({ signedIn: false, setup: "pending", setupAccess: "link" });
@@ -339,15 +339,15 @@ describe("Set up the workspace", () => {
     expect(new Headers(init!.headers).get("Authorization")).toBe(`Bearer ${token}`);
   });
 
-  it("asks for the setup link where Ember takes one and this address brought none", async () => {
+  it("asks for the setup link where Papaya OS takes one and this address brought none", async () => {
     history.replaceState(null, "", "/first_run");
     serve({ signedIn: false, setup: "pending", setupAccess: "link" });
     render(<App />);
-    expect(await screen.findByText("Ember is waiting for its administrator.")).toBeInTheDocument();
+    expect(await screen.findByText("Papaya OS is waiting for its administrator.")).toBeInTheDocument();
     expect(screen.queryByLabelText("Name")).not.toBeInTheDocument();
   });
 
-  it("leaves /first_run for the workspace once Ember is set up", async () => {
+  it("leaves /first_run for the workspace once Papaya OS is set up", async () => {
     history.replaceState(null, "", "/first_run");
     serve({ signedIn: true });
     render(<App />);
@@ -400,7 +400,7 @@ describe("Stay signed in, per device", () => {
     fetch.mockRejectedValueOnce(new TypeError("Failed to fetch"));
     render(<App />);
     await vi.waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
-    expect(screen.queryByRole("heading", { name: "Sign in to Ember" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Sign in to Papaya OS" })).not.toBeInTheDocument();
 
     await vi.advanceTimersByTimeAsync(1_000);
     expect(await roomHeading()).toBeInTheDocument();
@@ -499,7 +499,7 @@ describe("Rename the workspace", () => {
     act(() => WorkspaceSocket.all[0]!.welcome(ada));
     act(() => WorkspaceSocket.all[0]!.receive({ type: "account.updated", account: { ...EMBER, name: "Analytical Engines" } }));
     expect(screen.getByRole("heading", { level: 2, name: "Analytical Engines" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Ember home" })).toHaveAttribute("title", "Analytical Engines");
+    expect(screen.getByRole("link", { name: "Papaya OS home" })).toHaveAttribute("title", "Analytical Engines");
   });
 
   it("renames the workspace from its settings, and the rail takes the new name, and the sidebar back in a room", async () => {
@@ -508,12 +508,12 @@ describe("Rename the workspace", () => {
     render(<App />);
     const user = userEvent.setup();
     const name = await screen.findByRole("textbox", { name: "Community name" });
-    expect(name).toHaveValue("Ember");
+    expect(name).toHaveValue("Papaya OS");
     await user.clear(name);
     await user.type(name, "Analytical Engines{Enter}");
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Changes saved.");
-    expect(screen.getByRole("link", { name: "Ember home" })).toHaveAttribute("title", "Analytical Engines");
+    expect(screen.getByRole("link", { name: "Papaya OS home" })).toHaveAttribute("title", "Analytical Engines");
     expect(screen.getByRole("link", { name: "Admin" })).toHaveAttribute("aria-current", "page");
     // Community settings take the sidebar's place.
     await user.click(screen.getByRole("link", { name: "Go Back" }));
@@ -534,7 +534,7 @@ describe("Rename the workspace", () => {
 
     // The field too, which follows the workspace until it's typed in.
     await waitFor(() => expect(screen.getByRole("textbox", { name: "Community name" })).toHaveValue("Analytical Engines"));
-    expect(screen.getByRole("link", { name: "Ember home" })).toHaveAttribute("title", "Analytical Engines");
+    expect(screen.getByRole("link", { name: "Papaya OS home" })).toHaveAttribute("title", "Analytical Engines");
   });
 
   it("keeps a name the workspace socket says over a save answered after it said so, which may be older", async () => {
@@ -547,7 +547,7 @@ describe("Rename the workspace", () => {
     act(() => WorkspaceSocket.all[0]!.welcome(ada));
     const user = userEvent.setup();
     const name = await screen.findByRole("textbox", { name: "Community name" });
-    await waitFor(() => expect(name).toHaveValue("Ember"));
+    await waitFor(() => expect(name).toHaveValue("Papaya OS"));
     await user.clear(name);
     await user.type(name, "Difference Engines{Enter}");
     // Saved in another tab after this one's save.
@@ -555,14 +555,14 @@ describe("Rename the workspace", () => {
     answerSave();
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Changes saved.");
-    expect(screen.getByRole("link", { name: "Ember home" })).toHaveAttribute("title", "Analytical Engines");
+    expect(screen.getByRole("link", { name: "Papaya OS home" })).toHaveAttribute("title", "Analytical Engines");
   });
 });
 
 describe("Workspace tagline", () => {
   const TAGLINE = "Engines for every occasion";
   /** The sidebar's heading, with the tagline under the name, if there is one. */
-  const sidebarHeading = () => screen.getByRole("heading", { level: 2, name: "Ember" }).closest("hgroup");
+  const sidebarHeading = () => screen.getByRole("heading", { level: 2, name: "Papaya OS" }).closest("hgroup");
 
   it("takes a tagline saved in another tab at once, as the workspace socket says", async () => {
     WorkspaceSocket.all = [];
@@ -572,12 +572,12 @@ describe("Workspace tagline", () => {
     await roomHeading();
     await waitFor(() => expect(WorkspaceSocket.all).toHaveLength(1));
     act(() => WorkspaceSocket.all[0]!.welcome(ada));
-    expect(sidebarHeading()).toHaveTextContent(/^Ember$/);
+    expect(sidebarHeading()).toHaveTextContent(/^Papaya OS$/);
 
     act(() => WorkspaceSocket.all[0]!.receive({ type: "account.updated", account: { ...EMBER, tagline: TAGLINE } }));
-    expect(sidebarHeading()).toHaveTextContent(`Ember${TAGLINE}`);
+    expect(sidebarHeading()).toHaveTextContent(`Papaya OS${TAGLINE}`);
     act(() => WorkspaceSocket.all[0]!.receive({ type: "account.updated", account: EMBER }));
-    expect(sidebarHeading()).toHaveTextContent(/^Ember$/);
+    expect(sidebarHeading()).toHaveTextContent(/^Papaya OS$/);
   });
 
   it("gives the workspace a tagline from its settings, which the sidebar shows under the name", async () => {
@@ -590,7 +590,7 @@ describe("Workspace tagline", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Changes saved.");
     // Community settings take the sidebar's place.
     await user.click(screen.getByRole("link", { name: "Go Back" }));
-    await waitFor(() => expect(sidebarHeading()).toHaveTextContent(`Ember${TAGLINE}`));
+    await waitFor(() => expect(sidebarHeading()).toHaveTextContent(`Papaya OS${TAGLINE}`));
   });
 });
 
@@ -598,9 +598,9 @@ describe("Custom domain", () => {
   const DOMAIN = "chat.example.com";
   const MOVED: Account = { ...EMBER, customDomain: DOMAIN };
   /** The notice in a tab left open at another address. */
-  const movedNotice = () => screen.queryByText((_, element) => element?.tagName === "P" && element.textContent === `Ember has moved to ${DOMAIN}. Go there`);
+  const movedNotice = () => screen.queryByText((_, element) => element?.tagName === "P" && element.textContent === `Papaya OS has moved to ${DOMAIN}. Go there`);
 
-  it("moves a page opened at any other address to the same page at Ember's custom domain, before showing anything", async () => {
+  it("moves a page opened at any other address to the same page at Papaya OS's custom domain, before showing anything", async () => {
     history.replaceState(null, "", "/rooms/general?ref=email#top");
     serve({ signedIn: true, account: MOVED });
     render(<App />);
@@ -617,7 +617,7 @@ describe("Custom domain", () => {
     expect(screen.queryByRole("heading")).not.toBeInTheDocument();
   });
 
-  it("stays at Ember's custom domain", async () => {
+  it("stays at Papaya OS's custom domain", async () => {
     serve({ signedIn: true, account: { ...EMBER, customDomain: location.host } });
     render(<App />);
     expect(await roomHeading()).toBeInTheDocument();
@@ -632,12 +632,12 @@ describe("Custom domain", () => {
     const user = userEvent.setup();
     await user.click(await screen.findByRole("button", { name: `Go back to ${location.host}` }));
     expect(await screen.findByRole("alert")).toHaveTextContent("Changes saved.");
-    expect(screen.getByRole("region", { name: "Custom domain" })).toHaveTextContent(`Ember's address is ${location.host}.`);
+    expect(screen.getByRole("region", { name: "Custom domain" })).toHaveTextContent(`Papaya OS's address is ${location.host}.`);
     expect(loadPage).not.toHaveBeenCalled();
     expect(movedNotice()).not.toBeInTheDocument();
   });
 
-  it("tells a tab left open at another address that Ember has moved, on every page that would move", async () => {
+  it("tells a tab left open at another address that Papaya OS has moved, on every page that would move", async () => {
     WorkspaceSocket.all = [];
     vi.stubGlobal("WebSocket", WorkspaceSocket);
     serve({ signedIn: true });
@@ -646,7 +646,7 @@ describe("Custom domain", () => {
     await waitFor(() => expect(WorkspaceSocket.all).toHaveLength(1));
     act(() => WorkspaceSocket.all[0]!.welcome(ada));
     expect(movedNotice()).not.toBeInTheDocument();
-    /** Gives Ember the custom domain `customDomain`, as an administrator at that address does, which the workspace socket then says. */
+    /** Gives Papaya OS the custom domain `customDomain`, as an administrator at that address does, which the workspace socket then says. */
     const moveEmberTo = async (customDomain: string | null) => {
       const { account } = (await (await fetch("/api/account", { method: "PATCH", body: JSON.stringify({ customDomain }) })).json()) as { account: Account };
       act(() => WorkspaceSocket.all[0]!.receive({ type: "account.updated", account }));
@@ -662,7 +662,7 @@ describe("Custom domain", () => {
     const user = userEvent.setup();
     await user.click(screen.getByRole("link", { name: "Admin" }));
     await user.click(await screen.findByRole("link", { name: "Domain settings" }));
-    expect(await screen.findByRole("region", { name: "Custom domain" })).toHaveTextContent(`Ember's address is ${DOMAIN}.`);
+    expect(await screen.findByRole("region", { name: "Custom domain" })).toHaveTextContent(`Papaya OS's address is ${DOMAIN}.`);
     expect(movedNotice()).not.toBeInTheDocument();
     await user.click(screen.getByRole("link", { name: "Go Back" }));
     await roomHeading();
@@ -670,7 +670,7 @@ describe("Custom domain", () => {
 
     await user.click(screen.getByRole("button", { name: "Close" }));
     expect(movedNotice()).not.toBeInTheDocument();
-    // Until Ember moves again.
+    // Until Papaya OS moves again.
     await moveEmberTo("ember.example.org");
     expect(screen.getByRole("link", { name: "Go there" })).toHaveAttribute("href", "http://ember.example.org/rooms/general");
     // Moving as a page opened afresh would.
@@ -748,7 +748,7 @@ describe("Huddles", () => {
 
 describe("Workspace logo", () => {
   const LOGO = "/account/logo?v=20261017120000";
-  const brand = () => screen.getByRole("link", { name: "Ember home" }).querySelector("img");
+  const brand = () => screen.getByRole("link", { name: "Papaya OS home" }).querySelector("img");
 
   it("shows the workspace's logo before anyone signs in", async () => {
     serve({ signedIn: false, account: { ...EMBER, logo: LOGO } });
@@ -842,7 +842,7 @@ describe("Sign in with email and password", () => {
     render(<App />);
     await signInAsAda("wrong horse");
     expect(await screen.findByRole("alert")).toHaveTextContent(SIGN_IN_REJECTED);
-    expect(screen.getByRole("heading", { name: "Sign in to Ember" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Sign in to Papaya OS" })).toBeInTheDocument();
     expect(location.pathname).toBe("/session/new");
   });
 });
@@ -868,7 +868,7 @@ describe("Sign in with Papaya", () => {
 });
 
 describe("Sign up with the join link", () => {
-  const joinPage = () => screen.findByRole("heading", { name: "Join Ember" });
+  const joinPage = () => screen.findByRole("heading", { name: "Join Papaya OS" });
 
   async function join(emailAddress: string) {
     const user = userEvent.setup();
@@ -914,7 +914,7 @@ describe("Sign up without a link", () => {
     history.replaceState(null, "", "/join");
     const fetch = serve({ signedIn: false, account: { ...EMBER, openSignUp: true } });
     render(<App />);
-    expect(await screen.findByRole("heading", { name: "Join Ember" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Join Papaya OS" })).toBeInTheDocument();
     expect(location.pathname).toBe("/join");
 
     const user = userEvent.setup();
@@ -941,7 +941,7 @@ describe("Join with an invitation", () => {
     history.replaceState(null, "", `/join/invitation#token=${INVITATION_TOKEN}`);
     serve({ signedIn: false, account: { ...EMBER, joinLink: false } });
     render(<App />);
-    expect(await screen.findByRole("heading", { name: "Join Ember" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Join Papaya OS" })).toBeInTheDocument();
     expect(`${location.pathname}${location.hash}`).toBe("/join/invitation");
     expect(await screen.findByRole("textbox", { name: "Email address" })).toHaveValue("grace@example.com");
 
@@ -1002,7 +1002,7 @@ describe("Join with an email domain", () => {
 describe("Reset a forgotten password with an emailed code", () => {
   const resetPage = () => screen.findByRole("heading", { level: 1, name: "Reset your password" });
 
-  it("offers it from the sign-in page while Ember can send email", async () => {
+  it("offers it from the sign-in page while Papaya OS can send email", async () => {
     serve({ signedIn: false, passwordResetCodes: true });
     render(<App />);
     await signInPage();
@@ -1038,7 +1038,7 @@ describe("Private sign-in link", () => {
     await waitFor(() => expect(loadPage).toHaveBeenCalledWith("/"));
     expect(fetch).toHaveBeenCalledWith("/api/session/transfers", expect.objectContaining({ method: "POST", body: JSON.stringify({ transferId: TRANSFER_ID }) }));
     expect(`${location.pathname}${location.hash}`).toBe("/session/transfers");
-    expect(screen.queryByRole("heading", { name: "Sign in to Ember" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Sign in to Papaya OS" })).not.toBeInTheDocument();
   });
 
   it("signs in with it over the session this browser has, without opening the workspace", async () => {
@@ -1228,7 +1228,7 @@ describe("Select a field's text on entry", () => {
     expect(emailAddress).toHaveValue("ada@example.com");
   });
 
-  it("leaves what's in Set up Ember's fields alone when they're entered", async () => {
+  it("leaves what's in Set up Papaya OS's fields alone when they're entered", async () => {
     history.replaceState(null, "", "/first_run");
     serve({ signedIn: false, setup: "pending" });
     render(<App />);

@@ -6,8 +6,8 @@ import { forgetTurnstileKeys, isSignedOut } from "@/lib/api";
 import { BUTTON } from "./email-settings";
 
 // The Turnstile card in Membership, for administrators: whether Cloudflare Turnstile checks that whoever
-// signs up, or asks Ember to email them, is a person, with the keys of the widget an administrator gave
-// Ember, or the deployment's secrets, which nothing here changes. Its switch says whether it does, as
+// signs up, or asks Papaya OS to email them, is a person, with the keys of the widget an administrator gave
+// Papaya OS, or the deployment's secrets, which nothing here changes. Its switch says whether it does, as
 // the ways to join's switches say whether they let people in (Campfire's `.switch`), which the project's
 // owner chose to show plainly that it's on, over a badge or a green edge (2026-10-30). Turning it on
 // opens the steps to it (`TurnstileSetup`), as their switches open setup that's missing, as the owner
@@ -16,18 +16,18 @@ import { BUTTON } from "./email-settings";
 
 /** What turning Turnstile off asks first, since the limits on each network stand in for its check then. */
 export const CONFIRM_STOP_TURNSTILE =
-  "Are you sure you want to turn off Turnstile? Ember will forget the widget's keys, and limits on each network will stand in for its check until Turnstile is set up again.";
+  "Are you sure you want to turn off Turnstile? Papaya OS will forget the widget's keys, and limits on each network will stand in for its check until Turnstile is set up again.";
 
 const NOTE = "text-[0.8em] text-muted-foreground max-md:text-[12px]";
 
 /** Whom Turnstile's check is for. */
-const CHECKED = "whoever signs up, or asks Ember to email them a link to join or a code to reset a password, is a person";
+const CHECKED = "whoever signs up, or asks Papaya OS to email them a link to join or a code to reset a password, is a person";
 
 interface Props {
   turnstile: WorkspaceSettings["turnstile"];
   /** Opens Set up Turnstile. */
   onSetUp: () => void;
-  /** Shows where Ember's Turnstile keys come from once turning it off has taken the ones given away. */
+  /** Shows where Papaya OS's Turnstile keys come from once turning it off has taken the ones given away. */
   onStopped: (turnstile: WorkspaceSettings["turnstile"]) => void;
   /** Says why turning it off failed, as the workspace's alerts do. */
   onFailed: (error: unknown) => void;
@@ -90,7 +90,7 @@ export function TurnstileSettings({ turnstile, onSetUp, onStopped, onFailed }: P
   );
 }
 
-/** Set up Turnstile, which the ways to join whose limits stand in for its check have under them until Ember has a widget's keys. */
+/** Set up Turnstile, which the ways to join whose limits stand in for its check have under them until Papaya OS has a widget's keys. */
 export function SetUpTurnstile({ onSetUp }: { onSetUp: () => void }) {
   return (
     <div>

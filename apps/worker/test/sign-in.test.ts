@@ -12,7 +12,7 @@ import { api, apiWith, closeOf, connect, cookieOf, forwardUpgrade, freshDeploy, 
 const ada = { name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" };
 const SIGN_IN_WINDOW_MS = 3 * 60 * 1000;
 
-/** Sets Ember up with Ada as its administrator, signed in. */
+/** Sets Papaya OS up with Ada as its administrator, signed in. */
 async function setUp(): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(ada) });
   expect(response.status).toBe(201);
@@ -199,7 +199,7 @@ describe("Sign in with email and password", () => {
     expect(await response.json()).toEqual({ user: { id: "gracegracegrace1", name: "Grace Hopper", administrator: false } });
   });
 
-  it("refuses everyone before Ember is set up", async () => {
+  it("refuses everyone before Papaya OS is set up", async () => {
     expect((await signInWith({ emailAddress: ada.emailAddress, password: ada.password })).status).toBe(401);
   });
 });

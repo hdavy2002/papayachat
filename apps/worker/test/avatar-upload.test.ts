@@ -309,7 +309,7 @@ describe("Upload an avatar", () => {
     const { body, headers } = await encoded(photoForm(moon(), moonVariant()));
     const unbound = await apiWith({ FILES: undefined }, AVATAR_PATH, { method: "PUT", headers: { ...as(ada), ...headers }, body });
     expect(unbound.status).toBe(503);
-    expect(await unbound.json()).toEqual({ error: "Ember isn't set up to store files" });
+    expect(await unbound.json()).toEqual({ error: "Papaya OS isn't set up to store files" });
     expect(await storedAvatars()).toEqual([]);
   });
 
@@ -352,7 +352,7 @@ describe("Upload an avatar", () => {
 describe("Set up the workspace", () => {
   const ada = { name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" };
 
-  /** Posts the Set up Ember form with `form`'s photo, answering the response. */
+  /** Posts the Set up Papaya OS form with `form`'s photo, answering the response. */
   async function firstRun(form: FormData): Promise<Response> {
     const { body, headers } = await encoded(form);
     return api("/api/first_run", { method: "POST", headers, body });

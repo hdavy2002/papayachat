@@ -9,7 +9,7 @@ import { CopyButton, ROUND_BUTTON } from "./link-buttons";
 
 // The Invite by email card in Membership, for administrators, whichever ways to join are on: email
 // addresses to invite, which it sends `INVITATIONS_AT_ONCE` at a time, and the invitations no one has
-// accepted yet, each to send again or revoke. While Ember can't email them, it holds each new link for
+// accepted yet, each to send again or revoke. While Papaya OS can't email them, it holds each new link for
 // the administrator to copy, since the server keeps only their digests. Laid out as the Email card is.
 
 /** What revoking an invitation asks first. */
@@ -24,7 +24,7 @@ type Sent = "sending" | { outcomes: InvitationOutcome[] } | { refused: string[] 
 
 interface Props {
   invitations: EmailInvitation[];
-  /** Whether Ember emails invitations, as it does while it can send email and has a From address. */
+  /** Whether Papaya OS emails invitations, as it does while it can send email and has a From address. */
   emails: boolean;
   /** Opens Set up email. */
   onSetUpEmail: () => void;
@@ -50,13 +50,13 @@ const counted = (count: number, thing: string) => `${count} ${thing}${count === 
 export function InviteByEmail({ invitations, emails, onSetUpEmail, onInvitationsChanged, onFailed }: Props) {
   const [text, setText] = useState("");
   const [sent, setSent] = useState<Sent | null>(null);
-  // The links of the invitations Ember didn't email, by their ids, since only now are they known.
+  // The links of the invitations Papaya OS didn't email, by their ids, since only now are they known.
   const [links, setLinks] = useState<Record<string, string>>({});
   const mounted = useMounted();
   // While it sends, the addresses and each invitation's buttons wait, since its answer would undo what was typed or done meanwhile.
   const sending = sent === "sending";
 
-  /** Keeps what came of `invitation`'s newest link: the link itself, if Ember didn't email it, or nothing. */
+  /** Keeps what came of `invitation`'s newest link: the link itself, if Papaya OS didn't email it, or nothing. */
   const keepLink = (links: Record<string, string>, invitation: EmailInvitation, link: string | null) => {
     const { [invitation.id]: _, ...others } = links;
     return link === null ? others : { ...others, [invitation.id]: link };
@@ -105,14 +105,14 @@ export function InviteByEmail({ invitations, emails, onSetUpEmail, onInvitations
         </h2>
         <p className={NOTE}>
           {emails ? (
-            `Ember emails each person a link to join with their address, whichever ways to join are on. A link works once, for ${INVITATION_DAYS} days.`
+            `Papaya OS emails each person a link to join with their address, whichever ways to join are on. A link works once, for ${INVITATION_DAYS} days.`
           ) : (
             <>
-              Ember can't send email yet, so you'll get each person's link to send them yourself. A link works once, for {INVITATION_DAYS} days.{" "}
+              Papaya OS can't send email yet, so you'll get each person's link to send them yourself. A link works once, for {INVITATION_DAYS} days.{" "}
               <button type="button" onClick={onSetUpEmail} className="cursor-pointer underline">
                 Set up email
               </button>{" "}
-              to have Ember send them.
+              to have Papaya OS send them.
             </>
           )}
         </p>
@@ -203,7 +203,7 @@ function summaryOf(outcomes: InvitationOutcome[]): string {
 
 interface PendingProps {
   invitation: EmailInvitation;
-  /** Its newest link, while Ember didn't email it and the page knows it, or null. */
+  /** Its newest link, while Papaya OS didn't email it and the page knows it, or null. */
   link: string | null;
   emails: boolean;
   /** Whether the card is sending invitations, so its buttons wait. */

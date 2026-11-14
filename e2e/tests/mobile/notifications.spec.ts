@@ -30,7 +30,7 @@ test.describe("Notification levels", () => {
 
 test.describe("Turn on notifications", () => {
   test("Enable notifications fits the phone beside a long room name, and so does its setup dialog, with its help's one section open", async ({ page, room, screenIsFine }) => {
-    // As in Safari on an iPhone, which only has push once Ember is on the Home Screen.
+    // As in Safari on an iPhone, which only has push once Papaya OS is on the Home Screen.
     await page.addInitScript(() => Reflect.deleteProperty(window, "PushManager"));
     const named = { ...room, name: LONG_NAME };
     await isolateRoom(page, named);

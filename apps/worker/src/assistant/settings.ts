@@ -45,8 +45,8 @@ import { ask, askOnce, type Gateway, type GatewayRefusal, type Question } from "
 import { TEST_QUESTION, TEST_TIMEOUT_MS, testedLevelsOf } from "./model-tests";
 import { modelsFileOf, offeredModel, offeredModelsOf, searchingFormatOf, stillOffered } from "./offered";
 
-// Ember AI's setup, as administrators turn it on, change it and turn it off on the AI assistant tab of
-// workspace settings, the models Ember offers (assistant/offered.ts), the models people can pick, which
+// Papaya AI's setup, as administrators turn it on, change it and turn it off on the AI assistant tab of
+// workspace settings, the models Papaya OS offers (assistant/offered.ts), the models people can pick, which
 // administrators add there from those, what @ember may do on the web, @ember's avatar, and @ember's answers to each person, which
 // they set the most of there, and each person picks the levels and model of on their profile. They
 // answer JSON for the card, its dialogs and the profile.
@@ -54,15 +54,15 @@ import { modelsFileOf, offeredModel, offeredModelsOf, searchingFormatOf, stillOf
 const problem = (status: number, message: string) => Response.json({ error: message }, { status });
 
 const NOT_SIGNED_IN = "Not signed in";
-/** What's said of Ember AI is for administrators, which no cache should keep. */
+/** What's said of Papaya AI is for administrators, which no cache should keep. */
 const PRIVATE = { "Cache-Control": "no-store" };
 
-/** Why Set up Ember AI needs an API token: Ember has none to keep. */
-export const API_TOKEN_NEEDED = "Paste an API token. Ember doesn't have one yet.";
-/** Why it needs one after the model answered: Ember AI was turned off meanwhile, or set up with another token. */
-export const API_TOKEN_CHANGED = "Ember AI changed while the model answered, so Ember no longer has that API token. Paste an API token.";
-/** Why Add a model didn't add one: Ember AI was set up again, with another account or API token, while the model answered. */
-export const SETUP_CHANGED = "Ember AI was set up again while the model answered, so it wasn't added. Add it again.";
+/** Why Set up Papaya AI needs an API token: Papaya OS has none to keep. */
+export const API_TOKEN_NEEDED = "Paste an API token. Papaya OS doesn't have one yet.";
+/** Why it needs one after the model answered: Papaya AI was turned off meanwhile, or set up with another token. */
+export const API_TOKEN_CHANGED = "Papaya AI changed while the model answered, so Papaya OS no longer has that API token. Paste an API token.";
+/** Why Add a model didn't add one: Papaya AI was set up again, with another account or API token, while the model answered. */
+export const SETUP_CHANGED = "Papaya AI was set up again while the model answered, so it wasn't added. Add it again.";
 
 /** What turning on Search the web asks the model, which it has to search the web to answer, so that it's known to. */
 export const WEB_TEST_QUESTION: Question = {
@@ -87,7 +87,7 @@ export const answeredUnsearched = (name: string) =>
   `${name} answered without searching the web, so Search the web is still off. Try again, or choose another model under Models or Change.`;
 
 /**
- * The ID of the Cloudflare account the Worker is deployed to, which Set up Ember AI fills in, as the
+ * The ID of the Cloudflare account the Worker is deployed to, which Set up Papaya AI fills in, as the
  * deploy gave it, or null without one that can be an account's.
  */
 export const deployedAccountIdOf = (env: Env): string | null => accountIdOf(env.CLOUDFLARE_ACCOUNT_ID ?? "");
@@ -104,10 +104,10 @@ export async function administratorOf(request: Request, env: Env, forbidden = AS
 }
 
 /**
- * `POST /api/account/assistant/offered`, `{ accountId?, apiToken? }`: the models Ember offers
- * (`offeredModelsOf`) through Ember AI's account, as Add a model and the agents' pages list them, or the
- * account given, as Set up Ember AI does, with its API token, when one is given, which Workers AI's models
- * are listed with now, or else Ember AI's, from the copy the Workspace keeps. Someone who isn't an
+ * `POST /api/account/assistant/offered`, `{ accountId?, apiToken? }`: the models Papaya OS offers
+ * (`offeredModelsOf`) through Papaya AI's account, as Add a model and the agents' pages list them, or the
+ * account given, as Set up Papaya AI does, with its API token, when one is given, which Workers AI's models
+ * are listed with now, or else Papaya AI's, from the copy the Workspace keeps. Someone who isn't an
  * administrator hears so before anything they sent is read, and a field that can't be what it's for is
  * refused on that field.
  */
@@ -128,15 +128,15 @@ export async function listOfferedModels(request: Request, env: Env): Promise<Res
 }
 
 /**
- * `PUT /api/account/assistant`, `{ accountId, apiToken, model }`: turns Ember AI on, or changes it, with a
- * model Ember offers (`offeredModel`), once that has answered a test question through AI Gateway with the
- * account and API token given, or the API token Ember has, when none is, and again at each level of
+ * `PUT /api/account/assistant`, `{ accountId, apiToken, model }`: turns Papaya AI on, or changes it, with a
+ * model Papaya OS offers (`offeredModel`), once that has answered a test question through AI Gateway with the
+ * account and API token given, or the API token Papaya OS has, when none is, and again at each level of
  * thinking, to find those it takes, unless Cloudflare's model search lists them (`greetingFrom`),
- * answering Ember AI as it is then and what the model said. The model
+ * answering Papaya AI as it is then and what the model said. The model
  * answers anyone who hasn't picked another, in place of the one that did among the models people can
  * pick. Someone who isn't an administrator hears so before anything they sent is read. A field that
  * can't be what it's for, or that AI Gateway refuses, is refused on that field, as is the API token
- * Ember had once it no longer has it, so that turning Ember AI off while the model answers stays done.
+ * Papaya OS had once it no longer has it, so that turning Papaya AI off while the model answers stays done.
  */
 export async function saveAssistant(request: Request, env: Env): Promise<Response> {
   const credentials = await administratorOf(request, env);
@@ -160,12 +160,12 @@ export async function saveAssistant(request: Request, env: Env): Promise<Respons
 }
 
 /**
- * `POST /api/account/assistant/models`, `{ model }`: adds a model Ember offers (`offeredModel`) to those
- * people can pick, as Add a model on the Ember AI card does, once it has answered a test question through
- * Ember AI's account, and again at each level of thinking, unless Cloudflare's model search lists them
- * (`greetingFrom`), answering Ember AI as it is then and what the model said. Someone who isn't an administrator hears so before anything they sent is read. A
- * model Ember doesn't offer, or that AI Gateway refuses, is refused on its field, and one that answered
- * through Ember AI as it was before it was set up again isn't added.
+ * `POST /api/account/assistant/models`, `{ model }`: adds a model Papaya OS offers (`offeredModel`) to those
+ * people can pick, as Add a model on the Papaya AI card does, once it has answered a test question through
+ * Papaya AI's account, and again at each level of thinking, unless Cloudflare's model search lists them
+ * (`greetingFrom`), answering Papaya AI as it is then and what the model said. Someone who isn't an administrator hears so before anything they sent is read. A
+ * model Papaya OS doesn't offer, or that AI Gateway refuses, is refused on its field, and one that answered
+ * through Papaya AI as it was before it was set up again isn't added.
  */
 export async function addAssistantModel(request: Request, env: Env): Promise<Response> {
   const credentials = await administratorOf(request, env);
@@ -192,7 +192,7 @@ export async function addAssistantModel(request: Request, env: Env): Promise<Res
 
 /**
  * `DELETE /api/account/assistant/models`, `{ model }`: takes the model out of those people can pick, as its
- * Remove on the Ember AI card does, answering Ember AI as it is then, but for the model @ember answers
+ * Remove on the Papaya AI card does, answering Papaya AI as it is then, but for the model @ember answers
  * everyone with. Someone who isn't an administrator hears so before anything they sent is read.
  */
 export async function removeAssistantModel(request: Request, env: Env): Promise<Response> {
@@ -209,7 +209,7 @@ export async function removeAssistantModel(request: Request, env: Env): Promise<
   return Response.json(removed satisfies AssistantChanged, { headers: PRIVATE });
 }
 
-/** `DELETE /api/account/assistant`: turns Ember AI off, as turning off its card's switch does, forgetting its API token. */
+/** `DELETE /api/account/assistant`: turns Papaya AI off, as turning off its card's switch does, forgetting its API token. */
 export async function forgetAssistant(request: Request, env: Env): Promise<Response> {
   const credentials = await credentialsOf(request, env);
   const forgotten = credentials && (await workspace(env).changeAssistant(credentials, null));
@@ -220,8 +220,8 @@ export async function forgetAssistant(request: Request, env: Env): Promise<Respo
 
 /**
  * `PATCH /api/account/assistant`, `{ thinking?, length?, model? }`: changes the most each of @ember's dials
- * goes to for anyone's questions, as the Ember AI card's dials do while it's on, and which of the models
- * people can pick it answers everyone else with, as the card's Models do, answering Ember AI as it is
+ * goes to for anyone's questions, as the Papaya AI card's dials do while it's on, and which of the models
+ * people can pick it answers everyone else with, as the card's Models do, answering Papaya AI as it is
  * then. Someone who isn't an administrator hears so before anything they sent is read.
  */
 export async function changeAssistantSettings(request: Request, env: Env): Promise<Response> {
@@ -239,7 +239,7 @@ export async function changeAssistantSettings(request: Request, env: Env): Promi
 
 /**
  * `PUT /api/account/assistant/avatar`: gives @ember the avatar the form brings, as a picture chosen on the
- * Ember AI card does while it's on, in place of Ember's flame or the one it had, answering Ember AI as it
+ * Papaya AI card does while it's on, in place of Papaya OS's flame or the one it had, answering Papaya AI as it
  * is then. It's the form your own avatar comes in, its `avatar` and `variant` parts the picture. Someone
  * who isn't an administrator hears so before the picture is read.
  */
@@ -254,13 +254,13 @@ export async function changeAssistantAvatar(request: Request, env: Env): Promise
   return assistantAvatarAnswer(await workspace(env).changeAssistantAvatar(credentials, avatar));
 }
 
-/** `DELETE /api/account/assistant/avatar`: takes away the avatar @ember was given, as Use Ember's flame does, answering Ember AI as it is then. */
+/** `DELETE /api/account/assistant/avatar`: takes away the avatar @ember was given, as Use Papaya OS's flame does, answering Papaya AI as it is then. */
 export async function removeAssistantAvatar(request: Request, env: Env): Promise<Response> {
   const credentials = await credentialsOf(request, env);
   return assistantAvatarAnswer(credentials && (await workspace(env).changeAssistantAvatar(credentials, null)));
 }
 
-/** What a change to @ember's avatar answers: Ember AI as it is then, or why it was refused. */
+/** What a change to @ember's avatar answers: Papaya AI as it is then, or why it was refused. */
 function assistantAvatarAnswer(changed: AssistantChanged | "off" | "forbidden" | null): Response {
   if (!changed) return problem(401, NOT_SIGNED_IN);
   if (changed === "forbidden") return problem(403, ASSISTANT_FORBIDDEN);
@@ -269,8 +269,8 @@ function assistantAvatarAnswer(changed: AssistantChanged | "off" | "forbidden" |
 }
 
 /**
- * `PUT /api/account/assistant/web_search`, `{ on }`: turns Search the web on or off while Ember AI is on,
- * as the Ember AI card's switch does, answering Ember AI as it is then, and, once it's on, what the model
+ * `PUT /api/account/assistant/web_search`, `{ on }`: turns Search the web on or off while Papaya AI is on,
+ * as the Papaya AI card's switch does, answering Papaya AI as it is then, and, once it's on, what the model
  * that answers everyone said when it searched (`searchedBy`), in the format it searches in, which it's
  * asked in from then on, as one of Workers AI's kept in Chat Completions is in theirs (`searchFormatOf`). The models people pick
  * are given their format's tools for the web then too, in the one they search in (`movedModels`).
@@ -310,7 +310,7 @@ export async function changeWebSearch(request: Request, env: Env): Promise<Respo
  * it do (`webToolsOf`), and what it said, or why it can't: AI Gateway refused the tools, even without the
  * one for reading pages, which it may not have for every model, the model answered without searching,
  * which shows in the pages it cites, as `unsearched` says, or Cloudflare's Web Search API refused the
- * searches Ember ran for it, or it didn't answer at all.
+ * searches Papaya OS ran for it, or it didn't answer at all.
  */
 export async function searchedBy(
   env: Env,
@@ -360,7 +360,7 @@ export interface Greeting {
 
 /**
  * What the model `gateway` names says to the test question, @ember's unless it's another `question`,
- * asked in `format`, the one Ember asks it in (`formatOf`) unless it's to be asked in another, and the
+ * asked in `format`, the one Papaya OS asks it in (`formatOf`) unless it's to be asked in another, and the
  * levels of thinking it takes in that format, as Cloudflare's model search lists them, `listed`, for one
  * of Workers AI's, which turns a level it doesn't take into another rather than refusing it, or else as
  * asking it at each finds (`testedLevelsOf`), or why it didn't answer.

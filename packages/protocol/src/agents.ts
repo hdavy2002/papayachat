@@ -29,7 +29,7 @@ import { parseTemplate } from "./prompts.ts";
 
 // AI agents, which administrators make beside @ember on the AI assistant tab of workspace settings,
 // through `/api/account/agents`. Each is a bot that answers with its own instructions and model, through
-// the AI Gateway Ember AI asks, when someone mentions it in a room it's in, or writes to it directly.
+// the AI Gateway Papaya AI asks, when someone mentions it in a room it's in, or writes to it directly.
 
 /** The most agents there are, as many as the models people can pick, so that listing them is one short read. */
 export const MAX_AGENTS = 20;
@@ -58,18 +58,18 @@ export interface Agent extends DirectoryUser {
 }
 
 /**
- * An agent as its page shows it: as the tab lists it, with its instructions and what Ember adds around
+ * An agent as its page shows it: as the tab lists it, with its instructions and what Papaya OS adds around
  * them, the format its model took its test question in, how much it thinks and how long it answers, the
  * levels of thinking its model takes, whether an administrator uploaded its avatar, and who last changed
  * it, and when.
  */
 export interface AgentSettings extends Agent {
   instructions: string;
-  /** What Ember adds around its instructions, as an administrator changed it, or null for Ember's own (`ownTemplateFor`). */
+  /** What Papaya OS adds around its instructions, as an administrator changed it, or null for Papaya OS's own (`ownTemplateFor`). */
   promptTemplate: string | null;
   format: ModelFormat;
   levels: AnswerLevels;
-  /** The levels of thinking its model takes (`AssistantModel.thinkingLevels`), or null for one Ember hasn't asked at each, which is asked at any. */
+  /** The levels of thinking its model takes (`AssistantModel.thinkingLevels`), or null for one Papaya OS hasn't asked at each, which is asked at any. */
   thinkingLevels: ThinkingLevel[] | null;
   /** Whether an administrator uploaded its avatar, which `DELETE /api/account/agents/<id>/avatar` takes away. */
   avatar: boolean;
@@ -104,7 +104,7 @@ export interface AgentAnswer {
 
 /**
  * What `POST /api/account/agents` takes, as New agent sends it: the agent's name, what it does, its
- * instructions, and what Ember adds around them, if an administrator changed it, the ID of the model it
+ * instructions, and what Papaya OS adds around them, if an administrator changed it, the ID of the model it
  * answers with, how much it thinks and how long it answers, whether it searches the web, and the open
  * rooms it's in, or null for every one, new ones too.
  */
@@ -112,7 +112,7 @@ export interface NewAgent {
   name: string;
   description: string;
   instructions: string;
-  /** What Ember adds around the instructions (`promptAround`), or null, or left out, for Ember's own. */
+  /** What Papaya OS adds around the instructions (`promptAround`), or null, or left out, for Papaya OS's own. */
   promptTemplate?: string | null;
   model: string;
   thinking: ThinkingLevel;
@@ -157,7 +157,7 @@ export interface AgentRefusal {
 export const AGENTS_FORBIDDEN = "Only administrators can set up agents";
 
 /** Why `POST /api/account/agents` makes no more. */
-export const AGENTS_FULL = `Ember can have at most ${MAX_AGENTS} agents. Delete one first.`;
+export const AGENTS_FULL = `Papaya OS can have at most ${MAX_AGENTS} agents. Delete one first.`;
 
 /** Why an agent can't take a name that someone, a bot or another agent has, in any capitals. */
 export const NAME_TAKEN = "Someone is called that already. Choose another name.";
@@ -168,12 +168,12 @@ export const agentsName = (name: string) => `${name.trim()} is an AI agent's nam
 /** Why a change didn't save: the agent was changed while its model took its test question, or since its page read it. */
 export const AGENT_CHANGED = "The agent was changed while its model answered. Try again.";
 
-/** Why an agent wasn't saved: Ember AI was set up again, with another account or API token, while its model answered. */
-export const AGENT_SET_UP_AGAIN = "Ember AI was set up again while the model answered, so nothing was saved. Try again.";
+/** Why an agent wasn't saved: Papaya AI was set up again, with another account or API token, while its model answered. */
+export const AGENT_SET_UP_AGAIN = "Papaya AI was set up again while the model answered, so nothing was saved. Try again.";
 
-/** Why Search the web can't be on for an agent whose model, called `name`, has no tool for it that AI Gateway passes on, or Ember gives it. */
+/** Why Search the web can't be on for an agent whose model, called `name`, has no tool for it that AI Gateway passes on, or Papaya OS gives it. */
 export const agentCannotSearchWith = (name: string) =>
-  `${name} can't search the web through AI Gateway, but the other models Ember offers can. Choose one of those, or leave Search the web off.`;
+  `${name} can't search the web through AI Gateway, but the other models Papaya OS offers can. Choose one of those, or leave Search the web off.`;
 
 /** Why an agent's fields are refused before anything's saved. */
 export const NAME_REFUSED = `Give it a name of one line, at most ${MAX_USER_NAME_LENGTH} characters, which people mention it by.`;
@@ -186,9 +186,9 @@ export const QUESTION_NEEDED = "Ask it something.";
 /**
  * Parses an untrusted change to an agent, as its page saves it. Returns why it's refused instead, on the
  * field it's about: a name, which can't be @ember's (`isReservedName`), and what it does have to be one
- * line with more than spaces, no longer than Ember keeps, instructions more than spaces, no longer than
- * Ember takes (`MAX_INSTRUCTIONS_LENGTH`), what Ember adds around them a template Ember takes, or null
- * for its own (`parseTemplate`), a model one's ID, which needn't be one Ember offers, as an agent may
+ * line with more than spaces, no longer than Papaya OS keeps, instructions more than spaces, no longer than
+ * Papaya OS takes (`MAX_INSTRUCTIONS_LENGTH`), what Papaya OS adds around them a template Papaya OS takes, or null
+ * for its own (`parseTemplate`), a model one's ID, which needn't be one Papaya OS offers, as an agent may
  * keep the one it has (`changeAgent`), levels ones the dials have, and rooms a list of rooms' IDs, each
  * once, or null for every open room. Text is saved without the spaces around it.
  */
@@ -244,7 +244,7 @@ export function parseAgentChanges(data: unknown): AgentChanges | AgentRefusal {
 
 /**
  * Parses an untrusted new agent, as New agent sends it, as `parseAgentChanges` does a change, which leaves
- * out nothing but what Ember adds around the instructions, which is then its own. Whether Ember offers its
+ * out nothing but what Papaya OS adds around the instructions, which is then its own. Whether Papaya OS offers its
  * model is the Worker's to say, as the models it offers change.
  */
 export function parseNewAgent(data: unknown): NewAgent | AgentRefusal {
@@ -263,7 +263,7 @@ export function parseNewAgent(data: unknown): NewAgent | AgentRefusal {
 
 /**
  * Parses an untrusted trial, as Try it sends it: the agent as `parseNewAgent` takes one, but for what it
- * does and its rooms, which are left out, and its model, which may be one Ember no longer offers that the
+ * does and its rooms, which are left out, and its model, which may be one Papaya OS no longer offers that the
  * agent has (`tryAgent`), and a question of more than spaces, no longer than a message, without the
  * spaces around it.
  */

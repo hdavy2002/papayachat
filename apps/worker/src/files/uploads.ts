@@ -60,7 +60,7 @@ const ROOM_NOT_FOUND = "Room not found or inaccessible";
 const UPLOAD_NOT_FOUND = "Upload not found";
 const ALREADY_POSTED = "The file is posted already";
 /** What a request that would store a file answers without an R2 bucket bound as FILES. */
-export const NO_STORAGE = "Ember isn't set up to store files";
+export const NO_STORAGE = "Papaya OS isn't set up to store files";
 
 const problem = (status: number, message: string) => Response.json({ error: message }, { status });
 

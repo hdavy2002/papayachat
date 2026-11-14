@@ -18,7 +18,7 @@ export interface Env {
   /** Only bound when D1 is configured in wrangler.jsonc. */
   DB?: D1Database;
   /**
-   * The R2 bucket that keeps the files people upload to rooms. Unbound, Ember keeps none: uploading
+   * The R2 bucket that keeps the files people upload to rooms. Unbound, Papaya OS keeps none: uploading
    * answers 503 and a file's address 404.
    */
   FILES?: R2Bucket;
@@ -39,19 +39,19 @@ export interface Env {
   SESSION_SECRET: string;
   /** "true" lets anyone sign in with just a name, for tests and demos. Leave it unset otherwise. */
   EMBER_GUEST_SIGN_IN?: string;
-  /** What the Set up Ember form suggests for the administrator's name in place of "Kevin Rose". */
+  /** What the Set up Papaya OS form suggests for the administrator's name in place of "Kevin Rose". */
   EMBER_SETUP_NAME_PLACEHOLDER?: string;
-  /** What the Set up Ember form suggests for their email address in place of "kevin@kevinrose.com". */
+  /** What the Set up Papaya OS form suggests for their email address in place of "kevin@kevinrose.com". */
   EMBER_SETUP_EMAIL_PLACEHOLDER?: string;
   /**
-   * The setup password, which the Set up Ember page asks for, so that only whoever deployed Ember sets
+   * The setup password, which the Set up Papaya OS page asks for, so that only whoever deployed Papaya OS sets
    * it up (setup.ts). Deploy to Cloudflare's form asks the deployer to make one up. With neither it nor
    * EMBER_SETUP_TOKEN, setup is closed, except over loopback, where `wrangler dev` serves.
    */
   EMBER_SETUP_PASSWORD?: string;
   /**
    * 64 lowercase hex characters (`openssl rand -hex 32`) that the setup link a deploy prints carries,
-   * which also lets its holder set Ember up. `pnpm run deploy` makes one for a Worker that has neither it
+   * which also lets its holder set Papaya OS up. `pnpm run deploy` makes one for a Worker that has neither it
    * nor a setup password. Set to anything else, it counts as a setup password.
    */
   EMBER_SETUP_TOKEN?: string;
@@ -88,7 +88,7 @@ export interface Env {
   MEMBERFUL_WEBHOOK_SECRET?: string;
   /**
    * The site key of a Cloudflare Turnstile widget, whose check the open sign-up form shows, and the forms
-   * that ask Ember to email a link to join or a code to reset a password, to check that whoever fills
+   * that ask Papaya OS to email a link to join or a code to reset a password, to check that whoever fills
    * them in is a person (turnstile.ts). With the secret key below, it takes the place of the keys an
    * administrator gives in Set up Turnstile. Without either, the forms have no check, and only their
    * limits hold bots back.
@@ -99,14 +99,14 @@ export interface Env {
   /** Where the browser tests' stand-in for Turnstile's siteverify listens, which the Worker asks only at a loopback address. */
   TURNSTILE_SITEVERIFY_URL?: string;
   /**
-   * Cloudflare Email Service's binding, which Ember sends its email with, from the address an
+   * Cloudflare Email Service's binding, which Papaya OS sends its email with, from the address an
    * administrator gives in Membership (mail.ts). wrangler.jsonc declares it, but it only delivers from a
    * domain onboarded to Email Sending, and to anyone but the account's own verified addresses only on
    * the Workers Paid plan.
    */
   EMAIL?: SendEmail;
   /**
-   * An API key of Resend's, which Ember sends its email with in place of Cloudflare's binding, as an
+   * An API key of Resend's, which Papaya OS sends its email with in place of Cloudflare's binding, as an
    * account on Workers Free can, from a domain verified in Resend.
    */
   RESEND_API_KEY?: string;
@@ -114,25 +114,25 @@ export interface Env {
   RESEND_API_URL?: string;
   /**
    * The ID of the Cloudflare account the Worker is deployed to, which a Worker can't learn by itself:
-   * `pnpm run deploy` gives it, and Set up Ember AI fills it in for administrators.
+   * `pnpm run deploy` gives it, and Set up Papaya AI fills it in for administrators.
    */
   CLOUDFLARE_ACCOUNT_ID?: string;
   /**
-   * Where Cloudflare's API is, which Ember AI asks AI Gateway through, for the browser tests' stand-in,
-   * which only a loopback address can be: `http://127.0.0.1:8793` has Ember ask
+   * Where Cloudflare's API is, which Papaya AI asks AI Gateway through, for the browser tests' stand-in,
+   * which only a loopback address can be: `http://127.0.0.1:8793` has Papaya OS ask
    * `http://127.0.0.1:8793/accounts/<id>/ai/v1/...` (assistant/gateway.ts).
    */
   AI_GATEWAY_URL?: string;
   /**
-   * Where Ember reads the models file, which lists the models it offers besides Workers AI's
-   * (docs/models.md): unset, the one on Ember's main branch, or else an https address, or the browser
-   * tests' stand-in's at a loopback one, or nowhere, when it's blank, so that Ember offers only the file
+   * Where Papaya OS reads the models file, which lists the models it offers besides Workers AI's
+   * (docs/models.md): unset, the one on Papaya OS's main branch, or else an https address, or the browser
+   * tests' stand-in's at a loopback one, or nowhere, when it's blank, so that Papaya OS offers only the file
    * its release shipped with.
    */
   EMBER_MODELS_URL?: string;
   /**
    * Where the Realtime SFU's API is, which huddles run through, for the browser tests' stand-in, which only
-   * a loopback address can be: `http://127.0.0.1:8794` has Ember ask
+   * a loopback address can be: `http://127.0.0.1:8794` has Papaya OS ask
    * `http://127.0.0.1:8794/v1/apps/<id>/...` (huddles/sfu.ts).
    */
   REALTIME_SFU_URL?: string;
@@ -155,9 +155,9 @@ export interface Env {
   /** The commit deployed, which stands in for the version when APP_VERSION isn't set. */
   GIT_REVISION?: string;
   /**
-   * The GitHub repository of the copy of Ember deployed, as `owner/name`, which `pnpm run deploy` gives
+   * The GitHub repository of the copy of Papaya OS deployed, as `owner/name`, which `pnpm run deploy` gives
    * where git's origin is a copy on GitHub, with GIT_BRANCH, the branch that deploys, UPDATE_WORKFLOW,
-   * "true" where the copy has the Update Ember workflow, and BETA_WORKFLOW, "true" where it has the beta
+   * "true" where the copy has the Update Papaya OS workflow, and BETA_WORKFLOW, "true" where it has the beta
    * workflow: General's release card links to running each, or to adding it.
    */
   GITHUB_REPOSITORY?: string;

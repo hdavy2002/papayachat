@@ -1,7 +1,7 @@
 import { version } from "../package.json";
 import type { Env } from "./env";
 
-/** The version this Ember was released as, apps/worker/package.json's, such as "0.1.0", or "0.5.0-beta.1" for a beta of 0.5.0. */
+/** The version this Papaya OS was released as, apps/worker/package.json's, such as "0.1.0", or "0.5.0-beta.1" for a beta of 0.5.0. */
 export const VERSION = version;
 
 /** Whether a version is a beta's, which comes before its release and is offered only to whoever asks for one. */

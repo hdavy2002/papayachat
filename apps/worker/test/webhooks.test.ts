@@ -38,7 +38,7 @@ import {
 // Which bots' webhooks a new message is delivered to, and how, as Campfire's `Webhook#deliver` does
 // (app/models/webhook.rb, test/models/webhook_test.rb).
 
-/** Sets Ember up with Ada as its administrator, signed in, answering her session and first run's general room. */
+/** Sets Papaya OS up with Ada as its administrator, signed in, answering her session and first run's general room. */
 async function setUp(): Promise<{ ada: Session; general: RoomId }> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify({ name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" }) });
   expect(response.status).toBe(201);
@@ -589,7 +589,7 @@ describe("Webhook replies", () => {
 
     const sent = await post(client, `<p>Hey ${mention(bot)}</p>`);
     await vi.waitFor(() =>
-      expect(errors).toHaveBeenCalledWith(`Bot::WebhookJob of message ${sent.id} to bot ${bot.id} failed:`, "its reply, attachment.jpeg (image/jpeg), is a file, and Ember isn't set up to store files"),
+      expect(errors).toHaveBeenCalledWith(`Bot::WebhookJob of message ${sent.id} to bot ${bot.id} failed:`, "its reply, attachment.jpeg (image/jpeg), is a file, and Papaya OS isn't set up to store files"),
     );
     await settle(client);
     expect(client.pending("message.created")).toEqual([]);
@@ -903,7 +903,7 @@ describe("Webhooks run in the background", () => {
   it("stops delivering to a webhook saved before with an http URL elsewhere than localhost, saying why in its log", async () => {
     const { ada, general } = await setUp();
     const bot = await addBot(ada, "Build Bot", "https://bots.example.com/build");
-    // As Ember once saved it.
+    // As Papaya OS once saved it.
     await workspaceSql("UPDATE webhooks SET url = 'http://bots.example.com/build' WHERE user_id = ?", bot.id);
     const delivered = bots();
     const errors = vi.spyOn(console, "error").mockImplementation(() => {});

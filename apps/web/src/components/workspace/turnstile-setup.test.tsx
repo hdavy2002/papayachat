@@ -17,7 +17,7 @@ import { TURNSTILE_DASHBOARD, TurnstileSetup } from "./turnstile-setup";
 const KEYS = { siteKey: "0x4AAAAAAA-a-widgets-site-key", secretKey: "0x4AAAAAAA-a-widgets-secret-key" };
 const TOKEN = "XXXX.DUMMY.TOKEN.XXXX";
 
-/** Answers giving Ember the keys as the server would, or as `saved` says. */
+/** Answers giving Papaya OS the keys as the server would, or as `saved` says. */
 function serve(saved: () => Response | Promise<Response> = () => Response.json({ turnstile: "saved" })) {
   return vi.spyOn(globalThis, "fetch").mockImplementation(async (input, init) => {
     if (`${init?.method} ${String(input)}` === "PUT /api/account/turnstile_keys") return saved();
@@ -66,13 +66,13 @@ function checkSays(said: unknown, { source = frame().contentWindow, origin = loc
 afterEach(() => vi.restoreAllMocks());
 
 describe("Check that people are people with Cloudflare Turnstile", () => {
-  it("starts with the widget to make for Ember's hostname, linking to Turnstile in the Cloudflare dashboard", async () => {
+  it("starts with the widget to make for Papaya OS's hostname, linking to Turnstile in the Cloudflare dashboard", async () => {
     const fetch = serve();
     const { user, onClose } = showSetup();
     const setup = await dialog("Set up Turnstile");
     expect(within(setup).getByRole("heading", { name: "Set up Turnstile" })).toHaveFocus();
     expect(setup).toHaveAccessibleDescription(
-      "Cloudflare Turnstile checks that whoever signs up, or asks Ember to email them, is a person, mostly without asking them anything. It's free, and Ember keeps the widget's secret key encrypted.",
+      "Cloudflare Turnstile checks that whoever signs up, or asks Papaya OS to email them, is a person, mostly without asking them anything. It's free, and Papaya OS keeps the widget's secret key encrypted.",
     );
     const [widget, keys] = within(screen.getByRole("list", { name: "Steps to make a Turnstile widget" })).getAllByRole("listitem");
     expect(widget).toHaveTextContent(
@@ -119,7 +119,7 @@ describe("Check that people are people with Cloudflare Turnstile", () => {
     const check = await dialog("Pass the widget's check");
     expect(within(check).getByRole("heading", { name: "Pass the widget's check" })).toHaveFocus();
     expect(check).toHaveAccessibleDescription(
-      "Ember draws the widget's check with its site key. Once it passes, Ember asks Cloudflare whether the secret key is the same widget's, then keeps both.",
+      "Papaya OS draws the widget's check with its site key. Once it passes, Papaya OS asks Cloudflare whether the secret key is the same widget's, then keeps both.",
     );
     // jsdom lays nothing out, so the step is narrower than the check draws at its flexible size.
     expect(frame()).toHaveAttribute("src", `${TURNSTILE_CHECK_PATH}#site_key=${KEYS.siteKey}&theme=light&size=compact`);
@@ -127,7 +127,7 @@ describe("Check that people are people with Cloudflare Turnstile", () => {
 
     checkSays({ token: TOKEN });
     expect(await dialog("Turnstile is set up")).toHaveAccessibleDescription(
-      "Turnstile now checks that whoever signs up, or asks Ember to email them a link to join or a code to reset a password, is a person, in place of the limits on each network.",
+      "Turnstile now checks that whoever signs up, or asks Papaya OS to email them a link to join or a code to reset a password, is a person, in place of the limits on each network.",
     );
     expect(onSaved).toHaveBeenCalledExactlyOnceWith("saved");
     expect(asked()).toEqual([["PUT /api/account/turnstile_keys", { ...KEYS, turnstileToken: TOKEN }]]);
@@ -147,7 +147,7 @@ describe("Check that people are people with Cloudflare Turnstile", () => {
     }
   });
 
-  it("hears only its own frame, at Ember's origin", async () => {
+  it("hears only its own frame, at Papaya OS's origin", async () => {
     const fetch = serve();
     const { user } = showSetup();
     await giveKeys(user);
@@ -254,7 +254,7 @@ describe("Check that people are people with Cloudflare Turnstile", () => {
   it("says it has a widget's keys already when it's opened to change them, and goes back to them", async () => {
     serve();
     const { user } = showSetup("saved");
-    expect(await screen.findByText("Ember has a widget's keys already. Give another widget's to check people with it instead.")).toBeInTheDocument();
+    expect(await screen.findByText("Papaya OS has a widget's keys already. Give another widget's to check people with it instead.")).toBeInTheDocument();
     await giveKeys(user);
     await user.click(button("Back"));
     expect(await dialog("Set up Turnstile")).toBeInTheDocument();

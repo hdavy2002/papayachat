@@ -2,24 +2,24 @@ import { INVITATION_DAYS, PASSWORD_RESET_CODE_MINUTES } from "@ember/protocol";
 import { escapeHtml } from "./encoding";
 import type { Email } from "./mail";
 
-// The emails Ember sends, each as plain text and as simple HTML, with nothing that tracks whether it was
+// The emails Papaya OS sends, each as plain text and as simple HTML, with nothing that tracks whether it was
 // opened. All an administrator wrote in them is the workspace's name, and in an invitation their own.
 
 /** `text` on one line, as a subject must be: line breaks and other control characters become spaces. */
 const oneLine = (text: string) => text.replace(/[\u0000-\u001f\u007f]+/g, " ").trim();
 
-/** An email's HTML: its paragraphs, each given as HTML, in Ember's sans-serif. */
+/** An email's HTML: its paragraphs, each given as HTML, in Papaya OS's sans-serif. */
 const htmlOf = (paragraphs: string[]) =>
   `<!doctype html><html><body style="font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 16px; line-height: 1.5;">${paragraphs.map((paragraph) => `<p>${paragraph}</p>`).join("")}</body></html>`;
 
-/** The email Send me a test email sends an administrator, at `to`, from the workspace named `workspace`, whose Ember is at `origin`. */
+/** The email Send me a test email sends an administrator, at `to`, from the workspace named `workspace`, whose Papaya OS is at `origin`. */
 export function testEmail(to: string, workspace: string, origin: string): Email {
-  const name = oneLine(workspace) || "Ember";
+  const name = oneLine(workspace) || "Papaya OS";
   return {
     to,
     subject: `Test email from ${name}`,
-    text: `This is a test email from ${name}, at ${origin}.\n\nIt reached you, so Ember can send email.\n`,
-    html: htmlOf([`This is a test email from ${escapeHtml(name)}, at <a href="${escapeHtml(origin)}">${escapeHtml(origin)}</a>.`, "It reached you, so Ember can send email."]),
+    text: `This is a test email from ${name}, at ${origin}.\n\nIt reached you, so Papaya OS can send email.\n`,
+    html: htmlOf([`This is a test email from ${escapeHtml(name)}, at <a href="${escapeHtml(origin)}">${escapeHtml(origin)}</a>.`, "It reached you, so Papaya OS can send email."]),
   };
 }
 
@@ -28,7 +28,7 @@ export function testEmail(to: string, workspace: string, origin: string): Email 
  * `inviter`, with `link`, the invitation's, which joins with that address once, for `INVITATION_DAYS` days.
  */
 export function invitationEmail(to: string, workspace: string, inviter: string, link: string): Email {
-  const name = oneLine(workspace) || "Ember";
+  const name = oneLine(workspace) || "Papaya OS";
   const who = oneLine(inviter) || "An administrator";
   const terms = (address: string) => `The link works once, for ${INVITATION_DAYS} days, and joins with ${address}. If you weren't expecting this, you can ignore it.`;
   return {
@@ -45,7 +45,7 @@ export function invitationEmail(to: string, workspace: string, inviter: string, 
  * hour.
  */
 export function emailDomainLinkEmail(to: string, workspace: string, link: string): Email {
-  const name = oneLine(workspace) || "Ember";
+  const name = oneLine(workspace) || "Papaya OS";
   const terms = (address: string) => `The link works once, for an hour, and joins with ${address}. If you didn't ask for it, you can ignore this email: nobody joins without the link.`;
   return {
     to,
@@ -62,7 +62,7 @@ export function emailDomainLinkEmail(to: string, workspace: string, link: string
  * phone shows anyone.
  */
 export function passwordResetCodeEmail(to: string, workspace: string, code: string): Email {
-  const name = oneLine(workspace) || "Ember";
+  const name = oneLine(workspace) || "Papaya OS";
   const asked = (workspaceName: string) => `Someone asked to reset the password for this email address at ${workspaceName}.`;
   const use = `Enter it within ${PASSWORD_RESET_CODE_MINUTES} minutes, with a new password, where you asked for it. Don't give it to anyone.`;
   const ignore = "If you didn't ask, you can ignore this email: your password stays as it is.";
@@ -80,7 +80,7 @@ export function passwordResetCodeEmail(to: string, workspace: string, code: stri
  * says the same whoever has an account.
  */
 export function alreadyAMemberEmail(to: string, workspace: string, signIn: string): Email {
-  const name = oneLine(workspace) || "Ember";
+  const name = oneLine(workspace) || "Papaya OS";
   const asked = (workspaceName: string) => `Someone asked to join ${workspaceName} with this email address, which has an account there already.`;
   return {
     to,

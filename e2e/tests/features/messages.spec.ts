@@ -138,7 +138,7 @@ test.describe("Message rows", () => {
       expect((await box(name)).x - (avatar.x + avatar.width)).toBe(8);
       await expect(name).toHaveCSS("font-size", "15px");
       await expect(name).toHaveCSS("font-weight", "700");
-      // An h3, its letters spaced as Ember's other headings are.
+      // An h3, its letters spaced as Papaya OS's other headings are.
       await expect(row.getByRole("heading", { level: 3 })).toHaveCSS("letter-spacing", "-0.375px");
       await expect(row.locator("time")).toHaveCSS("font-size", "12px");
       const body = row.getByText(text, { exact: true });

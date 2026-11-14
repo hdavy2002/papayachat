@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { MESSAGES_AFTER, MESSAGES_BEFORE, NEWEST_MESSAGES } from "../src/store";
 import { api, connect, cookieOf, freshDeploy, freshRoom, post, roomSql, settle, shown, signIn, workspaceSql, type Session } from "./support";
 
-/** Sets Ember up afresh, with Ada as its administrator, signed in. */
+/** Sets Papaya OS up afresh, with Ada as its administrator, signed in. */
 async function setUp(): Promise<Session> {
   await freshDeploy();
   const ada = { name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" };
@@ -118,7 +118,7 @@ describe("Send a message", () => {
     const ada = await connect(room, "Ada");
     const original = await post(ada, "<p>Mine</p>");
     const old = await connect(room, ada.session, "outdated");
-    const reload = { type: "error", message: "Ember has been updated. Reload the page to keep chatting." };
+    const reload = { type: "error", message: "Papaya OS has been updated. Reload the page to keep chatting." };
     expect(await old.next("error")).toEqual(reload);
 
     // It sends what was typed as it was typed, which the room would read as markup.

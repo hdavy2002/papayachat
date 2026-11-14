@@ -7,7 +7,7 @@ rendered for each of ten user agents. An empty file is a partial Campfire leaves
 were rendered at.
 
 `../notification-help.test.tsx` renders the help for each of those platforms and reads it against
-them, reading "Campfire" as "Ember". The Worker reads the platform from the user agent, which
+them, reading "Campfire" as "Papaya OS". The Worker reads the platform from the user agent, which
 `apps/worker/test/user-agent.test.ts` checks against Rails' answers for 385 user agents, five of these
 ten among them.
 

@@ -175,7 +175,7 @@ const askedAfter = (requests: SentToMemberful[]) =>
     .filter(({ url }) => url === `${SITE}/api/graphql`)
     .map(({ body }) => [...(JSON.parse(body) as { query: string }).query.matchAll(/member\(id: ("[^"]*")\)/g)].map(([, id]) => JSON.parse(id!) as string));
 
-/** Sets Ember up with Ada as its administrator, signed in. */
+/** Sets Papaya OS up with Ada as its administrator, signed in. */
 async function setUp(): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(ada) });
   expect(response.status).toBe(201);
@@ -201,7 +201,7 @@ async function turnMemberful(administrator: Session, on: boolean, { membersOnly 
   expect(response.status, await response.clone().text()).toBe(200);
 }
 
-/** Sets Ember up with Papaya on, members only unless `membersOnly` is false, with Ada as its administrator. */
+/** Sets Papaya OS up with Papaya on, members only unless `membersOnly` is false, with Ada as its administrator. */
 async function setUpWithMemberful({ membersOnly = true } = {}): Promise<Session> {
   const administrator = await setUp();
   await turnMemberful(administrator, true, { membersOnly });
@@ -269,7 +269,7 @@ const storedSettings = async () => JSON.parse(((await workspaceSql("SELECT setti
 
 /** The workspace as pages show a new one, with Papaya's settings off but as `memberful` says. */
 const account = (memberful: Partial<Pick<Account, "memberfulJoin" | "memberfulSignIn">> = {}): Account => ({
-  name: "Ember",
+  name: "Papaya OS",
   tagline: "",
   hideTranslationButtons: true,
   customStyles: "",
@@ -358,7 +358,7 @@ describe("Sign in with Papaya", () => {
       expect(await settings({ ...KEYS, MEMBERFUL_URL: `${SITE}/members?ref=1` })).toBe(SITE);
       expect(await settings()).toBeNull();
       expect(await settings({ ...KEYS, MEMBERFUL_CLIENT_SECRET: " " })).toBeNull();
-      // A site Ember would send the client secret to in the clear, or that isn't an address at all, is none.
+      // A site Papaya OS would send the client secret to in the clear, or that isn't an address at all, is none.
       expect(await settings({ ...KEYS, MEMBERFUL_URL: "http://example.memberful.com" })).toBeNull();
       expect(await settings({ ...KEYS, MEMBERFUL_URL: "example.memberful.com" })).toBeNull();
       // But one on this computer, where the browser tests fake one, is a site.
@@ -613,13 +613,13 @@ describe("Sign in with Papaya", () => {
       expect(unavailable.headers.get("Set-Cookie")).toBeNull();
     });
 
-    it("goes home before Ember is set up", async () => {
+    it("goes home before Papaya OS is set up", async () => {
       const response = await start();
       expect(response.status).toBe(302);
       expect(locationOf(response)).toBe(`${origin}/`);
     });
 
-    it("starts at Ember's custom domain, where Papaya sends the browser back", async () => {
+    it("starts at Papaya OS's custom domain, where Papaya sends the browser back", async () => {
       const administrator = await setUpWithMemberful();
       const used = await apiWith({}, "https://chat.example.com/api/account", {
         method: "PATCH",
@@ -766,9 +766,9 @@ describe("Sign in with Papaya", () => {
       expect((await signedInAs(await signInWithMemberful())).name).toBe("Member");
     });
 
-    it("passes over an AI agent's name too, even while Ember AI is off", async () => {
+    it("passes over an AI agent's name too, even while Papaya AI is off", async () => {
       const administrator = await setUpWithMemberful();
-      // As making an agent called `name` leaves it once Ember AI is turned off.
+      // As making an agent called `name` leaves it once Papaya AI is turned off.
       const agentCalled = async (id: string, name: string) => {
         const now = new Date().toISOString();
         await workspaceSql("INSERT INTO users (id, name, role, status, created_at, updated_at) VALUES (?, ?, 2, 1, ?, ?)", id, name, now, now);
@@ -1562,7 +1562,7 @@ async function subscribe(session: Session, label: string): Promise<void> {
 
 const subscriptions = () => workspaceSql("SELECT user_id, endpoint FROM push_subscriptions ORDER BY endpoint");
 
-/** Sets Ember up with Ada as its administrator and Grace, who joined with a password, then makes Papaya members only. */
+/** Sets Papaya OS up with Ada as its administrator and Grace, who joined with a password, then makes Papaya members only. */
 async function setUpWithGrace(): Promise<{ administrator: Session; member: Session }> {
   const administrator = await setUp();
   const member = await joinAsGrace();
@@ -1825,7 +1825,7 @@ describe("Connect Papaya", () => {
       expect(await identities()).toEqual([]);
     });
 
-    it("starts at Ember's custom domain, where Papaya sends the browser back, and goes there from a tab left open elsewhere", async () => {
+    it("starts at Papaya OS's custom domain, where Papaya sends the browser back, and goes there from a tab left open elsewhere", async () => {
       const { administrator, member } = await setUpWithGrace();
       const used = await apiWith({}, "https://chat.example.com/api/account", {
         method: "PATCH",
@@ -1834,7 +1834,7 @@ describe("Connect Papaya", () => {
       });
       expect(used.status).toBe(200);
 
-      // From her profile, or as she signs in, at the address Ember has moved from, it keeps nothing.
+      // From her profile, or as she signs in, at the address Papaya OS has moved from, it keeps nothing.
       const fromProfile = await connect(member, { currentPassword: grace.password });
       expect(fromProfile.status).toBe(202);
       expect(await fromProfile.json()).toEqual({ memberfulConnection: "https://chat.example.com/users/me/profile" });
@@ -1873,7 +1873,7 @@ describe("The Papaya account connected", () => {
     expect((await profileOf(administrator)).memberful).toBeNull();
   });
 
-  it("is described anew each time it signs you in, and as nothing until then for one connected before Ember kept that", async () => {
+  it("is described anew each time it signs you in, and as nothing until then for one connected before Papaya OS kept that", async () => {
     const { member } = await setUpWithGrace();
     const site = await connectGrace(member);
     await workspaceSql("UPDATE identities SET name = NULL, email_address = NULL");

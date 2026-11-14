@@ -155,7 +155,7 @@ function photoForm({ file, variant }: ChosenPhoto, fields?: UserFields): FormDat
 /** What a sign-up form, a bot form or an agent's page sends: its fields as JSON, or with the photo chosen, a form. */
 const userBody = (fields: UserFields, photo: ChosenPhoto | null) => (photo ? photoForm(photo, fields) : JSON.stringify(fields));
 
-/** Whether Ember is set up yet, and who this browser is signed in as. */
+/** Whether Papaya OS is set up yet, and who this browser is signed in as. */
 export async function fetchBootstrap(): Promise<Bootstrap> {
   return request<Bootstrap>("/api/bootstrap");
 }
@@ -177,7 +177,7 @@ export function dropWorkspacePreloads(): void {
 const setupAuthorization = (secret: string) => ({ Authorization: `Bearer ${encodeURIComponent(secret)}` });
 
 /**
- * Checks the setup password typed into Set up Ember before the rest of its form is filled in, failing
+ * Checks the setup password typed into Set up Papaya OS before the rest of its form is filled in, failing
  * with an ApiError that says why the Worker refuses it.
  */
 export async function checkSetupPassword(password: string): Promise<void> {
@@ -212,16 +212,16 @@ export async function signUp(person: OpenSignUp, photo: ChosenPhoto | null = nul
   return (await request<{ user: Me }>("/api/join", { method: "POST", body: userBody(person, photo) })).user;
 }
 
-/** What the link Ember emailed whose secret is `token` is, and whom it's for, while it works. Fails with a 404 ApiError saying so once it doesn't. */
+/** What the link Papaya OS emailed whose secret is `token` is, and whom it's for, while it works. Fails with a 404 ApiError saying so once it doesn't. */
 export async function lookUpEmailLink(token: string): Promise<EmailLinkFor> {
   return request<EmailLinkFor>("/api/email_links/lookup", { method: "POST", body: JSON.stringify({ token }) });
 }
 
-/** Where each kind of link Ember emails posts its join form. */
+/** Where each kind of link Papaya OS emails posts its join form. */
 const EMAIL_LINK_JOINS: Record<EmailLinkKind, string> = { invitation: "/api/join/invitation", email_domain: "/api/join/email" };
 
 /**
- * Joins with a link Ember emailed, of `kind`: an invitation, or one asked for with an address at the
+ * Joins with a link Papaya OS emailed, of `kind`: an invitation, or one asked for with an address at the
  * workspace's email domains, as the person `person` describes, with the email address it was sent to and
  * the photo they chose, if any, and signs this browser in as them. A link that has stopped working fails
  * with a 404 ApiError, and an address with an account since with one that names the sign-in page to go
@@ -232,27 +232,27 @@ export async function joinWithEmailLink(kind: EmailLinkKind, person: EmailLinkSi
 }
 
 /**
- * Asks Ember to email a link to join with an address at the workspace's email domains, with the token of
+ * Asks Papaya OS to email a link to join with an address at the workspace's email domains, with the token of
  * Turnstile's check while the page shows one. It answers the same whether or not the address has an
  * account. A check that didn't pass fails with an ApiError for the `turnstile` field, and an address
- * Ember won't email with one for `emailAddress`.
+ * Papaya OS won't email with one for `emailAddress`.
  */
 export async function askForEmailLink(asked: EmailLinkRequest): Promise<void> {
   await request<unknown>("/api/email_links", { method: "POST", body: JSON.stringify(asked) });
 }
 
 /**
- * Asks Ember to email a code to reset the password of whoever has `asked.emailAddress`, with the token
+ * Asks Papaya OS to email a code to reset the password of whoever has `asked.emailAddress`, with the token
  * of Turnstile's check while the page shows one. It answers the same whether or not anyone has the
  * address. A check that didn't pass fails with an ApiError for the `turnstile` field, and one while
- * Ember can't send email with a 503.
+ * Papaya OS can't send email with a 503.
  */
 export async function askForPasswordResetCode(asked: PasswordResetRequest): Promise<void> {
   await request<unknown>("/api/password_resets", { method: "POST", body: JSON.stringify(asked) });
 }
 
 /**
- * Gives whoever has `reset.emailAddress` the password `reset.password`, with the code Ember emailed
+ * Gives whoever has `reset.emailAddress` the password `reset.password`, with the code Papaya OS emailed
  * them, ending all their sessions, and signs this browser in as them: who they are, or null when they
  * sign in themselves, as Papaya's members do while it's members only. A code that doesn't work fails
  * with an ApiError for the `code` field.
@@ -314,7 +314,7 @@ export async function deletePushSubscription(id: number): Promise<void> {
   await request(`/api/push-subscriptions/${id}`, { method: "DELETE" });
 }
 
-/** Pushes "Ember Test" to your push subscription `id` at once. Fails with a 500 ApiError if the push does. */
+/** Pushes "Papaya OS Test" to your push subscription `id` at once. Fails with a 500 ApiError if the push does. */
 export async function sendTestNotification(id: number): Promise<void> {
   await request(`/api/push-subscriptions/${id}/test-notifications`, { method: "POST" });
 }
@@ -367,7 +367,7 @@ export async function changeProfile(changes: ProfileChanges): Promise<ProfileAns
 
 /**
  * Makes `photo` your avatar, answering your profile as it is then, with a new sign-in link. Fails with a
- * 413 ApiError for a photo over 16 MB, and a 503 where Ember isn't set up to store files.
+ * 413 ApiError for a photo over 16 MB, and a 503 where Papaya OS isn't set up to store files.
  */
 export async function changeAvatar(photo: ChosenPhoto): Promise<ProfileAnswer> {
   return request<ProfileAnswer>(AVATAR_PATH, { method: "PUT", body: photoForm(photo) });
@@ -388,7 +388,7 @@ export async function changeAccount(changes: AccountChanges): Promise<Account> {
   return (await request<{ account: Account }>("/api/account", { method: "PATCH", body: JSON.stringify(changes) })).account;
 }
 
-/** What `domain`, a custom domain Ember moved away from, reaches, as Check in Workspace settings asks: this Ember, something else, or nothing. */
+/** What `domain`, a custom domain Papaya OS moved away from, reaches, as Check in Workspace settings asks: this Papaya OS, something else, or nothing. */
 export async function checkCustomDomain(domain: string): Promise<CustomDomainReach> {
   return (await request<CustomDomainCheck>("/api/account/custom_domain_checks", { method: "POST", body: JSON.stringify({ domain }) })).reaches;
 }
@@ -399,7 +399,7 @@ export async function lookUpCustomDomain(domain: string): Promise<CustomDomainLo
 }
 
 /**
- * The release this Ember is, and the newest one GitHub names, as General settings says, null when GitHub
+ * The release this Papaya OS is, and the newest one GitHub names, as General settings says, null when GitHub
  * didn't name one, as GitHub last told the Worker, which asks it again every six hours. Fails with a 403
  * ApiError for anyone but an administrator.
  */
@@ -420,7 +420,7 @@ export interface ChosenLogo {
 
 /**
  * Makes `logo` the workspace's, answering the workspace as it is then. Fails with a 403 ApiError for
- * anyone but an administrator, a 413 for a logo over 16 MB, and a 503 where Ember isn't set up to store files.
+ * anyone but an administrator, a 413 for a logo over 16 MB, and a 503 where Papaya OS isn't set up to store files.
  */
 export async function changeLogo({ file, variants }: ChosenLogo): Promise<Account> {
   const form = new FormData();
@@ -432,7 +432,7 @@ export async function changeLogo({ file, variants }: ChosenLogo): Promise<Accoun
   return (await request<{ account: Account }>(LOGO_PATH, { method: "PUT", body: form })).account;
 }
 
-/** Takes away the workspace's logo, so Ember's flame shows, answering the workspace as it is then. Fails as `changeLogo` does. */
+/** Takes away the workspace's logo, so Papaya OS's flame shows, answering the workspace as it is then. Fails as `changeLogo` does. */
 export async function removeLogo(): Promise<Account> {
   return (await request<{ account: Account }>(LOGO_PATH, { method: "DELETE" })).account;
 }
@@ -493,7 +493,7 @@ export async function regenerateJoinCode(): Promise<string> {
 
 /**
  * Sends you a test email from the workspace's From address, answering the address it went to. Fails
- * with an ApiError saying why it wasn't sent: 503 while Ember can't send email, 422 without a From
+ * with an ApiError saying why it wasn't sent: 503 while Papaya OS can't send email, 422 without a From
  * address or an email address of yours, 502 when the provider refused it, and 403 for anyone but an
  * administrator.
  */
@@ -510,7 +510,7 @@ export async function checkSendingDomain(domain: string): Promise<boolean | null
 }
 
 /**
- * Gives Ember a Resend API key to send email with, answering how it sends email then. Fails with a 422
+ * Gives Papaya OS a Resend API key to send email with, answering how it sends email then. Fails with a 422
  * ApiError for a key Resend doesn't take, saying why, a 502 one when Resend can't say, and a 403 one for
  * anyone but an administrator.
  */
@@ -518,44 +518,44 @@ export async function saveResendApiKey(apiKey: string): Promise<EmailSettings> {
   return request<EmailSettings>("/api/account/resend_api_key", { method: "PUT", body: JSON.stringify({ apiKey }) });
 }
 
-/** Takes away the Resend API key Ember was given, answering how it sends email then. Fails with a 403 ApiError for anyone but an administrator. */
+/** Takes away the Resend API key Papaya OS was given, answering how it sends email then. Fails with a 403 ApiError for anyone but an administrator. */
 export async function forgetResendApiKey(): Promise<EmailSettings> {
   return request<EmailSettings>("/api/account/resend_api_key", { method: "DELETE" });
 }
 
 /**
- * Gives Ember a Turnstile widget's keys to check people with, with the token the widget's check gave Set
- * up Turnstile, answering where Ember's keys come from then. Fails with a 422 ApiError on the field a key
- * or the check is refused on, a 502 one when Ember couldn't ask Cloudflare, and a 403 one for anyone but
+ * Gives Papaya OS a Turnstile widget's keys to check people with, with the token the widget's check gave Set
+ * up Turnstile, answering where Papaya OS's keys come from then. Fails with a 422 ApiError on the field a key
+ * or the check is refused on, a 502 one when Papaya OS couldn't ask Cloudflare, and a 403 one for anyone but
  * an administrator.
  */
 export async function saveTurnstileKeys(keys: TurnstileKeysChange): Promise<TurnstileSettings["turnstile"]> {
   return (await request<TurnstileSettings>("/api/account/turnstile_keys", { method: "PUT", body: JSON.stringify(keys) })).turnstile;
 }
 
-/** Takes away the Turnstile widget's keys Ember was given, answering where its keys come from then. Fails with a 403 ApiError for anyone but an administrator. */
+/** Takes away the Turnstile widget's keys Papaya OS was given, answering where its keys come from then. Fails with a 403 ApiError for anyone but an administrator. */
 export async function forgetTurnstileKeys(): Promise<TurnstileSettings["turnstile"]> {
   return (await request<TurnstileSettings>("/api/account/turnstile_keys", { method: "DELETE" })).turnstile;
 }
 
 /**
- * Gives Ember a Realtime SFU app's ID and secret to run huddles through, answering huddles as they are
- * then. Fails with a 422 ApiError on the field Ember or Cloudflare refuses, a 502 one when Ember couldn't
+ * Gives Papaya OS a Realtime SFU app's ID and secret to run huddles through, answering huddles as they are
+ * then. Fails with a 422 ApiError on the field Papaya OS or Cloudflare refuses, a 502 one when Papaya OS couldn't
  * ask Cloudflare, and a 403 one for anyone but an administrator.
  */
 export async function saveHuddles(setup: HuddlesSetup): Promise<HuddlesSettings> {
   return (await request<HuddlesSaved>("/api/account/huddles", { method: "PUT", body: JSON.stringify(setup) })).huddles;
 }
 
-/** Turns huddles off, forgetting the SFU app's keys Ember was given. Fails with a 403 ApiError for anyone but an administrator. */
+/** Turns huddles off, forgetting the SFU app's keys Papaya OS was given. Fails with a 403 ApiError for anyone but an administrator. */
 export async function forgetHuddles(): Promise<null> {
   return (await request<HuddlesForgotten>("/api/account/huddles", { method: "DELETE" })).huddles;
 }
 
 /**
- * The models Ember offers, as Set up Ember AI, Add a model and the agents' pages list them: those the
+ * The models Papaya OS offers, as Set up Papaya AI, Add a model and the agents' pages list them: those the
  * models file lists, then Workers AI's, as Cloudflare's model search lists them for the account `keys`
- * names, with its API token, as Set up Ember AI has them typed, or else Ember AI's, or why they aren't
+ * names, with its API token, as Set up Papaya AI has them typed, or else Papaya AI's, or why they aren't
  * listed. Fails with a 422 ApiError on a field that can't be what it's for, and a 403 one for anyone but
  * an administrator.
  */
@@ -564,8 +564,8 @@ export async function fetchOfferedModels(keys?: AssistantKeys): Promise<OfferedM
 }
 
 /**
- * Turns Ember AI on with `setup`, or changes it, once the model has answered a test question through AI
- * Gateway, answering Ember AI as it is then and what the model said. Fails with a 422 ApiError on the
+ * Turns Papaya AI on with `setup`, or changes it, once the model has answered a test question through AI
+ * Gateway, answering Papaya AI as it is then and what the model said. Fails with a 422 ApiError on the
  * field AI Gateway or the Worker refuses, or with none for the credits, a 429 one while AI Gateway turns
  * requests away, a 502 one when it didn't answer, and a 403 one for anyone but an administrator.
  */
@@ -574,18 +574,18 @@ export async function saveAssistant(setup: AssistantSetup): Promise<AssistantSav
 }
 
 /**
- * Adds `model` to the models people can pick, once it has answered a test question through Ember AI's
- * account, answering Ember AI as it is then and what the model said. Fails as `saveAssistant` does, with
+ * Adds `model` to the models people can pick, once it has answered a test question through Papaya AI's
+ * account, answering Papaya AI as it is then and what the model said. Fails as `saveAssistant` does, with
  * a 422 ApiError on the model's field once people can pick as many as they can, and a 409 one while
- * Ember AI is off, or once it was set up again while the model answered.
+ * Papaya AI is off, or once it was set up again while the model answered.
  */
 export async function addAssistantModel(model: NewAssistantModel): Promise<AssistantSaved> {
   return request<AssistantSaved>("/api/account/assistant/models", { method: "POST", body: JSON.stringify(model) });
 }
 
 /**
- * Takes the model `model` out of those people can pick, answering Ember AI as it is then. Fails with a
- * 409 ApiError for the one that answers everyone, or while Ember AI is off, and a 403 one for anyone but
+ * Takes the model `model` out of those people can pick, answering Papaya AI as it is then. Fails with a
+ * 409 ApiError for the one that answers everyone, or while Papaya AI is off, and a 403 one for anyone but
  * an administrator.
  */
 export async function removeAssistantModel(model: string): Promise<AssistantChanged["assistant"]> {
@@ -593,27 +593,27 @@ export async function removeAssistantModel(model: string): Promise<AssistantChan
 }
 
 /**
- * Gives @ember the avatar `photo` is, in place of Ember's flame or the one it had, answering Ember AI as
- * it is then. Fails with a 409 ApiError while Ember AI is off, and a 403 one for anyone but an
+ * Gives @ember the avatar `photo` is, in place of Papaya OS's flame or the one it had, answering Papaya AI as
+ * it is then. Fails with a 409 ApiError while Papaya AI is off, and a 403 one for anyone but an
  * administrator.
  */
 export async function changeAssistantAvatar(photo: ChosenPhoto): Promise<AssistantChanged["assistant"]> {
   return (await request<AssistantChanged>("/api/account/assistant/avatar", { method: "PUT", body: photoForm(photo) })).assistant;
 }
 
-/** Takes away the avatar @ember was given, bringing back Ember's flame, answering Ember AI as it is then. Fails as `changeAssistantAvatar` does. */
+/** Takes away the avatar @ember was given, bringing back Papaya OS's flame, answering Papaya AI as it is then. Fails as `changeAssistantAvatar` does. */
 export async function removeAssistantAvatar(): Promise<AssistantChanged["assistant"]> {
   return (await request<AssistantChanged>("/api/account/assistant/avatar", { method: "DELETE" })).assistant;
 }
 
-/** Turns Ember AI off, forgetting its API token. Fails with a 403 ApiError for anyone but an administrator. */
+/** Turns Papaya AI off, forgetting its API token. Fails with a 403 ApiError for anyone but an administrator. */
 export async function forgetAssistant(): Promise<null> {
   return (await request<AssistantForgotten>("/api/account/assistant", { method: "DELETE" })).assistant;
 }
 
 /**
  * Changes the most each of @ember's dials goes to for anyone's questions, or which of the models people
- * can pick it answers everyone else with, answering Ember AI as it is then. Fails with a 409 ApiError
+ * can pick it answers everyone else with, answering Papaya AI as it is then. Fails with a 409 ApiError
  * while it's off, a 422 one for a model people can't pick, and a 403 one for anyone but an administrator.
  */
 export async function changeAssistantSettings(changes: AssistantChanges): Promise<AssistantChanged["assistant"]> {
@@ -621,18 +621,18 @@ export async function changeAssistantSettings(changes: AssistantChanges): Promis
 }
 
 /**
- * Turns Search the web on, once the model Ember AI answers everyone with has searched the web for a test
- * question through AI Gateway, or off, answering Ember AI as it is then and, once it's on, what the model
+ * Turns Search the web on, once the model Papaya AI answers everyone with has searched the web for a test
+ * question through AI Gateway, or off, answering Papaya AI as it is then and, once it's on, what the model
  * said. Fails with a 422 ApiError when AI Gateway refused the model's tools for the web, the model
  * answered without searching or can't search, a 429 one while AI Gateway turns requests away, a 502 one
- * when it didn't answer, a 409 one while Ember AI is off, or changed while the model searched, and a 403
+ * when it didn't answer, a 409 one while Papaya AI is off, or changed while the model searched, and a 403
  * one for anyone but an administrator.
  */
 export async function changeWebSearch(on: boolean): Promise<WebSearchChanged> {
   return request<WebSearchChanged>("/api/account/assistant/web_search", { method: "PUT", body: JSON.stringify({ on }) });
 }
 
-/** The agents, by name. Fails with a 409 ApiError while Ember AI is off, and a 403 one for anyone but an administrator. */
+/** The agents, by name. Fails with a 409 ApiError while Papaya AI is off, and a 403 one for anyone but an administrator. */
 export async function fetchAgents(): Promise<Agent[]> {
   return (await request<Agents>("/api/account/agents")).agents;
 }
@@ -644,9 +644,9 @@ export async function fetchAgent(agentId: UserId): Promise<AgentSettings> {
 
 /**
  * Makes an agent, with the avatar chosen for it, if any, once its model has answered a test question
- * through Ember AI's account, and searched the web, if it's to, answering it as its page then shows it.
+ * through Papaya AI's account, and searched the web, if it's to, answering it as its page then shows it.
  * Fails with a 422 ApiError on the field AI Gateway or the Worker refuses, a 429 one while AI Gateway
- * turns requests away, a 502 one when the model didn't answer, a 409 one while Ember AI is off or once
+ * turns requests away, a 502 one when the model didn't answer, a 409 one while Papaya AI is off or once
  * there are as many agents as there can be, and a 403 one for anyone but an administrator.
  */
 export async function createAgent(agent: NewAgent, avatar: ChosenPhoto | null = null): Promise<AgentSettings> {
@@ -672,7 +672,7 @@ export async function deleteAgent(agentId: UserId): Promise<void> {
   await request(`/api/account/agents/${encodeURIComponent(agentId)}`, { method: "DELETE" });
 }
 
-/** The connected apps, by name. Fails with a 403 ApiError for anyone but an administrator, and a 409 while Ember AI is off. */
+/** The connected apps, by name. Fails with a 403 ApiError for anyone but an administrator, and a 409 while Papaya AI is off. */
 export async function fetchApps(): Promise<AppSummary[]> {
   return (await request<Apps>("/api/account/apps")).apps;
 }
@@ -683,7 +683,7 @@ export async function fetchApp(appId: AppId): Promise<App> {
 }
 
 /**
- * Connects an app, once Ember has read its server's tools, answering it as its page shows it. Fails as
+ * Connects an app, once Papaya OS has read its server's tools, answering it as its page shows it. Fails as
  * `fetchApps` does, with a 422 ApiError naming the field for what's refused, the address when its
  * server doesn't answer as one does, and with a 409 when as many apps are connected as can be.
  */
@@ -735,7 +735,7 @@ export async function tryAgent(trial: AgentTrial, agentId: UserId | null): Promi
 
 /**
  * Changes how much @ember thinks and how long it answers you, or the model it answers you with, answering
- * yours as they are then, or null while Ember AI is off. Fails with a 422 ApiError for a model people
+ * yours as they are then, or null while Papaya AI is off. Fails with a 422 ApiError for a model people
  * can't pick.
  */
 export async function changeYourAssistant(changes: YourAssistantChanges): Promise<YourAssistantChanged["assistant"]> {

@@ -51,7 +51,7 @@ export {
 // and the web app's main chunk, which imports this, would otherwise cost the app one more script to load
 // (`oneAppScript` in apps/web/vite.config.ts says why).
 export type { Bot, BotAnswer, BotChanges, BotRoom, Bots, BotSettings, NewBot } from "./bots.ts";
-// So is the rest of assistant.ts, from "@ember/protocol/assistant", which only Ember AI's settings, its dials and the Worker's assistant use.
+// So is the rest of assistant.ts, from "@ember/protocol/assistant", which only Papaya AI's settings, its dials and the Worker's assistant use.
 export type {
   AnswerLength,
   AnswerLevelChanges,
@@ -422,14 +422,14 @@ export interface Account {
   restrictRoomCreation: boolean;
   /**
    * The address of the workspace's logo, which changes whenever the account does, or null while there's
-   * none, when pages show Ember's flame.
+   * none, when pages show Papaya OS's flame.
    */
   logo: string | null;
   /**
-   * The address an administrator gave Ember in Workspace settings: a host, with its port where it isn't
+   * The address an administrator gave Papaya OS in Workspace settings: a host, with its port where it isn't
    * the scheme's own, as `location.host` writes it, either a custom domain or, once they go back to it,
-   * where a deploy put Ember (`EmberAddresses.deployed`). Pages opened at any other address move there,
-   * but workspace settings. Null while Ember has none, and is used wherever it's opened.
+   * where a deploy put Papaya OS (`EmberAddresses.deployed`). Pages opened at any other address move there,
+   * but workspace settings. Null while Papaya OS has none, and is used wherever it's opened.
    */
   customDomain: string | null;
   /**
@@ -457,7 +457,7 @@ export interface Account {
    */
   memberfulSignIn: boolean;
   /**
-   * Whether people with an email address at one of `emailDomains` may join with a link Ember emails
+   * Whether people with an email address at one of `emailDomains` may join with a link Papaya OS emails
    * them, which they ask for at `/join/email`, and which an administrator turns on in Membership as Email
    * domain. Off until one does, and off whatever this says while Papaya is members only
    * (`signsUpWithEmailDomain`).
@@ -476,7 +476,7 @@ export interface Account {
   navigationIcons: NavigationIcons;
   /**
    * Whether huddles are on, which an administrator turns on in community settings' Huddles tab, or as
-   * they set Ember up, by giving Ember the keys of the Realtime SFU app they run through. Off until one
+   * they set Papaya OS up, by giving Papaya OS the keys of the Realtime SFU app they run through. Off until one
    * does, when no room's header has a huddle button.
    */
   huddles: boolean;
@@ -501,32 +501,32 @@ export interface WorkspaceSettings {
   memberfulSite: string | null;
   /**
    * Whether the deployment also has what Papaya's webhooks take, their signing secret and the custom
-   * app's API key (`MEMBERFUL_WEBHOOK_SECRET` and `MEMBERFUL_API_KEY`), so that Ember hears when a
+   * app's API key (`MEMBERFUL_WEBHOOK_SECRET` and `MEMBERFUL_API_KEY`), so that Papaya OS hears when a
    * membership lapses or is renewed, and checks what it hears with Papaya.
    */
   memberfulWebhooks: boolean;
   /**
    * Where the keys of the Cloudflare Turnstile widget come from that checks whoever signs up, or asks
-   * Ember to email them, is a person, as Membership's Turnstile card says: the deployment's secrets
+   * Papaya OS to email them, is a person, as Membership's Turnstile card says: the deployment's secrets
    * `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY`, which take the place of any others, the ones an
-   * administrator gave Ember in Set up Turnstile, or null while it has neither, when limits on each
+   * administrator gave Papaya OS in Set up Turnstile, or null while it has neither, when limits on each
    * network stand in for the check.
    */
   turnstile: "secret" | "saved" | null;
-  /** How Ember sends email, which Membership's Email card shows administrators. */
+  /** How Papaya OS sends email, which Membership's Email card shows administrators. */
   email: EmailSettings;
   /** The invitations no one has accepted yet, newest first, for administrators, and none for anyone else. */
   invitations: EmailInvitation[];
   /** The domains Email domain lets in, as kept, whether it's on or not, for administrators, and none for anyone else. */
   emailDomains: string[];
-  /** The addresses Ember knows reach it besides its own, which the Custom domain card names, for administrators, and none for anyone else. */
+  /** The addresses Papaya OS knows reach it besides its own, which the Custom domain card names, for administrators, and none for anyone else. */
   addresses: EmberAddresses;
-  /** Ember AI as the AI assistant tab shows it, for administrators while it's on, and null otherwise. */
+  /** Papaya AI as the AI assistant tab shows it, for administrators while it's on, and null otherwise. */
   assistant: AssistantSettings | null;
   /** Huddles as the Huddles tab's card shows them, for administrators while they're on, and null otherwise. */
   huddles: HuddlesSettings | null;
   /**
-   * The ID of the Cloudflare account Ember is deployed to, which Set up Ember AI fills in, for
+   * The ID of the Cloudflare account Papaya OS is deployed to, which Set up Papaya AI fills in, for
    * administrators once the deploy has given it to the Worker, and null otherwise.
    */
   cloudflareAccountId: string | null;
@@ -546,8 +546,8 @@ export interface EmailInvitation {
   createdAt: string;
   expiresAt: string;
   /**
-   * Whether Ember emailed its newest link, as "sent", or why the provider didn't send it, or null while
-   * Ember can't send email, when the administrator sends the link themselves.
+   * Whether Papaya OS emailed its newest link, as "sent", or why the provider didn't send it, or null while
+   * Papaya OS can't send email, when the administrator sends the link themselves.
    */
   delivery: "sent" | { refusal: string } | null;
 }
@@ -560,7 +560,7 @@ export const INVITATION_DAYS = 7;
 
 /**
  * What came of inviting an email address: nothing, when someone has an account with it already, whatever
- * its case, or else its invitation, with the link when Ember didn't email it, for the administrator to
+ * its case, or else its invitation, with the link when Papaya OS didn't email it, for the administrator to
  * send themselves, since only its digest is kept.
  */
 export type InvitationOutcome = { emailAddress: string; member: true } | { emailAddress: string; invitation: EmailInvitation; link: string | null };
@@ -570,34 +570,34 @@ export interface Invited {
   outcomes: InvitationOutcome[];
 }
 
-/** What `POST /api/invitations/<id>/resend` answers: the invitation with its new link, which the old one no longer joins with, and the link when Ember didn't email it. */
+/** What `POST /api/invitations/<id>/resend` answers: the invitation with its new link, which the old one no longer joins with, and the link when Papaya OS didn't email it. */
 export interface ResentInvitation {
   invitation: EmailInvitation;
   link: string | null;
 }
 
-/** What Ember sends email with: Cloudflare Email Service's binding, or Resend's API. */
+/** What Papaya OS sends email with: Cloudflare Email Service's binding, or Resend's API. */
 export type EmailProvider = "cloudflare" | "resend";
 
-/** How Ember sends email. */
+/** How Papaya OS sends email. */
 export interface EmailSettings {
   /**
-   * What Ember sends email with: Resend while it has an API key for it, or else Cloudflare Email Service
-   * while the Worker has its `EMAIL` binding, or null while it has neither, when Ember can't send any.
+   * What Papaya OS sends email with: Resend while it has an API key for it, or else Cloudflare Email Service
+   * while the Worker has its `EMAIL` binding, or null while it has neither, when Papaya OS can't send any.
    */
   provider: EmailProvider | null;
   /**
    * Where Resend's API key comes from: the deployment's secret `RESEND_API_KEY`, which takes the place
-   * of any other, the one an administrator gave Ember in Membership's Set up email, or null for none.
+   * of any other, the one an administrator gave Papaya OS in Membership's Set up email, or null for none.
    */
   resendKey: "secret" | "saved" | null;
-  /** Whether the Worker has Cloudflare Email Service's `EMAIL` binding, which sends while Ember has no Resend API key. */
+  /** Whether the Worker has Cloudflare Email Service's `EMAIL` binding, which sends while Papaya OS has no Resend API key. */
   cloudflare: boolean;
-  /** The address an administrator gave Ember's email to come from, as `mailboxText` writes it, or null while there's none. */
+  /** The address an administrator gave Papaya OS's email to come from, as `mailboxText` writes it, or null while there's none. */
   from: string | null;
 }
 
-/** What `PUT` and `DELETE /api/account/turnstile_keys` answer: where Ember's Turnstile keys come from then, as `WorkspaceSettings.turnstile` says. */
+/** What `PUT` and `DELETE /api/account/turnstile_keys` answer: where Papaya OS's Turnstile keys come from then, as `WorkspaceSettings.turnstile` says. */
 export interface TurnstileSettings {
   turnstile: WorkspaceSettings["turnstile"];
 }
@@ -605,7 +605,7 @@ export interface TurnstileSettings {
 /**
  * What Set up Turnstile gives `PUT /api/account/turnstile_keys`: a widget's site key and secret key, and
  * the token that widget's check gave the dialog, which the Worker asks Cloudflare about with the secret
- * key, so that Ember keeps only keys that check people here.
+ * key, so that Papaya OS keeps only keys that check people here.
  */
 export interface TurnstileKeysChange {
   siteKey: string;
@@ -613,7 +613,7 @@ export interface TurnstileKeysChange {
   turnstileToken: string;
 }
 
-/** The longest key of a Turnstile widget Ember takes, where Cloudflare's are a few dozen characters. */
+/** The longest key of a Turnstile widget Papaya OS takes, where Cloudflare's are a few dozen characters. */
 const MAX_TURNSTILE_KEY_LENGTH = 100;
 
 /** Why a site key, or a secret key, is refused before Cloudflare is asked about it. */
@@ -624,7 +624,7 @@ export const TURNSTILE_SECRET_KEY_REFUSED = "A secret key starts with 0x. Copy i
 export const TURNSTILE_SECRET_KEY_UNKNOWN = "Cloudflare doesn't know that secret key. Copy it again from your widget in Cloudflare Turnstile.";
 export const TURNSTILE_KEYS_UNMATCHED = "That secret key isn't the site key's. Copy both keys from the same widget.";
 export const TURNSTILE_CHECK_EXPIRED = "That check has expired. Pass it again.";
-export const TURNSTILE_KEYS_UNCHECKED = "Ember couldn't reach Cloudflare to check the keys. Try again.";
+export const TURNSTILE_KEYS_UNCHECKED = "Papaya OS couldn't reach Cloudflare to check the keys. Try again.";
 
 /**
  * The Turnstile key `text` gives, without the spaces around it, or null when it can't be one: a widget's
@@ -637,7 +637,7 @@ export function turnstileKeyOf(text: string): string | null {
 }
 
 /**
- * What `PUT /api/account/turnstile_keys` gives Ember, as Set up Turnstile sends it, or why it can't be one,
+ * What `PUT /api/account/turnstile_keys` gives Papaya OS, as Set up Turnstile sends it, or why it can't be one,
  * on the field it's about: a site key and a secret key, which aren't the same, and the check's token.
  */
 export function parseTurnstileKeysChange(data: unknown): TurnstileKeysChange | { error: string; field: "siteKey" | "secretKey" | "turnstile" } {
@@ -653,10 +653,10 @@ export function parseTurnstileKeysChange(data: unknown): TurnstileKeysChange | {
   return { siteKey, secretKey, turnstileToken };
 }
 
-/** Why Ember can't send email while it has neither a Resend API key nor Cloudflare's binding. */
-export const CANT_SEND_EMAIL = "Ember can't send email yet. An administrator can set it up under Email in Membership.";
+/** Why Papaya OS can't send email while it has neither a Resend API key nor Cloudflare's binding. */
+export const CANT_SEND_EMAIL = "Papaya OS can't send email yet. An administrator can set it up under Email in Membership.";
 
-/** The longest Resend API key Ember takes, which goes in a header of each request to Resend. */
+/** The longest Resend API key Papaya OS takes, which goes in a header of each request to Resend. */
 const MAX_RESEND_API_KEY_LENGTH = 256;
 
 /** Why a Resend API key is refused before Resend is asked about it. */
@@ -668,7 +668,7 @@ export function resendApiKeyOf(text: string): string | null {
   return apiKey.length <= MAX_RESEND_API_KEY_LENGTH && /^re_[\x21-\x7e]+$/.test(apiKey) ? apiKey : null;
 }
 
-/** What `PUT /api/account/resend_api_key` gives Ember, as Set up email sends it: `{ apiKey }`, or why it can't be one. */
+/** What `PUT /api/account/resend_api_key` gives Papaya OS, as Set up email sends it: `{ apiKey }`, or why it can't be one. */
 export function parseResendApiKey(data: unknown): { apiKey: string } | string {
   const apiKey = isJsonObject(data) && typeof data.apiKey === "string" ? resendApiKeyOf(data.apiKey) : null;
   return apiKey === null ? RESEND_API_KEY_REFUSED : { apiKey };
@@ -708,7 +708,7 @@ export interface NewJoinCode {
 /**
  * What `PATCH /api/account` changes, as workspace settings save it: the workspace's name, its tagline,
  * its settings, its custom domain, which can only be the address the request comes to, or null for
- * none, the icons of the rail's buttons and the appearance modes, the address Ember's email comes from,
+ * none, the icons of the rail's buttons and the appearance modes, the address Papaya OS's email comes from,
  * or null for none, and the domains Email domain lets in, in place of those it had.
  */
 export interface AccountChanges {
@@ -725,7 +725,7 @@ export interface AccountChanges {
  * The workspace's settings that workspace settings' switches change, the ways to join among them: the
  * join link's switch, Open, Papaya, its Members only, which the Worker turns on only with the
  * deployment's Papaya keys, and Email domain, which it turns on only with a domain to let in, while
- * Ember can send email. Members only turns Papaya on with it, turning Papaya off turns it off, and
+ * Papaya OS can send email. Members only turns Papaya on with it, turning Papaya off turns it off, and
  * it's never on together with Open.
  */
 export interface AccountSettings {
@@ -763,8 +763,8 @@ export const EMAIL_DOMAINS_REFUSED = `Email domains must be a list of at most ${
 /** Why Email domain can't be on without a domain to let in. */
 export const NO_EMAIL_DOMAINS = "Add a domain whose email addresses can join.";
 
-/** Why Email domain can't be turned on while Ember can't send email, since it emails people the links they join with. */
-export const EMAIL_DOMAIN_NEEDS_EMAIL = "Email domain emails people a link to join with, so Ember has to send email first. Set up email in Membership.";
+/** Why Email domain can't be turned on while Papaya OS can't send email, since it emails people the links they join with. */
+export const EMAIL_DOMAIN_NEEDS_EMAIL = "Email domain emails people a link to join with, so Papaya OS has to send email first. Set up email in Membership.";
 
 /**
  * Domains anyone can have an email address at, for free, which Email domain warns would let almost
@@ -803,33 +803,33 @@ export interface CustomStyles {
   customStyles: string;
 }
 
-/** Ember's repository, which publishes its releases, and its docs on updating a deployment to one. */
+/** Papaya OS's repository, which publishes its releases, and its docs on updating a deployment to one. */
 export const EMBER_REPOSITORY = "https://github.com/NYLLON-SOFTWARE/ember-cloudflare";
 export const UPDATING_EMBER = `${EMBER_REPOSITORY}/blob/main/docs/self-hosting.md#updating`;
-/** Ember's docs on its betas, and on trying one. */
+/** Papaya OS's docs on its betas, and on trying one. */
 export const TRYING_BETAS = `${EMBER_REPOSITORY}/blob/main/docs/self-hosting.md#betas`;
 
 /**
  * What `GET /api/account/release` answers an administrator, for General settings to say, and `POST
  * /api/account/release_checks`, which opening Admin, and its Check for updates, make to have the Worker
- * ask GitHub afresh: the release this Ember is, named without its version's trailing ".0", such as "0.1",
- * and the newest release of Ember on GitHub, named so too, with its version, such as "0.1.0", the address
+ * ask GitHub afresh: the release this Papaya OS is, named without its version's trailing ".0", such as "0.1",
+ * and the newest release of Papaya OS on GitHub, named so too, with its version, such as "0.1.0", the address
  * of its notes there and whether it's newer than this one, or null when GitHub didn't name one.
  */
 export interface ReleaseCheck {
   release: string;
-  /** Whether this Ember is a beta, such as "0.5 beta 1", ahead of the newest release, which GitHub never names a beta. */
+  /** Whether this Papaya OS is a beta, such as "0.5 beta 1", ahead of the newest release, which GitHub never names a beta. */
   beta: boolean;
   newest: { release: string; version: string; notes: string; newer: boolean } | null;
   /** When GitHub named that release, as an ISO time, which General says it last checked, or null with it. */
   checkedAt: string | null;
   /**
-   * Ember's newest beta while it's ahead of the newest release, named as "0.6 beta 1", with its version,
+   * Papaya OS's newest beta while it's ahead of the newest release, named as "0.6 beta 1", with its version,
    * "0.6.0-beta.1", its notes and whether it's newer than this one, or null when it isn't ahead, or GitHub
    * didn't say: what General offers a release to try, and a beta to update to (docs/self-hosting.md#betas).
    */
   newestBeta: { release: string; version: string; notes: string; newer: boolean } | null;
-  /** The copy of Ember this is on GitHub, as its deploy said, or null where it said none. */
+  /** The copy of Papaya OS this is on GitHub, as its deploy said, or null where it said none. */
   copy: CopyOnGitHub | null;
 }
 
@@ -842,7 +842,7 @@ function numbersOf(version: string): number[] {
   return numbers.map((number) => (number === undefined ? Infinity : Number(number)));
 }
 
-/** Whether version `a` of Ember, a release's or a beta's, comes after version `b`. */
+/** Whether version `a` of Papaya OS, a release's or a beta's, comes after version `b`. */
 export function isNewer(a: string, b: string): boolean {
   const [later, earlier] = [numbersOf(a), numbersOf(b)];
   const differs = later.findIndex((number, at) => number !== earlier[at]);
@@ -850,8 +850,8 @@ export function isNewer(a: string, b: string): boolean {
 }
 
 /**
- * A copy of Ember on GitHub, as its deploy tells the Worker: its repository, as `owner/name`, the branch
- * that deploys, and whether it has the Update Ember workflow, and the beta workflow, Update Ember to its
+ * A copy of Papaya OS on GitHub, as its deploy tells the Worker: its repository, as `owner/name`, the branch
+ * that deploys, and whether it has the Update Papaya OS workflow, and the beta workflow, Update Papaya OS to its
  * newest beta, for General's release card to link to running each, or to adding it.
  */
 export interface CopyOnGitHub {
@@ -921,7 +921,7 @@ export interface Profile {
    * nothing to connect, or while Papaya isn't members only and you haven't connected one.
    */
   memberful: MemberfulStatus | null;
-  /** How much @ember thinks and how long it answers you, and the most each may be, and the model you picked, if you did, and the ones you can pick, or null while Ember AI is off. */
+  /** How much @ember thinks and how long it answers you, and the most each may be, and the model you picked, if you did, and the ones you can pick, or null while Papaya AI is off. */
   assistant: YourAssistant | null;
 }
 
@@ -950,14 +950,14 @@ export interface ProfileChanges {
   pushSubscriptionEndpoint?: string;
 }
 
-/** What the Set up Ember form shows in its Name and Email address fields while they're empty. */
+/** What the Set up Papaya OS form shows in its Name and Email address fields while they're empty. */
 export interface SetupPlaceholders {
   name: string;
   emailAddress: string;
 }
 
 /**
- * How setup can be reached from where the app runs, while Ember waits to be set up:
+ * How setup can be reached from where the app runs, while Papaya OS waits to be set up:
  * - "password": with the deployment's setup password, which Deploy to Cloudflare's form asks the deployer
  *   to make up (`EMBER_SETUP_PASSWORD`), typed into the page;
  * - "link": with the setup link a deploy from a terminal prints, which ends in the deployment's
@@ -967,14 +967,14 @@ export interface SetupPlaceholders {
  */
 export type SetupAccess = "password" | "link" | "open" | "closed";
 
-/** What the app asks first (`GET /api/bootstrap`): whether Ember is set up, and who this browser is signed in as. */
+/** What the app asks first (`GET /api/bootstrap`): whether Papaya OS is set up, and who this browser is signed in as. */
 export interface Bootstrap {
   /** "pending" until first run creates the workspace and its first administrator. */
   setup: "pending" | "complete";
-  /** What setting Ember up takes from here, while it's pending. */
+  /** What setting Papaya OS up takes from here, while it's pending. */
   setupAccess: SetupAccess;
   /**
-   * What the Set up Ember form suggests: Kevin Rose's name and email address, unless the deployment names
+   * What the Set up Papaya OS form suggests: Kevin Rose's name and email address, unless the deployment names
    * its own with `EMBER_SETUP_NAME_PLACEHOLDER` and `EMBER_SETUP_EMAIL_PLACEHOLDER`.
    */
   setupPlaceholders: SetupPlaceholders;
@@ -988,18 +988,18 @@ export interface Bootstrap {
   signInWithMemberful: boolean;
   /**
    * The site key of the Turnstile widget whose check the open sign-up form shows, and the forms that ask
-   * Ember to email a link to join or a code to reset a password, to check that whoever fills them in is a
+   * Papaya OS to email a link to join or a code to reset a password, to check that whoever fills them in is a
    * person: the deployment's `TURNSTILE_SITE_KEY`, while it has both Turnstile's keys, or else the one an
-   * administrator gave in Set up Turnstile, or null while Ember has neither.
+   * administrator gave in Set up Turnstile, or null while Papaya OS has neither.
    */
   turnstileSiteKey: string | null;
   /**
-   * Whether someone who forgot their password can have Ember email them a code to choose a new one with,
-   * as the sign-in page then offers: while Ember can send email, from the From address an administrator
+   * Whether someone who forgot their password can have Papaya OS email them a code to choose a new one with,
+   * as the sign-in page then offers: while Papaya OS can send email, from the From address an administrator
    * gave it.
    */
   passwordResetCodes: boolean;
-  /** "Ember" before setup. */
+  /** "Papaya OS" before setup. */
   account: Account;
   /** This deployment's version: `APP_VERSION`, else `GIT_REVISION`, else the release. */
   version: string;
@@ -1038,7 +1038,7 @@ export interface Platform {
 
 /**
  * Someone new with an email address and password: the workspace's first administrator, as the Set up
- * Ember form sends them to `POST /api/first_run`, or someone joining, as the join form sends them to
+ * Papaya OS form sends them to `POST /api/first_run`, or someone joining, as the join form sends them to
  * `POST /api/join/<code>`.
  */
 export interface SignUp {
@@ -1049,7 +1049,7 @@ export interface SignUp {
 
 /**
  * Someone signing up while anyone may, as the open sign-up form sends them to `POST /api/join`: as the
- * join form does, with the token Turnstile's check gave the page while Ember has a widget's keys.
+ * join form does, with the token Turnstile's check gave the page while Papaya OS has a widget's keys.
  */
 export interface OpenSignUp extends SignUp {
   turnstileToken?: string;
@@ -1059,7 +1059,7 @@ export interface OpenSignUp extends SignUp {
 export const MAX_TURNSTILE_TOKEN_LENGTH = 2048;
 
 /**
- * Someone joining with a link Ember emailed them, as its form sends them to `POST /api/join/invitation`
+ * Someone joining with a link Papaya OS emailed them, as its form sends them to `POST /api/join/invitation`
  * for an invitation's, or `POST /api/join/email` for one they asked for with an address at the
  * workspace's email domains: the secret in the link's fragment, and a name and password. The email
  * address is the link's.
@@ -1071,7 +1071,7 @@ export interface EmailLinkSignUp {
 }
 
 /**
- * What a link Ember emails people to join with is: an administrator's invitation, or one someone asked
+ * What a link Papaya OS emails people to join with is: an administrator's invitation, or one someone asked
  * for with an address at the workspace's email domains.
  */
 export type EmailLinkKind = "invitation" | "email_domain";
@@ -1091,7 +1091,7 @@ export const EMAIL_LINK_GONE = "This link has expired, been used, or been replac
 /**
  * Someone asking for a link to join with their email address, at one of the workspace's email domains,
  * as `/join/email`'s form sends it to `POST /api/email_links`, with the token Turnstile's check gave the
- * page while Ember has a widget's keys.
+ * page while Papaya OS has a widget's keys.
  */
 export interface EmailLinkRequest {
   emailAddress: string;
@@ -1099,14 +1099,14 @@ export interface EmailLinkRequest {
 }
 
 /**
- * How many times Ember emails an address in an hour, at most, whoever asks, so that nobody can have
- * Ember email someone over and over: links to join with it at the email domains and codes to reset its
+ * How many times Papaya OS emails an address in an hour, at most, whoever asks, so that nobody can have
+ * Papaya OS email someone over and over: links to join with it at the email domains and codes to reset its
  * password together.
  */
 export const EMAILS_PER_ADDRESS = 3;
 
 /**
- * How many links to join a network may ask for in an hour while Ember lacks Turnstile's keys, whose
+ * How many links to join a network may ask for in an hour while Papaya OS lacks Turnstile's keys, whose
  * check stops the scripts that would ask for many addresses at once.
  */
 export const EMAIL_LINKS_PER_NETWORK = 10;
@@ -1114,11 +1114,11 @@ export const EMAIL_LINKS_PER_NETWORK = 10;
 /** Why `/join/email` sends no link to a network that has asked for as many as it may in an hour. */
 export const EMAIL_LINKS_LIMITED = "Too many links asked for from your network. Try again in an hour.";
 
-/** Why `/join/email` sends no link while Ember can't send email. */
-export const CANT_EMAIL_LINKS = "Ember can't email links right now. Try again later, or ask an administrator to invite you.";
+/** Why `/join/email` sends no link while Papaya OS can't send email. */
+export const CANT_EMAIL_LINKS = "Papaya OS can't email links right now. Try again later, or ask an administrator to invite you.";
 
 /** Why `/join/email` sent no link when the email provider refused to send it. */
-export const EMAIL_LINK_UNSENT = "Ember couldn't email you just now. Try again later.";
+export const EMAIL_LINK_UNSENT = "Papaya OS couldn't email you just now. Try again later.";
 
 /**
  * Whose password to reset, and to what, as `POST /api/recovery/reset-password` takes it from
@@ -1130,9 +1130,9 @@ export interface PasswordReset {
 }
 
 /**
- * Someone who forgot their password asking Ember to email them a code to choose a new one with, as the
+ * Someone who forgot their password asking Papaya OS to email them a code to choose a new one with, as the
  * Reset your password page sends it to `POST /api/password_resets`, with the token Turnstile's check
- * gave the page while Ember has a widget's keys. The address is taken as given, as sign-in takes it.
+ * gave the page while Papaya OS has a widget's keys. The address is taken as given, as sign-in takes it.
  */
 export interface PasswordResetRequest {
   emailAddress: string;
@@ -1140,7 +1140,7 @@ export interface PasswordResetRequest {
 }
 
 /**
- * A new password, with the code Ember emailed the address to choose it with, as the Reset your password
+ * A new password, with the code Papaya OS emailed the address to choose it with, as the Reset your password
  * page sends it to `PUT /api/password_resets`.
  */
 export interface PasswordResetWithCode {
@@ -1158,10 +1158,10 @@ export interface PasswordResetDone {
 }
 
 /**
- * The codes Ember emails to reset a password: how many digits one has, how many minutes it works for, as
+ * The codes Papaya OS emails to reset a password: how many digits one has, how many minutes it works for, as
  * its email and page say, and how many times it can be tried before it stops working, so that guessing
  * one takes far more tries than anyone gets. An address is emailed as often as `EMAILS_PER_ADDRESS`
- * says, and a network may ask for a code as often as `PASSWORD_RESETS_PER_NETWORK` says while Ember
+ * says, and a network may ask for a code as often as `PASSWORD_RESETS_PER_NETWORK` says while Papaya OS
  * lacks Turnstile's keys.
  */
 export const PASSWORD_RESET_CODE_DIGITS = 8;
@@ -1169,8 +1169,8 @@ export const PASSWORD_RESET_CODE_MINUTES = 15;
 export const PASSWORD_RESET_CODE_TRIES = 5;
 export const PASSWORD_RESETS_PER_NETWORK = 10;
 
-/** Why the Reset your password page emails no code while Ember can't send email. */
-export const CANT_EMAIL_CODES = "Ember can't email you a code right now. Ask an administrator for help.";
+/** Why the Reset your password page emails no code while Papaya OS can't send email. */
+export const CANT_EMAIL_CODES = "Papaya OS can't email you a code right now. Ask an administrator for help.";
 
 /** Why the Reset your password page emails no code to a network that has asked for as many as it may in an hour. */
 export const PASSWORD_RESETS_LIMITED = "Too many codes asked for from your network. Try again in an hour.";
@@ -1182,7 +1182,7 @@ export const PASSWORD_RESET_CODE_NEEDED = `Enter the ${PASSWORD_RESET_CODE_DIGIT
  * Why a new password is refused with a code that doesn't work, whatever the reason, so that the answer
  * never says who has an account: mistyped, expired, replaced by a newer one, or tried too often.
  */
-export const PASSWORD_RESET_CODE_WRONG = "That code is wrong or no longer works. Check the newest email from Ember, or send another code.";
+export const PASSWORD_RESET_CODE_WRONG = "That code is wrong or no longer works. Check the newest email from Papaya OS, or send another code.";
 
 /** Why a code isn't checked once its network has tried as many codes and passwords as sign-in lets it. */
 export const PASSWORD_RESET_LIMITED = "Too many tries. Please wait a few minutes and try again.";
@@ -1226,7 +1226,7 @@ export interface LinkPreview {
 }
 
 /**
- * The answer to a sign-in Ember refuses: a wrong password, an unknown email address, or an account
+ * The answer to a sign-in Papaya OS refuses: a wrong password, an unknown email address, or an account
  * removed or banned.
  */
 export const SIGN_IN_REJECTED = "Incorrect email or password. Please try again.";
@@ -1238,7 +1238,7 @@ export const SIGN_IN_REJECTED = "Incorrect email or password. Please try again."
 export const SIGN_IN_LIMITED = "Too many sign-in attempts. Please wait a few minutes and try again.";
 
 /**
- * Campfire's one answer to a sign-in it refuses, which a Papaya sign-in Ember refuses still gets,
+ * Campfire's one answer to a sign-in it refuses, which a Papaya sign-in Papaya OS refuses still gets,
  * since it can't say which of the two went wrong.
  */
 export const SIGN_IN_REFUSED = "Too many requests or unauthorized.";
@@ -1280,7 +1280,7 @@ export interface MemberfulConnectionStart {
 /**
  * The Papaya account you've connected, as Papaya described it when you connected it or last
  * signed in with it: its name and email address there, either null when Papaya didn't say, or for
- * an account connected before Ember kept them, until you sign in with it again.
+ * an account connected before Papaya OS kept them, until you sign in with it again.
  */
 export interface MemberfulAccount {
   name: string | null;
@@ -1313,7 +1313,7 @@ export interface MemberfulDisconnection {
  * Where to sign in at the Papaya site, within ten minutes, to connect the account you sign in to there
  * to yours here: what connecting from your profile answers, and what signing in with a password answers a
  * member whose password checks out while Papaya is members only, until they've connected one.
- * Papaya sends the browser back, which connects it. Asked at an address Ember has moved from to its
+ * Papaya sends the browser back, which connects it. Asked at an address Papaya OS has moved from to its
  * custom domain, where Papaya doesn't send it back, it's the page to come back to at the custom domain
  * instead, to sign in and connect there.
  */
@@ -1402,7 +1402,7 @@ export const joiningProblemOf = (value: string | null): JoiningProblem | null =>
 export const signInSaying = (problem: JoiningProblem) => `/session/new?${JOINING_PARAM}=${problem}`;
 
 /**
- * Open sign-up's limits, which stand in for Turnstile's check while Ember lacks its keys: how many
+ * Open sign-up's limits, which stand in for Turnstile's check while Papaya OS lacks its keys: how many
  * people may sign up from an IP address in an hour, and how many new people in the workspace in the last
  * hour, however they joined, stop it, so that a flood can't use up the rows a Workers Free account
  * writes in a day.
@@ -1417,7 +1417,7 @@ export const SIGN_UP_LIMITED = "Too many sign-ups from your network. Try again i
 export const SIGN_UP_FULL = "Lots of people have signed up in the last hour. Try again later.";
 
 /** Why open sign-up refuses a form whose Turnstile check didn't pass, or that came without one. */
-export const TURNSTILE_FAILED = "Ember couldn't check that you're a person. Try again.";
+export const TURNSTILE_FAILED = "Papaya OS couldn't check that you're a person. Try again.";
 
 /**
  * What a room closes a socket with when access to it ends. A close code says the same and can't go
@@ -1442,7 +1442,7 @@ export const CloseCode = {
 export type CloseCode = (typeof CloseCode)[keyof typeof CloseCode];
 
 /**
- * The shortest new password Ember takes, in characters rather than bytes.
+ * The shortest new password Papaya OS takes, in characters rather than bytes.
  */
 export const MIN_PASSWORD_LENGTH = 8;
 /** The password fields' `maxlength`, which Campfire's profile form keeps from bcrypt's 72-byte limit. */
@@ -1822,15 +1822,15 @@ export const MAX_USER_NAME_LENGTH = 100;
 export const MAX_EMAIL_ADDRESS_LENGTH = 254;
 export const NAME_TOO_LONG = `Name must be at most ${MAX_USER_NAME_LENGTH} characters`;
 
-/** The id of @ember, the account Ember AI answers as, which the Worker adds once an administrator sets Ember AI up. */
+/** The id of @ember, the account Papaya AI answers as, which the Worker adds once an administrator sets Papaya AI up. */
 export const ASSISTANT_ID: UserId = "ember";
 /** @ember's name, which nobody else can take (`isReservedName`). */
 export const ASSISTANT_NAME = "Ember";
 export const NAME_RESERVED = `${ASSISTANT_NAME} is the AI assistant's name. Choose another.`;
 
 /**
- * Whether `name` is @ember's, which nobody can take, whether or not Ember AI is on, so that nobody passes
- * for it: "Ember" as `sameName` compares names. Anyone who had the name before keeps it.
+ * Whether `name` is @ember's, which nobody can take, whether or not Papaya AI is on, so that nobody passes
+ * for it: "Papaya OS" as `sameName` compares names. Anyone who had the name before keeps it.
  */
 export function isReservedName(name: string): boolean {
   return sameName(name, ASSISTANT_NAME);
@@ -2065,7 +2065,7 @@ const HOST = /^([a-z0-9-]+(?:\.[a-z0-9-]+)*)(?::([1-9][0-9]{0,4}))?$/;
 const MAX_PORT = 65535;
 
 /**
- * Where a deploy or `wrangler dev` puts Ember, which can't be its custom domain: a workers.dev address,
+ * Where a deploy or `wrangler dev` puts Papaya OS, which can't be its custom domain: a workers.dev address,
  * and localhost itself or a loopback address, though a name under localhost can, as a custom domain
  * stands in for one there.
  */
@@ -2077,22 +2077,22 @@ export function isHost(host: string): boolean {
   return match !== null && match[1]!.length <= MAX_HOST_NAME_LENGTH && Number(match[2] ?? 0) <= MAX_PORT;
 }
 
-/** Whether the host name `hostname` could be Ember's custom domain: any but where a deploy or `wrangler dev` puts it. */
+/** Whether the host name `hostname` could be Papaya OS's custom domain: any but where a deploy or `wrangler dev` puts it. */
 export const canBeCustomDomain = (hostname: string) => !DEPLOYED_HOSTNAME.test(hostname.toLowerCase());
 
-/** Whether `host`, as `location.host` writes one, could be Ember's custom domain (`canBeCustomDomain`). */
+/** Whether `host`, as `location.host` writes one, could be Papaya OS's custom domain (`canBeCustomDomain`). */
 export const isCustomDomainHost = (host: string) => isHost(host) && canBeCustomDomain(HOST.exec(host)![1]!);
 
 /** Why a custom domain is refused when it isn't a host. */
 export const CUSTOM_DOMAIN_NOT_A_HOST = "Custom domain must be a host name, such as chat.example.com";
-/** Why a custom domain is refused when it's where a deploy or `wrangler dev` puts Ember. */
+/** Why a custom domain is refused when it's where a deploy or `wrangler dev` puts Papaya OS. */
 export const NOT_A_CUSTOM_DOMAIN = "A workers.dev or localhost address can't be a custom domain";
 
 /** A custom domain as `PATCH /api/account` may send one, a host or null for none, or undefined when it's neither. */
 const customDomainOf = (value: unknown): string | null | undefined => (value === null || (typeof value === "string" && isHost(value)) ? value : undefined);
 
 /**
- * What a custom domain reaches, as checking it finds: this Ember; something else, which answers there
+ * What a custom domain reaches, as checking it finds: this Papaya OS; something else, which answers there
  * but isn't it; or nothing yet, as before Cloudflare has added the domain, or while its certificate is
  * on the way.
  */
@@ -2126,7 +2126,7 @@ export interface CustomDomainLookup {
 
 /**
  * Parses an untrusted request to check or look up a custom domain, `{ domain }`, whose host could be
- * Ember's as one `PATCH /api/account` takes could. Returns why it's refused instead of the domain.
+ * Papaya OS's as one `PATCH /api/account` takes could. Returns why it's refused instead of the domain.
  */
 export function parseCustomDomainCheck(data: unknown): { domain: string } | string {
   const domain = isJsonObject(data) && typeof data.domain === "string" && isHost(data.domain) ? data.domain : null;
@@ -2135,7 +2135,7 @@ export function parseCustomDomainCheck(data: unknown): { domain: string } | stri
 }
 
 /**
- * The addresses Ember knows reach it besides its own (`Account.customDomain`), as Workspace settings'
+ * The addresses Papaya OS knows reach it besides its own (`Account.customDomain`), as Workspace settings'
  * Custom domain card names them: where a deploy puts it, its workers.dev address or `wrangler dev`'s,
  * as the latest page opened at one told it, or null until one has; and the custom domains it has moved
  * away from, newest first, which reach it until they're removed from the Worker in Cloudflare, unless a
@@ -2146,11 +2146,11 @@ export interface EmberAddresses {
   others: string[];
 }
 
-/** The most custom domains Ember remembers moving away from, forgetting the oldest first. */
+/** The most custom domains Papaya OS remembers moving away from, forgetting the oldest first. */
 export const MAX_OTHER_ADDRESSES = 5;
 
 /**
- * The custom domains Ember has moved away from, `others`, once it moves to `to` from the addresses in
+ * The custom domains Papaya OS has moved away from, `others`, once it moves to `to` from the addresses in
  * `left`, its own until then and the one the move was asked at, which reach it too: those of them that
  * are custom domains first, as a deploy's address always reaches it, then the rest, newest first, but
  * never `to`, and only the latest `MAX_OTHER_ADDRESSES`.
@@ -2167,13 +2167,13 @@ export interface Mailbox {
 }
 
 /**
- * An email address Ember can send from or to: a local part of the characters RFC 5322 lets one have
+ * An email address Papaya OS can send from or to: a local part of the characters RFC 5322 lets one have
  * unquoted, then a domain of letters, digits and hyphens between dots, as DNS has its names.
  */
 const MAILBOX_ADDRESS =
   /^[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)+$/;
 
-/** Whether `address` is an email address Ember can send from or to, as `MAILBOX_ADDRESS` has them, no longer than Ember keeps. */
+/** Whether `address` is an email address Papaya OS can send from or to, as `MAILBOX_ADDRESS` has them, no longer than Papaya OS keeps. */
 export const isEmailAddress = (address: string) => address.length <= MAX_EMAIL_ADDRESS_LENGTH && MAILBOX_ADDRESS.test(address);
 /** A name, in quotes or not, then an address in angle brackets. */
 const NAMED_MAILBOX = /^(.*?)\s*<([^<>]*)>$/s;
@@ -2183,11 +2183,11 @@ const NOT_IN_A_NAME = /[\u0000-\u001f\u007f"\\<>]/;
 const QUOTED_IN_A_NAME = /[()[\]:;@,.]/;
 
 /** Why a From address is refused. */
-export const EMAIL_FROM_REFUSED = "From must be an email address, such as ember@example.com, or a name and one, such as Ember <ember@example.com>";
+export const EMAIL_FROM_REFUSED = "From must be an email address, such as ember@example.com, or a name and one, such as Papaya OS <ember@example.com>";
 
 /**
  * The mailbox `text` gives, as an administrator types a From address: an email address, or a name, in
- * quotes or not, and an address in angle brackets. Null for anything else, as for an address Ember can't
+ * quotes or not, and an address in angle brackets. Null for anything else, as for an address Papaya OS can't
  * send from, or a name a From line can't hold.
  */
 export function mailboxOf(text: string): Mailbox | null {
@@ -2205,7 +2205,7 @@ export function mailboxOf(text: string): Mailbox | null {
 const NOT_IN_A_NAME_ANYWHERE = new RegExp(NOT_IN_A_NAME.source, "g");
 
 /**
- * `mailbox` under `name`, the workspace's, unless it has a name of its own, as Ember's email comes from
+ * `mailbox` under `name`, the workspace's, unless it has a name of its own, as Papaya OS's email comes from
  * the From address, so that a mail client shows the workspace's name rather than the start of the
  * address: on one line, with a space for what a From line's name can't hold, or no name if that leaves none.
  */
@@ -2226,7 +2226,7 @@ function emailFromOf(value: unknown): string | null | undefined {
 }
 
 /**
- * The part of the URL parser that reading a domain needs, which every runtime Ember runs in has, though
+ * The part of the URL parser that reading a domain needs, which every runtime Papaya OS runs in has, though
  * the protocol, made for every runtime, names it itself, as it does `SearchParams`.
  */
 declare const URL: new (url: string) => { readonly hostname: string };
@@ -2420,7 +2420,7 @@ export function parseMemberfulDisconnection(data: unknown): MemberfulDisconnecti
 
 /**
  * Parses an untrusted first run or join. Returns why it's refused instead, when a field is missing or
- * the name or email address is longer than Ember keeps; the password's length is checked apart from
+ * the name or email address is longer than Papaya OS keeps; the password's length is checked apart from
  * this, since each form has its own rules.
  */
 export function parseSignUp(data: unknown): SignUp | string {
@@ -2447,7 +2447,7 @@ export function parseOpenSignUp(data: unknown): OpenSignUp | string {
 }
 
 /**
- * Parses an untrusted join with a link Ember emailed, as `parseSignUp` does a join, but for the email
+ * Parses an untrusted join with a link Papaya OS emailed, as `parseSignUp` does a join, but for the email
  * address, which is the link's, and with the link's secret, which the Worker checks. Returns why it's
  * refused instead.
  */
@@ -2466,8 +2466,8 @@ export const EMAIL_ADDRESS_NEEDED = "Enter your email address, such as ann@examp
 /**
  * Parses an untrusted `POST /api/email_links`, answering the address to email, with its domain, as
  * `emailDomainOf` has domains, and Turnstile's token if it has one, or why it's refused instead: no
- * address Ember can send to. The address is kept as given, as joining keeps one, but for an
- * international domain, which goes in its ASCII form, as Ember sends to it.
+ * address Papaya OS can send to. The address is kept as given, as joining keeps one, but for an
+ * international domain, which goes in its ASCII form, as Papaya OS sends to it.
  */
 export function parseEmailLinkRequest(data: unknown): (EmailLinkRequest & { domain: string }) | string {
   if (!isJsonObject(data)) return "Expected a JSON object";
@@ -2489,7 +2489,7 @@ export const NOT_AN_EMAIL_ADDRESS = "Each must be an email address, such as ann@
 
 /**
  * Parses an untrusted `POST /api/invitations`, `{ emailAddresses }`: 1 to `INVITATIONS_AT_ONCE` email
- * addresses Ember can send to, each once, whatever its case, as first given. Returns why it's refused
+ * addresses Papaya OS can send to, each once, whatever its case, as first given. Returns why it's refused
  * instead.
  */
 export function parseInvitationRequest(data: unknown): string[] | string {
@@ -2556,11 +2556,11 @@ export function parsePasswordResetRequest(data: unknown): PasswordResetRequest |
   return { emailAddress, turnstileToken };
 }
 
-/** A code Ember emails to reset a password: its digits, and nothing else. */
+/** A code Papaya OS emails to reset a password: its digits, and nothing else. */
 const PASSWORD_RESET_CODE = new RegExp(`^[0-9]{${PASSWORD_RESET_CODE_DIGITS}}$`);
 
 /**
- * The code in `typed`, as someone types or pastes the one Ember emailed them: its digits, apart by spaces
+ * The code in `typed`, as someone types or pastes the one Papaya OS emailed them: its digits, apart by spaces
  * or dashes if they like, and full-width as a Japanese keyboard types them if it does, or null for
  * anything else.
  */
@@ -2584,7 +2584,7 @@ export function parsePasswordResetWithCode(data: unknown): PasswordResetWithCode
   return { emailAddress, code: read, password };
 }
 
-/** Whether a new password is shorter than Ember takes, counting an emoji as one character. */
+/** Whether a new password is shorter than Papaya OS takes, counting an emoji as one character. */
 export const isPasswordTooShort = (password: string) => [...password].length < MIN_PASSWORD_LENGTH;
 
 /**

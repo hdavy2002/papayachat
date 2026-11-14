@@ -82,7 +82,7 @@ describe("Link preview lookup", () => {
     ]);
   });
 
-  it("answers 204 for a private address, or this Ember's own pages, without fetching them", async () => {
+  it("answers 204 for a private address, or this Papaya OS's own pages, without fetching them", async () => {
     const fetch = vi.spyOn(globalThis, "fetch");
     const { cookie } = await signIn("Ada");
     for (const url of ["http://127.0.0.1/secret", "http://[::1]/", "http://2130706433/", `${origin}/rooms/1`, "HTTPS://EMBER.TEST./"]) {
@@ -91,7 +91,7 @@ describe("Link preview lookup", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
-  it("knows a link on one of Ember's hosts, at any port, as @ember's answers leave its preview out", () => {
+  it("knows a link on one of Papaya OS's hosts, at any port, as @ember's answers leave its preview out", () => {
     const hosts = ["chat.example.com", "ember.example.workers.dev", "localhost:8787"];
     for (const url of ["https://chat.example.com/rooms/1", "HTTPS://Chat.Example.com.:8443/", "https://ember.example.workers.dev/", "http://localhost/x"]) {
       expect(isOnHost(url, hosts), url).toBe(true);

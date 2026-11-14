@@ -58,7 +58,7 @@ const grace = { name: "Grace Hopper", emailAddress: "grace@example.com", passwor
 /** A time so far ahead that the runtime never runs an alarm set for it during a test. */
 const LATER = Date.now() + 365 * 24 * 60 * 60 * 1000;
 
-/** Sets Ember up with Ada as its administrator, signed in. */
+/** Sets Papaya OS up with Ada as its administrator, signed in. */
 async function setUp(): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(ada) });
   expect(response.status).toBe(201);
@@ -848,7 +848,7 @@ describe("What a ban blocks", () => {
   /** Signs in as a guest named `name` from the IP address `ip`. */
   const guestFrom = (ip: string, name = "Hal") => api("/api/session", fromAddress(ip, null, { method: "POST", body: JSON.stringify({ name }) }));
 
-  /** Sets Ember up with Ada as its administrator, and bans Grace, who signed in from `banned`. */
+  /** Sets Papaya OS up with Ada as its administrator, and bans Grace, who signed in from `banned`. */
   async function banGrace(): Promise<{ administrator: Session; member: Session }> {
     const administrator = await setUp();
     const member = await join(grace);
@@ -924,7 +924,7 @@ describe("What a ban blocks", () => {
     expect((await api("/api/session/transfers", { method: "POST", body: JSON.stringify({ transferId }) })).status).toBe(201);
   });
 
-  it("still lets a banned address read, connect and check Ember's health, and finds nothing where no route is", async () => {
+  it("still lets a banned address read, connect and check Papaya OS's health, and finds nothing where no route is", async () => {
     const { administrator } = await banGrace();
     const lobby = await freshRoom("lobby");
     for (const path of ["/api/bootstrap", "/api/me", "/api/users", "/api/sidebar", "/api/account", `/api/rooms/${lobby}/settings`]) {

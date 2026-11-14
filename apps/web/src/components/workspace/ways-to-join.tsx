@@ -28,7 +28,7 @@ import { SetUpTurnstile } from "./turnstile-settings";
 // settings for when it's off. Members see the links that let people in.
 
 /** What turning on Open asks first, since it lets anyone in. */
-export const CONFIRM_OPEN = "Are you sure you want to let anyone create an account? Ember doesn't check that the email addresses people sign up with are theirs.";
+export const CONFIRM_OPEN = "Are you sure you want to let anyone create an account? Papaya OS doesn't check that the email addresses people sign up with are theirs.";
 
 /** What turning on Papaya's Members only asks first, since it keeps everyone but administrators, and the people they invite, from signing in with a password. */
 export const CONFIRM_MEMBERS_ONLY =
@@ -53,7 +53,7 @@ interface Props {
   saveSwitch: (settings: AccountSettings, settled: () => void) => void;
   /** Saves Email domain's domains, turning it on with them if `turnOn`, then calls `settled` with whether it did. */
   saveEmailDomains: (domains: string[], turnOn: boolean, settled: (saved: boolean) => void) => void;
-  /** Opens Set up email, calling `then`, if given, once it closes with Ember able to send email. */
+  /** Opens Set up email, calling `then`, if given, once it closes with Papaya OS able to send email. */
   onSetUpEmail: (then?: () => void) => void;
   /** Opens Set up Turnstile, whose check lifts the limits that stand in for it. */
   onSetUpTurnstile: () => void;
@@ -102,7 +102,7 @@ export function WaysToJoin({ settings, saveSwitch, saveEmailDomains, onSetUpEmai
       <Way
         id="open-sign-up"
         title="Open"
-        description="Anyone can create an account at Ember's sign-up page."
+        description="Anyone can create an account at Papaya OS's sign-up page."
         checked={open}
         onCheckedChange={switchTo("openSignUp")}
         setAside={membersOnlyOverrides && !open ? MEMBERS_ONLY_OVERRIDES : null}

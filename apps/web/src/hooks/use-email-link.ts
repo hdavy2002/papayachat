@@ -2,20 +2,20 @@ import { useEffect, useState } from "react";
 import type { EmailLinkKind } from "@ember/protocol";
 import { ApiError, lookUpEmailLink } from "@/lib/api";
 
-// The pages a link Ember emails opens hold its secret in the fragment (`invitationLink`,
+// The pages a link Papaya OS emails opens hold its secret in the fragment (`invitationLink`,
 // `emailSignUpLink`): they take it out of the address, as the sign-in link's page does, and ask what
 // the link is and whom it's for, which spends nothing.
 
 const MAX_RETRY_MS = 15_000;
 
-/** A link Ember emailed someone to join with: what it is, its secret, and the address it's for. */
+/** A link Papaya OS emailed someone to join with: what it is, its secret, and the address it's for. */
 export interface EmailLink {
   kind: EmailLinkKind;
   token: string;
   emailAddress: string;
 }
 
-/** The secret in the fragment of a link Ember emails. */
+/** The secret in the fragment of a link Papaya OS emails. */
 const tokenOf = (hash: string) => new URLSearchParams(hash.slice(1)).get("token") || null;
 
 /**
@@ -34,9 +34,9 @@ export function useLinksOpened(): number {
 
 /**
  * The link of `kind` whose secret was in the address's fragment as the page opened, once it's looked up:
- * "none" without one, "looking" until Ember answers, and "gone" for one that doesn't work, or is another
+ * "none" without one, "looking" until Papaya OS answers, and "gone" for one that doesn't work, or is another
  * kind. It clears the fragment first, so the secret leaves the address bar and this tab's history. A
- * request that can't reach Ember, or that Ember fails, is tried again, as the app's first one is. With
+ * request that can't reach Papaya OS, or that Papaya OS fails, is tried again, as the app's first one is. With
  * it comes what to call once the link stops working while it's shown, which makes it "gone".
  */
 export function useEmailLink(kind: EmailLinkKind): [EmailLink | "none" | "looking" | "gone", () => void] {

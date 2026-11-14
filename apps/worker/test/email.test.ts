@@ -17,7 +17,7 @@ const ada = { name: "Ada Lovelace", emailAddress: "ada@example.com", password: "
 /** A Resend API key, as the deployment's secret holds one. */
 const RESEND_KEY = "re_test_only_not_a_key";
 
-/** Sets Ember up with Ada as its administrator, signed in. */
+/** Sets Papaya OS up with Ada as its administrator, signed in. */
 async function setUp(): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(ada) });
   expect(response.status).toBe(201);
@@ -86,10 +86,10 @@ const sendingOnly = () => Response.json({ statusCode: 401, name: "restricted_api
 /** Stands in for Resend's API as a key that can only send has it: refused the domains, but sending. */
 const fakeSendingKey = () => fakeResend((url) => (url.endsWith("/domains") ? sendingOnly() : Response.json({ id: crypto.randomUUID() })));
 
-/** Gives Ember the Resend API key `apiKey` as `session`, as Set up email does. */
+/** Gives Papaya OS the Resend API key `apiKey` as `session`, as Set up email does. */
 const giveResendKey = (session: Session | null, apiKey: unknown) => api("/api/account/resend_api_key", { method: "PUT", headers: as(session), body: JSON.stringify({ apiKey }) });
 
-/** Takes Ember's Resend API key away as `session`, as Set up email does when Cloudflare Email Service is chosen. */
+/** Takes Papaya OS's Resend API key away as `session`, as Set up email does when Cloudflare Email Service is chosen. */
 const forgetResendKey = (session: Session | null) => api("/api/account/resend_api_key", { method: "DELETE", headers: as(session) });
 
 /** How a workspace sends email from `from` with the Resend API key an administrator gave it. */
@@ -144,7 +144,7 @@ beforeEach(freshDeploy);
 afterEach(() => vi.restoreAllMocks());
 
 describe("Sending email", () => {
-  it("says what Ember sends email with: Resend while there's an API key, else Cloudflare Email Service's binding", async () => {
+  it("says what Papaya OS sends email with: Resend while there's an API key, else Cloudflare Email Service's binding", async () => {
     const administrator = await setUp();
     expect(await emailSettings(administrator)).toEqual({ provider: "cloudflare", resendKey: null, cloudflare: true, from: null });
     await withWorkspaceEnv({ RESEND_API_KEY: RESEND_KEY }, async () =>
@@ -158,11 +158,11 @@ describe("Sending email", () => {
 
   it("keeps the From address an administrator gives, as an address is written, and takes it away", async () => {
     const administrator = await setUp();
-    await saveFrom(administrator, "  Ember   <ember@example.com> ");
-    expect(await storedFrom()).toBe("Ember <ember@example.com>");
-    expect(await emailSettings(administrator)).toEqual({ provider: "cloudflare", resendKey: null, cloudflare: true, from: "Ember <ember@example.com>" });
+    await saveFrom(administrator, "  Papaya OS   <ember@example.com> ");
+    expect(await storedFrom()).toBe("Papaya OS <ember@example.com>");
+    expect(await emailSettings(administrator)).toEqual({ provider: "cloudflare", resendKey: null, cloudflare: true, from: "Papaya OS <ember@example.com>" });
     const member = await signIn("Grace");
-    expect((await emailSettings(member)).from).toBe("Ember <ember@example.com>");
+    expect((await emailSettings(member)).from).toBe("Papaya OS <ember@example.com>");
 
     await saveFrom(administrator, "Acme, Inc. <chat@acme.example>");
     expect((await emailSettings(administrator)).from).toBe('"Acme, Inc." <chat@acme.example>');
@@ -186,7 +186,7 @@ describe("Sending email", () => {
   it("refuses a From address that isn't one, and anyone but an administrator", async () => {
     const administrator = await setUp();
     await saveFrom(administrator, "ember@example.com");
-    for (const emailFrom of ["Ember", "ember@", "Ember <ember@example.com", 42]) await expectRefused(await giveFrom(administrator, emailFrom), 422, EMAIL_FROM_REFUSED);
+    for (const emailFrom of ["Papaya OS", "ember@", "Papaya OS <ember@example.com", 42]) await expectRefused(await giveFrom(administrator, emailFrom), 422, EMAIL_FROM_REFUSED);
     expect((await giveFrom(await signIn("Grace"), "grace@example.com")).status).toBe(403);
     expect((await giveFrom(null, "anyone@example.com")).status).toBe(401);
     expect(await storedFrom()).toBe("ember@example.com");
@@ -194,7 +194,7 @@ describe("Sending email", () => {
 
   it("sends an administrator a test email from the From address with Cloudflare Email Service", async () => {
     const administrator = await setUp();
-    await saveFrom(administrator, "Ember Team <chat@example.com>");
+    await saveFrom(administrator, "Papaya OS Team <chat@example.com>");
     const { binding, sent } = fakeBinding();
     await withWorkspaceEnv({ EMAIL: binding }, async () => {
       const response = await sendTest(administrator);
@@ -206,13 +206,13 @@ describe("Sending email", () => {
     });
     expect(sent).toEqual([
       {
-        from: { name: "Ember Team", email: "chat@example.com" },
+        from: { name: "Papaya OS Team", email: "chat@example.com" },
         to: "ada@example.com",
-        subject: "Test email from Ember",
-        text: "This is a test email from Ember, at https://ember.test.\n\nIt reached you, so Ember can send email.\n",
+        subject: "Test email from Papaya OS",
+        text: "This is a test email from Papaya OS, at https://ember.test.\n\nIt reached you, so Papaya OS can send email.\n",
         html: expect.stringContaining('<a href="https://ember.test">https://ember.test</a>') as unknown,
       },
-      expect.objectContaining({ from: { name: "Ember", email: "chat@example.com" }, to: "ada@example.com" }),
+      expect.objectContaining({ from: { name: "Papaya OS", email: "chat@example.com" }, to: "ada@example.com" }),
     ]);
   });
 
@@ -229,7 +229,7 @@ describe("Sending email", () => {
     expect(requests.map((request) => request.body)).toEqual([expect.objectContaining({ from: '"The Best Club, Inc." <join@example.com>' })]);
   });
 
-  it("names the workspace, as the email's text has it, and Ember's custom domain", async () => {
+  it("names the workspace, as the email's text has it, and Papaya OS's custom domain", async () => {
     const administrator = await setUp();
     await saveFrom(administrator, "chat@example.com");
     await workspaceSql("UPDATE accounts SET name = ?, settings = json_set(settings, '$.custom_domain', ?)", "Grace's <b>lab</b>", "chat.example.com");
@@ -241,9 +241,9 @@ describe("Sending email", () => {
     expect(sent[0]!.html).toContain('from Grace&#39;s &lt;b&gt;lab&lt;/b&gt;, at <a href="https://chat.example.com">https://chat.example.com</a>.');
   });
 
-  it("sends with the binding as wrangler dev has it, which takes the email as Ember gives it", async () => {
+  it("sends with the binding as wrangler dev has it, which takes the email as Papaya OS gives it", async () => {
     const administrator = await setUp();
-    await saveFrom(administrator, "Ember <ember@example.com>");
+    await saveFrom(administrator, "Papaya OS <ember@example.com>");
     const response = await sendTest(administrator);
     expect(response.status, await response.clone().text()).toBe(200);
     expect(await response.json()).toEqual({ to: "ada@example.com" });
@@ -255,7 +255,7 @@ describe("Sending email", () => {
     const grace = await signIn("Grace");
     expect((await sendTest(grace)).status).toBe(403);
     await withWorkspaceEnv({ EMAIL: undefined }, async () => expectRefused(await sendTest(administrator), 503, CANT_SEND_EMAIL));
-    await expectRefused(await sendTest(administrator), 422, "Give Ember a From address first.");
+    await expectRefused(await sendTest(administrator), 422, "Give Papaya OS a From address first.");
 
     await saveFrom(administrator, "chat@example.com");
     await workspaceSql("UPDATE users SET role = 1 WHERE id = ?", grace.user.id);
@@ -303,9 +303,9 @@ describe("Sending email", () => {
     expect(request!.body).toEqual({
       from: '"Acme, Inc." <chat@acme.example>',
       to: ["ada@example.com"],
-      subject: "Test email from Ember",
-      text: "This is a test email from Ember, at https://ember.test.\n\nIt reached you, so Ember can send email.\n",
-      html: expect.stringContaining("It reached you, so Ember can send email.") as unknown,
+      subject: "Test email from Papaya OS",
+      text: "This is a test email from Papaya OS, at https://ember.test.\n\nIt reached you, so Papaya OS can send email.\n",
+      html: expect.stringContaining("It reached you, so Papaya OS can send email.") as unknown,
     });
   });
 
@@ -374,7 +374,7 @@ describe("Sending email", () => {
     await withWorkspaceEnv({ EMAIL: binding }, async () => expect((await sendTest(administrator)).status).toBe(200));
     expect(sent).toEqual([]);
     expect(requests).toHaveLength(2);
-    expect(requests[1]).toMatchObject({ url: "https://api.resend.com/emails", method: "POST", body: expect.objectContaining({ from: "Ember <chat@example.com>", to: ["ada@example.com"] }) as unknown });
+    expect(requests[1]).toMatchObject({ url: "https://api.resend.com/emails", method: "POST", body: expect.objectContaining({ from: "Papaya OS <chat@example.com>", to: ["ada@example.com"] }) as unknown });
     expect(requests[1]!.headers.get("Authorization")).toBe(`Bearer ${RESEND_KEY}`);
 
     // Given again, it's sealed afresh.
@@ -479,7 +479,7 @@ describe("Sending email", () => {
       expect(await emailSettings(administrator)).toEqual({ provider: "cloudflare", resendKey: null, cloudflare: true, from: "chat@example.com" });
       await withWorkspaceEnv({ EMAIL: undefined }, async () => expectRefused(await sendTest(administrator), 503, CANT_SEND_EMAIL));
     });
-    expect(logged).toHaveBeenCalledWith("The Resend API key Ember was given doesn't open under SESSION_SECRET, so it isn't used.");
+    expect(logged).toHaveBeenCalledWith("The Resend API key Papaya OS was given doesn't open under SESSION_SECRET, so it isn't used.");
     expect(await emailSettings(administrator)).toEqual(withSavedKey("chat@example.com"));
   });
 
@@ -543,7 +543,7 @@ describe("Sending email", () => {
     expect(asked).toEqual([]);
   });
 
-  it("says a key Resend no longer takes is the one given to Ember, which an administrator can replace", async () => {
+  it("says a key Resend no longer takes is the one given to Papaya OS, which an administrator can replace", async () => {
     const administrator = await setUp();
     await saveFrom(administrator, "chat@example.com");
     fakeSendingKey();
@@ -554,7 +554,7 @@ describe("Sending email", () => {
     await expectRefused(
       await sendTest(administrator),
       502,
-      "Resend doesn't take Ember's API key anymore. Make another under API Keys in Resend, and give it to Ember under Email in Membership.",
+      "Resend doesn't take Papaya OS's API key anymore. Make another under API Keys in Resend, and give it to Papaya OS under Email in Membership.",
     );
   });
 });

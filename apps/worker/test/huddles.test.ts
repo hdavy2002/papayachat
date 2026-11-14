@@ -20,7 +20,7 @@ const ada = { name: "Ada Lovelace", emailAddress: "ada@example.com", password: "
 /** Where Cloudflare's Realtime SFU is asked to start a session with an app, or a stand-in for it at `sfu`. */
 const newSession = (appId: string, sfu = "https://rtc.live.cloudflare.com") => `${sfu}/v1/apps/${appId}/sessions/new`;
 
-/** Sets Ember up with Ada as its administrator, signed in. */
+/** Sets Papaya OS up with Ada as its administrator, signed in. */
 async function setUp(): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(ada) });
   expect(response.status).toBe(201);
@@ -29,11 +29,11 @@ async function setUp(): Promise<Session> {
 
 const as = (session?: Session | null): Record<string, string> => (session ? { Cookie: session.cookie } : {});
 
-/** Gives Ember an SFU app's keys as `session`, as Set up huddles does, on a deployment whose bindings differ from this suite's by `changes`. */
+/** Gives Papaya OS an SFU app's keys as `session`, as Set up huddles does, on a deployment whose bindings differ from this suite's by `changes`. */
 const giveKeys = (session: Session | null, app: unknown, changes: Partial<Env> = {}) =>
   apiWith(changes, "/api/account/huddles", { method: "PUT", headers: as(session), body: JSON.stringify(app) });
 
-/** Gives Ember `app`'s keys as `administrator`, which has to work. */
+/** Gives Papaya OS `app`'s keys as `administrator`, which has to work. */
 async function saveKeys(administrator: Session, app = APP): Promise<void> {
   const response = await giveKeys(administrator, app);
   expect(response.status, await response.clone().text()).toBe(200);
@@ -268,7 +268,7 @@ describe("Set up huddles", () => {
       expect((await settings(administrator)).account.huddles).toBe(false);
       expect((await openWorkspaceSocket(administrator)).welcome).toMatchObject({ account: { huddles: false } });
     });
-    expect(logged).toHaveBeenCalledWith("The SFU app secret Ember was given doesn't open under SESSION_SECRET, so huddles are off.");
+    expect(logged).toHaveBeenCalledWith("The SFU app secret Papaya OS was given doesn't open under SESSION_SECRET, so huddles are off.");
     expect(await huddlesSettings(administrator)).toEqual({ appId: APP.appId });
     expect((await settings(administrator)).account.huddles).toBe(true);
   });

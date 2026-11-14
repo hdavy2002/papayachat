@@ -29,7 +29,7 @@ import { api, apiWith, builtPages, cookieOf, createRoom, freshDeploy, origin, sh
 const ada = { name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" };
 const hal = { name: "Hal", password: "heuristically" };
 
-const FROM = "Ember <ember@example.com>";
+const FROM = "Papaya OS <ember@example.com>";
 /** The keys of a deployment whose members may sign in with Papaya. */
 const MEMBERFUL_KEYS = { MEMBERFUL_URL: "https://example.memberful.com/", MEMBERFUL_CLIENT_ID: "ember-client-id", MEMBERFUL_CLIENT_SECRET: "ember-client-secret" };
 /** Turnstile's test keys: a site key whose check always passes, and a secret key, which this suite's fake siteverify takes. */
@@ -38,7 +38,7 @@ const TURNSTILE_KEYS = { TURNSTILE_SITE_KEY: "1x00000000000000000000AA", TURNSTI
 const TOKEN = "XXXX.DUMMY.TOKEN.XXXX";
 const HOUR_MS = 60 * 60 * 1000;
 
-/** Sets Ember up with Ada as its administrator, signed in, answering its first room too. */
+/** Sets Papaya OS up with Ada as its administrator, signed in, answering its first room too. */
 async function setUp(): Promise<Session & { general: NewWorkspace["room"] }> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(ada) });
   expect(response.status).toBe(201);
@@ -59,7 +59,7 @@ async function changed(administrator: Session, body: unknown, changes: Partial<E
   return ((await response.json()) as { account: Account }).account;
 }
 
-/** Sets Ember up with a From address and Email domain on, letting in `domains`, answering Ada, its administrator. */
+/** Sets Papaya OS up with a From address and Email domain on, letting in `domains`, answering Ada, its administrator. */
 async function setUpEmailDomain(domains: string[] = ["example.org"]): Promise<Session & { general: NewWorkspace["room"] }> {
   const administrator = await setUp();
   await changed(administrator, { emailFrom: FROM, emailDomains: domains, settings: { emailDomainSignUp: true } });
@@ -98,7 +98,7 @@ async function emailing(run: () => Promise<void>, refusal?: () => unknown): Prom
   return sent;
 }
 
-/** Asks for a link to join with `emailAddress`, which has to be answered as asked, answering the emails Ember sent. */
+/** Asks for a link to join with `emailAddress`, which has to be answered as asked, answering the emails Papaya OS sent. */
 async function asked(emailAddress: string, options: Parameters<typeof ask>[1] = {}): Promise<EmailMessageBuilder[]> {
   return emailing(async () => {
     const response = await ask(emailAddress, options);
@@ -107,7 +107,7 @@ async function asked(emailAddress: string, options: Parameters<typeof ask>[1] = 
   });
 }
 
-/** Asks for a link to join with `emailAddress`, answering the secret of the link Ember emailed. */
+/** Asks for a link to join with `emailAddress`, answering the secret of the link Papaya OS emailed. */
 async function linkFor(emailAddress: string): Promise<string> {
   const [email] = await asked(emailAddress);
   return tokenIn(linkIn(email!));
@@ -215,7 +215,7 @@ describe("Join with an email domain", () => {
       const response = await change(administrator, { name: "Renamed", emailDomains });
       expect(response.status).toBe(422);
       expect(await response.json()).toEqual({ error: EMAIL_DOMAINS_REFUSED });
-      expect((await bootstrap()).account.name).toBe("Ember");
+      expect((await bootstrap()).account.name).toBe("Papaya OS");
     });
 
     it("is for administrators to change", async () => {
@@ -269,11 +269,11 @@ describe("Join with an email domain", () => {
       const link = linkIn(email!);
       expect(link).toMatch(new RegExp(`^${origin}/join/email#token=[\\w-]{43}$`));
       expect(email).toEqual({
-        from: { name: "Ember", email: "ember@example.com" },
+        from: { name: "Papaya OS", email: "ember@example.com" },
         to: "Hal@Example.org",
-        subject: "Your link to join Ember",
-        text: `Someone asked to join Ember with this email address.\n\nJoin here: ${link}\n\nThe link works once, for an hour, and joins with Hal@Example.org. If you didn't ask for it, you can ignore this email: nobody joins without the link.\n`,
-        html: expect.stringContaining(`<a href="${link}">Join Ember</a>`) as unknown,
+        subject: "Your link to join Papaya OS",
+        text: `Someone asked to join Papaya OS with this email address.\n\nJoin here: ${link}\n\nThe link works once, for an hour, and joins with Hal@Example.org. If you didn't ask for it, you can ignore this email: nobody joins without the link.\n`,
+        html: expect.stringContaining(`<a href="${link}">Join Papaya OS</a>`) as unknown,
       });
 
       // Only the secret's digest is kept, with the address as given.
@@ -286,7 +286,7 @@ describe("Join with an email domain", () => {
     it("answers the same for an address with an account, whatever its case, emailing it where to sign in instead", async () => {
       await setUpEmailDomain(["example.com"]);
       const [email] = await asked("ADA@example.com");
-      expect(email).toMatchObject({ to: "ADA@example.com", subject: "You already have an account at Ember" });
+      expect(email).toMatchObject({ to: "ADA@example.com", subject: "You already have an account at Papaya OS" });
       expect(linkIn(email!)).toBe(`${origin}/session/new?email_address=ADA%40example.com`);
       expect(await count("email_links")).toBe(0);
     });
@@ -413,7 +413,7 @@ describe("Join with an email domain", () => {
       expect(await response.json()).toEqual({ error: JOINING_PROBLEMS.email_off, redirect: "/session/new?joining=email_off" });
     });
 
-    it("says so when Ember can't send email, or the provider doesn't send it", async () => {
+    it("says so when Papaya OS can't send email, or the provider doesn't send it", async () => {
       const administrator = await setUpEmailDomain();
       const refused = await emailing(
         async () => {

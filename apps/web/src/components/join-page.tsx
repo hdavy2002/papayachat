@@ -14,13 +14,13 @@ import { ApiError, joinWithEmailLink, joinWorkspace, signUp, type ChosenPhoto } 
 import { loadPage } from "@/lib/page";
 
 // The join page, which the workspace's join link opens for someone signed out. Without a code it's open
-// sign-up's page, which shows Turnstile's check while Ember has a widget's keys, and with a link Ember
+// sign-up's page, which shows Turnstile's check while Papaya OS has a widget's keys, and with a link Papaya OS
 // emailed, an invitation's or one asked for at the workspace's email domains, it's the link's, which
 // joins with its email address.
 
 /** What the page says when Turnstile's script doesn't load, so there's no check to pass. */
 export const TURNSTILE_UNAVAILABLE =
-  "Ember couldn't load Cloudflare's check that you're a person. Check your connection, and anything that blocks challenges.cloudflare.com, then reload the page.";
+  "Papaya OS couldn't load Cloudflare's check that you're a person. Check your connection, and anything that blocks challenges.cloudflare.com, then reload the page.";
 
 /**
  * Upload photo: Campfire's `.btn`, holding the file field over itself, outlined while the field has
@@ -33,20 +33,20 @@ interface Props {
   workspace: SignedOutWorkspace;
   /** The code from the join link, which the Worker checked before serving the page, or null for signing up without one. */
   joinCode: string | null;
-  /** The link Ember emailed to join with, which its page has looked up, in place of a join code. */
+  /** The link Papaya OS emailed to join with, which its page has looked up, in place of a join code. */
   emailLink?: EmailLink;
   /** What the link's page does once the link stops working while the form is open. */
   onGone?: () => void;
   onJoined: (me: Me) => void;
 }
 
-/** What the address field says it's fixed by, for each kind of link Ember emails. */
+/** What the address field says it's fixed by, for each kind of link Papaya OS emails. */
 const ADDRESS_FIXED_BY = { invitation: "Your invitation is for this address.", email_domain: "Your link is for this address." } as const;
 
 /**
- * Creates an account with the join link, or a link Ember emailed, with its email address, or without
+ * Creates an account with the join link, or a link Papaya OS emailed, with its email address, or without
  * either while anyone may sign up, with the photo chosen, as a member in every open room, and signs in as it.
- * Signing up without a link waits for Turnstile's check to pass while Ember has a widget's keys, and
+ * Signing up without a link waits for Turnstile's check to pass while Papaya OS has a widget's keys, and
  * draws it afresh for each try.
  */
 export function JoinPage({ workspace, joinCode, emailLink, onGone, onJoined }: Props) {
@@ -82,7 +82,7 @@ export function JoinPage({ workspace, joinCode, emailLink, onGone, onJoined }: P
         setTurnstileToken(null);
         setTries((tries) => tries + 1);
       }
-      if (!(error instanceof ApiError)) return setProblem("Couldn't reach Ember. Check your connection and try again.");
+      if (!(error instanceof ApiError)) return setProblem("Couldn't reach Papaya OS. Check your connection and try again.");
       // An email address with an account goes to sign in with it filled in, and someone who signed in
       // elsewhere meanwhile goes home.
       if (error.redirect) return loadPage(error.redirect);

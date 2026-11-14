@@ -3,7 +3,7 @@ import { expect, test } from "./fixtures";
 
 test("the join screen fits the phone", async ({ page, request, session, screenIsFine }) => {
   await page.goto(`/join/${(await invitation(request, session)).joinCode}`);
-  await expect(page.getByRole("heading", { name: "Join Ember" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Join Papaya OS" })).toBeVisible();
   await screenIsFine();
 });
 

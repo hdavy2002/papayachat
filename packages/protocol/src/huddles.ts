@@ -1,6 +1,6 @@
 // Huddles, in which people in a room talk to each other through Cloudflare's Realtime SFU, by an SFU app
-// in the Cloudflare account of whoever runs Ember, whose keys administrators give it in Set up huddles,
-// behind the Huddles card of workspace settings, or as they set Ember up, through `/api/account/huddles`.
+// in the Cloudflare account of whoever runs Papaya OS, whose keys administrators give it in Set up huddles,
+// behind the Huddles card of workspace settings, or as they set Papaya OS up, through `/api/account/huddles`.
 
 import type { User, UserId } from "./index.ts";
 
@@ -39,7 +39,7 @@ export const APP_SECRET_REFUSED = `An App Secret is ${APP_SECRET_LENGTH} letters
 /** Why they're refused once Cloudflare has been asked to start a session with them, or couldn't be. */
 export const APP_ID_UNKNOWN = "Cloudflare doesn't know that App ID. Copy it again from your app, or try again in a minute if you've just made it.";
 export const APP_SECRET_UNKNOWN = "Cloudflare didn't take that App Secret for this app. Copy both from the same app.";
-export const HUDDLES_UNCHECKED = "Ember couldn't reach Cloudflare to check the app's keys. Try again.";
+export const HUDDLES_UNCHECKED = "Papaya OS couldn't reach Cloudflare to check the app's keys. Try again.";
 
 /** What the Huddles card tells anyone but an administrator. */
 export const HUDDLES_FORBIDDEN = "Only administrators can set up huddles";
@@ -56,7 +56,7 @@ export function appSecretOf(text: string): string | null {
   return appSecret.length === APP_SECRET_LENGTH && /^[0-9a-z]+$/i.test(appSecret) ? appSecret : null;
 }
 
-/** What `PUT /api/account/huddles` gives Ember, as Set up huddles sends it, or why it can't be an app's keys, on the field it's about. */
+/** What `PUT /api/account/huddles` gives Papaya OS, as Set up huddles sends it, or why it can't be an app's keys, on the field it's about. */
 export function parseHuddlesSetup(data: unknown): HuddlesSetup | { error: string; field: HuddlesField } {
   const given = typeof data === "object" && data !== null && !Array.isArray(data) ? (data as Record<string, unknown>) : {};
   const appId = typeof given.appId === "string" ? appIdOf(given.appId) : null;

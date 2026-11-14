@@ -6,7 +6,7 @@ import type { Page } from "@playwright/test";
 import { expect, expectsPolicyViolation, test } from "../../fixtures";
 
 // What the Worker answers whoever asks: its headers, /up, its error pages, and the page for browsers
-// too old to run Ember. These start signed out and need no rooms, so they use Playwright's own fixtures: with the
+// too old to run Papaya OS. These start signed out and need no rooms, so they use Playwright's own fixtures: with the
 // app's, making a test's rooms would ask the API as the old browsers below, and get the upgrade page.
 
 /** Chrome 119, a version short of what Campfire allows. */
@@ -16,7 +16,7 @@ const APPLE_MESSAGES =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_1) AppleWebKit/601.2.4 (KHTML, like Gecko) Version/9.0.1 Safari/601.2.4 facebookexternalhit/1.1 Facebot Twitterbot/1.0";
 
 const upgradeHeading = (page: Page) => page.getByRole("heading", { level: 1, name: "Upgrade to a supported web browser" });
-const signInHeading = (page: Page) => page.getByRole("heading", { level: 1, name: "Sign in to Ember" });
+const signInHeading = (page: Page) => page.getByRole("heading", { level: 1, name: "Sign in to Papaya OS" });
 
 /** One of the files the web app serves as it is, from apps/web/public/. */
 const publicFile = (name: string) => readFileSync(resolve(import.meta.dirname, "../../../apps/web/public", name), "utf8");
@@ -29,7 +29,7 @@ test.describe("Supported browsers", () => {
       await page.goto("/");
       await expect(page).toHaveTitle("Unsupported browser");
       await expect(upgradeHeading(page)).toBeVisible();
-      await expect(page.getByText("Ember requires a modern web browser.")).toBeVisible();
+      await expect(page.getByText("Papaya OS requires a modern web browser.")).toBeVisible();
       await expect(page.locator(".browser")).toHaveText(["Safari 17.2+", "Chrome 120+", "Firefox 121+", "Opera 104+"]);
       for (const logo of await page.locator(".browser img").all()) {
         await expect.poll(() => logo.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
@@ -62,9 +62,9 @@ test.describe("Supported browsers", () => {
   test.describe("in Apple Messages", () => {
     test.use({ userAgent: APPLE_MESSAGES });
 
-    test("previews a link as Ember rather than as a warning", async ({ page }) => {
+    test("previews a link as Papaya OS rather than as a warning", async ({ page }) => {
       await page.goto("/rooms/general");
-      await expect(page).toHaveTitle("Ember");
+      await expect(page).toHaveTitle("Papaya OS");
       await expect(upgradeHeading(page)).toBeVisible();
     });
   });
@@ -73,7 +73,7 @@ test.describe("Supported browsers", () => {
 test.describe("Security headers and HTTPS", () => {
   test("pages come with Rails' default headers", async ({ page }) => {
     const response = await page.goto("/session/new");
-    await expect(page.getByRole("heading", { level: 1, name: "Sign in to Ember" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Sign in to Papaya OS" })).toBeVisible();
     expect(response!.headers()).toMatchObject({
       "x-frame-options": "SAMEORIGIN",
       "x-xss-protection": "0",
@@ -88,10 +88,10 @@ test.describe("Security headers and HTTPS", () => {
       page.evaluate((src) => document.body.append(Object.assign(document.createElement("iframe"), { src })), src);
     await page.goto("/up");
     await showInFrame("/session/new");
-    await expect(page.frameLocator("iframe").getByRole("heading", { name: "Sign in to Ember" })).toBeVisible();
+    await expect(page.frameLocator("iframe").getByRole("heading", { name: "Sign in to Papaya OS" })).toBeVisible();
 
-    // Another site on this machine, with a page of its own, since a page of Ember's couldn't try: its
-    // policy lets it frame only Ember. (Chrome lets no site elsewhere reach this machine's addresses.)
+    // Another site on this machine, with a page of its own, since a page of Papaya OS's couldn't try: its
+    // policy lets it frame only Papaya OS. (Chrome lets no site elsewhere reach this machine's addresses.)
     const site = createServer((_, response) => response.writeHead(200, { "Content-Type": "text/html" }).end("<!doctype html><title>Another site</title>"));
     await new Promise<void>((resolve) => site.listen(0, resolve));
     expectsPolicyViolation("frame-ancestors");
@@ -136,7 +136,7 @@ test.describe("Health check", () => {
 });
 
 test.describe("Error pages", () => {
-  test("an address Ember has no page at answers 404 with Campfire's page, whose Go back goes home", async ({ page }) => {
+  test("an address Papaya OS has no page at answers 404 with Campfire's page, whose Go back goes home", async ({ page }) => {
     const response = await page.goto("/no-such-page");
     expect(response!.status()).toBe(404);
     expect(await response!.text()).toBe(publicFile("404.html"));

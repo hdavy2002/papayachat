@@ -25,7 +25,7 @@ import { workspace } from "../workspace";
 import { appConnector } from "./connector";
 
 // Apps, as administrators connect, change and disconnect them on the AI assistant tab of workspace
-// settings: MCP servers, each with the tools Ember read from it, which the AI agents may be given. They
+// settings: MCP servers, each with the tools Papaya OS read from it, which the AI agents may be given. They
 // answer JSON for the tab and each app's page.
 
 const problem = (status: number, message: string) => Response.json({ error: message }, { status });
@@ -37,7 +37,7 @@ const PRIVATE = { "Cache-Control": "no-store" };
 /**
  * An app's page, `/account/apps/<id>/edit`: Campfire's 404 page for an administrator when `id` isn't a
  * connected app's, and otherwise the app's page, which sends anyone signed out to sign in, anyone else
- * to workspace settings, and anyone while Ember AI is off to the AI assistant tab.
+ * to workspace settings, and anyone while Papaya AI is off to the AI assistant tab.
  */
 export async function appPage(request: Request, env: Env, pathname: string, appId: AppId): Promise<Response> {
   const credentials = await credentialsOf(request, env);
@@ -45,7 +45,7 @@ export async function appPage(request: Request, env: Env, pathname: string, appI
   return found === "not found" ? notFound(request) : anyOtherPage(request, env, pathname);
 }
 
-/** `GET /api/account/apps`: the connected apps, by name, as the AI assistant tab lists them while Ember AI is on. */
+/** `GET /api/account/apps`: the connected apps, by name, as the AI assistant tab lists them while Papaya AI is on. */
 export async function listApps(request: Request, env: Env): Promise<Response> {
   const credentials = await credentialsOf(request, env);
   const apps = credentials && (await workspace(env).connectedApps(credentials));
@@ -60,9 +60,9 @@ export async function showApp(request: Request, env: Env, appId: AppId): Promise
 }
 
 /**
- * `POST /api/account/apps`, `{ name, url, token? }`: connects the MCP server at `url`, once Ember has
+ * `POST /api/account/apps`, `{ name, url, token? }`: connects the MCP server at `url`, once Papaya OS has
  * read its tools there, with the token, if one's given, answering 201 with the app as its page shows
- * it. Someone who isn't an administrator hears so before anything they sent is read, and Ember AI being
+ * it. Someone who isn't an administrator hears so before anything they sent is read, and Papaya AI being
  * off, or as many apps as there can be, is refused before the server is asked. A field that can't be
  * what it's for, or that the server refuses, is refused on that field.
  */
@@ -81,9 +81,9 @@ export async function connectApp(request: Request, env: Env): Promise<Response> 
 
 /**
  * `PATCH /api/account/apps/:id`, with any of `{ name, url, token }`, "" for no token: changes the
- * connected app `id`, answering it as its page then shows it. Another address or token has Ember read
+ * connected app `id`, answering it as its page then shows it. Another address or token has Papaya OS read
  * the server's tools again first, there or with it, so that neither is saved unless the server answers.
- * As with connecting one, someone who isn't an administrator hears so first, then that Ember AI is off,
+ * As with connecting one, someone who isn't an administrator hears so first, then that Papaya AI is off,
  * then that there's no such app, before anything that was sent is read.
  */
 export async function changeApp(request: Request, env: Env, appId: AppId): Promise<Response> {
@@ -104,7 +104,7 @@ export async function changeApp(request: Request, env: Env, appId: AppId): Promi
 
 /**
  * `POST /api/account/apps/:id/tools`: reads the connected app `id`'s tools from its server again,
- * answering it as its page then shows it, or why Ember couldn't read them, which leaves the app as it was.
+ * answering it as its page then shows it, or why Papaya OS couldn't read them, which leaves the app as it was.
  */
 export async function readAppTools(request: Request, env: Env, appId: AppId): Promise<Response> {
   const credentials = await credentialsOf(request, env);

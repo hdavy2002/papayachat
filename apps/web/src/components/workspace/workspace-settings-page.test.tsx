@@ -35,7 +35,7 @@ import { PeopleContext } from "@/hooks/use-directory";
 import { navigate, WORKSPACE_SETTINGS_PATH } from "@/hooks/use-route";
 import { ApiError } from "@/lib/api";
 import { timeLabel } from "@/lib/messages";
-// Ember's own Update Ember workflow, which the card offers a copy without one: the copy beside the deploy
+// Papaya OS's own Update Papaya OS workflow, which the card offers a copy without one: the copy beside the deploy
 // script, which CI keeps the same as .github's, since a copy's .github keeps its own workflow, or none.
 import EMBERS_WORKFLOW from "../../../../worker/scripts/update-ember.yml?raw";
 // And its beta workflow, which the card offers a copy without one while a beta's out to try.
@@ -128,10 +128,10 @@ interface Answers {
 /** The workspace's logo once one is uploaded. */
 const LOGO = "/account/logo?v=20261017120000";
 
-/** @ember's avatar while it's Ember's flame. */
+/** @ember's avatar while it's Papaya OS's flame. */
 const EMBER_FLAME = "/users/ember.abc/avatar?v=20261101120000";
 
-/** An agent, as the AI assistant tab lists it while Ember AI is on. */
+/** An agent, as the AI assistant tab lists it while Papaya AI is on. */
 const RECAP: Agent = {
   id: "0mgk3x2a9b4c60",
   name: "Recap",
@@ -269,7 +269,7 @@ function serve(settings: WorkspaceSettings, { saved, regenerated, roleChanged, r
   });
 }
 
-/** An invitation to `emailAddress`, as the server answers one Ember couldn't email. */
+/** An invitation to `emailAddress`, as the server answers one Papaya OS couldn't email. */
 function invitationTo(emailAddress: string): EmailInvitation {
   const createdAt = Date.now();
   return { id: `id-${emailAddress}`, emailAddress, invitedBy: "Ada Lovelace", createdAt: new Date(createdAt).toISOString(), expiresAt: new Date(createdAt + 7 * 86_400_000).toISOString(), delivery: null };
@@ -293,7 +293,7 @@ let socketSays: (person: DirectoryUser) => void;
 let workspaceSays: (account: Account) => void;
 /** Changes the rooms the page shows, and the shared order, as the sidebar's list does. */
 let sidebarSays: (rooms: SidebarRoom[] | null, sharedOrder?: RoomId[]) => void;
-/** Changes what the page shows of Ember's releases, as the workspace's release check does once the Worker answers. */
+/** Changes what the page shows of Papaya OS's releases, as the workspace's release check does once the Worker answers. */
 let releaseSays: (check: ReleaseCheck) => void;
 
 /**
@@ -303,7 +303,7 @@ let releaseSays: (check: ReleaseCheck) => void;
  */
 function Page({ me, listed, rooms: listedRooms, callbacks }: { me: Me; listed: DirectoryUser[]; rooms: SidebarRoom[] | null; callbacks: Callbacks }) {
   const [people, setPeople] = useState(() => new Map(listed.map((person) => [person.id, person])));
-  const [account, setAccount] = useState<Account>({ ...asAdministrator.account, name: "Ember" });
+  const [account, setAccount] = useState<Account>({ ...asAdministrator.account, name: "Papaya OS" });
   const [sidebar, setSidebar] = useState<{ rooms: SidebarRoom[] | null; sharedOrder: RoomId[] }>({ rooms: listedRooms, sharedOrder: [] });
   const [releaseCheck, setReleaseCheck] = useState(release);
   socketSays = (person) => setPeople((people) => new Map(people).set(person.id, person));
@@ -349,7 +349,7 @@ function Page({ me, listed, rooms: listedRooms, callbacks }: { me: Me; listed: D
 
 /** The section the tests show, as the address's fragment names it: Community, unless their `describe` names another. */
 let section: WorkspaceSection = "community-settings";
-/** What the Worker said of Ember's releases, as the workspace gives the page it: nothing, unless a test says. */
+/** What the Worker said of Papaya OS's releases, as the workspace gives the page it: nothing, unless a test says. */
 let release: ReleaseCheck | null = null;
 /** Shows `shown` in the tests of the `describe` that calls it. */
 const showingSection = (shown: WorkspaceSection) => beforeEach(() => void (section = shown));
@@ -464,15 +464,15 @@ describe("Community settings page", () => {
 });
 
 describe("Version", () => {
-  /** Ember 0.2's page on GitHub, with its notes. */
+  /** Papaya OS 0.2's page on GitHub, with its notes. */
   const NOTES = "https://github.com/NYLLON-SOFTWARE/ember-cloudflare/releases/tag/v0.2.0";
   /** When GitHub named the newest release to the Worker, just now, and what the card says of it. */
   const CHECKED_AT = new Date().toISOString();
   const LAST_CHECKED = `Last checked today at ${timeLabel(new Date(CHECKED_AT))}.`;
-  const card = () => screen.findByRole("region", { name: /^Ember \d(?!.* is out to try$)/ });
+  const card = () => screen.findByRole("region", { name: /^Papaya OS \d(?!.* is out to try$)/ });
   /** The box under it that offers a beta to try, apart from it. */
   const betaBox = () => screen.queryByRole("region", { name: / is out to try$/ });
-  /** What the Worker says of a copy on GitHub, as its deploy told it, while Ember 0.2 is out, if `copy` is given. */
+  /** What the Worker says of a copy on GitHub, as its deploy told it, while Papaya OS 0.2 is out, if `copy` is given. */
   const newerFor = (copy: CopyOnGitHub | null = null): ReleaseCheck => ({
     release: "0.1",
     beta: false,
@@ -497,7 +497,7 @@ describe("Version", () => {
       release = { release: "0.1", beta: false, newest: { release: "0.1", version: "0.1.0", notes: NOTES, newer: false }, checkedAt: CHECKED_AT, newestBeta: null, copy };
       showPage();
       const shown = await card();
-      expect(shown.textContent).toBe(`Ember 0.1This is the newest release.Check for updates${LAST_CHECKED}`);
+      expect(shown.textContent).toBe(`Papaya OS 0.1This is the newest release.Check for updates${LAST_CHECKED}`);
       expect(within(shown).queryByRole("link")).not.toBeInTheDocument();
       const general = screen.getByRole("region", { name: "Basic community settings" });
       expect(general.lastElementChild).toBe(shown);
@@ -508,13 +508,13 @@ describe("Version", () => {
     release = newerFor();
     showPage();
     const shown = await card();
-    expect(within(shown).getByRole("heading", { level: 2 })).toHaveTextContent("Ember 0.2 is available");
-    expect(shown).toHaveTextContent("This is Ember 0.1.");
+    expect(within(shown).getByRole("heading", { level: 2 })).toHaveTextContent("Papaya OS 0.2 is available");
+    expect(shown).toHaveTextContent("This is Papaya OS 0.1.");
     expect(shown).toHaveTextContent(HOW_COPIES_UPDATE);
     expect(linksIn(shown)).toEqual({ "What's new": NOTES, "How to update": UPDATING_EMBER });
   });
 
-  it("links a copy that has the Update Ember workflow straight to it on GitHub, to run", async () => {
+  it("links a copy that has the Update Papaya OS workflow straight to it on GitHub, to run", async () => {
     release = newerFor({ repository: "someone/my-ember", branch: "main", workflow: true, betaWorkflow: false });
     showPage();
     const shown = await card();
@@ -522,7 +522,7 @@ describe("Version", () => {
     expect(linksIn(shown)).toEqual({ "What's new": NOTES, "Open GitHub action to update": "https://github.com/someone/my-ember/actions/workflows/update-ember.yml" });
   });
 
-  it("links a copy without it to GitHub's editor, on the branch that deploys, with Ember's workflow filled in to commit", async () => {
+  it("links a copy without it to GitHub's editor, on the branch that deploys, with Papaya OS's workflow filled in to commit", async () => {
     release = newerFor({ repository: "someone/my-ember", branch: "release/v1#stable", workflow: false, betaWorkflow: true });
     showPage();
     const shown = await card();
@@ -540,7 +540,7 @@ describe("Version", () => {
   it("says when GitHub didn't say whether a newer release is out", async () => {
     release = { release: "0.1", beta: false, newest: null, checkedAt: null, newestBeta: null, copy: null };
     showPage();
-    expect((await card()).textContent).toBe("Ember 0.1GitHub didn't say whether a newer release is out.Check for updates");
+    expect((await card()).textContent).toBe("Papaya OS 0.1GitHub didn't say whether a newer release is out.Check for updates");
   });
 
   it("says a beta is one, ahead of the newest release, until its release is out", async () => {
@@ -548,27 +548,27 @@ describe("Version", () => {
     release = { release: "0.2 beta 1", beta: true, newest: { release: "0.1", version: "0.1.0", notes: releaseNotes, newer: false }, checkedAt: CHECKED_AT, newestBeta: null, copy: null };
     showPage();
     let shown = await card();
-    expect(shown.textContent).toBe(`Ember 0.2 beta 1This is a beta, ahead of Ember 0.1, the newest release.Check for updates${LAST_CHECKED}`);
+    expect(shown.textContent).toBe(`Papaya OS 0.2 beta 1This is a beta, ahead of Papaya OS 0.1, the newest release.Check for updates${LAST_CHECKED}`);
     expect(within(shown).queryByRole("link")).not.toBeInTheDocument();
     cleanup();
 
     release = { release: "0.2 beta 1", beta: true, newest: null, checkedAt: null, newestBeta: null, copy: null };
     showPage();
-    expect((await card()).textContent).toBe("Ember 0.2 beta 1This is a beta. GitHub didn't say whether its release is out.Check for updates");
+    expect((await card()).textContent).toBe("Papaya OS 0.2 beta 1This is a beta. GitHub didn't say whether its release is out.Check for updates");
     cleanup();
 
     release = { ...newerFor(), release: "0.2 beta 1", beta: true };
     showPage();
     shown = await card();
-    expect(within(shown).getByRole("heading", { level: 2 })).toHaveTextContent("Ember 0.2 is available");
-    expect(shown).toHaveTextContent("This is Ember 0.2 beta 1.");
+    expect(within(shown).getByRole("heading", { level: 2 })).toHaveTextContent("Papaya OS 0.2 is available");
+    expect(shown).toHaveTextContent("This is Papaya OS 0.2 beta 1.");
     expect(linksIn(shown)).toEqual({ "What's new": NOTES, "How to update": UPDATING_EMBER });
   });
 
   describe("Betas", () => {
-    /** Ember 0.3 beta 1's page on GitHub, with its notes. */
+    /** Papaya OS 0.3 beta 1's page on GitHub, with its notes. */
     const BETA_NOTES = "https://github.com/NYLLON-SOFTWARE/ember-cloudflare/releases/tag/v0.3.0-beta.1";
-    /** What the Worker says of Ember 0.2, the newest release, while 0.3 beta 1 is out ahead of it, to a copy on GitHub if `copy` is given. */
+    /** What the Worker says of Papaya OS 0.2, the newest release, while 0.3 beta 1 is out ahead of it, to a copy on GitHub if `copy` is given. */
     const betaOutFor = (copy: CopyOnGitHub | null = null): ReleaseCheck => ({
       release: "0.2",
       beta: false,
@@ -588,19 +588,19 @@ describe("Version", () => {
       release = betaOutFor({ repository: "someone/my-ember", branch: "main", workflow: true, betaWorkflow: true });
       showPage();
       const shown = await card();
-      expect(shown.textContent).toBe(`Ember 0.2This is the newest release.Check for updates${LAST_CHECKED}`);
+      expect(shown.textContent).toBe(`Papaya OS 0.2This is the newest release.Check for updates${LAST_CHECKED}`);
       expect(within(shown).queryByRole("link")).not.toBeInTheDocument();
       const box = shownBetaBox();
       expect(shown.nextElementSibling).toBe(box);
       expect(screen.getByRole("region", { name: "Basic community settings" }).lastElementChild).toBe(box);
       // A little red, as a beta is experimental.
       expect(box).toHaveClass("border-beta-border", "bg-beta-background");
-      expect(within(box).getByRole("heading", { level: 2 })).toHaveTextContent(/^Ember 0\.3 beta 1 is out to try$/);
+      expect(within(box).getByRole("heading", { level: 2 })).toHaveTextContent(/^Papaya OS 0\.3 beta 1 is out to try$/);
       expect(box).toHaveTextContent(HOW_THIS_COPY_TRIES_BETAS);
       expect(linksIn(box)).toEqual({ "What's in it": BETA_NOTES, "Open GitHub action to try it": "https://github.com/someone/my-ember/actions/workflows/update-ember-beta.yml" });
     });
 
-    it("links a copy without the beta workflow to GitHub's editor, on the branch that deploys, with Ember's filled in to commit", async () => {
+    it("links a copy without the beta workflow to GitHub's editor, on the branch that deploys, with Papaya OS's filled in to commit", async () => {
       release = betaOutFor({ repository: "someone/my-ember", branch: "release/v1#stable", workflow: true, betaWorkflow: false });
       showPage();
       await card();
@@ -629,7 +629,7 @@ describe("Version", () => {
       release = { ...newerFor({ repository: "someone/my-ember", branch: "main", workflow: true, betaWorkflow: true }), newestBeta: { release: "0.3 beta 1", version: "0.3.0-beta.1", notes: BETA_NOTES, newer: true } };
       showPage();
       let shown = await card();
-      expect(within(shown).getByRole("heading", { level: 2 })).toHaveTextContent("Ember 0.2 is available");
+      expect(within(shown).getByRole("heading", { level: 2 })).toHaveTextContent("Papaya OS 0.2 is available");
       expect(betaBox()).not.toBeInTheDocument();
       expect(Object.keys(linksIn(shown))).toEqual(["What's new", "Open GitHub action to update"]);
       cleanup();
@@ -638,18 +638,18 @@ describe("Version", () => {
       showPage();
       shown = await card();
       // The newest beta, as no newer one is out.
-      expect(shown.textContent).toBe(`Ember 0.3 beta 1This is the newest beta, ahead of Ember 0.2, the newest release.Check for updates${LAST_CHECKED}`);
+      expect(shown.textContent).toBe(`Papaya OS 0.3 beta 1This is the newest beta, ahead of Papaya OS 0.2, the newest release.Check for updates${LAST_CHECKED}`);
       expect(within(shown).queryByRole("link")).not.toBeInTheDocument();
       expect(betaBox()).not.toBeInTheDocument();
     });
 
-    it("tells a beta of the beta after it as of an update, which Update Ember brings", async () => {
+    it("tells a beta of the beta after it as of an update, which Update Papaya OS brings", async () => {
       const nextNotes = "https://github.com/NYLLON-SOFTWARE/ember-cloudflare/releases/tag/v0.3.0-beta.2";
       release = { ...betaOutFor({ repository: "someone/my-ember", branch: "main", workflow: true, betaWorkflow: true }), release: "0.3 beta 1", beta: true, newestBeta: { release: "0.3 beta 2", version: "0.3.0-beta.2", notes: nextNotes, newer: true } };
       showPage();
       const shown = await card();
-      expect(within(shown).getByRole("heading", { level: 2 })).toHaveTextContent("Ember 0.3 beta 2 is available");
-      expect(shown).toHaveTextContent("This is Ember 0.3 beta 1.");
+      expect(within(shown).getByRole("heading", { level: 2 })).toHaveTextContent("Papaya OS 0.3 beta 2 is available");
+      expect(shown).toHaveTextContent("This is Papaya OS 0.3 beta 1.");
       expect(shown).toHaveTextContent(HOW_THIS_COPY_UPDATES);
       expect(betaBox()).not.toBeInTheDocument();
       expect(linksIn(shown)).toEqual({ "What's new": nextNotes, "Open GitHub action to update": "https://github.com/someone/my-ember/actions/workflows/update-ember.yml" });
@@ -657,7 +657,7 @@ describe("Version", () => {
   });
 
   describe("Check for updates", () => {
-    /** What the Worker says once GitHub names Ember 0.2, a minute after it named 0.1. */
+    /** What the Worker says once GitHub names Papaya OS 0.2, a minute after it named 0.1. */
     const heardOfNewer = (): ReleaseCheck => ({ ...newerFor(), checkedAt: new Date(Date.parse(CHECKED_AT) + 60_000).toISOString() });
 
     it("asks the Worker again, saying it's checking until it has answered, then when GitHub last named the newest release", async () => {
@@ -675,11 +675,11 @@ describe("Version", () => {
       expect(check).toBeDisabled();
       expect(status).toHaveTextContent(/^Checking for updates…$/);
 
-      // The workspace hears of Ember 0.2 as the Worker answers, which the card says, and when.
+      // The workspace hears of Papaya OS 0.2 as the Worker answers, which the card says, and when.
       act(() => releaseSays(heardOfNewer()));
       expect(status).toHaveTextContent(/^Checking for updates…$/);
       await act(async () => answer());
-      expect(within(shown).getByRole("heading", { level: 2 })).toHaveTextContent("Ember 0.2 is available");
+      expect(within(shown).getByRole("heading", { level: 2 })).toHaveTextContent("Papaya OS 0.2 is available");
       expect(Object.keys(linksIn(shown))).toEqual(["What's new", "How to update"]);
       expect(within(shown).getAllByRole("button").at(-1)).toBe(check);
       expect(check).toBeEnabled();
@@ -715,13 +715,13 @@ describe("Version", () => {
   it("shows nothing of it before the Worker has said, nor to members", async () => {
     showPage();
     await nameField();
-    expect(screen.queryByText(/^Ember \d/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/^Papaya OS \d/)).not.toBeInTheDocument();
     cleanup();
     release = newerFor();
     serve(asMember);
     showPage(asLinus);
     expect(await screen.findByRole("heading", { level: 2, name: "Analytical Engines" })).toBeInTheDocument();
-    expect(screen.queryByText(/^Ember \d/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/^Papaya OS \d/)).not.toBeInTheDocument();
   });
 });
 
@@ -905,7 +905,7 @@ describe("Workspace logo", () => {
     vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
   });
 
-  it("shows administrators Ember's stock icon above the workspace's name, to change with a logo", async () => {
+  it("shows administrators Papaya OS's stock icon above the workspace's name, to change with a logo", async () => {
     showPage();
     await nameField();
     expect(logo()).toHaveAttribute("src", "/logos/app-icon.png");
@@ -971,12 +971,12 @@ describe("Workspace logo", () => {
   });
 
   it("says why a logo couldn't be saved, showing the logo as it was", async () => {
-    serve(withLogo, { logoSaved: () => Response.json({ error: "Ember isn't set up to store files" }, { status: 503 }) });
+    serve(withLogo, { logoSaved: () => Response.json({ error: "Papaya OS isn't set up to store files" }, { status: 503 }) });
     const { onFailed, user } = showPage();
     await nameField();
     await user.upload(picker(), blackHole());
 
-    await waitFor(() => expect(onFailed).toHaveBeenCalledWith(expect.objectContaining({ status: 503, message: "Ember isn't set up to store files" })));
+    await waitFor(() => expect(onFailed).toHaveBeenCalledWith(expect.objectContaining({ status: 503, message: "Papaya OS isn't set up to store files" })));
     expect(logo()).toHaveAttribute("src", LOGO);
     expect(picker()).toBeEnabled();
   });
@@ -989,7 +989,7 @@ describe("Workspace logo", () => {
     expect(removeButton()).toBeInTheDocument();
   });
 
-  it("shows members the workspace's logo over its name, or Ember's stock icon, with no picker", async () => {
+  it("shows members the workspace's logo over its name, or Papaya OS's stock icon, with no picker", async () => {
     serve({ ...withLogo, canAdminister: false });
     showPage(asLinus);
     const name = await screen.findByRole("heading", { level: 2, name: "Analytical Engines" });
@@ -1099,16 +1099,16 @@ describe("Custom domain", () => {
     expect(await nameField()).toBeInTheDocument();
     expect(screen.queryByRole("region", { name: "Custom domain" })).not.toBeInTheDocument();
     act(() => navigate(workspaceSectionPath("domain-settings")));
-    expect(section).toHaveTextContent("Ember's address is chat.example.com.");
+    expect(section).toHaveTextContent("Papaya OS's address is chat.example.com.");
     expect(section).toHaveTextContent("old.example.com still forwards to chat.example.com.");
 
     await user.click(within(section).getByRole("button", { name: `Go back to ${location.host}` }));
     expect(await screen.findByRole("alert")).toHaveTextContent(CHANGES_SAVED);
     expect(saved()).toEqual([{ customDomain: location.host }]);
     expect(onAccountChanged).toHaveBeenLastCalledWith({ ...asAdministrator.account, customDomain: location.host });
-    expect(section).toHaveTextContent(`Ember's address is ${location.host}.`);
+    expect(section).toHaveTextContent(`Papaya OS's address is ${location.host}.`);
     // The domain it left keeps reaching it, as the page's settings now say.
-    expect(within(within(section).getByRole("list", { name: "Other addresses that reach Ember" })).getAllByRole("listitem").map((item) => item.textContent)).toEqual([
+    expect(within(within(section).getByRole("list", { name: "Other addresses that reach Papaya OS" })).getAllByRole("listitem").map((item) => item.textContent)).toEqual([
       expect.stringMatching(/^chat\.example\.com still forwards here/),
       expect.stringMatching(/^old\.example\.com still forwards here/),
     ]);
@@ -1158,7 +1158,7 @@ describe("Sign in with Papaya", () => {
     expect(on).toHaveAccessibleDescription("Papaya can't be turned on until this deployment has your Papaya site's keys. These steps give it them.");
     const steps = screen.getByRole("list", { name: "Steps to let Papaya members sign in" });
     expect(within(steps).getAllByRole("listitem")).toHaveLength(4);
-    // Papaya's custom app sends people back to Ember's address.
+    // Papaya's custom app sends people back to Papaya OS's address.
     expect(steps).toHaveTextContent(`OAuth redirect URL ${location.origin}/auth/memberful/callback`);
     expect(steps).toHaveTextContent("MEMBERFUL_URL");
     expect(steps).toHaveTextContent("Reload this page, and turn on Papaya again.");
@@ -1364,16 +1364,16 @@ describe("Ways to join", () => {
     expect(within(ways).getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent)).toEqual(["Open", "Join link", "Email domain", "Papaya"]);
     const open = await way("Open");
     expect(open).not.toBeChecked();
-    expect(open).toHaveAccessibleDescription("Anyone can create an account at Ember's sign-up page.");
+    expect(open).toHaveAccessibleDescription("Anyone can create an account at Papaya OS's sign-up page.");
     const link = await way("Join link");
     expect(link).toBeChecked();
     expect(link).toHaveAccessibleDescription("Anyone with the link can create an account.");
-    // Ember emails its links, so until it can send email, turning it on sets that up first.
+    // Papaya OS emails its links, so until it can send email, turning it on sets that up first.
     const emailDomain = await way("Email domain");
     expect(emailDomain).not.toBeChecked();
     expect(emailDomain).toBeEnabled();
     expect(emailDomain).toHaveAccessibleDescription(
-      "People with an email address at your domains join with a link Ember emails them. Ember can't send email yet, so turning this on sets that up first.",
+      "People with an email address at your domains join with a link Papaya OS emails them. Papaya OS can't send email yet, so turning this on sets that up first.",
     );
     expect(await way("Papaya")).not.toBeChecked();
     // Each shows its settings while it's on.
@@ -1473,7 +1473,7 @@ describe("Ways to join", () => {
     expect(screen.queryByText(/Anyone who signs up can create rooms/)).not.toBeInTheDocument();
   });
 
-  it("says what limits signing up until Ember has Turnstile's keys, and opens Set up Turnstile to lift them", async () => {
+  it("says what limits signing up until Papaya OS has Turnstile's keys, and opens Set up Turnstile to lift them", async () => {
     serve(withAccount(asAdministrator, { openSignUp: true }));
     const { user } = showPage();
     const open = await screen.findByRole("region", { name: "Open" });
@@ -1484,7 +1484,7 @@ describe("Ways to join", () => {
     expect(await screen.findByRole("dialog", { name: "Set up Turnstile" })).toBeInTheDocument();
   });
 
-  it("says Turnstile checks whoever signs up once Ember has a widget's keys, with no limits", async () => {
+  it("says Turnstile checks whoever signs up once Papaya OS has a widget's keys, with no limits", async () => {
     serve({ ...withAccount(asAdministrator, { openSignUp: true }), turnstile: "saved" });
     showPage();
     const open = await screen.findByRole("region", { name: "Open" });
@@ -1586,7 +1586,7 @@ describe("Ways to join", () => {
 
 describe("Join with an email domain", () => {
   showingSection("membership-settings");
-  const sending: WorkspaceSettings = { ...asAdministrator, email: { provider: "cloudflare", resendKey: null, cloudflare: true, from: "Ember <ember@example.com>" } };
+  const sending: WorkspaceSettings = { ...asAdministrator, email: { provider: "cloudflare", resendKey: null, cloudflare: true, from: "Papaya OS <ember@example.com>" } };
   /** `settings` with Email domain on, letting in `domains`. */
   const letsIn = (domains: string[], settings = sending): WorkspaceSettings => ({
     ...settings,
@@ -1607,7 +1607,7 @@ describe("Join with an email domain", () => {
     const { onAccountChanged, user } = showPage();
     const toggle = await emailDomain();
     expect(toggle).toBeEnabled();
-    expect(toggle).toHaveAccessibleDescription("People with an email address at your domains join with a link Ember emails them.");
+    expect(toggle).toHaveAccessibleDescription("People with an email address at your domains join with a link Papaya OS emails them.");
     await user.click(toggle);
     expect(toggle).toBeChecked();
     expect(saved()).toEqual([]);
@@ -1696,13 +1696,13 @@ describe("Join with an email domain", () => {
     expect(screen.queryByText(CHANGES_SAVED)).not.toBeInTheDocument();
   });
 
-  it("says when it's on but Ember can email nobody a link until email is set up, with Set up email, and can still be turned off", async () => {
+  it("says when it's on but Papaya OS can email nobody a link until email is set up, with Set up email, and can still be turned off", async () => {
     serve(letsIn(["example.org"], asAdministrator));
     const { user } = showPage();
     const toggle = await emailDomain();
     expect(toggle).toBeChecked();
     expect(toggle).toBeEnabled();
-    expect(toggle).toHaveAccessibleDescription("It's on, but Ember can't send email, so nobody gets a link to join with until email is set up.");
+    expect(toggle).toHaveAccessibleDescription("It's on, but Papaya OS can't send email, so nobody gets a link to join with until email is set up.");
     await user.click(within(card()).getByRole("button", { name: "Set up email" }));
     expect(await screen.findByRole("dialog", { name: "Set up email" })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Cancel" }));
@@ -1713,7 +1713,7 @@ describe("Join with an email domain", () => {
   });
 
   /** Sets up email with Resend in Set up email, from `from`, as an administrator does. */
-  async function setUpResend(user: ReturnType<typeof userEvent.setup>, from = "Ember <ember@example.com>") {
+  async function setUpResend(user: ReturnType<typeof userEvent.setup>, from = "Papaya OS <ember@example.com>") {
     await user.click(await screen.findByRole("radio", { name: "Resend" }));
     await user.click(screen.getByRole("button", { name: "Continue" }));
     await user.type(await screen.findByRole("textbox", { name: "API key" }), "re_123{Enter}");
@@ -1721,7 +1721,7 @@ describe("Join with an email domain", () => {
     await user.click(await screen.findByRole("button", { name: "Done" }));
   }
 
-  it("sets up email as it's turned on before Ember can send any, then opens its list", async () => {
+  it("sets up email as it's turned on before Papaya OS can send any, then opens its list", async () => {
     const { user } = showPage();
     const toggle = await emailDomain();
     await user.click(toggle);
@@ -1731,11 +1731,11 @@ describe("Join with an email domain", () => {
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(toggle).toBeChecked();
-    expect(toggle).toHaveAccessibleDescription("People with an email address at your domains join with a link Ember emails them.");
+    expect(toggle).toHaveAccessibleDescription("People with an email address at your domains join with a link Papaya OS emails them.");
     expect(domainField()).toBeInTheDocument();
     expect(saveButton()).toHaveAccessibleName("Save and turn on");
-    expect(saved()).toEqual([{ emailFrom: "Ember <ember@example.com>" }]);
-    expect(screen.getByRole("region", { name: "Email" })).toHaveTextContent("Ember sends email from Ember <ember@example.com> with Resend.");
+    expect(saved()).toEqual([{ emailFrom: "Papaya OS <ember@example.com>" }]);
+    expect(screen.getByRole("region", { name: "Email" })).toHaveTextContent("Papaya OS sends email from Papaya OS <ember@example.com> with Resend.");
   });
 
   it("turns on with the domains it kept once email is set up", async () => {
@@ -1744,11 +1744,11 @@ describe("Join with an email domain", () => {
     await user.click(await emailDomain());
     await setUpResend(user);
     await waitFor(() => expect(onAccountChanged).toHaveBeenLastCalledWith({ ...asAdministrator.account, emailDomainSignUp: true, emailDomains: ["example.org"] }));
-    expect(saved()).toEqual([{ emailFrom: "Ember <ember@example.com>" }, { settings: { emailDomainSignUp: true } }]);
+    expect(saved()).toEqual([{ emailFrom: "Papaya OS <ember@example.com>" }, { settings: { emailDomainSignUp: true } }]);
     expect(domainsListed()).toEqual(["example.org"]);
   });
 
-  it("stays off when Set up email closes before Ember can send email", async () => {
+  it("stays off when Set up email closes before Papaya OS can send email", async () => {
     const { user } = showPage();
     const toggle = await emailDomain();
     await user.click(toggle);
@@ -1777,11 +1777,11 @@ describe("Join with an email domain", () => {
     expect(within(card()).queryByRole("textbox")).not.toBeInTheDocument();
   });
 
-  it("says how often Ember emails an address a link, and what limits asking until Ember has Turnstile's keys, opening Set up Turnstile to lift it", async () => {
+  it("says how often Papaya OS emails an address a link, and what limits asking until Papaya OS has Turnstile's keys, opening Set up Turnstile to lift it", async () => {
     serve(letsIn(["example.org"]));
     const { user } = showPage();
     await emailDomain();
-    expect(card()).toHaveTextContent("Ember emails an address at most 3 links an hour, whoever asks, so nobody can use it to fill someone's inbox.");
+    expect(card()).toHaveTextContent("Papaya OS emails an address at most 3 links an hour, whoever asks, so nobody can use it to fill someone's inbox.");
     expect(card()).toHaveTextContent(
       "Until Cloudflare Turnstile checks that whoever asks is a person, 10 links can be asked for from a network in an hour. Setting up Turnstile lifts that limit.",
     );
@@ -1789,7 +1789,7 @@ describe("Join with an email domain", () => {
     expect(await screen.findByRole("dialog", { name: "Set up Turnstile" })).toBeInTheDocument();
   });
 
-  it("says Turnstile checks whoever asks once Ember has a widget's keys, with no limit on a network", async () => {
+  it("says Turnstile checks whoever asks once Papaya OS has a widget's keys, with no limit on a network", async () => {
     serve({ ...letsIn(["example.org"]), turnstile: "saved" });
     showPage();
     await emailDomain();
@@ -1850,16 +1850,16 @@ describe("Sending email", () => {
     const email = await screen.findByRole("region", { name: "Email" });
     const following = (a: Element, b: Element) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
     expect(following(screen.getByRole("region", { name: "Who can join" }), email)).toBe(true);
-    expect(email).toHaveTextContent("Ember can't send email yet, so it can't email invitations, the links people at your email domains join with, or codes to reset a forgotten password.");
+    expect(email).toHaveTextContent("Papaya OS can't send email yet, so it can't email invitations, the links people at your email domains join with, or codes to reset a forgotten password.");
 
     await user.click(within(email).getByRole("button", { name: "Set up email" }));
     await user.click(await screen.findByRole("radio", { name: "Cloudflare Email Service" }));
     await user.click(screen.getByRole("button", { name: "Continue" }));
     await user.click(await screen.findByRole("button", { name: "Continue" }));
-    await user.type(await screen.findByRole("textbox", { name: "From" }), "Ember <ember@example.com>{Enter}");
+    await user.type(await screen.findByRole("textbox", { name: "From" }), "Papaya OS <ember@example.com>{Enter}");
     await user.click(await screen.findByRole("button", { name: "Done" }));
-    expect(saved()).toEqual([{ emailFrom: "Ember <ember@example.com>" }]);
-    expect(email).toHaveTextContent("Ember sends email from Ember <ember@example.com> with Cloudflare Email Service.");
+    expect(saved()).toEqual([{ emailFrom: "Papaya OS <ember@example.com>" }]);
+    expect(email).toHaveTextContent("Papaya OS sends email from Papaya OS <ember@example.com> with Cloudflare Email Service.");
     expect(within(email).getByRole("button", { name: "Send me a test email" })).toBeEnabled();
     // Nothing else changed, so Who can join stays as it was.
     expect(await screen.findByRole("switch", { name: "Email domain" })).not.toBeChecked();
@@ -1873,7 +1873,7 @@ describe("Sending email", () => {
       ...asAdministrator,
       account: { ...asAdministrator.account, emailDomainSignUp: true, emailDomains: ["example.org"] },
       emailDomains: ["example.org"],
-      email: { provider: "cloudflare", resendKey: null, cloudflare: true, from: "Ember <ember@example.com>" },
+      email: { provider: "cloudflare", resendKey: null, cloudflare: true, from: "Papaya OS <ember@example.com>" },
     });
     vi.spyOn(window, "confirm").mockReturnValue(true);
     const { user } = showPage();
@@ -1881,15 +1881,15 @@ describe("Sending email", () => {
     await user.click(within(email).getByRole("button", { name: "Stop sending email" }));
     expect(await within(email).findByRole("button", { name: "Set up email" })).toBeInTheDocument();
     expect(saved()).toEqual([{ emailFrom: null }]);
-    expect(email).toHaveTextContent("Ember can't send email yet, so it can't email invitations, the links people at your email domains join with, or codes to reset a forgotten password.");
+    expect(email).toHaveTextContent("Papaya OS can't send email yet, so it can't email invitations, the links people at your email domains join with, or codes to reset a forgotten password.");
     expect(within(screen.getByRole("region", { name: "Invite by email" })).getByRole("button", { name: "Create invite links" })).toBeInTheDocument();
     expect(screen.getByRole("switch", { name: "Email domain" })).toHaveAccessibleDescription(
-      "It's on, but Ember can't send email, so nobody gets a link to join with until email is set up.",
+      "It's on, but Papaya OS can't send email, so nobody gets a link to join with until email is set up.",
     );
   });
 
   it("shows members no Email card", async () => {
-    serve({ ...asMember, email: { provider: "cloudflare", resendKey: null, cloudflare: true, from: "Ember <ember@example.com>" } });
+    serve({ ...asMember, email: { provider: "cloudflare", resendKey: null, cloudflare: true, from: "Papaya OS <ember@example.com>" } });
     showPage(asLinus);
     expect(await joinLink()).toBeInTheDocument();
     expect(screen.queryByRole("region", { name: "Email" })).not.toBeInTheDocument();
@@ -1920,13 +1920,13 @@ describe("Check that people are people with Cloudflare Turnstile", () => {
     const check = await screen.findByTitle<HTMLIFrameElement>("Turnstile's check");
     act(() => void window.dispatchEvent(new MessageEvent("message", { data: { turnstileCheck: { token: "XXXX.DUMMY.TOKEN.XXXX" } }, origin: location.origin, source: check.contentWindow })));
     await user.click(await screen.findByRole("button", { name: "Done" }));
-    expect(turnstile).toHaveTextContent("Cloudflare Turnstile checks that whoever signs up, or asks Ember to email them a link to join or a code to reset a password, is a person.");
+    expect(turnstile).toHaveTextContent("Cloudflare Turnstile checks that whoever signs up, or asks Papaya OS to email them a link to join or a code to reset a password, is a person.");
     expect(turnstileSwitch).toBeChecked();
     expect(openCard).toHaveTextContent("Cloudflare Turnstile checks that whoever signs up is a person.");
     expect(openCard).not.toHaveTextContent("in an hour");
 
     await user.click(within(turnstile).getByRole("button", { name: "Change keys" }));
-    expect(await screen.findByText("Ember has a widget's keys already. Give another widget's to check people with it instead.")).toBeInTheDocument();
+    expect(await screen.findByText("Papaya OS has a widget's keys already. Give another widget's to check people with it instead.")).toBeInTheDocument();
   });
 
   it("turns Turnstile off once the administrator confirms, as Who can join then says", async () => {
@@ -1949,9 +1949,9 @@ describe("Check that people are people with Cloudflare Turnstile", () => {
   });
 });
 
-describe("Ember AI", () => {
+describe("Papaya AI", () => {
   showingSection("assistant-settings");
-  /** Ember AI on Claude Haiku 5.5, the only model people can pick. */
+  /** Papaya AI on Claude Haiku 5.5, the only model people can pick. */
   const ON: AssistantSettings = {
     accountId: "0123456789abcdef0123456789abcdef",
     model: "anthropic/claude-haiku-5.5",
@@ -1966,10 +1966,10 @@ describe("Ember AI", () => {
 
   const agentsCard = () => screen.queryByRole("region", { name: "Agents" });
 
-  it("gives administrators the Ember AI card, whose switch sets up Ember AI, then lists the agents under it", async () => {
+  it("gives administrators the Papaya AI card, whose switch sets up Papaya AI, then lists the agents under it", async () => {
     const { user } = showPage();
-    const card = await screen.findByRole("region", { name: "Ember AI" });
-    const assistantSwitch = within(card).getByRole("switch", { name: "Ember AI" });
+    const card = await screen.findByRole("region", { name: "Papaya AI" });
+    const assistantSwitch = within(card).getByRole("switch", { name: "Papaya AI" });
     expect(assistantSwitch).not.toBeChecked();
     expect(card).toHaveTextContent(ASSISTANT_EXPLAINED);
     expect(agentsCard()).not.toBeInTheDocument();
@@ -2003,26 +2003,26 @@ describe("Ember AI", () => {
     expect(await screen.findByRole("textbox", { name: "Account ID" })).toHaveValue("0123456789abcdef0123456789abcdef");
   });
 
-  it("fills in the Cloudflare account Ember is deployed to when the switch sets up Ember AI", async () => {
+  it("fills in the Cloudflare account Papaya OS is deployed to when the switch sets up Papaya AI", async () => {
     serve({ ...asAdministrator, cloudflareAccountId: "0123456789abcdef0123456789abcdef" });
     const { user } = showPage();
-    const card = await screen.findByRole("region", { name: "Ember AI" });
-    await user.click(within(card).getByRole("switch", { name: "Ember AI" }));
+    const card = await screen.findByRole("region", { name: "Papaya AI" });
+    await user.click(within(card).getByRole("switch", { name: "Papaya AI" }));
     const accountId = await screen.findByRole("textbox", { name: "Account ID" });
     expect(accountId).toHaveValue("0123456789abcdef0123456789abcdef");
-    expect(accountId).toHaveAccessibleDescription("Ember is deployed to this account. To ask through another, paste that account's ID.");
+    expect(accountId).toHaveAccessibleDescription("Papaya OS is deployed to this account. To ask through another, paste that account's ID.");
   });
 
-  it("turns Ember AI off once the administrator confirms, taking the agents away", async () => {
+  it("turns Papaya AI off once the administrator confirms, taking the agents away", async () => {
     serve({ ...asAdministrator, assistant: ON });
     vi.spyOn(window, "confirm").mockReturnValue(true);
     const { user } = showPage();
-    const card = await screen.findByRole("region", { name: "Ember AI" });
+    const card = await screen.findByRole("region", { name: "Papaya AI" });
     expect(card).toHaveTextContent(AGENTS_ANSWER);
     expect(agentsCard()).toBeInTheDocument();
-    await user.click(within(card).getByRole("switch", { name: "Ember AI" }));
+    await user.click(within(card).getByRole("switch", { name: "Papaya AI" }));
     await waitFor(() => expect(within(card).queryByRole("button", { name: "Change" })).not.toBeInTheDocument());
-    expect(within(card).getByRole("switch", { name: "Ember AI" })).not.toBeChecked();
+    expect(within(card).getByRole("switch", { name: "Papaya AI" })).not.toBeChecked();
     expect(card).toHaveTextContent(ASSISTANT_EXPLAINED);
     expect(agentsCard()).not.toBeInTheDocument();
   });
@@ -2031,7 +2031,7 @@ describe("Ember AI", () => {
     serve(asMember);
     showPage(asLinus);
     expect(await screen.findByText("Community admins manage the AI assistant.")).toBeInTheDocument();
-    expect(screen.queryByRole("region", { name: "Ember AI" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Papaya AI" })).not.toBeInTheDocument();
     expect(agentsCard()).not.toBeInTheDocument();
   });
 });
@@ -2064,10 +2064,10 @@ describe("Set up huddles", () => {
 
     await user.click(within(card).getByRole("button", { name: "Change keys" }));
     expect(await screen.findByRole("textbox", { name: "App ID" })).toHaveValue(APP.appId);
-    expect(screen.getByText("Ember has an app's keys already. Give another app's to run huddles through it instead.")).toBeInTheDocument();
+    expect(screen.getByText("Papaya OS has an app's keys already. Give another app's to run huddles through it instead.")).toBeInTheDocument();
   });
 
-  it("opens Cloudflare's dashboard at the account Ember is deployed to when the switch sets up huddles", async () => {
+  it("opens Cloudflare's dashboard at the account Papaya OS is deployed to when the switch sets up huddles", async () => {
     serve({ ...asAdministrator, cloudflareAccountId: "0123456789abcdef0123456789abcdef" });
     const { user } = showPage();
     await user.click(within(await huddlesCard()).getByRole("switch", { name: "Audio and video chat" }));
@@ -2122,15 +2122,15 @@ describe("Invite people by email", () => {
     expect(following(invite, screen.getByRole("region", { name: "Email" }))).toBe(true);
     expect(within(invite).getByRole("region", { name: "Pending invitations" })).toHaveTextContent("ann@example.com");
 
-    // Without a From address, Ember can't email them.
+    // Without a From address, Papaya OS can't email them.
     await user.type(within(invite).getByRole("textbox", { name: "Email addresses" }), "bob@example.com");
     await user.click(within(invite).getByRole("button", { name: "Create invite links" }));
     expect(await within(invite).findByRole("button", { name: "Copy the invite link for bob@example.com" })).toBeInTheDocument();
     expect(within(invite).getAllByRole("listitem")).toHaveLength(2);
   });
 
-  it("emails invitations once Ember can send email and has a From address", async () => {
-    serve({ ...asAdministrator, email: { provider: "resend", resendKey: "secret", cloudflare: true, from: "Ember <ember@example.com>" } });
+  it("emails invitations once Papaya OS can send email and has a From address", async () => {
+    serve({ ...asAdministrator, email: { provider: "resend", resendKey: "secret", cloudflare: true, from: "Papaya OS <ember@example.com>" } });
     showPage();
     const invite = await screen.findByRole("region", { name: "Invite by email" });
     expect(within(invite).getByRole("button", { name: "Send invitations" })).toBeInTheDocument();
@@ -2142,7 +2142,7 @@ describe("Invite people by email", () => {
     const { user } = showPage();
     const invite = await screen.findByRole("region", { name: "Invite by email" });
     await user.click(within(invite).getByRole("button", { name: "Set up email" }));
-    await user.type(await screen.findByRole("textbox", { name: "From" }), "Ember <ember@example.com>{Enter}");
+    await user.type(await screen.findByRole("textbox", { name: "From" }), "Papaya OS <ember@example.com>{Enter}");
     await user.click(await screen.findByRole("button", { name: "Done" }));
     expect(within(invite).getByRole("button", { name: "Send invitations" })).toBeInTheDocument();
   });
@@ -2984,7 +2984,7 @@ describe("Papaya memberships", () => {
     expect(on).toHaveAccessibleDescription(expect.stringMatching(/ A member whose membership lapses is signed out until it's renewed\.$/));
     expect(webhookSteps()).not.toBeInTheDocument();
     expect(screen.getByRole("region", { name: "Papaya" })).toHaveTextContent(
-      `and its webhook to ${location.origin}/webhooks/memberful. If Ember's address changes, change both there too.`,
+      `and its webhook to ${location.origin}/webhooks/memberful. If Papaya OS's address changes, change both there too.`,
     );
   });
 

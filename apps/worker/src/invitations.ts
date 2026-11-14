@@ -18,13 +18,13 @@ const ADMINISTRATORS_ONLY = "Only administrators can invite people";
 /** A link's secret: 32 random bytes in base64url, as a session token is. */
 const EMAIL_LINK_TOKEN = /^[\w-]{43}$/;
 
-/** A new link for Ember to email: a secret, as random as a session token, and its digest under SESSION_SECRET. */
+/** A new link for Papaya OS to email: a secret, as random as a session token, and its digest under SESSION_SECRET. */
 export async function newEmailLink(env: Env): Promise<NewEmailLink> {
   const token = newSessionToken();
   return { token, digest: await tokenDigest(token, env.SESSION_SECRET) };
 }
 
-/** Ember's address, where links go: its custom domain, if it has one, or else the address the request came to. */
+/** Papaya OS's address, where links go: its custom domain, if it has one, or else the address the request came to. */
 async function emberOrigin(request: Request, env: Env): Promise<string> {
   return originFor(request, (await workspace(env).account())?.customDomain ?? null);
 }
@@ -43,7 +43,7 @@ export async function invite(request: Request, env: Env): Promise<Response> {
   if (!invited) return problem(401, NOT_SIGNED_IN);
   if (invited === "forbidden") return problem(403, ADMINISTRATORS_ONLY);
   if (typeof emailAddresses === "string") return problem(422, emailAddresses);
-  // The links Ember didn't email are secrets that no one else should keep.
+  // The links Papaya OS didn't email are secrets that no one else should keep.
   return Response.json(invited satisfies Invited, { headers: { "Cache-Control": "no-store" } });
 }
 

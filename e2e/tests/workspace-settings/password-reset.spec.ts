@@ -4,7 +4,7 @@ import { expect, test } from "../../fixtures";
 import { administratorSession, cookieHeader, newAddress, SAME_ORIGIN, sentFrom, useOwnAddress } from "../../fixtures";
 import { forgetResendKey, giveResendKey, startFakeResend, type FakeResend } from "./fake-resend";
 
-// Resetting a forgotten password with a code Ember emails, on the second test server, which sends email
+// Resetting a forgotten password with a code Papaya OS emails, on the second test server, which sends email
 // with the Resend API the email specs fake once it's given the key that API takes. Each test leaves the
 // workspace as a new one is: no Resend API key and no From address.
 
@@ -48,7 +48,7 @@ async function signedOut(browser: Browser, baseURL: string): Promise<Page> {
   return page;
 }
 
-/** Asks for a code on the page `page` shows, for the address its field holds, answering the code Ember emailed. */
+/** Asks for a code on the page `page` shows, for the address its field holds, answering the code Papaya OS emailed. */
 async function askForCode(page: Page, emailAddress: string): Promise<string> {
   const sent = resend.sent.length;
   await page.getByRole("button", { name: "Email me a code" }).click();
@@ -98,13 +98,13 @@ test.describe("Reset a forgotten password with an emailed code", () => {
     expect(await signInStatus(request, hal, "a password of my own")).toBe(201);
   });
 
-  test("the sign-in page offers it only while Ember can send email, and the page says why it can't", async ({ browser, request, baseURL }) => {
+  test("the sign-in page offers it only while Papaya OS can send email, and the page says why it can't", async ({ browser, request, baseURL }) => {
     const page = await signedOut(browser, baseURL!);
     await page.goto("/session/new");
     await expect(page.getByRole("button", { name: "Sign in" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Reset it" })).toBeHidden();
     await page.goto("/passwords/new");
-    await expect(page.getByText("Ember can't email you a code right now. Ask an administrator for help.")).toBeVisible();
+    await expect(page.getByText("Papaya OS can't email you a code right now. Ask an administrator for help.")).toBeVisible();
     await expect(page.getByRole("textbox")).toHaveCount(0);
 
     await giveResendKey(request);

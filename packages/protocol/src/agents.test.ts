@@ -18,7 +18,7 @@ import { INSTRUCTIONS_TOO_LONG, LEVELS_REFUSED, MAX_INSTRUCTIONS_LENGTH, MODEL_R
 import { MAX_MESSAGE_LENGTH, MAX_SHARED_ORDER, MAX_USER_NAME_LENGTH, MESSAGE_TOO_LONG, NAME_RESERVED } from "./index";
 import { AGENT_TEMPLATE, EMBER_TEMPLATE, INSTRUCTIONS_PLACE_NEEDED, TEMPLATE_REFUSED, unknownPlaceholder } from "./prompts";
 
-/** An agent as New agent sends it, with what Ember adds around its instructions as Ember writes it, in every open room. */
+/** An agent as New agent sends it, with what Papaya OS adds around its instructions as Papaya OS writes it, in every open room. */
 const RECAP: NewAgent = {
   name: "Recap",
   description: "Sums up long threads",
@@ -34,7 +34,7 @@ const RECAP: NewAgent = {
 const ROOMS = ["0mgk3x2a9b4c5a", "0mgk3x2a9b4c5b"];
 
 describe("New agent", () => {
-  it("takes every field, and text without the spaces around it, leaving out a model's name, as Ember names the models it offers", () => {
+  it("takes every field, and text without the spaces around it, leaving out a model's name, as Papaya OS names the models it offers", () => {
     expect(parseNewAgent(RECAP)).toEqual(RECAP);
     expect(parseNewAgent({ ...RECAP, name: " Recap ", description: "\tSums up long threads ", instructions: "\n  Sum up.  \n", model: " anthropic/claude-haiku-5.5 ", modelName: " Claude Haiku 5.5 " })).toEqual({
       ...RECAP,
@@ -43,20 +43,20 @@ describe("New agent", () => {
     expect(parseNewAgent({ ...RECAP, webSearch: true, rooms: ROOMS, other: true })).toEqual({ ...RECAP, webSearch: true, rooms: ROOMS });
   });
 
-  it("keeps instructions of more than one line, as long as Ember takes", () => {
+  it("keeps instructions of more than one line, as long as Papaya OS takes", () => {
     const instructions = `Sum up the thread.\n\n- Five bullets at most\n- ${"x".repeat(MAX_INSTRUCTIONS_LENGTH - 45)}`;
     expect(instructions).toHaveLength(MAX_INSTRUCTIONS_LENGTH);
     expect(parseNewAgent({ ...RECAP, instructions })).toEqual({ ...RECAP, instructions });
   });
 
-  it("takes a model by its ID, as whether Ember offers it is the Worker's to say, and refuses anything else on its field", () => {
+  it("takes a model by its ID, as whether Papaya OS offers it is the Worker's to say, and refuses anything else on its field", () => {
     expect(parseNewAgent({ ...RECAP, model: "@cf/zai-org/glm-5.2" })).toEqual({ ...RECAP, model: "@cf/zai-org/glm-5.2" });
     for (const model of ["gpt-5.5", "openai/gpt 5.5", 5]) {
       expect(parseNewAgent({ ...RECAP, model }), String(model)).toEqual({ error: MODEL_REFUSED, field: "model" });
     }
   });
 
-  it("takes what Ember adds around its instructions as an administrator changed it, or else Ember's own", () => {
+  it("takes what Papaya OS adds around its instructions as an administrator changed it, or else Papaya OS's own", () => {
     const { promptTemplate: _, ...unchanged } = RECAP;
     expect(parseNewAgent(unchanged)).toEqual(RECAP);
     expect(parseNewAgent({ ...RECAP, promptTemplate: AGENT_TEMPLATE })).toEqual(RECAP);
@@ -89,11 +89,11 @@ describe("An agent's page", () => {
     expect(parseAgentChanges({ thinking: "high" })).toEqual({ thinking: "high" });
     expect(parseAgentChanges({ webSearch: true, rooms: ROOMS })).toEqual({ webSearch: true, rooms: ROOMS });
     expect(parseAgentChanges({ rooms: null })).toEqual({ rooms: null });
-    // Without a name, as Ember names the models it offers.
+    // Without a name, as Papaya OS names the models it offers.
     expect(parseAgentChanges({ model: "openai/gpt-6.1-sol", modelName: "GPT-6.1 Sol" })).toEqual({ model: "openai/gpt-6.1-sol" });
     expect(parseAgentChanges({ modelName: "GPT-6.1 Sol" })).toEqual({});
     expect(parseAgentChanges({ promptTemplate: "{{instructions}}" })).toEqual({ promptTemplate: "{{instructions}}" });
-    // Ember's own, as the page puts it back, goes back to following Ember's.
+    // Papaya OS's own, as the page puts it back, goes back to following Papaya OS's.
     expect(parseAgentChanges({ promptTemplate: AGENT_TEMPLATE })).toEqual({ promptTemplate: null });
     expect(parseAgentChanges({ promptTemplate: null })).toEqual({ promptTemplate: null });
     // @ember's own isn't an agent's.
@@ -111,10 +111,10 @@ describe("An agent's page", () => {
     ["a description longer than one line in the list", { description: "x".repeat(MAX_AGENT_DESCRIPTION_LENGTH + 1) }, DESCRIPTION_REFUSED, "description"],
     ["blank instructions", { instructions: "\n \n" }, INSTRUCTIONS_NEEDED, "instructions"],
     ["instructions that aren't text", { instructions: ["Sum up."] }, INSTRUCTIONS_NEEDED, "instructions"],
-    ["instructions longer than Ember takes", { instructions: "x".repeat(MAX_INSTRUCTIONS_LENGTH + 1) }, INSTRUCTIONS_TOO_LONG, "instructions"],
-    ["what Ember adds around them without the instructions", { promptTemplate: "You are {{name}}." }, INSTRUCTIONS_PLACE_NEEDED, "promptTemplate"],
-    ["what Ember adds around them with a placeholder it doesn't fill in", { promptTemplate: "{{instructions}} {{room}}" }, unknownPlaceholder("room"), "promptTemplate"],
-    ["what Ember adds around them that isn't text", { promptTemplate: ["{{instructions}}"] }, TEMPLATE_REFUSED, "promptTemplate"],
+    ["instructions longer than Papaya OS takes", { instructions: "x".repeat(MAX_INSTRUCTIONS_LENGTH + 1) }, INSTRUCTIONS_TOO_LONG, "instructions"],
+    ["what Papaya OS adds around them without the instructions", { promptTemplate: "You are {{name}}." }, INSTRUCTIONS_PLACE_NEEDED, "promptTemplate"],
+    ["what Papaya OS adds around them with a placeholder it doesn't fill in", { promptTemplate: "{{instructions}} {{room}}" }, unknownPlaceholder("room"), "promptTemplate"],
+    ["what Papaya OS adds around them that isn't text", { promptTemplate: ["{{instructions}}"] }, TEMPLATE_REFUSED, "promptTemplate"],
     ["a model that can't be one", { model: "claude haiku" }, MODEL_REFUSED, "model"],
     ["a level a dial doesn't have", { thinking: "max" }, LEVELS_REFUSED, "levels"],
     ["a length a dial doesn't have", { length: 3 }, LEVELS_REFUSED, "levels"],
@@ -152,7 +152,7 @@ describe("Try it", () => {
     expect(parseAgentTrial({ ...TRIAL, description: "", rooms: "Launch!" })).toEqual(TRIAL);
     const longest = "x".repeat(MAX_MESSAGE_LENGTH);
     expect(parseAgentTrial({ ...TRIAL, question: longest })).toEqual({ ...TRIAL, question: longest });
-    // What Ember adds around the instructions as the page has it, unsaved too, or else Ember's own.
+    // What Papaya OS adds around the instructions as the page has it, unsaved too, or else Papaya OS's own.
     expect(parseAgentTrial({ ...TRIAL, promptTemplate: "Be {{name}}. {{instructions}}" })).toEqual({ ...TRIAL, promptTemplate: "Be {{name}}. {{instructions}}" });
     const { promptTemplate: _, ...unchanged } = TRIAL;
     expect(parseAgentTrial(unchanged)).toEqual(TRIAL);

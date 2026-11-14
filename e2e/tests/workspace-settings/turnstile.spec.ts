@@ -36,7 +36,7 @@ async function openTurnstile(page: Page, request: APIRequestContext) {
 }
 
 test.describe("Check that people are people with Cloudflare Turnstile", () => {
-  test("the administrator gives Ember a widget's keys, which its check proves, and anyone signing up passes it", async ({ page, request, browser, baseURL }) => {
+  test("the administrator gives Papaya OS a widget's keys, which its check proves, and anyone signing up passes it", async ({ page, request, browser, baseURL }) => {
     const turnstile = await openTurnstile(page, request);
     await expect(turnstile).toContainText("Until it does, limits on each network stand in for its check.");
     const open = page.getByRole("region", { name: "Open", exact: true });
@@ -67,11 +67,11 @@ test.describe("Check that people are people with Cloudflare Turnstile", () => {
     expect(siteverify.asked.at(-1)).toEqual({ secret: TURNSTILE_WIDGET.secretKey, response: turnstileTokenFor(TURNSTILE_WIDGET.siteKey), remoteip: expect.any(String) as unknown });
     await setup.getByRole("button", { name: "Done" }).click();
     await expect(setup).toBeHidden();
-    await expect(turnstile).toContainText("Cloudflare Turnstile checks that whoever signs up, or asks Ember to email them a link to join or a code to reset a password, is a person.");
+    await expect(turnstile).toContainText("Cloudflare Turnstile checks that whoever signs up, or asks Papaya OS to email them a link to join or a code to reset a password, is a person.");
     await expect(turnstile.getByRole("switch", { name: "Turnstile" })).toBeChecked();
     await expect(open).toContainText("Cloudflare Turnstile checks that whoever signs up is a person.");
 
-    // Ember keeps the keys, and checks whoever signs up with them.
+    // Papaya OS keeps the keys, and checks whoever signs up with them.
     await page.reload();
     await expect(page.getByRole("region", { name: "Turnstile", exact: true }).getByRole("switch", { name: "Turnstile" })).toBeChecked();
     const context = await browser.newContext({ baseURL, ignoreHTTPSErrors: true });

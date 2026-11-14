@@ -119,7 +119,7 @@ describe("Join with an invitation", () => {
     expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
   });
 
-  it("says so without asking Ember when the address holds no link", () => {
+  it("says so without asking Papaya OS when the address holds no link", () => {
     const fetch = vi.spyOn(globalThis, "fetch");
     for (const address of ["/join/invitation", "/join/invitation#token=", "/join/invitation#m3"]) {
       history.replaceState(null, "", address);
@@ -143,7 +143,7 @@ describe("Join with an invitation", () => {
     expect(location.hash).toBe("");
   });
 
-  it("asks again when it can't reach Ember, or Ember fails, waiting longer each time", async () => {
+  it("asks again when it can't reach Papaya OS, or Papaya OS fails, waiting longer each time", async () => {
     vi.useFakeTimers();
     const fetch = serve(unreachable, () => Response.json({ error: "Something went wrong" }, { status: 500 }), forHal);
     open();

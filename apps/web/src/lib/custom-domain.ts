@@ -2,9 +2,9 @@ import { MAX_PUSH_KEY_LENGTH, WORKSPACE_SETTINGS_PATH } from "@ember/protocol";
 import { loadPage } from "./page";
 import { pushKey, replaceOnSave } from "./push";
 
-// Ember's custom domain (`Account.customDomain`), which an administrator gives it in workspace settings:
+// Papaya OS's custom domain (`Account.customDomain`), which an administrator gives it in workspace settings:
 // every page opened at any other address moves there, but workspace settings, which stays wherever it's
-// opened, so an administrator can always stop using a domain that has stopped reaching Ember. A page
+// opened, so an administrator can always stop using a domain that has stopped reaching Papaya OS. A page
 // that moves names this browser's push subscription at the address it leaves, so that the one this
 // browser saves at the new address replaces it.
 
@@ -15,8 +15,8 @@ const REPLACING_PUSH = "replacing_push";
 const PUSH_KEY = /^[\w-]+$/;
 
 /**
- * This page at Ember's custom domain, `customDomain`, naming the push subscription with the P-256 key
- * `replacingPush`, if given, or null when it's there already or Ember has none.
+ * This page at Papaya OS's custom domain, `customDomain`, naming the push subscription with the P-256 key
+ * `replacingPush`, if given, or null when it's there already or Papaya OS has none.
  */
 export function thisPageAt(customDomain: string | null, replacingPush: string | null = null): string | null {
   if (customDomain === null || customDomain === location.host) return null;
@@ -28,13 +28,13 @@ export function thisPageAt(customDomain: string | null, replacingPush: string | 
 /** Whether the page at `pathname` stays at whatever address it's opened at, as workspace settings does. */
 export const staysAtAnyAddress = (pathname: string) => pathname === WORKSPACE_SETTINGS_PATH;
 
-/** Whether Ember has moved from this page's address to its custom domain, `customDomain`. */
+/** Whether Papaya OS has moved from this page's address to its custom domain, `customDomain`. */
 export const movedFrom = (customDomain: string | null) => thisPageAt(customDomain) !== null;
 
-/** Whether this page moves to Ember's custom domain, `customDomain`, as it opens: it's elsewhere, and doesn't stay. */
+/** Whether this page moves to Papaya OS's custom domain, `customDomain`, as it opens: it's elsewhere, and doesn't stay. */
 export const movesTo = (customDomain: string | null) => !staysAtAnyAddress(location.pathname) && movedFrom(customDomain);
 
-/** Loads this page at Ember's custom domain, `customDomain`, naming this browser's push subscription here. */
+/** Loads this page at Papaya OS's custom domain, `customDomain`, naming this browser's push subscription here. */
 export async function moveTo(customDomain: string | null): Promise<void> {
   const there = thisPageAt(customDomain, await pushKey().catch(() => null));
   if (there !== null) loadPage(there);

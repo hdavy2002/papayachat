@@ -55,7 +55,7 @@ const LENGTH_NOTES: Record<AnswerLength, string> = {
 
 /**
  * The model that answers at the dials' levels, by name, with the levels of thinking it takes, as asking
- * it at each found when an administrator picked it, or none for one Ember hasn't asked at each.
+ * it at each found when an administrator picked it, or none for one Papaya OS hasn't asked at each.
  */
 export interface ThinkingModel {
   name: string;

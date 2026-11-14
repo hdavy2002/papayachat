@@ -6,7 +6,7 @@ test.beforeEach(({ page }) => useOwnAddress(page));
 
 test("the sign-in screen fits the phone", async ({ page, screenIsFine }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Sign in to Ember" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Sign in to Papaya OS" })).toBeVisible();
   await screenIsFine();
 });
 

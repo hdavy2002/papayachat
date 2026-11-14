@@ -10,19 +10,19 @@ import { BUTTON } from "./email-settings";
 import { dashboard, NOTE } from "./model-picker";
 
 // Set up huddles' two steps, which its dialog in community settings and first run's card share: make a
-// Realtime SFU app in Cloudflare's dashboard, which a button opens, in the account Ember is deployed to
+// Realtime SFU app in Cloudflare's dashboard, which a button opens, in the account Papaya OS is deployed to
 // when the deploy gave it, then copy the app's ID and its secret here. The Worker has Cloudflare start a
 // session with the keys before it keeps them, and why it didn't, if it didn't, is said on the field it's
-// about. One line under the secret says that, or that Cloudflare is being asked, or else what Ember does
+// about. One line under the secret says that, or that Cloudflare is being asked, or else what Papaya OS does
 // with the secret, so the steps keep their height on a phone.
 
 /** Where Realtime's SFU apps are made, in the Cloudflare dashboard. */
 const sfuDashboard = (accountId: string | null) => dashboard(accountId, "realtime/sfu");
 
 /** What the line under the secret says while there's nothing else to say. */
-const SECRET_KEPT = "Ember keeps it encrypted.";
-/** Or when Ember has an app's keys, which Change keys starts from. */
-const KEYS_KEPT = "Ember has an app's keys already. Give another app's to run huddles through it instead.";
+const SECRET_KEPT = "Papaya OS keeps it encrypted.";
+/** Or when Papaya OS has an app's keys, which Change keys starts from. */
+const KEYS_KEPT = "Papaya OS has an app's keys already. Give another app's to run huddles through it instead.";
 /** Or while the Worker asks Cloudflare about the keys. */
 const CHECKING = "Asking Cloudflare to start a session with the app's keys…";
 
@@ -105,9 +105,9 @@ const fieldOf = (field: string | undefined): HuddlesField | null => (field === "
 
 interface StepsProps {
   keys: HuddlesKeys;
-  /** The Cloudflare account Ember is deployed to, whose SFU apps the dashboard opens at, if the deploy gave it. */
+  /** The Cloudflare account Papaya OS is deployed to, whose SFU apps the dashboard opens at, if the deploy gave it. */
   deployedAccountId: string | null;
-  /** Whether Ember has an app's keys already, which these would take the place of. */
+  /** Whether Papaya OS has an app's keys already, which these would take the place of. */
   changing?: boolean;
   /** As first run's card sets them: in its larger type, each step's title a heading under the page's own. */
   roomy?: boolean;

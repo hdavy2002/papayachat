@@ -14,7 +14,7 @@ import answers from "./fixtures/webhook_expected.json";
 // webhook's status and the bot's reply, or a failure. The request must be the one Net::HTTP sent, but
 // for the headers a Worker's `fetch` decides itself. A file is kept as it arrives, where Campfire reads
 // all of it first, and must come to the bytes Campfire kept. The answers are given the 7 seconds
-// Campfire gave them, where Ember gives a webhook 30.
+// Campfire gave them, where Papaya OS gives a webhook 30.
 
 interface Case {
   name: string;
@@ -46,7 +46,7 @@ const CAMPFIRE_TIMEOUTS: Timeouts = { endpointMs: 7_000, deadlineMs: DELIVERY_DE
 /** The headers Net::HTTP sends that a Worker's `fetch` decides itself. */
 const FETCH_HEADERS = ["Accept-Encoding", "Host", "Connection", "Content-Length"];
 
-/** What Campfire raised, as Ember fails with it. A Worker's `fetch` doesn't say why it couldn't connect, as Ruby's `Errno` does. */
+/** What Campfire raised, as Papaya OS fails with it. A Worker's `fetch` doesn't say why it couldn't connect, as Ruby's `Errno` does. */
 const FAILURES: Record<string, (recorded: Case) => WebhookError> = {
   "Mime::Type::InvalidMimeType": ({ headers }) => new WebhookError(`${JSON.stringify(headers[0]![1])} is not a valid MIME type`),
   "Errno::ECONNREFUSED": () => new WebhookError("TypeError: Network connection lost."),

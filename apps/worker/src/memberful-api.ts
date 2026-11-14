@@ -2,7 +2,7 @@ import { isReservedName, MAX_EMAIL_ADDRESS_LENGTH, MAX_USER_NAME_LENGTH } from "
 import type { Env } from "./env";
 import { isLoopback } from "./loopback";
 
-// What Ember asks the Papaya site whose members sign in, and the keys it asks with: its member API,
+// What Papaya OS asks the Papaya site whose members sign in, and the keys it asks with: its member API,
 // with the access token a sign-in's code is exchanged for, says who signed in, and its admin API, with
 // the custom app's API key, says whose memberships are active, which the Workspace checks when a webhook
 // says one changed, and once a day. Neither follows a redirect, which would take a secret elsewhere, and
@@ -43,7 +43,7 @@ export interface MemberfulMember {
    * agent's, else "Member", or "Member 2" and on while an agent is called that (`namelessMember`).
    */
   names: string[];
-  /** Their email address, or null when they have none Ember can keep. */
+  /** Their email address, or null when they have none Papaya OS can keep. */
   emailAddress: string | null;
   /** Whether they have an active subscription, or the all access pass (`unrestrictedAccess`). */
   subscribed: boolean;

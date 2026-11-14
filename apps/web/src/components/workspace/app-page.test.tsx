@@ -103,14 +103,14 @@ describe("Connect an app", () => {
     expect(screen.getByRole("link", { name: "Go Back" })).toHaveAttribute("href", AGENTS_PATH);
   });
 
-  it("connects the app with what's typed, leaving out a blank token, and goes to its page, saying how many tools Ember read", async () => {
+  it("connects the app with what's typed, leaving out a blank token, and goes to its page, saying how many tools Papaya OS read", async () => {
     const requests = serve();
     const { user } = showNew();
     await user.type(await nameField(), "Linear");
     await user.type(urlField(), LINEAR.url);
     await user.click(screen.getByRole("button", { name: "Connect" }));
 
-    expect(await flashed()).toHaveTextContent("Linear is connected. Ember read 2 tools from it.");
+    expect(await flashed()).toHaveTextContent("Linear is connected. Papaya OS read 2 tools from it.");
     expect(location.pathname).toBe(appSettingsPath(LINEAR.id));
     expect(requests).toEqual([{ request: "POST /api/account/apps", body: { name: "Linear", url: LINEAR.url } }]);
   });
@@ -179,7 +179,7 @@ describe("Connect an app", () => {
     expect(onFailed).not.toHaveBeenCalled();
   });
 
-  it("sends an administrator to the AI assistant tab while Ember AI is off, saying so", async () => {
+  it("sends an administrator to the AI assistant tab while Papaya AI is off, saying so", async () => {
     serve({ listed: () => refused(409, ASSISTANT_OFF) });
     showNew();
     expect(await flashed()).toHaveTextContent(ASSISTANT_OFF);
@@ -188,7 +188,7 @@ describe("Connect an app", () => {
 });
 
 describe("A connected app's page", () => {
-  it("shows the app as it's connected, never its token, and the tools Ember read, each with what its server says of it", async () => {
+  it("shows the app as it's connected, never its token, and the tools Papaya OS read, each with what its server says of it", async () => {
     serve();
     showSettings();
     expect(await nameField()).toHaveValue("Linear");
@@ -206,10 +206,10 @@ describe("A connected app's page", () => {
     expect(create).toHaveTextContent("Create issue");
     expect(create).toHaveTextContent("Creates an issue in a team. It needs a title.");
     expect(list).toHaveTextContent(/^list_issues$/);
-    expect(tools()).not.toHaveTextContent("Ember leaves out");
+    expect(tools()).not.toHaveTextContent("Papaya OS leaves out");
   });
 
-  it("says how many tools Ember left out, when the server has more than it keeps", async () => {
+  it("says how many tools Papaya OS left out, when the server has more than it keeps", async () => {
     serve({ loaded: () => answer({ ...LINEAR, toolsLeftOut: 12, serverName: null, connectedBy: null }) });
     showSettings();
     await nameField();
@@ -250,7 +250,7 @@ describe("A connected app's page", () => {
     expect(tokenField()).toHaveValue("lin_api_456");
     expect(screen.getByRole("checkbox", { name: "Send no token" })).toBeDisabled();
     saved(answer({ ...LINEAR, tools: [LINEAR.tools[0]!] }));
-    expect(await flashed()).toHaveTextContent("Changes saved. Ember read 1 tool from Linear.");
+    expect(await flashed()).toHaveTextContent("Changes saved. Papaya OS read 1 tool from Linear.");
     expect(within(tools()).getByRole("heading", { name: "Tools (1)" })).toBeVisible();
     expect(tokenField()).toHaveValue("");
   });

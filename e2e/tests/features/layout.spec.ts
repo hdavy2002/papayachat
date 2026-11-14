@@ -103,7 +103,7 @@ test.describe("Workspace layout", () => {
     expect(await box(header)).toMatchObject({ y: 0 });
   });
 
-  test("uses Ember's palette and 14px text, light and dark", async ({ members }) => {
+  test("uses Papaya OS's palette and 14px text, light and dark", async ({ members }) => {
     const palettes = {
       light: { canvas: "rgb(255, 255, 255)", surface: "rgb(250, 250, 250)", hover: "rgb(242, 242, 242)", border: "rgb(229, 229, 229)", muted: "rgb(115, 115, 115)", ink: "rgb(23, 23, 23)" },
       dark: { canvas: "rgb(23, 23, 23)", surface: "rgb(28, 28, 28)", hover: "rgb(40, 40, 40)", border: "rgb(52, 52, 52)", muted: "rgb(163, 163, 163)", ink: "rgb(245, 245, 245)" },

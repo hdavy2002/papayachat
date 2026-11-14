@@ -9,7 +9,7 @@ import type { IndexedMessage, SearchFacts } from "./search-index";
 // Messages for one room, kept in the room's Durable Object SQLite storage or in D1 (see db.ts), each
 // with the number of its latest change, and the deletions a tab that connects again may yet need to
 // hear of (migrations/0015_numbered_changes.sql). A file message keeps its file (migrations/0029_file_messages.sql),
-// whose addresses are signed as it's read, so they're always signed under the secret Ember has now, and a
+// whose addresses are signed as it's read, so they're always signed under the secret Papaya OS has now, and a
 // bot's message its cards (migrations/0034_message_cards.sql). A reply in a thread names its parent, and shows
 // in the room's timeline only when it was also sent there, and a parent is read with its thread's summary
 // (migrations/0044_threads.sql).

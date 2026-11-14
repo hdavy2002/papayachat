@@ -21,7 +21,7 @@ import { whenIdle } from "@/lib/idle";
 import { cn } from "@/lib/utils";
 import { loadPage } from "@/lib/page";
 
-// The Set up Ember page. Entering its fields doesn't select what's in them, since it isn't one of the
+// The Set up Papaya OS page. Entering its fields doesn't select what's in them, since it isn't one of the
 // app's pages, which do (`useSelectOnEntry`). Its name and email address placeholders come from
 // /api/bootstrap: Kevin Rose's, unless the deployment suggests its own.
 //
@@ -36,10 +36,10 @@ import { loadPage } from "@/lib/page";
 // would be refused.
 //
 // Once the form has made the workspace, the page asks whether to turn huddles on (setup-huddles.tsx),
-// and opens Ember from there.
+// and opens Papaya OS from there.
 
 /** What the setup password step says where the setup link it was opened with is refused. */
-const STALE_LINK = "That setup link is out of date. Type this Ember's setup password instead.";
+const STALE_LINK = "That setup link is out of date. Type this Papaya OS's setup password instead.";
 /** The token in a setup link's fragment. */
 const setupTokenOf = (hash: string) => new URLSearchParams(hash.slice(1)).get("token") || null;
 /** The Worker's setup password, as its settings in the Cloudflare dashboard name it. */
@@ -86,7 +86,7 @@ export function SetupPage({ placeholders, access, onSetUp }: Props) {
     navigate(`/rooms/${workspace.room.id}`, { replace: true });
     onSetUp(workspace);
   };
-  // Where the question can't load, Ember opens without it, and huddles wait in community settings.
+  // Where the question can't load, Papaya OS opens without it, and huddles wait in community settings.
   const askAboutHuddles = (workspace: NewWorkspace) =>
     loadSetupHuddles().then(
       (SetupHuddles) => setMade({ workspace, SetupHuddles }),
@@ -138,7 +138,7 @@ function SetupPasswordStep({ linkToken, onAccepted }: { linkToken: string | null
       setBusy(false);
       // A link that couldn't be checked opens the form all the same, which has it checked again when it's sent.
       if (withLink && !(error instanceof ApiError && error.status < 500)) return onAccepted(secret);
-      if (!(error instanceof ApiError)) return setProblem("Couldn't reach Ember. Check your connection and try again.");
+      if (!(error instanceof ApiError)) return setProblem("Couldn't reach Papaya OS. Check your connection and try again.");
       // Someone else set it up first.
       if (error.status === 409) return loadPage("/");
       // Too many tries, say, which no other password would get past.
@@ -158,7 +158,7 @@ function SetupPasswordStep({ linkToken, onAccepted }: { linkToken: string | null
   }, [linkToken]);
 
   return (
-    <SetupCard problem={problem} subtitle="Ember is waiting for its administrator.">
+    <SetupCard problem={problem} subtitle="Papaya OS is waiting for its administrator.">
       <form
         onSubmit={(event) => {
           event.preventDefault();
@@ -201,7 +201,7 @@ function SetupForm({ placeholders, setupSecret, onSetUp }: { placeholders: Setup
       onSetUp(await setUpWorkspace({ name, emailAddress, password: passwordInput.current?.value ?? "" }, await photo.photo(), setupSecret));
     } catch (error) {
       setBusy(false);
-      if (!(error instanceof ApiError)) return setProblem("Couldn't reach Ember. Check your connection and try again.");
+      if (!(error instanceof ApiError)) return setProblem("Couldn't reach Papaya OS. Check your connection and try again.");
       // The name, email address and photo stay, and the password starts over.
       if (error.field === "password") {
         if (passwordInput.current) passwordInput.current.value = "";
@@ -268,13 +268,13 @@ function SetupForm({ placeholders, setupSecret, onSetUp }: { placeholders: Setup
   );
 }
 
-/** The page without its form: what deploying Ember printed is the way in. */
+/** The page without its form: what deploying Papaya OS printed is the way in. */
 function SetupLinkNeeded() {
   return (
-    <SetupCard subtitle="Ember is waiting for its administrator.">
+    <SetupCard subtitle="Papaya OS is waiting for its administrator.">
       <Notice>
         <p>
-          Open the setup link that deploying Ember printed. It looks like <Code>{`${location.origin}/first_run#token=…`}</Code> and carries this deployment's
+          Open the setup link that deploying Papaya OS printed. It looks like <Code>{`${location.origin}/first_run#token=…`}</Code> and carries this deployment's
           setup token, so only whoever deployed it can set it up.
         </p>
         <p>
@@ -397,7 +397,7 @@ function SetupPasswordField({ ref, refusal }: { ref: Ref<HTMLInputElement>; refu
         </p>
       ) : (
         <p id="setup-password-description" className="text-sm leading-normal text-muted-foreground">
-          The one you gave Ember when you deployed it.
+          The one you gave Papaya OS when you deployed it.
         </p>
       )}
     </div>

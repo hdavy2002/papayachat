@@ -35,7 +35,7 @@ const TOKEN = "XXXX.DUMMY.TOKEN.XXXX";
 const SITEVERIFY = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 const HOUR_MS = 60 * 60 * 1000;
 
-/** Sets Ember up with Ada as its administrator, signed in, answering general, its first room, too. */
+/** Sets Papaya OS up with Ada as its administrator, signed in, answering general, its first room, too. */
 async function setUp(): Promise<Session & { general: NewWorkspace["room"] }> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(ada) });
   expect(response.status).toBe(201);
@@ -55,7 +55,7 @@ async function turn(administrator: Session, settings: Record<string, boolean>, c
   expect(response.status, await response.clone().text()).toBe(200);
 }
 
-/** Sets Ember up with Open on, with Ada as its administrator. */
+/** Sets Papaya OS up with Open on, with Ada as its administrator. */
 async function setUpOpen(): Promise<Session & { general: NewWorkspace["room"] }> {
   const administrator = await setUp();
   await turn(administrator, { openSignUp: true });
@@ -64,7 +64,7 @@ async function setUpOpen(): Promise<Session & { general: NewWorkspace["room"] }>
 
 /** The workspace as pages show a new one, but for `changes`. */
 const account = (changes: Partial<Account> = {}): Account => ({
-  name: "Ember",
+  name: "Papaya OS",
   tagline: "",
   hideTranslationButtons: true,
   customStyles: "",

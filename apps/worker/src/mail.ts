@@ -2,7 +2,7 @@ import { mailboxText, type Mailbox } from "@ember/protocol";
 import type { Env } from "./env";
 import { isLoopback } from "./loopback";
 
-// How Ember sends email: with Resend's API while it has an API key, the deployment's secret
+// How Papaya OS sends email: with Resend's API while it has an API key, the deployment's secret
 // `RESEND_API_KEY` or the one an administrator gave it in Set up email, or else with Cloudflare Email
 // Service's `send_email` binding, `EMAIL`
 // (https://developers.cloudflare.com/email-service/api/send-emails/workers-api/). Each email goes to one
@@ -17,7 +17,7 @@ const SEND_TIMEOUT_MS = 10_000;
 /** How much of what Resend says about an email it refused is passed on. */
 const MAX_REFUSAL_LENGTH = 300;
 
-/** An email Ember sends: to one address, with its subject, and its body as plain text and as HTML. */
+/** An email Papaya OS sends: to one address, with its subject, and its body as plain text and as HTML. */
 export interface Email {
   to: string;
   subject: string;
@@ -25,7 +25,7 @@ export interface Email {
   html: string;
 }
 
-/** Resend's API, with an API key: the deployment's `secret`, or the one an administrator gave Ember. */
+/** Resend's API, with an API key: the deployment's `secret`, or the one an administrator gave Papaya OS. */
 export interface ResendSender {
   provider: "resend";
   apiKey: string;
@@ -33,13 +33,13 @@ export interface ResendSender {
   api: string;
 }
 
-/** What sends Ember's email: Resend's API, or Cloudflare Email Service's binding. */
+/** What sends Papaya OS's email: Resend's API, or Cloudflare Email Service's binding. */
 export type Sender = ResendSender | { provider: "cloudflare"; binding: SendEmail };
 
 /**
- * What sends Ember's email: Resend, with the deployment's secret `RESEND_API_KEY`, or else with
- * `savedKey`, the API key an administrator gave Ember, or else Cloudflare Email Service's binding, or
- * null while there's none of them, when Ember can't send email.
+ * What sends Papaya OS's email: Resend, with the deployment's secret `RESEND_API_KEY`, or else with
+ * `savedKey`, the API key an administrator gave Papaya OS, or else Cloudflare Email Service's binding, or
+ * null while there's none of them, when Papaya OS can't send email.
  */
 export function senderOf(env: Env, savedKey: string | null): Sender | null {
   const secret = env.RESEND_API_KEY?.trim();
@@ -72,14 +72,14 @@ export async function sendEmails(sender: Sender, from: Mailbox, emails: Email[])
   return refusals;
 }
 
-/** Why Resend doesn't take an API key Ember is given, with the status that says it: 422 for the key, or 502 for Resend. */
+/** Why Resend doesn't take an API key Papaya OS is given, with the status that says it: 422 for the key, or 502 for Resend. */
 export interface KeyRefusal {
   status: 422 | 502;
   refusal: string;
 }
 
 /**
- * Asks Resend whether it takes `apiKey`, as Set up email gives Ember one, answering null if it does, or
+ * Asks Resend whether it takes `apiKey`, as Set up email gives Papaya OS one, answering null if it does, or
  * else why not. A key with full access lists the account's domains, and one that can only send, as Resend
  * suggests, is refused that as restricted (https://resend.com/docs/api-reference/errors), which says
  * Resend knows it.
@@ -175,13 +175,13 @@ function refusalOf(body: unknown): { name: string | null; message: string | null
 /**
  * What Resend refusing an email with `status`, and the error `name` and `message`, means for an
  * administrator (https://resend.com/docs/api-reference/errors), the key being the deployment's `secret`
- * or the one an administrator gave Ember.
+ * or the one an administrator gave Papaya OS.
  */
 function resendRefusal(status: number, name: string | null, message: string | null, secret: boolean): string {
   if (status === 401 || name === "missing_api_key" || name === "restricted_api_key" || name === "suspended_api_key")
     return secret
       ? "Resend doesn't take the API key in RESEND_API_KEY. Check it under API Keys in Resend, or make one that can send."
-      : "Resend doesn't take Ember's API key anymore. Make another under API Keys in Resend, and give it to Ember under Email in Membership.";
+      : "Resend doesn't take Papaya OS's API key anymore. Make another under API Keys in Resend, and give it to Papaya OS under Email in Membership.";
   if (name === "daily_quota_exceeded") return "Resend's daily sending quota is used up. It starts again at midnight UTC.";
   if (name === "monthly_quota_exceeded") return "Resend's monthly sending quota is used up.";
   if (status === 429) return "Resend is taking too many emails at once. Try again in a moment.";

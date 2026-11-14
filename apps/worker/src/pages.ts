@@ -47,7 +47,7 @@ function appScriptHashes(request: Request, env: Env, etag: string | null): Promi
 
 /**
  * What the app asks for as it starts, for the browser to fetch with the page rather than once the app
- * has loaded, which the app's own first requests then take: on every page, whether Ember is set up and
+ * has loaded, which the app's own first requests then take: on every page, whether Papaya OS is set up and
  * who's signed in, and on a page with the sidebar, for a browser with a session, its rooms and the
  * people directory. Which depends on the session cookie, so the page varies with it.
  */
@@ -95,7 +95,7 @@ export const formAnswer = (data: unknown, status: number, ...cookies: Array<stri
   withCookies(Response.json(data, { status, headers: { "Cache-Control": "no-store" } }), ...cookies);
 
 /**
- * The answer to a sign-up form `parseSignUp` refused: a name or email address longer than Ember keeps,
+ * The answer to a sign-up form `parseSignUp` refused: a name or email address longer than Papaya OS keeps,
  * or @ember's name, is unprocessable (422) on its field, as a password too long is, and a field missing
  * is a bad request.
  */

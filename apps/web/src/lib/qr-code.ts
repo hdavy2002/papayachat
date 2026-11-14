@@ -11,7 +11,7 @@ export function qrCodePath(url: string): string {
 /**
  * `url`'s QR code drawn in the page, as the Worker draws it, for a link whose address mustn't reach the
  * Worker, as a sign-in link's mustn't. What draws it loads the first time one's drawn. Fails for text
- * too long for any QR code, which no link of Ember's is.
+ * too long for any QR code, which no link of Papaya OS's is.
  */
 export async function drawnQrCode(url: string): Promise<Blob> {
   const { qrCodeSvg } = await import("@ember/protocol/qr-code");

@@ -5,14 +5,14 @@ import type { APIRequestContext, Page, TestInfo } from "@playwright/test";
 import { cookieHeader, createSession, expect, keepOtherRoomsOut, openRoom, Participant, signInAs, test, type Session, type TestRoom } from "../../fixtures";
 import { settle } from "../mobile/audits";
 
-// The web app manifest's screenshots, which an install prompt shows: Ember on a phone. `pnpm
+// The web app manifest's screenshots, which an install prompt shows: Papaya OS on a phone. `pnpm
 // screenshots` saves them over apps/web/public/screenshots/, and any other run with the test's results,
 // so the suite keeps them working.
 
 const SAVED = path.resolve(import.meta.dirname, "../../../apps/web/public/screenshots");
 
 test.describe("Web app manifest", () => {
-  test("Ember on a phone: a room, the conversations drawer, and a room in dark mode", async ({ page, request, baseURL }, testInfo) => {
+  test("Papaya OS on a phone: a room, the conversations drawer, and a room in dark mode", async ({ page, request, baseURL }, testInfo) => {
     const maya = await createSession(request, "Maya Chen");
     const sam = await createSession(request, "Sam Rivera");
     const priya = await createSession(request, "Priya Patel");

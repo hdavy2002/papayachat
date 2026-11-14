@@ -3,9 +3,9 @@ import type { ReleaseCheck } from "@ember/protocol";
 import { betaToTryOf, updateOf } from "./release-check";
 
 const RELEASES = "https://github.com/NYLLON-SOFTWARE/ember-cloudflare/releases/tag";
-/** Ember `release`, or its beta, as the Worker names it, newer than this one or not. */
+/** Papaya OS `release`, or its beta, as the Worker names it, newer than this one or not. */
 const named = (release: string, version: string, newer: boolean) => ({ release, version, notes: `${RELEASES}/v${version}`, newer });
-/** What the Worker says of releases to an Ember on `release`, a beta or not, having heard from GitHub just now. */
+/** What the Worker says of releases to an Papaya OS on `release`, a beta or not, having heard from GitHub just now. */
 const checkOf = (release: string, beta: boolean, newest: ReleaseCheck["newest"], newestBeta: ReleaseCheck["newestBeta"]): ReleaseCheck => ({
   release,
   beta,
@@ -15,7 +15,7 @@ const checkOf = (release: string, beta: boolean, newest: ReleaseCheck["newest"],
   copy: null,
 });
 
-describe("What Update Ember would bring", () => {
+describe("What Update Papaya OS would bring", () => {
   it("is the newest release once it's newer, a beta of it or not", () => {
     const release = named("0.5", "0.5.0", true);
     expect(updateOf(checkOf("0.4.2", false, release, null))).toBe(release);

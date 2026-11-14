@@ -22,7 +22,7 @@ import { api, apiWith, builtPages, cookieOf, createRoom, freshDeploy, openWorksp
 const ada = { name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" };
 const grace = { name: "Grace Hopper", emailAddress: "grace@example.com", password: "compiler" };
 
-/** Sets Ember up with Ada as its administrator, signed in, answering general, its first room, too. */
+/** Sets Papaya OS up with Ada as its administrator, signed in, answering general, its first room, too. */
 async function setUp(): Promise<Session & { general: NewWorkspace["room"] }> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(ada) });
   expect(response.status).toBe(201);
@@ -118,7 +118,7 @@ describe("Sign up with the join link", () => {
     expect(await count("sessions")).toBe(2);
   });
 
-  it("answers 404 for any other code, and for every code before Ember is set up", async () => {
+  it("answers 404 for any other code, and for every code before Papaya OS is set up", async () => {
     for (const code of ["AAAA-BBBB-CCCC", "nothing"]) {
       expect((await page(`/join/${code}`)).status, code).toBe(404);
       expect((await join(code, grace)).status, code).toBe(404);
@@ -161,7 +161,7 @@ describe("Sign up with the join link", () => {
     ["a password shorter than first run takes", { ...grace, password: "1234567" }, 422, { error: PASSWORD_TOO_SHORT, field: "password" }],
     ["four emoji, which the field's minlength counts as eight", { ...grace, password: "🔐🔐🔐🔐" }, 422, { error: PASSWORD_TOO_SHORT, field: "password" }],
     ["a password longer than the form sends", { ...grace, password: "x".repeat(MAX_PASSWORD_LENGTH + 1) }, 422, { error: PASSWORD_TOO_LONG, field: "password" }],
-    ["a name longer than Ember keeps", { ...grace, name: "x".repeat(MAX_USER_NAME_LENGTH + 1) }, 422, { error: NAME_TOO_LONG, field: "name" }],
+    ["a name longer than Papaya OS keeps", { ...grace, name: "x".repeat(MAX_USER_NAME_LENGTH + 1) }, 422, { error: NAME_TOO_LONG, field: "name" }],
     ["an email address longer than any deliverable one", { ...grace, emailAddress: `${"x".repeat(MAX_EMAIL_ADDRESS_LENGTH - 11)}@example.com` }, 422, { error: EMAIL_ADDRESS_TOO_LONG, field: "emailAddress" }],
     ["a blank name", { ...grace, name: " " }, 400, { error: "Name, email address and password are required" }],
     ["no email address", { ...grace, emailAddress: undefined }, 400, { error: "Name, email address and password are required" }],
@@ -256,7 +256,7 @@ describe("Welcome and invite card", () => {
     expect((await roomList(administrator.cookie)).invitation).not.toBeNull();
   });
 
-  it("has none before Ember is set up", async () => {
+  it("has none before Papaya OS is set up", async () => {
     const guest = await signIn("Katherine");
     await createRoom("Design", { as: guest });
     expect((await roomList(guest.cookie)).invitation).toBeNull();

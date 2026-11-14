@@ -14,7 +14,7 @@ import { Marked } from "./search-marks";
 // browser would fetch it signed in. A search's results mark what it matched in all of a card's text, as it
 // searched all of it. A button that acts tells the room it was clicked, which reports the click to the card's bot.
 
-/** The bars of Slack's named colors, in Ember's: a notice's green, the warning amber and an alert's red. */
+/** The bars of Slack's named colors, in Papaya OS's: a notice's green, the warning amber and an alert's red. */
 const BARS = new Map([
   ["good", "bg-positive"],
   ["warning", "bg-warning"],

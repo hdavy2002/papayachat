@@ -39,7 +39,7 @@ const LEAVE_DELAY_MS = 180;
 let openBar: { close(): void } | null = null;
 
 /**
- * The bar's buttons: 32px, with 16px icons. For fingers they're 44px, as Ember's controls are.
+ * The bar's buttons: 32px, with 16px icons. For fingers they're 44px, as Papaya OS's controls are.
  */
 const ACTION =
   "flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-[6px] text-[0.8rem] font-medium text-message-muted transition-colors duration-150 hover:bg-hover focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-foreground touch:size-11 [&_svg]:size-4";
@@ -556,7 +556,7 @@ function Reaction({ emoji, title, onClick }: { emoji: string; title: string; onC
 
 /**
  * A file message's Download and Share, in Quote's place.
- * Download is hidden in Ember added to an iPhone's or iPad's home screen, as the file's card hides it, and
+ * Download is hidden in Papaya OS added to an iPhone's or iPad's home screen, as the file's card hides it, and
  * Share shows where the browser can share, sharing the file titled with its name.
  */
 function FileActions({ file }: { file: StoredFile }) {

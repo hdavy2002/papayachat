@@ -80,7 +80,7 @@ interface Props {
   onSharedOrderSaved: (sharedOrder: RoomId[]) => void;
   /** Called with null when the session has expired. */
   onSessionChanged: (me: Me | null) => void;
-  /** For an administrator, the release this Ember is and the newest one, once the Worker has said, or else null. */
+  /** For an administrator, the release this Papaya OS is and the newest one, once the Worker has said, or else null. */
   release: ReleaseCheck | null;
   /** Asks the Worker that afresh, as General's Check for updates does, settling once it's answered, which `release` then says. */
   onCheckForUpdates: () => Promise<void>;
@@ -92,7 +92,7 @@ interface Props {
  *
  * - General, where administrators change the workspace's icon, which one picked saves at once, showing it
  *   meanwhile, and Remove icon takes away, then rename the workspace, give it a tagline, and show or hide
- *   the translation buttons, which Save changes saves together, and see which release of Ember this is,
+ *   the translation buttons, which Save changes saves together, and see which release of Papaya OS this is,
  *   and when a newer one is out, which Check for updates asks GitHub again. Members see its icon, name
  *   and tagline.
  *   The rail's icons are in Custom styles (`NavigationIconSettings`), where the project's owner moved
@@ -101,12 +101,12 @@ interface Props {
  *   rooms, then for administrators, the switch that says so, and the rooms' order for everyone, each
  *   linking to its settings.
  * - Membership: for administrators, who can join, with switches for Open, the join link, which they can
- *   regenerate, and Papaya, how Ember sends email, and whether Cloudflare Turnstile checks who joins,
+ *   regenerate, and Papaya, how Papaya OS sends email, and whether Cloudflare Turnstile checks who joins,
  *   or for members, the links that let people in, then the administrators and members, whom
  *   administrators can make administrators or members and remove.
- * - Domain settings: for administrators, the custom domain Ember answers at.
- * - AI assistant: for administrators, whether Ember's AI agents run on models through Cloudflare AI
- *   Gateway, which Set up Ember AI connects, and while they do, the agents, @ember first, each linking to
+ * - Domain settings: for administrators, the custom domain Papaya OS answers at.
+ * - AI assistant: for administrators, whether Papaya OS's AI agents run on models through Cloudflare AI
+ *   Gateway, which Set up Papaya AI connects, and while they do, the agents, @ember first, each linking to
  *   its page, and New agent.
  * - Huddles: for administrators, whether huddles are on, through the Realtime SFU app whose keys Set up
  *   huddles takes.
@@ -141,7 +141,7 @@ export function WorkspaceSettingsPage({
   const [hidingTranslations, setHidingTranslations] = useState<boolean | null>(null);
   // Where Must be admin to create new rooms was moved to, while that's saved.
   const [restrictingCreation, setRestrictingCreation] = useState<boolean | null>(null);
-  // Set up email, while it's open, with what to go on to once it closes with Ember able to send email.
+  // Set up email, while it's open, with what to go on to once it closes with Papaya OS able to send email.
   const [emailSetup, setEmailSetup] = useState<{ then?: () => void } | null>(null);
   const [settingUpTurnstile, setSettingUpTurnstile] = useState(false);
   const [settingUpAssistant, setSettingUpAssistant] = useState(false);
@@ -301,14 +301,14 @@ export function WorkspaceSettingsPage({
     [],
   );
 
-  /** Shows how Ember sends email as Set up email, or Stop sending email, changes it, which only workspace settings shows. */
+  /** Shows how Papaya OS sends email as Set up email, or Stop sending email, changes it, which only workspace settings shows. */
   const showEmail = (change: (email: WorkspaceSettings["email"]) => WorkspaceSettings["email"]) => setSettings((settings) => settings && { ...settings, email: change(settings.email) });
-  /** Shows the addresses Ember knows reach it as the Custom domain section changes them, which only workspace settings shows. */
+  /** Shows the addresses Papaya OS knows reach it as the Custom domain section changes them, which only workspace settings shows. */
   const showAddresses = (change: (addresses: EmberAddresses) => EmberAddresses) => setSettings((settings) => settings && { ...settings, addresses: change(settings.addresses) });
   const setUpEmail = (then?: () => void) => setEmailSetup({ then });
-  /** Shows where Ember's Turnstile keys come from as Set up Turnstile, or turning Turnstile off, changes it, which only workspace settings shows. */
+  /** Shows where Papaya OS's Turnstile keys come from as Set up Turnstile, or turning Turnstile off, changes it, which only workspace settings shows. */
   const showTurnstile = (turnstile: WorkspaceSettings["turnstile"]) => setSettings((settings) => settings && { ...settings, turnstile });
-  /** Shows Ember AI as Set up Ember AI, or turning it off, changes it, which only workspace settings shows. */
+  /** Shows Papaya AI as Set up Papaya AI, or turning it off, changes it, which only workspace settings shows. */
   const showAssistant = (assistant: WorkspaceSettings["assistant"]) => setSettings((settings) => settings && { ...settings, assistant });
   /** Shows huddles as Set up huddles, or turning them off, changes them, which only workspace settings shows. */
   const showHuddles = (huddles: WorkspaceSettings["huddles"]) => setSettings((settings) => settings && { ...settings, huddles });

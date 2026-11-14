@@ -29,7 +29,7 @@ export async function listPushSubscriptions(request: Request, env: Env): Promise
  * `POST /api/push-subscriptions`, `{ endpoint, p256dhKey, authKey }`: saves a browser's subscription for
  * you, with its user agent, or, when you've saved one at that endpoint before, records that it was saved
  * again with the keys it has now, answering 204. You keep the `MAX_PUSH_SUBSCRIPTIONS` you saved most
- * recently, and one can replace the one its browser had at the address it moved from to Ember's custom
+ * recently, and one can replace the one its browser had at the address it moved from to Papaya OS's custom
  * domain (`replacing`). An endpoint pushes may not go to is refused (422) with Campfire's errors, which
  * it leaves out of its answer.
  */
@@ -60,7 +60,7 @@ export async function deletePushSubscription(request: Request, env: Env, id: str
 }
 
 /**
- * `POST /api/push-subscriptions/:id/test-notifications`: pushes "Ember Test" to your subscription `id`
+ * `POST /api/push-subscriptions/:id/test-notifications`: pushes "Papaya OS Test" to your subscription `id`
  * at once, with a random text, your unread count as its badge, and this page to open, answering 204
  * where Campfire redirects to the list. Someone else's subscription is 404, and Web Push being off, or
  * the push failing, is 500, without forgetting a subscription whose push service says it's gone.
@@ -71,6 +71,6 @@ export async function sendTestNotification(request: Request, env: Env, id: strin
   if (!delivery) return problem(401, NOT_SIGNED_IN);
   if (delivery === "missing") return problem(404, "Push subscription not found");
   const path = new URL(PUSH_SUBSCRIPTIONS_PATH, request.url).href;
-  await sendTestPush(env, { title: "Ember Test", body: crypto.randomUUID(), path }, delivery);
+  await sendTestPush(env, { title: "Papaya OS Test", body: crypto.randomUUID(), path }, delivery);
   return new Response(null, { status: 204 });
 }

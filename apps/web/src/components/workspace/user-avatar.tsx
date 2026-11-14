@@ -95,7 +95,7 @@ export const userTitle = ({ name, bio }: { name: string; bio?: string | null }) 
  * not a transform, so the phone audits can measure it.
  */
 const TOUCH_REACH = {
-  /** 44px across, as Ember sizes controls for fingers. */
+  /** 44px across, as Papaya OS sizes controls for fingers. */
   finger: "touch:after:absolute touch:after:inset-[calc(50%-22px)]",
   /** 24px, WCAG 2.5.8's floor, where it sits among small targets, as in a reaction. */
   dense: "touch:after:absolute touch:after:inset-[calc(50%-12px)]",

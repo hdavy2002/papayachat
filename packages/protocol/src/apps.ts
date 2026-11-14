@@ -2,7 +2,7 @@ import type { UserId } from "./index.ts";
 
 // Apps: the MCP servers an administrator connects, whose tools the AI agents may be given. An app is
 // the address of a server that speaks the Model Context Protocol over Streamable HTTP
-// (https://modelcontextprotocol.io), the token Ember sends it, if it takes one, and the tools Ember read
+// (https://modelcontextprotocol.io), the token Papaya OS sends it, if it takes one, and the tools Papaya OS read
 // from it when an administrator last looked.
 
 /** An app's id, as its page's address names it. */
@@ -15,15 +15,15 @@ export const MAX_APP_NAME_LENGTH = 60;
 export const MAX_APP_URL_LENGTH = 2048;
 export const MAX_APP_TOKEN_LENGTH = 4096;
 
-/** The most tools Ember reads from an app: the rest are left out, which its page says. */
+/** The most tools Papaya OS reads from an app: the rest are left out, which its page says. */
 export const MAX_APP_TOOLS = 100;
 
-/** The most characters Ember keeps of a tool's description, which rides with every question its agents are asked. */
+/** The most characters Papaya OS keeps of a tool's description, which rides with every question its agents are asked. */
 export const MAX_TOOL_DESCRIPTION_LENGTH = 1500;
 
 export const APPS_FORBIDDEN = "Only administrators can connect apps";
-export const APPS_FULL = `Ember connects at most ${MAX_APPS} apps. Remove one first.`;
-export const APP_CHANGED = "Someone else changed this app while Ember read its tools. Load the page again.";
+export const APPS_FULL = `Papaya OS connects at most ${MAX_APPS} apps. Remove one first.`;
+export const APP_CHANGED = "Someone else changed this app while Papaya OS read its tools. Load the page again.";
 export const APP_URL_REFUSED = "The address must be an https URL, or an http one on localhost";
 
 /** A tool of an app's, as its server describes it: its name there, what it's called, if that's something else, and what it does. */
@@ -34,9 +34,9 @@ export interface AppTool {
 }
 
 /**
- * An app as its page shows it: its name, its server's address, whether Ember
+ * An app as its page shows it: its name, its server's address, whether Papaya OS
  * sends a token, which it never shows again, what the server calls itself, the tools read from it, how
- * many more it has than Ember keeps, and who connected it, and when its tools were last read.
+ * many more it has than Papaya OS keeps, and who connected it, and when its tools were last read.
  */
 export interface App {
   id: AppId;
@@ -50,7 +50,7 @@ export interface App {
   connectedBy: { id: UserId; name: string } | null;
 }
 
-/** An app as the AI assistant tab lists it: its name, its server's address and how many tools Ember read from it. */
+/** An app as the AI assistant tab lists it: its name, its server's address and how many tools Papaya OS read from it. */
 export interface AppSummary {
   id: AppId;
   name: string;
@@ -93,7 +93,7 @@ export interface AppRefused {
 
 /**
  * Parses an untrusted change to an app, or says why it's refused: a name has more than spaces, an
- * address is a URL Ember may ask (`isAppUrl`), and a token is what a header can carry. The name and the
+ * address is a URL Papaya OS may ask (`isAppUrl`), and a token is what a header can carry. The name and the
  * address are kept trimmed, and the token as it's given but for the spaces around it.
  */
 export function parseAppChanges(data: unknown): AppChanges | AppRefused {
@@ -131,7 +131,7 @@ export function parseNewApp(data: unknown): NewApp | AppRefused {
 }
 
 /**
- * Whether Ember may ask an app at `address`: an https URL with a host, or an http one on this machine,
+ * Whether Papaya OS may ask an app at `address`: an https URL with a host, or an http one on this machine,
  * as a bot's webhook is, and without a name and password in it, which would be kept unsealed.
  */
 export function isAppUrl(address: string): boolean {
@@ -150,8 +150,8 @@ const LOOPBACK_HOST = /^(?:(?:.+\.)?localhost|127(?:\.\d{1,3}){3}|\[::1\])$/;
 const isLoopback = (hostname: string) => LOOPBACK_HOST.test(hostname);
 
 // The tools an agent may use. An administrator picks them, for @ember and for each agent, from the
-// tools Ember read from the connected apps. Each one an agent has rides with every question it's asked,
-// and whoever asked is shown each call of one before Ember makes it.
+// tools Papaya OS read from the connected apps. Each one an agent has rides with every question it's asked,
+// and whoever asked is shown each call of one before Papaya OS makes it.
 
 /** The most tools of connected apps one agent may use, as each rides with every question it's asked. */
 export const MAX_AGENT_TOOLS = 20;

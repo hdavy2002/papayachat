@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 // Community settings: the pages that set the workspace up share a layout whose column of links to them
 // takes the conversations' place, and workspace settings show one of their sections at a time, the one
 // the address's fragment names: General, Rooms and permissions, Membership, and Domain settings, where
-// administrators give Ember a custom domain, AI assistant, where they set up Ember AI and its agents,
+// administrators give Papaya OS a custom domain, AI assistant, where they set up Papaya AI and its agents,
 // whose pages are part of it, and Huddles, where they turn huddles on.
 
 /** The sections of community settings, by their ids. */

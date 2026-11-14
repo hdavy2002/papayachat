@@ -25,9 +25,9 @@ import {
 import { API_TOKEN_NEEDED } from "../src/assistant/settings";
 import { addKeptModels, agentWithKeptModel, api, apiWith, connect, cookieOf, freshDeploy, post, shown, withWorkspaceEnv, workspaceSql, workspaceStub, type Client, type Session } from "./support";
 
-// The models Ember offers administrators, as Set up Ember AI, Add a model and the agents' pages list
-// them: those the models file lists, which Ember reads from its main branch once a day, and Workers AI's
-// that take tools, as Cloudflare's model search lists them for Ember AI's account, which Ember gives its
+// The models Papaya OS offers administrators, as Set up Papaya AI, Add a model and the agents' pages list
+// them: those the models file lists, which Papaya OS reads from its main branch once a day, and Workers AI's
+// that take tools, as Cloudflare's model search lists them for Papaya AI's account, which Papaya OS gives its
 // own tool for searching the web, and runs their searches with Cloudflare's Web Search API.
 
 const ACCOUNT_ID = "0123456789abcdef0123456789abcdef";
@@ -72,7 +72,7 @@ const GEMMA_ROW = {
   output_modalities: ["text"],
   pricing: { prompt: "0.0000001", completion: "0.0000003" },
 };
-/** One whose reasoning can't be turned off, at efforts as Ember names them. */
+/** One whose reasoning can't be turned off, at efforts as Papaya OS names them. */
 const QWQ_ROW = {
   id: "@cf/qwen/qwq-32b",
   name: "QwQ 32B",
@@ -80,7 +80,7 @@ const QWQ_ROW = {
   reasoning: { supported_efforts: ["low", "medium", "high"], default_effort: "medium", default_enabled: true, mandatory: true },
   pricing: { prompt: "0.00000066", completion: "0.000001" },
 };
-/** Ones Ember doesn't offer: without tools, drawing pictures, and another company's. */
+/** Ones Papaya OS doesn't offer: without tools, drawing pictures, and another company's. */
 const UNOFFERED_ROWS = [
   { id: "@cf/meta/llama-3.2-1b-instruct", name: "Llama 3.2 1B", supported_features: ["json_mode"], pricing: { prompt: "0.000000027", completion: "0.0000002" } },
   { id: "@cf/black-forest-labs/flux-2", name: "FLUX.2", supported_features: ["tools"], output_modalities: ["image"] },
@@ -88,13 +88,13 @@ const UNOFFERED_ROWS = [
 ];
 const ROWS = [GLM_ROW, GEMMA_ROW, QWQ_ROW, ...UNOFFERED_ROWS];
 
-/** The same as Ember offers them, by their names. */
+/** The same as Papaya OS offers them, by their names. */
 const GEMMA: OfferedModel = { id: GEMMA_ROW.id, name: "Gemma 4 26B", format: "workers", price: { input: 0.1, output: 0.3 }, thinkingLevels: [] };
 const GLM: OfferedModel = { id: GLM_ROW.id, name: "GLM 5.2", format: "workers", price: { input: 1.4, output: 4.4 }, thinkingLevels: ["off", "high"], until: STOPS };
 const QWQ: OfferedModel = { id: QWQ_ROW.id, name: "QwQ 32B", format: "workers", price: { input: 0.66, output: 1 }, thinkingLevels: ["low", "medium", "high"] };
 const WORKERS_AI = [GEMMA, GLM, QWQ];
 
-/** A models file, as models.json on Ember's main branch is written, which lists a model the one Ember shipped with doesn't, and leaves out Grok. */
+/** A models file, as models.json on Papaya OS's main branch is written, which lists a model the one Papaya OS shipped with doesn't, and leaves out Grok. */
 const FILE = {
   version: MODELS_FILE_VERSION,
   suggested: "anthropic/claude-haiku-5.5",
@@ -165,14 +165,14 @@ function cloudflare({ file = () => Response.json(FILE), search = searchPage(ROWS
 /** Where the requests in `sent` went, without their queries. */
 const placesOf = (sent: Sent[]) => sent.map(({ url }) => url.split("?")[0]);
 
-/** Sets Ember up with Ada as its administrator, signed in. */
+/** Sets Papaya OS up with Ada as its administrator, signed in. */
 async function setUp(): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify({ name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" }) });
   expect(response.status).toBe(201);
   return { user: shown(((await response.json()) as NewWorkspace).user), cookie: cookieOf(response) };
 }
 
-/** Sets Ember up with Ada, and Ember AI on with `setup`, as Set up Ember AI does, which has to work. */
+/** Sets Papaya OS up with Ada, and Papaya AI on with `setup`, as Set up Papaya AI does, which has to work. */
 async function setUpWithAssistant(setup: Record<string, unknown> = SETUP): Promise<Session> {
   const ada = await setUp();
   cloudflare();
@@ -182,7 +182,7 @@ async function setUpWithAssistant(setup: Record<string, unknown> = SETUP): Promi
   return ada;
 }
 
-/** The models Ember offers `session`, as `POST /api/account/assistant/offered` answers with `keys`, from a Worker bound as this suite's is but for `changes`. */
+/** The models Papaya OS offers `session`, as `POST /api/account/assistant/offered` answers with `keys`, from a Worker bound as this suite's is but for `changes`. */
 const listed = (session: Session | null, keys: unknown = {}, changes = {}) =>
   apiWith(changes, "/api/account/assistant/offered", { method: "POST", headers: session ? { Cookie: session.cookie } : {}, body: JSON.stringify(keys) });
 
@@ -203,8 +203,8 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe("The models Ember offers", () => {
-  it("are those the models file lists, then Workers AI's that take tools, as the model search lists them for Ember AI's account, by their names", async () => {
+describe("The models Papaya OS offers", () => {
+  it("are those the models file lists, then Workers AI's that take tools, as the model search lists them for Papaya AI's account, by their names", async () => {
     const ada = await setUpWithAssistant();
     const requests = cloudflare();
 
@@ -264,15 +264,15 @@ describe("The models Ember offers", () => {
     expect((await offered(ada, {}, WITH_THE_FILE)).models).toEqual(shippedModels);
     expect(fileReads()).toBe(1);
 
-    // One for another version of Ember, then one larger than Ember reads, aren't read either.
+    // One for another version of Papaya OS, then one larger than Papaya OS reads, aren't read either.
     file = () => Response.json({ ...FILE, version: MODELS_FILE_VERSION + 1 });
     vi.setSystemTime(Date.now() + 1);
     expect((await offered(ada, {}, WITH_THE_FILE)).models).toEqual(shippedModels);
-    await vi.waitFor(() => expect(errors).toHaveBeenCalledWith("The models file wasn't read, as it isn't one this Ember reads"));
+    await vi.waitFor(() => expect(errors).toHaveBeenCalledWith("The models file wasn't read, as it isn't one this Papaya OS reads"));
     file = () => new Response(" ".repeat(64 * 1024 + 1));
     vi.setSystemTime(Date.now() + MODELS_FILE_RETRY_MS);
     await offered(ada, {}, WITH_THE_FILE);
-    await vi.waitFor(() => expect(errors).toHaveBeenCalledWith("The models file wasn't read, as it is larger than Ember reads"));
+    await vi.waitFor(() => expect(errors).toHaveBeenCalledWith("The models file wasn't read, as it is larger than Papaya OS reads"));
 
     file = () => Response.json(FILE);
     vi.setSystemTime(Date.now() + MODELS_FILE_RETRY_MS);
@@ -308,13 +308,13 @@ describe("The models Ember offers", () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     cloudflare({ search: refusing(403, 10000, "Authentication error") });
 
-    // Typed into Set up Ember AI, an API token lists them at once, and forgets what was kept when it's refused.
+    // Typed into Set up Papaya AI, an API token lists them at once, and forgets what was kept when it's refused.
     expect(await offered(ada, { accountId: ACCOUNT_ID, apiToken: OTHER_API_TOKEN })).toEqual({ models: [...ASSISTANT_MODELS], suggested: SUGGESTED_MODEL, workersAi: WORKERS_AI_TOKEN_REFUSED });
     expect(await workspaceStub().keptWorkersAiModels(ACCOUNT_ID)).toBeNull();
     expect((await offered(ada)).workersAi).toBe(WORKERS_AI_TOKEN_REFUSED);
   });
 
-  it("are listed for the account Set up Ember AI is given, with the API token it's given, or Ember AI's, which they're kept for", async () => {
+  it("are listed for the account Set up Papaya AI is given, with the API token it's given, or Papaya AI's, which they're kept for", async () => {
     const ada = await setUpWithAssistant();
     const requests = cloudflare({ search: searchPage([GEMMA_ROW]) });
 
@@ -379,19 +379,19 @@ describe("What the model search says of a model", () => {
     expect(workersAiModelOf({ ...GLM_ROW, deprecation_date: "soon" })).not.toHaveProperty("until");
   });
 
-  it("gives the levels of thinking it takes, as the efforts Ember asks for are among those it supports, with nothing turned into more", () => {
+  it("gives the levels of thinking it takes, as the efforts Papaya OS asks for are among those it supports, with nothing turned into more", () => {
     expect(thinkingLevelsIn(GLM_ROW.reasoning)).toEqual(["off", "high"]);
     expect(thinkingLevelsIn(QWQ_ROW.reasoning)).toEqual(["low", "medium", "high"]);
     expect(thinkingLevelsIn({ supported_efforts: ["none", "low", "medium", "high"] })).toEqual(["off", "low", "medium", "high"]);
-    // High turned into the most counts as High, as Ember's is its most.
+    // High turned into the most counts as High, as Papaya OS's is its most.
     expect(thinkingLevelsIn({ supported_efforts: ["none", "max"], normalizes_to: { high: "max", low: "max" } })).toEqual(["off", "high"]);
     expect(thinkingLevelsIn(null)).toEqual([]);
     for (const reasoning of [undefined, {}, { supported_efforts: [] }]) expect(thinkingLevelsIn(reasoning)).toBeUndefined();
   });
 });
 
-describe("A model Ember offers", () => {
-  /** Sets Ember AI up as `session` with `setup`, as Set up Ember AI does. */
+describe("A model Papaya OS offers", () => {
+  /** Sets Papaya AI up as `session` with `setup`, as Set up Papaya AI does. */
   const setUpAs = (session: Session, setup: unknown, changes = {}) =>
     apiWith(changes, "/api/account/assistant", { method: "PUT", headers: { Cookie: session.cookie }, body: JSON.stringify(setup) });
   /** Adds `model` as `session`, as Add a model does. */
@@ -482,7 +482,7 @@ describe("Workers AI's models", () => {
     }
   }
 
-  /** A Chat Completions answer that calls Ember's tool for searching the web for each of `queries`, or says `text`. */
+  /** A Chat Completions answer that calls Papaya OS's tool for searching the web for each of `queries`, or says `text`. */
   const calling = (...queries: string[]) =>
     Response.json({
       choices: [
@@ -494,17 +494,17 @@ describe("Workers AI's models", () => {
       usage: { completion_tokens: 20 },
     });
 
-  /** Turns Search the web on or off as `session`, as the Ember AI card's switch does. */
+  /** Turns Search the web on or off as `session`, as the Papaya AI card's switch does. */
   const turnWebSearch = (session: Session, on: boolean) => api("/api/account/assistant/web_search", { method: "PUT", headers: { Cookie: session.cookie }, body: JSON.stringify({ on }) });
 
-  /** A model that searches the web with Ember's tool once it's given it, for "AI Gateway", and answers with what it found. */
+  /** A model that searches the web with Papaya OS's tool once it's given it, for "AI Gateway", and answers with what it found. */
   const searchingModel = (sent: Sent) => {
     const messages = (sent.body?.messages ?? []) as Array<{ role: string }>;
     if (!sent.body?.tools) return answering("Hello, team!")(sent);
     return messages.at(-1)?.role === "tool" ? answering("AI Gateway is Cloudflare's proxy for AI models.")(sent) : calling("AI Gateway");
   };
 
-  it("search the web with Ember's tool, which Ember runs with Cloudflare's Web Search API, listing the pages found under the answer", async () => {
+  it("search the web with Papaya OS's tool, which Papaya OS runs with Cloudflare's Web Search API, listing the pages found under the answer", async () => {
     const ada = await setUpWithAssistant({ ...SETUP, model: GLM.id });
     let requests = cloudflare({ model: searchingModel });
     const turned = await turnWebSearch(ada, true);
@@ -576,7 +576,7 @@ describe("Workers AI's models", () => {
     expect(placesOf(requests).filter((url) => url === CHAT_COMPLETIONS)).toHaveLength(2);
   });
 
-  it("don't search the web for a model that calls Ember's tool while Search the web is off, telling it to answer without it", async () => {
+  it("don't search the web for a model that calls Papaya OS's tool while Search the web is off, telling it to answer without it", async () => {
     const ada = await setUpWithAssistant({ ...SETUP, model: GLM.id });
     const client = await connect(await general(), ada);
     const requests = cloudflare({
@@ -590,7 +590,7 @@ describe("Workers AI's models", () => {
     expect((requests[1]!.body!.messages as Array<Record<string, unknown>>).at(-1)).toEqual({ role: "tool", tool_call_id: "call_0", content: "You can't search the web for this answer. Answer without it." });
   });
 
-  it("answer what they said cut short when they take every token an answer may as they call Ember's tool, searching no more", async () => {
+  it("answer what they said cut short when they take every token an answer may as they call Papaya OS's tool, searching no more", async () => {
     const ada = await setUpWithAssistant({ ...SETUP, model: GLM.id });
     cloudflare({ model: searchingModel });
     expect((await turnWebSearch(ada, true)).status).toBe(200);
@@ -628,7 +628,7 @@ describe("Workers AI's models", () => {
     expect(placesOf(requests).filter((url) => url === WEB_SEARCH)).toHaveLength(WEB_SEARCHES_PER_ANSWER);
   });
 
-  it("don't turn Search the web on when the Web Search API refuses Ember AI's API token, saying which permissions it needs", async () => {
+  it("don't turn Search the web on when the Web Search API refuses Papaya AI's API token, saying which permissions it needs", async () => {
     const ada = await setUpWithAssistant({ ...SETUP, model: GLM.id });
     vi.spyOn(console, "error").mockImplementation(() => {});
     cloudflare({ model: searchingModel, webSearch: refusing(403, 10000, "Authentication error") });
@@ -699,7 +699,7 @@ describe("Workers AI's models", () => {
       await post(client, `<p>${mention} hello?</p>`);
       await nextAnswer(client);
       client.close();
-      // The only tool it's given is the room's search, which Ember runs.
+      // The only tool it's given is the room's search, which Papaya OS runs.
       const given = requests.map(({ body }) => (body?.tools as Array<{ type: string; name?: string }> | undefined)?.map(({ type, name }) => [type, name]));
       expect(given).toEqual([[["function", "search_messages"]]]);
     });

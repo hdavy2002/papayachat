@@ -81,7 +81,7 @@ function requiredUrl(body: unknown): unknown {
   return url;
 }
 
-/** Whether `url` is on this Ember's own host, which the app never shows a preview of. */
+/** Whether `url` is on this Papaya OS's own host, which the app never shows a preview of. */
 function isOwnHost(url: string, request: Request): boolean {
   return isOnHost(url, [urlOf(request).host]);
 }

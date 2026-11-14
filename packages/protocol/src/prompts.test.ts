@@ -44,7 +44,7 @@ describe("What @ember and the agents are told", () => {
   });
 
   it("tells @ember it's the AI assistant, answering as a helpful teammate would, and an agent not saved yet as it's named", () => {
-    const ember = promptAround(ASSISTANT_ID, "Ember", "Ada Lovelace", { community: "Fernwood", roomName: null, inThread: false }, 1_500, "WEB", NOW);
+    const ember = promptAround(ASSISTANT_ID, "Papaya OS", "Ada Lovelace", { community: "Fernwood", roomName: null, inThread: false }, 1_500, "WEB", NOW);
     expect(ember.before).toMatch(/^You are Ember, the AI assistant in the team chat "Fernwood"\. People ask you things by mentioning @ember/);
     expect(ember.after).toMatch(/^\n\nWrite in Markdown\./);
     expect(ember.after).toMatch(/\n\nYou're asked in a direct message\. .* Answer the last one, which Ada Lovelace wrote, as a helpful teammate would: plainly, and in at most about 1,500 words\.$/);
@@ -78,13 +78,13 @@ describe("What an administrator changes it to", () => {
     );
   });
 
-  it("leaves what fills a placeholder as it is, though it's written as one, and keeps a placeholder Ember doesn't fill in as it's written", () => {
+  it("leaves what fills a placeholder as it is, though it's written as one, and keeps a placeholder Papaya OS doesn't fill in as it's written", () => {
     const prompt = promptAround("0mgk3x2a9b4c5e", "{{web}}", "Ada Lovelace", IN_LAUNCH, 150, "WEB", NOW, "{{name}} {{nickname}}\n\n{{instructions}}");
     expect(prompt).toEqual({ before: "{{web}} {{nickname}}\n\n", after: "" });
   });
 
   it("drops the line the instructions would take when there are none, leaving the lines around it as far apart as the further side was", () => {
-    const withNone = (template: string) => withInstructions(promptAround(ASSISTANT_ID, "Ember", "Ada Lovelace", IN_LAUNCH, 150, "WEB", NOW, template), "");
+    const withNone = (template: string) => withInstructions(promptAround(ASSISTANT_ID, "Papaya OS", "Ada Lovelace", IN_LAUNCH, 150, "WEB", NOW, template), "");
     expect(withNone("{{instructions}}\n\nToday is {{today}}.")).toBe("Today is Tuesday, November 10, 2026.");
     expect(withNone("You are {{name}}.\n{{instructions}}\nToday is {{today}}.")).toBe("You are Ember.\nToday is Tuesday, November 10, 2026.");
     expect(withNone("You are {{name}}.\n\n  {{instructions}}\nToday is {{today}}.")).toBe("You are Ember.\n\nToday is Tuesday, November 10, 2026.");
@@ -92,26 +92,26 @@ describe("What an administrator changes it to", () => {
   });
 
   it("leaves the rest of the line as it's written when the instructions' place within it has none", () => {
-    const withNone = (template: string) => withInstructions(promptAround(ASSISTANT_ID, "Ember", "Ada Lovelace", IN_LAUNCH, 150, "WEB", NOW, template), "");
+    const withNone = (template: string) => withInstructions(promptAround(ASSISTANT_ID, "Papaya OS", "Ada Lovelace", IN_LAUNCH, 150, "WEB", NOW, template), "");
     expect(withNone('Answer as {"instructions": "{{instructions}}"} says.')).toBe('Answer as {"instructions": ""} says.');
     expect(withNone("You are {{name}}. Also: {{instructions}}\n\nToday is {{today}}.")).toBe("You are Ember. Also: \n\nToday is Tuesday, November 10, 2026.");
   });
 
-  it("takes a template with the instructions once and only the placeholders Ember fills in, of at most the length it takes", () => {
+  it("takes a template with the instructions once and only the placeholders Papaya OS fills in, of at most the length it takes", () => {
     expect(templateRefusal(AGENT_TEMPLATE)).toBeNull();
     expect(templateRefusal(EMBER_TEMPLATE)).toBeNull();
     expect(templateRefusal("You are {{name}}.")).toBe(INSTRUCTIONS_PLACE_NEEDED);
     expect(templateRefusal("{{instructions}} and {{ instructions }}")).toBe(INSTRUCTIONS_PLACE_NEEDED);
     expect(templateRefusal("{{instructions}} for {{comunity}}")).toBe(unknownPlaceholder("comunity"));
     expect(unknownPlaceholder("comunity")).toBe(
-      "Ember has nothing to fill in for {{comunity}}. It fills in {{name}}, {{community}}, {{where}}, {{asker}}, {{words}}, {{cards}}, {{web}}, {{today}}, {{instructions}}.",
+      "Papaya OS has nothing to fill in for {{comunity}}. It fills in {{name}}, {{community}}, {{where}}, {{asker}}, {{words}}, {{cards}}, {{web}}, {{today}}, {{instructions}}.",
     );
     expect(templateRefusal(`{{instructions}}${" ".repeat(MAX_TEMPLATE_LENGTH)}`)).toBe(TEMPLATE_TOO_LONG);
     // Single braces are anyone's to write.
     expect(templateRefusal('{{instructions}} Answer as {"answer": "…"}.')).toBeNull();
   });
 
-  it("parses one as a page saves it: null or Ember's own for Ember's own, and anything else without the spaces around it", () => {
+  it("parses one as a page saves it: null or Papaya OS's own for Papaya OS's own, and anything else without the spaces around it", () => {
     expect(parseTemplate(null, null)).toEqual({ template: null });
     expect(parseTemplate(`\n${AGENT_TEMPLATE}  `, "0mgk3x2a9b4c5e")).toEqual({ template: null });
     expect(parseTemplate(EMBER_TEMPLATE, ASSISTANT_ID)).toEqual({ template: null });

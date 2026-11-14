@@ -195,7 +195,7 @@ describe("An agent's Tools card", () => {
     expect(within(card()).queryByRole("checkbox")).toBeNull();
   });
 
-  it("leaves it to the page to say why the tools didn't load, or a pick failed any other way, as when Ember AI is off", async () => {
+  it("leaves it to the page to say why the tools didn't load, or a pick failed any other way, as when Papaya AI is off", async () => {
     serve({ loaded: () => Response.json({ error: "Something went wrong" }, { status: 500 }) });
     const { onFailed } = showCard();
     await waitFor(() => expect(onFailed).toHaveBeenCalledTimes(1));

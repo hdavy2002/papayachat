@@ -48,7 +48,7 @@ interface Props {
  * Whether this browser has notifications on, for every page of the workspace, and turning them on. It's
  * checked as the workspace opens, rather than by the bell on each page, which would show the bell that
  * turns them on for a moment each time a room opens, and when they're on, this browser's subscription is
- * saved again, so the server keeps it (`savePushAgain`), but at an address Ember has moved from to its
+ * saved again, so the server keeps it (`savePushAgain`), but at an address Papaya OS has moved from to its
  * custom domain, where the one this browser saved there replaced it (`replaceOnSave`), and saving it
  * again would have everything pushed to both.
  */

@@ -1,6 +1,6 @@
 # Icons
 
-Every icon Ember draws is Iconoir's, from its 7.12.1 release, as the project's owner chose, picking one
+Every icon Papaya OS draws is Iconoir's, from its 7.12.1 release, as the project's owner chose, picking one
 for each place, with three exceptions: the icons people choose for rooms and the rail, from the icon
 pickers' catalog; the setup help's picture of Chrome's View site information button, which shows what
 Chrome draws there; and the brand images. Import icons from this folder, never from `lucide-react`:
@@ -17,7 +17,7 @@ Iconoir's files in `iconoir/`.
 | `room-icon.tsx`, `room-icon-label.ts` | A room's icon, from its own file, as a mask in the color of the text around it, or `#` for the default, and what the pickers call it, crediting Iconoir's |
 
 The brand images live in `apps/web/public`, with the icons the web app manifest lists.
-`logos/app-icon.png` and `logos/app-icon-192.png` are Ember's icons: the home-screen icon and the
+`logos/app-icon.png` and `logos/app-icon-192.png` are Papaya OS's icons: the home-screen icon and the
 installed app's. `shortcuts/plus.svg` and `shortcuts/user.svg` are Iconoir's, byte for byte, for the
 installed app's New chat room and My profile shortcuts. The favicon,
 `logos/app-icon-48.png`, is the same image scaled from 512px down to 48px: browsers fetch the favicon
@@ -25,7 +25,7 @@ while the page loads, and in Lighthouse the 121 KB original delayed a room's lar
 390 ms on mobile and 80 ms on desktop. For the same reason, while the workspace has a logo the app
 points the favicon at the logo's 192-pixel variant, and only the Apple touch icon at its 512-pixel
 one (`hooks/use-account-logo.ts`).
-`ember-icon.png` is Ember's flame, on the rail and the sign-in card, scaled from 1254px down to 192px,
+`ember-icon.png` is Papaya OS's flame, on the rail and the sign-in card, scaled from 1254px down to 192px,
 so the page doesn't load 595 KB for a 44px mark.
 `assistant-avatar.svg` is @ember's avatar, which the Worker serves as its picture: the flame's outline,
 traced from `logos/app-icon.png`, in white on the app icon's sunset. It fills its square, which the app

@@ -15,7 +15,7 @@ import { ROUND_BUTTON } from "./link-buttons";
 import { workspaceSectionPath } from "./settings-navigation";
 import { UserAvatar } from "./user-avatar";
 
-// The Agents card on the AI assistant tab, for administrators while Ember AI is on: New agent, then
+// The Agents card on the AI assistant tab, for administrators while Papaya AI is on: New agent, then
 // @ember, built in, and each agent made, by name, with what it does, its model, whether it searches the
 // web, and its rooms, each with a link to its page. An agent deleted or renamed elsewhere leaves or is
 // renamed here as soon as the people directory hears of it, as the Chat bots page's bots do.
@@ -25,12 +25,12 @@ const NOTE = "text-[0.8em] text-muted-foreground max-md:text-[12px]";
 /** The AI assistant tab, which the agents' pages go back to. */
 export const AGENTS_PATH = workspaceSectionPath("assistant-settings");
 
-/** Whether `error` says Ember AI is off. */
+/** Whether `error` says Papaya AI is off. */
 export const isOff = (error: unknown) => error instanceof ApiError && error.status === 409 && error.message === ASSISTANT_OFF;
 
 /**
  * Sends anyone but an administrator away from the agents' pages to workspace settings, as the bot pages
- * do, and an administrator to the AI assistant tab while Ember AI is off, where it's turned on, each
+ * do, and an administrator to the AI assistant tab while Papaya AI is off, where it's turned on, each
  * with an alert saying why: `forbidden` and `off`, and `failed` with an error, which goes to `onFailed`
  * unless the server answered one of those.
  */
@@ -75,7 +75,7 @@ interface Row {
   builtIn: boolean;
 }
 
-/** @ember's row, from Ember AI's settings: the model it answers everyone with, whether people can pick theirs, and whether it searches. */
+/** @ember's row, from Papaya AI's settings: the model it answers everyone with, whether people can pick theirs, and whether it searches. */
 function emberRow(assistant: AssistantSettings, people: People): Row {
   const user = people.get(ASSISTANT_ID) ?? { id: ASSISTANT_ID, name: ASSISTANT_NAME, bio: null, role: "bot", status: "active", avatarUrl: assistant.avatarUrl };
   const model = modelName(assistant.model, assistant.models) + (assistant.models.length > 1 ? ", or the model each person picks" : "");

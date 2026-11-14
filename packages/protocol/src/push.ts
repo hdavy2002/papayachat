@@ -23,7 +23,7 @@ export interface PushSubscriptionKeys {
 
 /**
  * What `POST /api/push-subscriptions` takes: a browser's push subscription, and the P-256 key of the one
- * the same browser had at the address its page moved from to Ember's custom domain, which this one
+ * the same browser had at the address its page moved from to Papaya OS's custom domain, which this one
  * replaces.
  */
 export interface PushSubscriptionSave extends PushSubscriptionKeys {

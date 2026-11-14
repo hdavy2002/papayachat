@@ -37,7 +37,7 @@ export function KeyboardShortcutsDialog({ open, onOpenChange }: Props) {
           <Xmark className="size-[18px]" />
         </button>
         <DialogTitle className={DIALOG_TITLE}>Keyboard shortcuts</DialogTitle>
-        <DialogDescription className="sr-only">The keys that do what Ember does, and what each does.</DialogDescription>
+        <DialogDescription className="sr-only">The keys that do what Papaya OS does, and what each does.</DialogDescription>
         {SHORTCUTS.map(({ group, rows }) => (
           <section key={group} aria-label={group} className="mt-5">
             <h3 className="mb-1.5 text-xs font-medium text-muted-foreground">{group}</h3>

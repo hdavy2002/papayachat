@@ -5,7 +5,7 @@ import { changeYourAssistant, isSignedOut } from "@/lib/api";
 import { LevelDials } from "./level-dials";
 import { NOTE, SELECT } from "./model-picker";
 
-// The Ember AI section of your profile, while Ember AI is on: which of the models administrators let
+// The Papaya AI section of your profile, while Papaya AI is on: which of the models administrators let
 // people pick @ember answers you with, when they let people pick from more than one, how much it thinks
 // before it answers you, and how long its answers to you are, up to the most administrators allow. A
 // choice saves at once, and shows as it was again if it isn't saved. Default follows the administrators'
@@ -22,7 +22,7 @@ const DEFAULT = "";
 interface Props {
   /** Your model and levels, the most each level may be, and the models you can pick. */
   assistant: YourAssistant;
-  /** Shows your model and levels as a change leaves them, or as they were again when it fails, or none once Ember AI is off. */
+  /** Shows your model and levels as a change leaves them, or as they were again when it fails, or none once Papaya AI is off. */
   onChanged: (assistant: YourAssistant | null) => void;
   /** Says why a change wasn't saved, as the workspace's alerts do. */
   onFailed: (error: unknown) => void;
@@ -57,7 +57,7 @@ export function AnswerLevels({ assistant, onChanged, onFailed }: Props) {
   return (
     <section aria-labelledby="answer-levels-heading" className="flex flex-col gap-3 rounded-[10px] border bg-surface px-[2ch] py-4 max-md:px-3">
       <h2 id="answer-levels-heading" className="text-base font-semibold">
-        Ember AI
+        Papaya AI
       </h2>
       <p>
         {picking

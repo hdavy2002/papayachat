@@ -7,7 +7,7 @@ import { ApiError } from "@/lib/api";
 import { EMAIL_SENDING_DASHBOARD, EmailSetup, WORKERS_PLANS } from "./email-setup";
 
 const EMBER: Account = {
-  name: "Ember",
+  name: "Papaya OS",
   tagline: "",
   hideTranslationButtons: true,
   customStyles: "",
@@ -29,9 +29,9 @@ const NEW_EMAIL: Email = { provider: "cloudflare", resendKey: null, cloudflare: 
 const RESEND_KEY = "re_123456789_abcdefghijklmnop";
 
 interface Answers {
-  /** What giving Ember a Resend API key answers, rather than Ember sending with it. */
+  /** What giving Papaya OS a Resend API key answers, rather than Papaya OS sending with it. */
   keySaved?: () => Response | Promise<Response>;
-  /** What taking it away answers, rather than Ember sending with Cloudflare's binding. */
+  /** What taking it away answers, rather than Papaya OS sending with Cloudflare's binding. */
   keyForgotten?: () => Response | Promise<Response>;
   /** What saving the From address answers, rather than the workspace. */
   fromSaved?: () => Response | Promise<Response>;
@@ -141,14 +141,14 @@ describe("Sending email", () => {
     const { user, onClose } = showSetup(NEW_EMAIL);
     const setup = await dialog("Set up email");
     expect(within(setup).getByRole("heading", { name: "Set up email" })).toHaveFocus();
-    expect(setup).toHaveAccessibleDescription("Ember emails invitations, the links people at your email domains join with, and codes to reset a forgotten password. Choose what sends them.");
+    expect(setup).toHaveAccessibleDescription("Papaya OS emails invitations, the links people at your email domains join with, and codes to reset a forgotten password. Choose what sends them.");
     expect(choice("Resend")).not.toBeChecked();
     expect(choice("Resend")).toHaveAccessibleDescription(
       "Free for up to 100 emails a day, and 3,000 a month, whatever your Cloudflare plan. It takes a Resend account, and a domain to send from.",
     );
     expect(choice("Cloudflare Email Service")).toBeEnabled();
     expect(choice("Cloudflare Email Service")).toHaveAccessibleDescription(
-      "Needs the Workers Paid plan ($5 a month) on the Cloudflare account that runs Ember.",
+      "Needs the Workers Paid plan ($5 a month) on the Cloudflare account that runs Papaya OS.",
     );
     expect(button("Continue")).toBeDisabled();
     await user.click(choice("Resend"));
@@ -160,7 +160,7 @@ describe("Sending email", () => {
     expect(asked()).toEqual([]);
   });
 
-  it("sets up Resend with an API key Ember checks, then the From address, then a test email, closing able to send", async () => {
+  it("sets up Resend with an API key Papaya OS checks, then the From address, then a test email, closing able to send", async () => {
     serve(NEW_EMAIL);
     const { user, onEmailChanged, onFromSaved, onAccountChanged, onClose } = showSetup(NEW_EMAIL);
     await user.click(await screen.findByRole("radio", { name: "Resend" }));
@@ -168,7 +168,7 @@ describe("Sending email", () => {
 
     const resend = await dialog("Send with Resend");
     expect(within(resend).getByRole("heading", { name: "Send with Resend" })).toHaveFocus();
-    expect(resend).toHaveAccessibleDescription("Ember sends email with an API key from your Resend account, which it keeps encrypted.");
+    expect(resend).toHaveAccessibleDescription("Papaya OS sends email with an API key from your Resend account, which it keeps encrypted.");
     const [domain, key] = within(screen.getByRole("list", { name: "Steps to send email with Resend" })).getAllByRole("listitem");
     expect(domain).toHaveTextContent(
       "In Resend, add the domain to send from under Domains, then add the DNS records it gives you where your domain's DNS is, until Resend says it's verified.",
@@ -184,17 +184,17 @@ describe("Sending email", () => {
     await dialog("Choose the From address");
     expect(onEmailChanged).toHaveBeenCalledExactlyOnceWith({ ...NEW_EMAIL, provider: "resend", resendKey: "saved" });
     expect(screen.getByRole("dialog")).toHaveAccessibleDescription(
-      "The address Ember's email comes from, on the domain you verified in Resend. Email comes under the community's name, unless you put another name before the address.",
+      "The address Papaya OS's email comes from, on the domain you verified in Resend. Email comes under the community's name, unless you put another name before the address.",
     );
     expect(fromField()).toHaveValue("");
-    await user.type(fromField(), "  Ember Team   <chat@example.com> ");
+    await user.type(fromField(), "  Papaya OS Team   <chat@example.com> ");
     await user.click(button("Continue"));
 
     const test = await dialog("Send a test email");
-    expect(onFromSaved).toHaveBeenCalledExactlyOnceWith("Ember Team <chat@example.com>");
+    expect(onFromSaved).toHaveBeenCalledExactlyOnceWith("Papaya OS Team <chat@example.com>");
     expect(onAccountChanged).toHaveBeenCalledWith(EMBER);
     expect(test).toHaveAccessibleDescription(
-      "Ember is set up to send email, and sends you a test email to check that it arrives. If it doesn't, go back and change what sends it.",
+      "Papaya OS is set up to send email, and sends you a test email to check that it arrives. If it doesn't, go back and change what sends it.",
     );
     // It's sent as the step opens.
     expect(await screen.findByText("Sent to ada@example.com. If it isn't in your inbox, look in spam.")).toBeInTheDocument();
@@ -202,7 +202,7 @@ describe("Sending email", () => {
     expect(onClose).toHaveBeenCalledExactlyOnceWith(true);
     expect(asked()).toEqual([
       ["PUT /api/account/resend_api_key", { apiKey: RESEND_KEY }],
-      ["PATCH /api/account", { emailFrom: "Ember Team <chat@example.com>" }],
+      ["PATCH /api/account", { emailFrom: "Papaya OS Team <chat@example.com>" }],
       ["POST /api/account/test_email", undefined],
     ]);
   });
@@ -264,9 +264,9 @@ describe("Sending email", () => {
     await user.click(button("Continue"));
 
     const cloudflare = await dialog("Send with Cloudflare Email Service");
-    expect(cloudflare).toHaveAccessibleDescription("Ember sends email from your Cloudflare account, with this Worker's EMAIL binding.");
+    expect(cloudflare).toHaveAccessibleDescription("Papaya OS sends email from your Cloudflare account, with this Worker's EMAIL binding.");
     const [plan, domain] = within(screen.getByRole("list", { name: "Steps to send email with Cloudflare" })).getAllByRole("listitem");
-    expect(plan).toHaveTextContent(/^Put the Cloudflare account that runs Ember on the Workers Paid plan\. Open Workers plans$/);
+    expect(plan).toHaveTextContent(/^Put the Cloudflare account that runs Papaya OS on the Workers Paid plan\. Open Workers plans$/);
     expect(within(plan!).getByRole("link", { name: "Open Workers plans" })).toHaveAttribute("href", WORKERS_PLANS);
     expect(domain).toHaveTextContent(
       "In the Cloudflare dashboard, open Email Service, Email Sending, choose Onboard Domain, and pick a domain on Cloudflare DNS.",
@@ -276,7 +276,7 @@ describe("Sending email", () => {
 
     await dialog("Choose the From address");
     expect(screen.getByRole("dialog")).toHaveAccessibleDescription(
-      "The address Ember's email comes from, on the domain you onboarded to Email Sending. Email comes under the community's name, unless you put another name before the address.",
+      "The address Papaya OS's email comes from, on the domain you onboarded to Email Sending. Email comes under the community's name, unless you put another name before the address.",
     );
     expect(asked()).toEqual([]);
     // Back goes to Cloudflare's steps, then to the choice, which stays as it was.
@@ -299,7 +299,7 @@ describe("Sending email", () => {
     expect(choice("Resend")).toBeEnabled();
   });
 
-  it("keeps the Resend API key Ember has unless another is pasted, and changes only what's changed", async () => {
+  it("keeps the Resend API key Papaya OS has unless another is pasted, and changes only what's changed", async () => {
     const email: Email = { provider: "resend", resendKey: "saved", cloudflare: true, from: "chat@example.com" };
     serve(email);
     const { user, onClose } = showSetup(email);
@@ -307,7 +307,7 @@ describe("Sending email", () => {
     await user.click(button("Continue"));
     await dialog("Send with Resend");
     expect(keyField()).toHaveValue("");
-    expect(keyField()).toHaveAccessibleDescription("Ember has a Resend API key already. Paste another to send with it instead.");
+    expect(keyField()).toHaveAccessibleDescription("Papaya OS has a Resend API key already. Paste another to send with it instead.");
     await user.click(button("Continue"));
 
     await dialog("Choose the From address");
@@ -320,14 +320,14 @@ describe("Sending email", () => {
     expect(asked()).toEqual([["POST /api/account/test_email", undefined]]);
   });
 
-  it("forgets the Resend API key Ember has once Cloudflare Email Service is chosen instead", async () => {
+  it("forgets the Resend API key Papaya OS has once Cloudflare Email Service is chosen instead", async () => {
     const email: Email = { provider: "resend", resendKey: "saved", cloudflare: true, from: "chat@example.com" };
     serve(email);
     const { user, onEmailChanged } = showSetup(email);
     await user.click(await screen.findByRole("radio", { name: "Cloudflare Email Service" }));
     await user.click(button("Continue"));
     await dialog("Send with Cloudflare Email Service");
-    expect(screen.getByRole("dialog")).toHaveTextContent("Ember will stop sending with Resend, and forget its API key.");
+    expect(screen.getByRole("dialog")).toHaveTextContent("Papaya OS will stop sending with Resend, and forget its API key.");
     await user.click(button("Continue"));
 
     await dialog("Choose the From address");
@@ -353,7 +353,7 @@ describe("Sending email", () => {
     const email: Email = { provider: "resend", resendKey: "secret", cloudflare: true, from: null };
     serve(email);
     const { user, onFromSaved } = showSetup(email);
-    await user.type(await screen.findByRole("textbox", { name: "From" }), "Ember{Enter}");
+    await user.type(await screen.findByRole("textbox", { name: "From" }), "Papaya OS{Enter}");
     expect(screen.getByRole("alert")).toHaveTextContent(EMAIL_FROM_REFUSED);
     expect(fromField()).toHaveAttribute("aria-invalid", "true");
     expect(fromField()).toHaveAccessibleDescription(EMAIL_FROM_REFUSED);
@@ -381,7 +381,7 @@ describe("Sending email", () => {
     serve(NEW_EMAIL, { domainChecked: check.answered });
     const { user, onClose } = await cloudflareFrom();
     expect(domainNote()).toBeEmptyDOMElement();
-    await user.type(fromField(), "Ember <ember@Mail.Example.com>");
+    await user.type(fromField(), "Papaya OS <ember@Mail.Example.com>");
     await noted("Checking that mail.example.com is onboarded to Cloudflare Email Sending…");
     await check.answer();
     await noted("mail.example.com is onboarded to Cloudflare Email Sending.");
@@ -396,7 +396,7 @@ describe("Sending email", () => {
     // Once, for the domain typed, as typing stopped.
     expect(asked()).toEqual([
       ["POST /api/account/sending_domain_checks", { domain: "mail.example.com" }],
-      ["PATCH /api/account", { emailFrom: "Ember <ember@Mail.Example.com>" }],
+      ["PATCH /api/account", { emailFrom: "Papaya OS <ember@Mail.Example.com>" }],
       ["POST /api/account/test_email", undefined],
     ]);
   });
@@ -423,17 +423,17 @@ describe("Sending email", () => {
     serve(NEW_EMAIL, { domainChecked: () => Response.json({ onboarded: null }) });
     const { user } = await cloudflareFrom();
     await user.type(fromField(), "ember@example.net");
-    await noted("Ember couldn't look up example.net just now. The test email will say whether Cloudflare sends from it.");
+    await noted("Papaya OS couldn't look up example.net just now. The test email will say whether Cloudflare sends from it.");
     expect(domainNote()).not.toHaveClass("text-positive", "text-negative");
 
     // A From address that isn't one says only that.
     await user.clear(fromField());
-    await user.type(fromField(), "Ember{Enter}");
+    await user.type(fromField(), "Papaya OS{Enter}");
     expect(screen.getByRole("alert")).toHaveTextContent(EMAIL_FROM_REFUSED);
     expect(domainNote()).toBeEmptyDOMElement();
     await user.clear(fromField());
     await user.type(fromField(), "chat@example.net");
-    await noted("Ember couldn't look up example.net just now.");
+    await noted("Papaya OS couldn't look up example.net just now.");
     expect(asked()).toEqual([["POST /api/account/sending_domain_checks", { domain: "example.net" }]]);
   });
 
@@ -471,7 +471,7 @@ describe("Sending email", () => {
     ]);
   });
 
-  it("closes with Escape, saying whether Ember can send email then", async () => {
+  it("closes with Escape, saying whether Papaya OS can send email then", async () => {
     const email: Email = { provider: "cloudflare", resendKey: null, cloudflare: true, from: "chat@example.com" };
     serve(email);
     const { user, onClose } = showSetup(email);

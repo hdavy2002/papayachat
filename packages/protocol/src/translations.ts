@@ -1,4 +1,4 @@
-// Campfire's translations (app/helpers/translations_helper.rb), with Ember in place of its name: for
+// Campfire's translations (app/helpers/translations_helper.rb), with Papaya OS in place of its name: for
 // each field that has a translation button, what it asks for in English, Spanish, French, Hindi, German,
 // Brazilian Portuguese and Japanese, each after its country's flag. The app's translation buttons show
 // them, and so does the Worker's page for browsers too old for the app.
@@ -59,22 +59,22 @@ export const TRANSLATIONS = {
     ["🇯🇵", "ルームに名前を付ける"],
   ],
   invite_message: [
-    ["🇺🇸", "Welcome to Ember. To invite some people to chat with you, share the join link below."],
-    ["🇪🇸", "Bienvenido a Ember. Para invitar a algunas personas a chatear contigo, comparte el enlace de unión que se encuentra a continuación."],
-    ["🇫🇷", "Bienvenue sur Ember. Pour inviter des personnes à discuter avec vous, partagez le lien pour rejoindre ci-dessous."],
-    ["🇮🇳", "Ember में आपका स्वागत है। अधिक लोगों को चैट के लिए आमंत्रित करने के लिए, नीचे जुड़ने का लिंक साझा करें।"],
-    ["🇩🇪", "Willkommen bei Ember. Um einige Personen zum Chatten einzuladen, teilen Sie den unten stehenden Beitrittslink."],
-    ["🇧🇷", "Boas vindas ao Ember. Para convidar pessoas para conversarem com você, compartilhe o link de convite abaixo."],
-    ["🇯🇵", "Emberへようこそ。他の人をチャットに招待するには、下記の参加リンクを共有してください。"],
+    ["🇺🇸", "Welcome to Papaya OS. To invite some people to chat with you, share the join link below."],
+    ["🇪🇸", "Bienvenido a Papaya OS. Para invitar a algunas personas a chatear contigo, comparte el enlace de unión que se encuentra a continuación."],
+    ["🇫🇷", "Bienvenue sur Papaya OS. Pour inviter des personnes à discuter avec vous, partagez le lien pour rejoindre ci-dessous."],
+    ["🇮🇳", "Papaya OS में आपका स्वागत है। अधिक लोगों को चैट के लिए आमंत्रित करने के लिए, नीचे जुड़ने का लिंक साझा करें।"],
+    ["🇩🇪", "Willkommen bei Papaya OS. Um einige Personen zum Chatten einzuladen, teilen Sie den unten stehenden Beitrittslink."],
+    ["🇧🇷", "Boas vindas ao Papaya OS. Para convidar pessoas para conversarem com você, compartilhe o link de convite abaixo."],
+    ["🇯🇵", "Papaya OSへようこそ。他の人をチャットに招待するには、下記の参加リンクを共有してください。"],
   ],
   incompatible_browser_messsage: [
-    ["🇺🇸", "Upgrade to a supported web browser. Ember requires a modern web browser. Please use one of the browsers listed below and make sure auto-updates are enabled."],
-    ["🇪🇸", "Actualiza a un navegador web compatible. Ember requiere un navegador web moderno. Utiliza uno de los navegadores listados a continuación y asegúrate de que las actualizaciones automáticas estén habilitadas."],
-    ["🇫🇷", "Mettez à jour vers un navigateur web pris en charge. Ember nécessite un navigateur web moderne. Veuillez utiliser l'un des navigateurs répertoriés ci-dessous et assurez-vous que les mises à jour automatiques sont activées."],
-    ["🇮🇳", "समर्थित वेब ब्राउज़र में अपग्रेड करें। Ember को एक आधुनिक वेब ब्राउज़र की आवश्यकता है। कृपया नीचे सूचीबद्ध ब्राउज़रों में से कोई एक का उपयोग करें और सुनिश्चित करें कि स्वचालित अपडेट्स सक्षम हैं।"],
-    ["🇩🇪", "Aktualisieren Sie auf einen unterstützten Webbrowser. Ember erfordert einen modernen Webbrowser. Verwenden Sie bitte einen der unten aufgeführten Browser und stellen Sie sicher, dass automatische Updates aktiviert sind."],
-    ["🇧🇷", "Atualize para um navegador compatível. O Ember requer um navegador moderno. Por favor, use um dos navegadores listados abaixo e certifique-se de que as atualizações automáticas estão ativadas."],
-    ["🇯🇵", "サポートされたウェブブラウザーにアップグレードしてください。Emberはモダンなウェブブラウザーが必要です。下記のブラウザーのいずれかを使用し、自動更新が有効になっていることを確認してください。"],
+    ["🇺🇸", "Upgrade to a supported web browser. Papaya OS requires a modern web browser. Please use one of the browsers listed below and make sure auto-updates are enabled."],
+    ["🇪🇸", "Actualiza a un navegador web compatible. Papaya OS requiere un navegador web moderno. Utiliza uno de los navegadores listados a continuación y asegúrate de que las actualizaciones automáticas estén habilitadas."],
+    ["🇫🇷", "Mettez à jour vers un navigateur web pris en charge. Papaya OS nécessite un navigateur web moderne. Veuillez utiliser l'un des navigateurs répertoriés ci-dessous et assurez-vous que les mises à jour automatiques sont activées."],
+    ["🇮🇳", "समर्थित वेब ब्राउज़र में अपग्रेड करें। Papaya OS को एक आधुनिक वेब ब्राउज़र की आवश्यकता है। कृपया नीचे सूचीबद्ध ब्राउज़रों में से कोई एक का उपयोग करें और सुनिश्चित करें कि स्वचालित अपडेट्स सक्षम हैं।"],
+    ["🇩🇪", "Aktualisieren Sie auf einen unterstützten Webbrowser. Papaya OS erfordert einen modernen Webbrowser. Verwenden Sie bitte einen der unten aufgeführten Browser und stellen Sie sicher, dass automatische Updates aktiviert sind."],
+    ["🇧🇷", "Atualize para um navegador compatível. O Papaya OS requer um navegador moderno. Por favor, use um dos navegadores listados abaixo e certifique-se de que as atualizações automáticas estão ativadas."],
+    ["🇯🇵", "サポートされたウェブブラウザーにアップグレードしてください。Papaya OSはモダンなウェブブラウザーが必要です。下記のブラウザーのいずれかを使用し、自動更新が有効になっていることを確認してください。"],
   ],
   bio: [
     ["🇺🇸", "Enter a few words about yourself."],
@@ -94,7 +94,7 @@ export const TRANSLATIONS = {
     ["🇧🇷", "URL do Webhook"],
     ["🇯🇵", "Webhook URL"],
   ],
-  // The page's name and the first sentence it says, which is Ember's: Campfire's said only that bots post.
+  // The page's name and the first sentence it says, which is Papaya OS's: Campfire's said only that bots post.
   chat_bots: [
     ["🇺🇸", "Chat bots. Chat bots let other apps and services post in your rooms, and reply when people talk to them."],
     ["🇪🇸", "Bots de chat. Los bots de chat permiten que otras aplicaciones y servicios publiquen en tus salas y respondan cuando alguien les habla."],

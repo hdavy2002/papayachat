@@ -15,7 +15,7 @@ const transferIdOf = (hash: string) => new URLSearchParams(hash.slice(1)).get("t
  * Signs in with the sign-in link's id in the address's fragment as soon as it opens, then loads the page
  * this tab was sent to sign in from, or home. It clears the fragment first, as the setup page clears its
  * link's, so the id leaves the address bar and this tab's history. A link that doesn't work, or an
- * address without one, leaves the page blank, and a request that can't reach Ember, or that Ember fails,
+ * address without one, leaves the page blank, and a request that can't reach Papaya OS, or that Papaya OS fails,
  * is tried again, as the app's first one is.
  */
 export function TransferPage() {

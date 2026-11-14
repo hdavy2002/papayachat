@@ -172,7 +172,7 @@ const page = (title: string, translations: boolean) => `<!DOCTYPE html>
           <h1>Upgrade to a supported web browser</h1>
           <div class="message">
             ${translations ? globe : ""}
-            <p>Ember requires a modern web browser. Please use one of the browsers listed below and make sure auto-updates are enabled.</p>
+            <p>Papaya OS requires a modern web browser. Please use one of the browsers listed below and make sure auto-updates are enabled.</p>
           </div>
         </header>
         <div class="browser-list">
@@ -193,11 +193,11 @@ export const isFromUnsupportedBrowser = (request: Request) =>
 const scriptHashes = new Map<boolean, Promise<string[]>>();
 
 /**
- * The upgrade page, titled "Ember" for Apple Messages' link previews rather than with a warning, with the
+ * The upgrade page, titled "Papaya OS" for Apple Messages' link previews rather than with a warning, with the
  * globe once the workspace shows translation buttons.
  */
 export async function unsupportedBrowserPage(request: Request, env: Env): Promise<Response> {
-  const title = isAppleMessages(request.headers.get("User-Agent")) ? "Ember" : "Unsupported browser";
+  const title = isAppleMessages(request.headers.get("User-Agent")) ? "Papaya OS" : "Unsupported browser";
   const account = await workspace(env).account();
   const translations = account?.hideTranslationButtons === false;
   let hashes = scriptHashes.get(translations);

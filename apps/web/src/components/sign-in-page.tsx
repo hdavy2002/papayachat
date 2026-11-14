@@ -33,8 +33,8 @@ import { returnPath } from "@/lib/return-path";
 // administrators, and members with an account from before, whose password then asks them to connect
 // their Papaya account. Otherwise, while Papaya's members sign in with it, the card links to that
 // under the form. While anyone may sign up, it links to the page for that, and it says why a way to join
-// that's off sent someone here. While Ember can send email, the form links to resetting a forgotten
-// password with a code Ember emails.
+// that's off sent someone here. While Papaya OS can send email, the form links to resetting a forgotten
+// password with a code Papaya OS emails.
 
 /** What a Papaya sign-in that came back here says went wrong, as this page's address names it, if it does. */
 function memberfulProblemOnArrival() {
@@ -82,7 +82,7 @@ export function SignInPage({ workspace, onSignedIn }: { workspace: SignedOutWork
       setConnection(answer.memberfulConnection);
     } catch (error) {
       setBusy(false);
-      if (!(error instanceof ApiError)) return setProblem("Couldn't reach Ember. Check your connection and try again.");
+      if (!(error instanceof ApiError)) return setProblem("Couldn't reach Papaya OS. Check your connection and try again.");
       if (passwordInput.current) passwordInput.current.value = "";
       // A member whose password is right, and who has connected Papaya, hears that they sign in with it.
       setRefusal(error.status === 403 ? error.message : error.status === 429 ? SIGN_IN_LIMITED : SIGN_IN_REJECTED);

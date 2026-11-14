@@ -158,7 +158,7 @@ describe("Supported browsers", () => {
     const appleMessages =
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_1) AppleWebKit/601.2.4 (KHTML, like Gecko) Version/9.0.1 Safari/601.2.4 facebookexternalhit/1.1 Facebot Twitterbot/1.0";
     expect(isAppleMessages(appleMessages)).toBe(true);
-    // It reports Safari 9, so its link previews get the upgrade page, which Campfire titles "Ember" for it.
+    // It reports Safari 9, so its link previews get the upgrade page, which Campfire titles "Papaya OS" for it.
     expect(isUnsupportedBrowser(appleMessages)).toBe(true);
     expect(
       isAppleMessages(

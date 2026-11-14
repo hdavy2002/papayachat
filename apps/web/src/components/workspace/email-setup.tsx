@@ -20,10 +20,10 @@ import { cn } from "@/lib/utils";
 import { sendsEmail, TestEmail } from "./email-settings";
 import { DIALOG, DIALOG_BACKDROP, DIALOG_CLOSE, DIALOG_TITLE, MAIN_ACTION, OTHER_ACTION } from "./unsaved-changes";
 
-// Set up email, for administrators: the steps to have Ember send email, one at a time, in a dialog that
+// Set up email, for administrators: the steps to have Papaya OS send email, one at a time, in a dialog that
 // Membership's Email card opens, as Invite by email does, and as turning on Email domain does before
-// Ember can send email, as the project's owner asked (2026-10-26). First, what sends it: Resend, with an
-// API key Ember checks with Resend and keeps, or Cloudflare Email Service, which delivers beyond the
+// Papaya OS can send email, as the project's owner asked (2026-10-26). First, what sends it: Resend, with an
+// API key Papaya OS checks with Resend and keeps, or Cloudflare Email Service, which delivers beyond the
 // account's own addresses only on Workers Paid. Then the From address, whose domain it checks for the
 // records Cloudflare's Onboard Domain adds, and then a test email, which it sends as it gets there, so
 // that setting up checks itself. While the deployment has the secret RESEND_API_KEY, Resend sends with
@@ -96,7 +96,7 @@ function useOnboarding(domain: string | null): Onboarding | undefined {
 function OnboardingNote({ domain, onboarding }: { domain: string; onboarding: Onboarding }) {
   if (onboarding === "checking") return <>Checking that {domain} is onboarded to Cloudflare Email Sending…</>;
   if (onboarding === true) return <>{domain} is onboarded to Cloudflare Email Sending.</>;
-  if (onboarding === null) return <>Ember couldn't look up {domain} just now. The test email will say whether Cloudflare sends from it.</>;
+  if (onboarding === null) return <>Papaya OS couldn't look up {domain} just now. The test email will say whether Cloudflare sends from it.</>;
   return (
     <>
       {domain} isn't onboarded to Cloudflare Email Sending yet, as its DNS doesn't have the records Onboard Domain adds.{" "}
@@ -109,11 +109,11 @@ interface Props {
   email: Email;
   /** As workspace settings asks for the workspace, which it says the server answers with. */
   askForAccount: () => (account: Account) => void;
-  /** Shows how Ember sends email as the server answers once Resend's API key is saved or forgotten. */
+  /** Shows how Papaya OS sends email as the server answers once Resend's API key is saved or forgotten. */
   onEmailChanged: (email: Email) => void;
   /** Shows the From address once it's saved. */
   onFromSaved: (from: string) => void;
-  /** Called as it closes, with whether Ember can send email then. */
+  /** Called as it closes, with whether Papaya OS can send email then. */
   onClose: (sends: boolean) => void;
   /** Says why saving failed, when it isn't Resend's or the form's doing, as the workspace's alerts do. */
   onFailed: (error: unknown) => void;
@@ -250,7 +250,7 @@ function Out({ href, children }: { href: string; children: ReactNode }) {
   );
 }
 
-/** The first step: what sends Ember's email, Resend or Cloudflare Email Service, which the Worker sends with only while it has the EMAIL binding. */
+/** The first step: what sends Papaya OS's email, Resend or Cloudflare Email Service, which the Worker sends with only while it has the EMAIL binding. */
 function ChooseProvider({
   email,
   chosen,
@@ -267,7 +267,7 @@ function ChooseProvider({
   return (
     <>
       <DialogDescription className="mb-4 leading-[1.65]">
-        Ember emails invitations, the links people at your email domains join with, and codes to reset a forgotten password. Choose what sends them.
+        Papaya OS emails invitations, the links people at your email domains join with, and codes to reset a forgotten password. Choose what sends them.
       </DialogDescription>
       <fieldset className="flex flex-col gap-2.5">
         <legend className="sr-only">Send email with</legend>
@@ -276,7 +276,7 @@ function ChooseProvider({
         </ProviderChoice>
         <ProviderChoice provider="cloudflare" title="Cloudflare Email Service" chosen={chosen} onChoose={onChoose} disabled={!email.cloudflare}>
           {email.cloudflare
-            ? "Needs the Workers Paid plan ($5 a month) on the Cloudflare account that runs Ember."
+            ? "Needs the Workers Paid plan ($5 a month) on the Cloudflare account that runs Papaya OS."
             : "This Worker has no EMAIL binding, which Cloudflare Email Service sends with."}
         </ProviderChoice>
       </fieldset>
@@ -325,7 +325,7 @@ function ProviderChoice({
   );
 }
 
-/** Resend's steps: a domain verified in Resend, and an API key from it, which Ember checks with Resend and keeps, or the one it has. */
+/** Resend's steps: a domain verified in Resend, and an API key from it, which Papaya OS checks with Resend and keeps, or the one it has. */
 function ResendStep({
   email,
   saving,
@@ -366,7 +366,7 @@ function ResendStep({
   return (
     <form onSubmit={save}>
       <DialogDescription className="mb-4 leading-[1.65]">
-        Ember sends email with an API key from your Resend account, which it keeps encrypted.
+        Papaya OS sends email with an API key from your Resend account, which it keeps encrypted.
       </DialogDescription>
       <ol aria-label="Steps to send email with Resend" className="mb-4 flex list-decimal flex-col gap-2 ps-5">
         <li>
@@ -402,7 +402,7 @@ function ResendStep({
       ) : (
         hasKey && (
           <p id="resend-api-key-description" className={cn(NOTE, "mt-2")}>
-            Ember has a Resend API key already. Paste another to send with it instead.
+            Papaya OS has a Resend API key already. Paste another to send with it instead.
           </p>
         )
       )}
@@ -411,7 +411,7 @@ function ResendStep({
   );
 }
 
-/** Cloudflare Email Service's steps: Workers Paid, and a domain onboarded to Email Sending, after which Ember forgets any Resend API key it has. */
+/** Cloudflare Email Service's steps: Workers Paid, and a domain onboarded to Email Sending, after which Papaya OS forgets any Resend API key it has. */
 function CloudflareStep({
   email,
   saving,
@@ -444,17 +444,17 @@ function CloudflareStep({
 
   return (
     <>
-      <DialogDescription className="mb-4 leading-[1.65]">Ember sends email from your Cloudflare account, with this Worker's EMAIL binding.</DialogDescription>
+      <DialogDescription className="mb-4 leading-[1.65]">Papaya OS sends email from your Cloudflare account, with this Worker's EMAIL binding.</DialogDescription>
       <ol aria-label="Steps to send email with Cloudflare" className="flex list-decimal flex-col gap-2 ps-5">
         <li>
-          Put the Cloudflare account that runs Ember on the <em>Workers Paid</em> plan. <Out href={WORKERS_PLANS}>Open Workers plans</Out>
+          Put the Cloudflare account that runs Papaya OS on the <em>Workers Paid</em> plan. <Out href={WORKERS_PLANS}>Open Workers plans</Out>
         </li>
         <li>
           In the Cloudflare dashboard, open <em>Email Service</em>, <em>Email Sending</em>, choose <em>Onboard Domain</em>, and pick a domain on Cloudflare
           DNS. Cloudflare adds the records sending takes. <Out href={EMAIL_SENDING_DASHBOARD}>Open Email Sending in the Cloudflare dashboard</Out>
         </li>
       </ol>
-      {hasKey && <p className={cn(NOTE, "mt-4")}>Ember will stop sending with Resend, and forget its API key.</p>}
+      {hasKey && <p className={cn(NOTE, "mt-4")}>Papaya OS will stop sending with Resend, and forget its API key.</p>}
       <Actions back={onBack} next={next} saving={saving} />
     </>
   );
@@ -511,7 +511,7 @@ function FromStep({
   return (
     <form onSubmit={save}>
       <DialogDescription className="mb-4 leading-[1.65]">
-        The address Ember's email comes from, on the domain {email.provider === "cloudflare" ? "you onboarded to Email Sending" : "you verified in Resend"}.
+        The address Papaya OS's email comes from, on the domain {email.provider === "cloudflare" ? "you onboarded to Email Sending" : "you verified in Resend"}.
         Email comes under the community's name, unless you put another name before the address.
       </DialogDescription>
       <Field id="email_from" label="From">
@@ -520,7 +520,7 @@ function FromStep({
           autoComplete="off"
           autoCapitalize="none"
           spellCheck={false}
-          placeholder="Ember <ember@example.com>"
+          placeholder="Papaya OS <ember@example.com>"
           value={typed}
           disabled={saving}
           aria-invalid={refusal !== null}
@@ -557,7 +557,7 @@ function TestStep({ onBack, onDone, onFailed }: { onBack: () => void; onDone: ()
   return (
     <>
       <DialogDescription className="mb-4 leading-[1.65]">
-        Ember is set up to send email, and sends you a test email to check that it arrives. If it doesn't, go back and change what sends it.
+        Papaya OS is set up to send email, and sends you a test email to check that it arrives. If it doesn't, go back and change what sends it.
       </DialogDescription>
       <TestEmail onFailed={onFailed} atOnce />
       <Actions back={onBack} next={onDone} nextLabel="Done" />

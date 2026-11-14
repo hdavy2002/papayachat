@@ -9,7 +9,7 @@ import { workspace } from "./workspace";
 
 // The workspace's logo, as Campfire's Accounts::LogosController serves it: a PNG anyone may fetch, so it
 // can be a push's icon and the installed app's: a variant of the logo an administrator uploaded, or
-// Ember's stock app icon, from the built app's files.
+// Papaya OS's stock app icon, from the built app's files.
 
 /** `expires_in 5.minutes, public: true, stale_while_revalidate: 1.week` */
 const CACHE_CONTROL = "max-age=300, public, stale-while-revalidate=604800";

@@ -9,19 +9,19 @@ sounds of their own.
 | `left.mp3` | As someone leaves it, the tab's own person included | The same two notes, falling |
 | `music.mp3` | To whoever is the only one in the huddle, from five seconds after they find themselves alone until someone joins them | "The Rotary Dial Shuffle", music to wait to: 2 min 50 s, stereo, 1.9 MB, played on a loop. It starts from silence and ends on a fade into two seconds of it, so the loop turns over on a rest |
 
-The two short sounds were written for Ember and are under its license (`LICENSE`): nobody is owed a
+The two short sounds were written for Papaya OS and are under its license (`LICENSE`): nobody is owed a
 royalty or a credit for them, and nothing in them is sampled from anyone's recording. FluidSynth
 played them through the Fluid R3 General MIDI SoundFont, which Frank Wen released under the MIT
 license (`FluidR3-GM-LICENSE.txt`).
 
-The music was generated for Ember by Google's generative AI on 13 November 2026: no person wrote or
+The music was generated for Papaya OS by Google's generative AI on 13 November 2026: no person wrote or
 played it. The file it came as said so in content credentials (C2PA) that Google had signed, and
 Google put its inaudible SynthID watermark in the sound. Google's
 [Terms of Service](https://policies.google.com/terms) claim no ownership of what its services
 generate and forbid passing it off as a person's work, so nobody is owed a royalty or a credit for
 it either. Here it's the piece as it was generated, only turned down to the level below and encoded
 again, which leaves the watermark alone and the credentials behind, since they vouch for the file
-they came in. It's under Ember's license with the rest, as far as a piece no person wrote is
+they came in. It's under Papaya OS's license with the rest, as far as a piece no person wrote is
 anyone's to license.
 
 A file plays as loud as it is, since a phone's browser plays an `<audio>` at no volume but the

@@ -167,7 +167,7 @@ describe("Bot cards", () => {
         kind: "tiles",
         tiles: [{ hero: { url: "https://example.com/hero.png", alt: "" }, icon: { url: "https://example.com/icon.png", alt: "" }, title: "Room 1", buttons: [{ text: "Book", href: "https://example.com/book" }] }],
       },
-      { kind: "footer", text: "Ember", icon: "https://example.com/e.png" },
+      { kind: "footer", text: "Papaya OS", icon: "https://example.com/e.png" },
     ];
     expect(parseCards([card(parts, { thumb: { url: "https://example.com/thumb.png", alt: "" } })], linksOnly)).toEqual([
       card([
@@ -176,7 +176,7 @@ describe("Bot cards", () => {
         { kind: "section", html: "<p>Up</p>", button: { text: "Open", href: "https://example.com/open" } },
         { kind: "context", items: [{ html: "<p>Kept</p>" }] },
         { kind: "tiles", tiles: [{ title: "Room 1", buttons: [{ text: "Book", href: "https://example.com/book" }] }] },
-        { kind: "footer", text: "Ember" },
+        { kind: "footer", text: "Papaya OS" },
       ]),
     ]);
     expect(asked.link!.sort()).toEqual(["https://example.com/ada", "https://example.com/book", "https://example.com/open", "https://example.com/status"]);

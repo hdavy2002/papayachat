@@ -171,8 +171,8 @@ function RarePage({ show, loading, onFailed }: RarePageProps) {
 /** Where someone goes from a room they can't see. */
 const ROOM_NOT_FOUND: Redirect = { path: "/", alert: "Room not found or inaccessible" };
 
-/** What an alert says about a request that failed: the server's reason, or that Ember couldn't be reached. */
-const reasonFor = (error: unknown) => (error instanceof ApiError ? error.message : "Couldn't reach Ember. Check your connection and try again.");
+/** What an alert says about a request that failed: the server's reason, or that Papaya OS couldn't be reached. */
+const reasonFor = (error: unknown) => (error instanceof ApiError ? error.message : "Couldn't reach Papaya OS. Check your connection and try again.");
 
 /**
  * The room an address names that has to be one of someone's rooms, which a direct message's address
@@ -319,7 +319,7 @@ export function Workspace({ me, workspaceName, onAccountChanged, onSignOut, onSe
   // doesn't wait for them. If they fail to, the first page that needs them tries again.
   const listed = rooms !== null;
   useEffect(() => (listed ? whenIdle(() => void loadRarePages().catch(() => {})) : undefined), [listed]);
-  // And for an administrator, whether a newer release of Ember is out, or for a beta the beta after it,
+  // And for an administrator, whether a newer release of Papaya OS is out, or for a beta the beta after it,
   // which the rail's Admin marks, asked afresh each time Admin opens, and by General's Check for updates.
   const { check: release, checkAgain: checkForUpdates } = useReleaseCheck(administrator, listed, settings !== null);
   const newRelease = (release && updateOf(release)?.release) ?? null;
@@ -689,7 +689,7 @@ export function Workspace({ me, workspaceName, onAccountChanged, onSignOut, onSe
       case "new-agent":
         return rarePage(({ NewAgentPage }) => <NewAgentPage me={me} rooms={rooms} onFailed={failed} />);
       case "agent-settings":
-        // @ember's page is its own, with what the Ember AI card held before there were agents.
+        // @ember's page is its own, with what the Papaya AI card held before there were agents.
         if (route.agentId === ASSISTANT_ID) return rarePage(({ EmberPage }) => <EmberPage me={me} onFailed={failed} />);
         return rarePage(({ AgentSettingsPage }) => (
           <AgentSettingsPage key={route.agentId} agentId={route.agentId} me={me} rooms={rooms} onMissing={showNotFound} onFailed={failed} />
@@ -822,7 +822,7 @@ export function Workspace({ me, workspaceName, onAccountChanged, onSignOut, onSe
             className="flex w-auto max-w-[calc(100dvw-16px)] flex-row gap-0 border-0 bg-surface p-0 shadow-none sm:max-w-[calc(100dvw-16px)] md:hidden"
           >
             <SheetTitle className="sr-only">{settings ? "Navigation" : "Conversations"}</SheetTitle>
-            <SheetDescription className="sr-only">{settings ? "Ember’s pages" : "Rooms and direct messages"}</SheetDescription>
+            <SheetDescription className="sr-only">{settings ? "Papaya OS’s pages" : "Rooms and direct messages"}</SheetDescription>
             <div ref={drawerRail} className="pt-[env(safe-area-inset-top)]">
               {rail}
             </div>

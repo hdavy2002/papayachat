@@ -1,7 +1,7 @@
 import { lookUp, type DnsFetch } from "./dns";
 
 // A check that a domain is onboarded to Cloudflare Email Sending, as Set up email's From step asks once
-// an address is typed there. Cloudflare's API says so only with an API token, which Ember never holds,
+// an address is typed there. Cloudflare's API says so only with an API token, which Papaya OS never holds,
 // but Onboard Domain adds public records that stay as long as the domain sends: MX records on its
 // `cf-bounce` subdomain naming Cloudflare's mail servers, which take its bounces, and the DKIM key
 // Cloudflare signs its email with, at `cf-bounce._domainkey`

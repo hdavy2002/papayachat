@@ -31,7 +31,7 @@ const RESEND_KEY = "re_test_only_not_a_key";
 const MEMBERFUL_KEYS = { MEMBERFUL_URL: "https://example.memberful.com/", MEMBERFUL_CLIENT_ID: "ember-client-id", MEMBERFUL_CLIENT_SECRET: "ember-client-secret" };
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-/** Sets Ember up with Ada as its administrator, signed in, answering its first room too. */
+/** Sets Papaya OS up with Ada as its administrator, signed in, answering its first room too. */
 async function setUp(): Promise<Session & { general: NewWorkspace["room"] }> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(ada) });
   expect(response.status).toBe(201);
@@ -64,7 +64,7 @@ async function invited(administrator: Session, ...emailAddresses: string[]): Pro
   return ((await response.json()) as Invited).outcomes;
 }
 
-/** Invites `emailAddress` as `administrator`, answering its invitation and the link, if Ember didn't email it. */
+/** Invites `emailAddress` as `administrator`, answering its invitation and the link, if Papaya OS didn't email it. */
 async function inviteOne(administrator: Session, emailAddress: string): Promise<{ invitation: EmailInvitation; link: string | null }> {
   const [outcome] = await invited(administrator, emailAddress);
   if (!outcome || "member" in outcome) throw new Error(`${emailAddress} wasn't invited`);
@@ -151,7 +151,7 @@ afterEach(() => vi.restoreAllMocks());
 describe("Invite people by email", () => {
   it("emails each address an administrator invites its own link, from the From address, which joins with it for 7 days", async () => {
     const administrator = await setUp();
-    await saveFrom(administrator, "Ember <ember@example.com>");
+    await saveFrom(administrator, "Papaya OS <ember@example.com>");
     const { binding, sent } = fakeBinding();
     let outcomes: InvitationOutcome[] = [];
     await withWorkspaceEnv({ EMAIL: binding }, async () => void (outcomes = await invited(administrator, "grace@example.com", "Hal@Example.com")));
@@ -169,14 +169,14 @@ describe("Invite people by email", () => {
     expect(sent).toHaveLength(2);
     const [toGrace, toHal] = sent;
     expect(toGrace).toEqual({
-      from: { name: "Ember", email: "ember@example.com" },
+      from: { name: "Papaya OS", email: "ember@example.com" },
       to: "grace@example.com",
-      subject: "Ada Lovelace invited you to Ember",
-      text: `Ada Lovelace invited you to join Ember.\n\nJoin here: ${linkIn(toGrace!)}\n\nThe link works once, for 7 days, and joins with grace@example.com. If you weren't expecting this, you can ignore it.\n`,
-      html: expect.stringContaining(`<a href="${linkIn(toGrace!)}">Join Ember</a>`) as unknown,
+      subject: "Ada Lovelace invited you to Papaya OS",
+      text: `Ada Lovelace invited you to join Papaya OS.\n\nJoin here: ${linkIn(toGrace!)}\n\nThe link works once, for 7 days, and joins with grace@example.com. If you weren't expecting this, you can ignore it.\n`,
+      html: expect.stringContaining(`<a href="${linkIn(toGrace!)}">Join Papaya OS</a>`) as unknown,
     });
     expect(linkIn(toGrace!)).toMatch(new RegExp(`^${origin}/join/invitation#token=[\\w-]{43}$`));
-    expect(toHal).toMatchObject({ to: "Hal@Example.com", subject: "Ada Lovelace invited you to Ember" });
+    expect(toHal).toMatchObject({ to: "Hal@Example.com", subject: "Ada Lovelace invited you to Papaya OS" });
     expect(linkIn(toHal!)).not.toBe(linkIn(toGrace!));
 
     // Each link works for its own address, and only its digest is kept.
@@ -201,7 +201,7 @@ describe("Invite people by email", () => {
     expect(await invitations(guest)).toEqual([]);
   });
 
-  it("answers each link it didn't email, for the administrator to send, while Ember has no From address or can't send email", async () => {
+  it("answers each link it didn't email, for the administrator to send, while Papaya OS has no From address or can't send email", async () => {
     const administrator = await setUp();
     const { link } = await inviteOne(administrator, "grace@example.com");
     expect(link).toMatch(new RegExp(`^${origin}/join/invitation#token=[\\w-]{43}$`));
@@ -215,7 +215,7 @@ describe("Invite people by email", () => {
     });
   });
 
-  it("puts the links at Ember's custom domain, while it has one", async () => {
+  it("puts the links at Papaya OS's custom domain, while it has one", async () => {
     const administrator = await setUp();
     await workspaceSql("UPDATE accounts SET name = ?, settings = json_set(settings, '$.custom_domain', ?)", "Grace's <b>lab</b>", "chat.example.com");
     await evictDurableObject(workspaceStub());
@@ -316,9 +316,9 @@ describe("Invite people by email", () => {
       ["grace@example.com", "hal@example.com", "linus@example.com"].map((to) => ({
         from: '"Acme, Inc." <chat@acme.example>',
         to: [to],
-        subject: "Ada Lovelace invited you to Ember",
+        subject: "Ada Lovelace invited you to Papaya OS",
         text: expect.stringContaining(`and joins with ${to}.`) as unknown,
-        html: expect.stringContaining("Join Ember</a>") as unknown,
+        html: expect.stringContaining("Join Papaya OS</a>") as unknown,
       })),
     );
 
@@ -339,7 +339,7 @@ describe("Invite people by email", () => {
 
 describe("Invite people by email", () => {
   describe("sending again", () => {
-    it("gives an invitation a new link, which only it joins with, answering it while Ember didn't email it", async () => {
+    it("gives an invitation a new link, which only it joins with, answering it while Papaya OS didn't email it", async () => {
       const administrator = await setUp();
       const first = await inviteOne(administrator, "hal@example.com");
       const response = await resend(administrator, first.invitation.id);
@@ -353,7 +353,7 @@ describe("Invite people by email", () => {
       expect(await invitations(administrator)).toEqual([again.invitation]);
     });
 
-    it("emails the new link while Ember can send email", async () => {
+    it("emails the new link while Papaya OS can send email", async () => {
       const administrator = await setUp();
       const { invitation, link } = await inviteOne(administrator, "hal@example.com");
       await saveFrom(administrator, "chat@example.com");

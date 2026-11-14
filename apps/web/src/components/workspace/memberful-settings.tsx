@@ -62,7 +62,7 @@ export function MemberfulSettings({
     if (site === null && !checked) return setSettingUp(turnOn);
     onCheckedChange(turnOn);
   };
-  // Where Papaya sends people back to, and its webhooks: Ember's address, wherever settings are opened.
+  // Where Papaya sends people back to, and its webhooks: Papaya OS's address, wherever settings are opened.
   const origin = `${location.protocol}//${customDomain ?? location.host}`;
   const redirectUrl = `${origin}${MEMBERFUL_CALLBACK_PATH}`;
   const webhookUrl = `${origin}${MEMBERFUL_WEBHOOK_PATH}`;
@@ -127,11 +127,11 @@ export function MemberfulSettings({
             {webhooks ? (
               <>
                 Papaya sends people back to <span className="wrap-anywhere">{redirectUrl}</span>, the OAuth redirect URL of its custom app, and its webhook
-                to <span className="wrap-anywhere">{webhookUrl}</span>. If Ember's address changes, change both there too.
+                to <span className="wrap-anywhere">{webhookUrl}</span>. If Papaya OS's address changes, change both there too.
               </>
             ) : (
               <>
-                Papaya sends people back to <span className="wrap-anywhere">{redirectUrl}</span>, the OAuth redirect URL of its custom app. If Ember's
+                Papaya sends people back to <span className="wrap-anywhere">{redirectUrl}</span>, the OAuth redirect URL of its custom app. If Papaya OS's
                 address changes, change it there too.
               </>
             )}
@@ -183,7 +183,7 @@ function Steps({ redirectUrl, webhookUrl }: { redirectUrl: string; webhookUrl: s
 function WebhookSteps({ webhookUrl }: { webhookUrl: string }) {
   return (
     <>
-      <p>A member whose membership lapses can't sign in again, but stays signed in where they are until Ember hears Papaya's webhooks.</p>
+      <p>A member whose membership lapses can't sign in again, but stays signed in where they are until Papaya OS hears Papaya's webhooks.</p>
       <ol aria-label="Steps to sign out members whose membership lapses" className="flex list-decimal flex-col gap-2 ps-5">
         <li>
           <AddWebhook webhookUrl={webhookUrl} />

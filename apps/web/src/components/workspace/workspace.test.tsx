@@ -224,12 +224,12 @@ describe("Open a room", () => {
     expect(roomListRequests()).toBe(3);
   });
 
-  it("stays at a room's address, saying Ember can't be reached, when the list can't be asked for again", async () => {
+  it("stays at a room's address, saying Papaya OS can't be reached, when the list can't be asked for again", async () => {
     const answers = [() => Response.json(roomList(rooms)), () => Promise.reject(new TypeError("Failed to fetch"))];
     serve({ "GET /api/sidebar": () => answers.shift()!() });
     showWorkspace("/rooms/design");
     const alert = await screen.findByRole("alert");
-    expect(alert).toHaveTextContent("Couldn't reach Ember. Check your connection and try again.");
+    expect(alert).toHaveTextContent("Couldn't reach Papaya OS. Check your connection and try again.");
     // In the page, where it stays while the page does, rather than in an alert that fades.
     expect(screen.getByRole("main")).toContainElement(alert);
     // For trying again, and with the header's way to the other rooms.
@@ -290,7 +290,7 @@ describe("Go back to the last room", () => {
     expect(screen.getByRole("main")).toHaveTextContent("Ada");
     expect(screen.getByRole("main").querySelector("svg")).toHaveAttribute("aria-hidden", "true");
     expect(location.pathname).toBe("/");
-    expect(railCurrent()).toEqual(["Ember home", "Home"]);
+    expect(railCurrent()).toEqual(["Papaya OS home", "Home"]);
   });
 
   it("goes back from workspace settings to the room visited last, by way of a room's settings", async () => {
@@ -836,7 +836,7 @@ describe("Suggested people", () => {
     const { user } = showWorkspace("/rooms/general");
     await roomHeading();
     await user.click(suggestion()!);
-    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't reach Ember. Check your connection and try again.");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't reach Papaya OS. Check your connection and try again.");
     expect(location.pathname).toBe("/rooms/general");
     expect(suggestion()).toBeInTheDocument();
     expect(suggestion()).not.toHaveAttribute("aria-disabled");
@@ -880,10 +880,10 @@ describe("Saved notices", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Name must be 1 to 100 characters");
   });
 
-  it("says when Ember can't be reached", async () => {
+  it("says when Papaya OS can't be reached", async () => {
     serve({ "GET /api/rooms/new": () => Promise.reject(new TypeError("Failed to fetch")) });
     showWorkspace("/rooms/closeds/new");
-    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't reach Ember. Check your connection and try again.");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't reach Papaya OS. Check your connection and try again.");
   });
 
   it("shows the same alert again when it comes again", async () => {
@@ -905,7 +905,7 @@ describe("Rail", () => {
   it("titles the logo with the workspace's name", async () => {
     showWorkspace("/rooms/general");
     await roomHeading();
-    expect(screen.getByRole("link", { name: "Ember home" })).toHaveAttribute("title", "Analytical Engines");
+    expect(screen.getByRole("link", { name: "Papaya OS home" })).toHaveAttribute("title", "Analytical Engines");
   });
 
   it("marks Home on a room's page, and Workspace on community settings' pages, a room's settings among them", async () => {
@@ -952,11 +952,11 @@ describe("New releases", () => {
     expect(releaseChecks()).toBe(0);
     act(() => idle.forEach((run) => run()));
     const admin = screen.getByRole("link", { name: "Admin" });
-    await waitFor(() => expect(admin).toHaveAccessibleDescription("Ember 0.2 is available"));
+    await waitFor(() => expect(admin).toHaveAccessibleDescription("Papaya OS 0.2 is available"));
 
     // General says so too, as the release check answered, before opening Admin has it asked afresh.
     await user.click(admin);
-    expect(await screen.findByRole("heading", { level: 2, name: "Ember 0.2 is available" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { level: 2, name: "Papaya OS 0.2 is available" })).toBeInTheDocument();
     expect([releaseChecks(), afreshChecks()]).toEqual([1, 0]);
   });
 
@@ -974,17 +974,17 @@ describe("New releases", () => {
     await vi.waitFor(() => expect(idle).toHaveLength(2));
     act(() => idle.splice(0).forEach((run) => run()));
     const admin = screen.getByRole("link", { name: "Admin" });
-    await waitFor(() => expect(admin).toHaveAccessibleDescription("Ember 0.2 is available"));
+    await waitFor(() => expect(admin).toHaveAccessibleDescription("Papaya OS 0.2 is available"));
 
     // GitHub has published another since, which General and the rail say once the check made afresh answers.
     newest = "0.3";
     await user.click(admin);
-    expect(await screen.findByRole("heading", { level: 2, name: "Ember 0.2 is available" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { level: 2, name: "Papaya OS 0.2 is available" })).toBeInTheDocument();
     await vi.waitFor(() => expect(idle).toHaveLength(1));
     expect(afreshChecks()).toBe(0);
     act(() => idle.splice(0).forEach((run) => run()));
-    expect(await screen.findByRole("heading", { level: 2, name: "Ember 0.3 is available" })).toBeInTheDocument();
-    expect(admin).toHaveAccessibleDescription("Ember 0.3 is available");
+    expect(await screen.findByRole("heading", { level: 2, name: "Papaya OS 0.3 is available" })).toBeInTheDocument();
+    expect(admin).toHaveAccessibleDescription("Papaya OS 0.3 is available");
     expect([releaseChecks(), afreshChecks()]).toEqual([1, 1]);
 
     // Going on to Membership, then home, asks nothing, but opening Admin again asks afresh again.
@@ -1017,7 +1017,7 @@ describe("New releases", () => {
       await communitySettings();
       await vi.waitFor(() => expect(idle).toHaveLength(2));
       act(() => idle.forEach((run) => run()));
-      expect(await screen.findByRole("region", { name: "Ember 0.1" })).toHaveTextContent(says);
+      expect(await screen.findByRole("region", { name: "Papaya OS 0.1" })).toHaveTextContent(says);
       expect(screen.getByRole("link", { name: "Admin" })).not.toHaveAccessibleDescription();
       expect([releaseChecks(), afreshChecks()]).toEqual([0, 1]);
       unmount();
@@ -1025,12 +1025,12 @@ describe("New releases", () => {
     }
   });
 
-  it("marks Admin for the beta after a beta's own, which Update Ember brings, but not for a beta a release could try", async () => {
+  it("marks Admin for the beta after a beta's own, which Update Papaya OS brings, but not for a beta a release could try", async () => {
     const betaNotes = "https://github.com/NYLLON-SOFTWARE/ember-cloudflare/releases/tag/v0.2.0-beta.2";
     const newestBeta = { release: "0.2 beta 2", version: "0.2.0-beta.2", notes: betaNotes, newer: true };
     for (const [check, card, mark] of [
-      [{ release: "0.2 beta 1", beta: true, newest: { release: "0.1", version: "0.1.0", notes: NOTES, newer: false }, newestBeta, copy: null }, "Ember 0.2 beta 2 is available", "Ember 0.2 beta 2 is available"],
-      [{ release: "0.1", beta: false, newest: { release: "0.1", version: "0.1.0", notes: NOTES, newer: false }, newestBeta, copy: null }, "Ember 0.1", null],
+      [{ release: "0.2 beta 1", beta: true, newest: { release: "0.1", version: "0.1.0", notes: NOTES, newer: false }, newestBeta, copy: null }, "Papaya OS 0.2 beta 2 is available", "Papaya OS 0.2 beta 2 is available"],
+      [{ release: "0.1", beta: false, newest: { release: "0.1", version: "0.1.0", notes: NOTES, newer: false }, newestBeta, copy: null }, "Papaya OS 0.1", null],
     ] as const) {
       const idle = idleCallbacks();
       serve({
@@ -1061,15 +1061,15 @@ describe("New releases", () => {
     await communitySettings();
     await vi.waitFor(() => expect(idle).toHaveLength(2));
     act(() => idle.splice(0).forEach((run) => run()));
-    const card = await screen.findByRole("region", { name: "Ember 0.1" });
+    const card = await screen.findByRole("region", { name: "Papaya OS 0.1" });
     const admin = screen.getByRole("link", { name: "Admin" });
     expect(admin).not.toHaveAccessibleDescription();
 
     // GitHub has published 0.2 since, which Check for updates hears of without waiting for the browser to be idle.
     newest = { release: "0.2", version: "0.2.0", notes: NOTES, newer: true };
     await user.click(within(card).getByRole("button", { name: "Check for updates" }));
-    expect(await screen.findByRole("heading", { level: 2, name: "Ember 0.2 is available" })).toBeInTheDocument();
-    expect(admin).toHaveAccessibleDescription("Ember 0.2 is available");
+    expect(await screen.findByRole("heading", { level: 2, name: "Papaya OS 0.2 is available" })).toBeInTheDocument();
+    expect(admin).toHaveAccessibleDescription("Papaya OS 0.2 is available");
     expect(idle).toEqual([]);
     expect([releaseChecks(), afreshChecks()]).toEqual([0, 2]);
   });
@@ -1641,7 +1641,7 @@ describe("Keyboard shortcuts", () => {
 
 describe("Welcome card for administrators, until they dismiss it", () => {
   const invited = { ...roomList(rooms), invitation: { roomId: "general", joinCode: "aB3d-Ef5h-iJ7k" } };
-  const card = () => screen.queryByRole("heading", { name: "Welcome to Ember" });
+  const card = () => screen.queryByRole("heading", { name: "Welcome to Papaya OS" });
   /** Shows general with the welcome card, its dismissal answered by `answer`. */
   async function showCard(answer: () => Response) {
     vi.stubGlobal("WebSocket", OpenRoomSocket);
@@ -2065,7 +2065,7 @@ describe("Chat bots page", () => {
 
 describe("Agent pages", () => {
   const asAdministrator: Me = { ...ada, administrator: true };
-  /** Ember AI on GLM-4.7 Flash. */
+  /** Papaya AI on GLM-4.7 Flash. */
   const assistant: AssistantSettings = {
     accountId: "0123456789abcdef0123456789abcdef",
     model: "@cf/zai-org/glm-4.7-flash",
@@ -2110,7 +2110,7 @@ describe("Agent pages", () => {
     toolsReadAt: "2026-11-13T10:30:00.000Z",
     connectedBy: { id: ada.id, name: ada.name },
   };
-  /** What an administrator's workspace answers while Ember AI is on. */
+  /** What an administrator's workspace answers while Papaya AI is on. */
   const withAgents = (responses: Parameters<typeof serve>[0] = {}) =>
     serve({
       "GET /api/account": () => Response.json({ ...workspaceSettings, canAdminister: true, assistant }),
@@ -2224,7 +2224,7 @@ describe("App icon badge", () => {
     const badges = badgeTheApp();
     serve({ "GET /api/sidebar": () => Promise.reject(new TypeError("Failed to fetch")) });
     showWorkspace("/rooms/general");
-    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't reach Ember");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't reach Papaya OS");
     expect(badges).toEqual([]);
   });
 });
@@ -2299,7 +2299,7 @@ describe("Conversations drawer on phones", () => {
     const drawer = screen.getByRole("dialog", { name: "Navigation" });
     expect(within(drawer).getByRole("navigation", { name: "Workspace" })).toBeInTheDocument();
     expect(within(drawer).queryByRole("complementary")).not.toBeInTheDocument();
-    expect(within(drawer).getByRole("link", { name: "Ember home" })).toHaveFocus();
+    expect(within(drawer).getByRole("link", { name: "Papaya OS home" })).toHaveFocus();
     expect(drawer).not.toContainElement(screen.getByRole("button", { name: "Close navigation", expanded: true, hidden: true }));
     await user.keyboard("{Escape}");
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());

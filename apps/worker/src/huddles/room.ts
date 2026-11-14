@@ -576,7 +576,7 @@ export class Huddle {
 
   /**
    * Has the SFU close tracks, as the app whose ID is `appId`, and keeps the ones it didn't for the alarm
-   * to ask about again. An app Ember no longer has the secret of can't be asked, and no huddle runs
+   * to ask about again. An app Papaya OS no longer has the secret of can't be asked, and no huddle runs
    * through it again.
    */
   private async cut(appId: string, sessions: Session[]): Promise<void> {

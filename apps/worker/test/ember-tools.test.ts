@@ -11,7 +11,7 @@ import { goingOn, NO_CALLS_LEFT, resultsOf, TOOL_CALLS_PER_ANSWER, toolCallsIn, 
 import type { Env } from "../src/env";
 import { answerWithKeptModel, api, connect, cookieOf, createRoom, freshDeploy, post, roomSql, shown, workspaceSql, type Client, type Session } from "./support";
 
-// The tools Ember runs for @ember and the agents: a model that calls one is asked again with what the
+// The tools Papaya OS runs for @ember and the agents: a model that calls one is asked again with what the
 // call came to, in its format, for as many calls as an answer may make. The first searches the room.
 
 const bindings = env as unknown as Env;
@@ -60,7 +60,7 @@ const THOUGHT = { type: "thinking", thinking: "The launch was set earlier.", sig
 const REASONED = { type: "reasoning", id: "rs_1", summary: [], encrypted_content: "sealed" };
 
 let asked: Asked[];
-/** What the model does in each turn of its answers to questions with Ember's tools, in order, and then says hello. */
+/** What the model does in each turn of its answers to questions with Papaya OS's tools, in order, and then says hello. */
 let script: Turn[];
 /** What the fake AI Gateway answers a request, in place of the script, if anything. */
 let refusing: (asked: Asked) => Response | null;
@@ -86,7 +86,7 @@ afterEach(() => vi.restoreAllMocks());
 const as = (session: Session) => ({ Cookie: session.cookie });
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-/** Sets Ember up with Ada as its administrator and Ember AI answering with `model`, answering her session, the general room, and her there. */
+/** Sets Papaya OS up with Ada as its administrator and Papaya AI answering with `model`, answering her session, the general room, and her there. */
 async function setUp(model: string): Promise<{ ada: Session; general: RoomId; inGeneral: Client }> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify({ name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" }) });
   expect(response.status).toBe(201);
@@ -119,13 +119,13 @@ async function ask(client: Client, room: RoomId, bot: Pick<User, "id">, question
   }
 }
 
-/** The requests that asked a model a question in a room, which give it Ember's tools, or would. */
+/** The requests that asked a model a question in a room, which give it Papaya OS's tools, or would. */
 const answers = () => asked.filter(({ body }) => JSON.stringify(body).includes("when is the launch?"));
 
 const SEARCH_DESCRIBED = { name: "search_messages", description: expect.stringContaining("Searches the messages of the room you're asked in") as string };
 const SEARCH_TAKES = { type: "object", properties: { words: { type: "string", description: expect.any(String) as string } }, required: ["words"], additionalProperties: false };
 
-describe("A tool Ember runs", () => {
+describe("A tool Papaya OS runs", () => {
   it("is called by Claude, which is asked again with what it said, its thinking too, and what the room's search found", async () => {
     const { general, inGeneral } = await setUp(CLAUDE);
     const said = await post(inGeneral, "<p>The launch moved to March 3.</p>");
@@ -151,7 +151,7 @@ describe("A tool Ember runs", () => {
     expect(second!.body).not.toHaveProperty("tool_choice");
   });
 
-  it("is called by GPT in Responses, whose thinking Ember asks for in a form it can send back with the call's result", async () => {
+  it("is called by GPT in Responses, whose thinking Papaya OS asks for in a form it can send back with the call's result", async () => {
     const { general, inGeneral } = await setUp(GPT);
     await post(inGeneral, "<p>The launch moved to March 3.</p>");
     await moveOn(inGeneral);
@@ -278,7 +278,7 @@ describe("A tool Ember runs", () => {
         `/client/v4/accounts/${ACCOUNT_ID}/ai/websearch/`,
         `/client/v4/accounts/${ACCOUNT_ID}/ai/v1/chat/completions`,
       ]);
-      // Only Ember's tool for searching the web is given, as Chat Completions has no tool for reading pages.
+      // Only Papaya OS's tool for searching the web is given, as Chat Completions has no tool for reading pages.
       expect((asked[0]!.body.tools as Array<{ function: { name: string } }>).map(({ function: { name } }) => name)).toEqual(["web_search", "search_messages"]);
       expect(asked[1]!.body).toMatchObject({ query: "launch date", options: { gateway: { id: "default" } } });
       expect(asked[2]!.body.messages!.slice(-2)).toEqual([
@@ -287,7 +287,7 @@ describe("A tool Ember runs", () => {
       ]);
     });
 
-    it("asks Grok once more without Ember's tool for searching the web too, when it's refused going on from a call, listing what its searches found before", async () => {
+    it("asks Grok once more without Papaya OS's tool for searching the web too, when it's refused going on from a call, listing what its searches found before", async () => {
       vi.spyOn(console, "error").mockImplementation(() => {});
       const page = { url: "https://example.com/launch", title: "Launch day", description: "The launch is on March 3." };
       const searching = { role: "assistant", content: null, tool_calls: [{ id: "call_1", type: "function", function: { name: "web_search", arguments: '{"query":"launch"}' } }] };
@@ -307,7 +307,7 @@ describe("A tool Ember runs", () => {
       expect(last).toMatchObject({ max_completion_tokens: question.maxTokens - 50, messages: asked[0]!.body.messages });
     });
 
-    it("leaves a model refused going on from a call the searches and tokens its turns didn't use, as it's asked again without Ember's tools", async () => {
+    it("leaves a model refused going on from a call the searches and tokens its turns didn't use, as it's asked again without Papaya OS's tools", async () => {
       vi.spyOn(console, "error").mockImplementation(() => {});
       const refusal = () => Response.json({ type: "error", error: { type: "invalid_request_error", message: "messages.2: unexpected `tool_result`" } }, { status: 400 });
       const searched = (id: string) => [{ type: "server_tool_use", id, name: "web_search", input: { query: "launch" } }, { type: "web_search_tool_result", tool_use_id: id, content: [] }];
@@ -382,7 +382,7 @@ describe("A tool Ember runs", () => {
       [false, true, maxTokensAt(DEFAULT_LEVELS) - 300],
     ]);
     expect(answers()[2]!.body.messages).toEqual(answers()[0]!.body.messages);
-    expect(logged).toHaveBeenCalledWith(expect.stringContaining("again without Ember's tools, as it was refused going on from a call of one"));
+    expect(logged).toHaveBeenCalledWith(expect.stringContaining("again without Papaya OS's tools, as it was refused going on from a call of one"));
 
     // Refused without them too, it isn't asked another way.
     asked.length = 0;
@@ -393,7 +393,7 @@ describe("A tool Ember runs", () => {
     expect(answers()).toHaveLength(3);
   });
 
-  it("isn't given to a model kept from before Ember offered only its own, or to an agent someone tries", async () => {
+  it("isn't given to a model kept from before Papaya OS offered only its own, or to an agent someone tries", async () => {
     const { ada, general, inGeneral } = await setUp(CLAUDE);
     await answerWithKeptModel({ id: GLM, name: "GLM-4.7 Flash", format: "chat", thinkingLevels: ["off"] });
     await ask(inGeneral, general, EMBER);

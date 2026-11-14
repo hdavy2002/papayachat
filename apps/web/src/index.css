@@ -8,7 +8,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Ember's palette, expressed as shadcn/ui tokens so the stock components match.
+ * Papaya OS's palette, expressed as shadcn/ui tokens so the stock components match.
  *   canvas  -> --background    surface -> --surface    hover -> --accent / --hover
  *   border  -> --border        muted   -> --muted-foreground    ink -> --foreground
  */
@@ -63,7 +63,7 @@
   /* A bot card's `warning` bar: Slack's own amber, since Campfire's --lch-orange is too near the negative red to tell apart. */
   --warning: #daa038;
   /*
-   * The box an agent's page, or @ember's, asks for care in before what Ember adds around the instructions
+   * The box an agent's page, or @ember's, asks for care in before what Papaya OS adds around the instructions
    * is modified: the warning amber at 8% over the surface, bordered by it at 55% over the border, mixed in
    * whichever mode is on, with its sign in a darker amber, which reads on it in light mode.
    */
@@ -343,7 +343,7 @@
 /* `short:` tightens dialogs on screens under 500px tall, such as a phone in landscape. */
 @custom-variant short (@media (height < 31.25rem));
 
-/* Campfire's `.hide-in-ios-pwa` (utilities.css): Ember added to an iPhone's or iPad's home screen. */
+/* Campfire's `.hide-in-ios-pwa` (utilities.css): Papaya OS added to an iPhone's or iPad's home screen. */
 @custom-variant ios-pwa {
   @media (display-mode: standalone) {
     @supports (-webkit-touch-callout: none) {

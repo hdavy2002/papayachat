@@ -37,7 +37,7 @@ function shownSize({ width, height }: StoredFile): Size | null {
  * A picture, lazily loaded, which links to its file and opens it in the image viewer, with Download and
  * Share taking the file's download address. A picture not every browser shows, such as a HEIC or TIFF,
  * opens as its thumbnail, since Chrome can't show the original, and so does one over 250 megapixels,
- * which only a message posted before Ember kept to that limit has a thumbnail of. The picture is at most
+ * which only a message posted before Papaya OS kept to that limit has a thumbnail of. The picture is at most
  * 480px wide and 640px or 70% of the screen tall, in a box that keeps to those limits, so the box is
  * always the picture's shape. The picture's alt text is the file's name. The viewer is only there while
  * it's open, so a timeline of pictures holds no viewer for each.

@@ -13,10 +13,10 @@ import { SELECT } from "./model-picker";
 import { DIALOG, DIALOG_BACKDROP, DIALOG_CLOSE, DIALOG_TITLE, MAIN_ACTION, OTHER_ACTION } from "./unsaved-changes";
 import { UserAvatar } from "./user-avatar";
 
-/** What the preview says while the browser asks whether Ember may use a microphone. */
-export const ASKING_FOR_MICROPHONE = "Waiting for your browser to let Ember use your microphone…";
+/** What the preview says while the browser asks whether Papaya OS may use a microphone. */
+export const ASKING_FOR_MICROPHONE = "Waiting for your browser to let Papaya OS use your microphone…";
 /** And once there's none it may use. */
-export const NO_MICROPHONE = "Ember has no microphone to use, so you'll only listen. To speak, let this site use your microphone in your browser's settings, then join again.";
+export const NO_MICROPHONE = "Papaya OS has no microphone to use, so you'll only listen. To speak, let this site use your microphone in your browser's settings, then join again.";
 
 /**
  * The microphone the preview has open, which it asks the browser for as it opens: undefined while the

@@ -25,7 +25,7 @@ const workspace: Omit<Bootstrap, "user"> = {
   signInWithMemberful: false,
   turnstileSiteKey: null,
   passwordResetCodes: false,
-  account: { name: "Ember", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo: null, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false },
+  account: { name: "Papaya OS", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo: null, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false },
   version: "0.1",
   vapidPublicKey: null,
   platform: CHROME_MAC,
@@ -40,7 +40,7 @@ async function signIn(password: string) {
   await user.type(screen.getByLabelText("Password"), `${password}{Enter}`);
 }
 
-const card = () => screen.getByRole("heading", { name: "Sign in to Ember" }).closest("section")!;
+const card = () => screen.getByRole("heading", { name: "Sign in to Papaya OS" }).closest("section")!;
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -52,8 +52,8 @@ describe("Sign in with email and password", () => {
   it("asks for an email address and password", () => {
     render(<SignInPage workspace={workspace} onSignedIn={vi.fn()} />, { wrapper: FlashProvider });
     expect(document.title).toBe("Sign in");
-    expect(screen.getByRole("img", { name: "Ember" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Sign in to Ember" })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Papaya OS" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Sign in to Papaya OS" })).toBeInTheDocument();
     expect(screen.getByText("Welcome back. Pick up the conversation.")).toBeInTheDocument();
 
     const emailAddress = screen.getByLabelText("Email address");
@@ -128,12 +128,12 @@ describe("Sign in with email and password", () => {
     expect(screen.getAllByRole("alert")).toHaveLength(1);
   });
 
-  it("says when Ember can't be reached, keeping what was typed", async () => {
+  it("says when Papaya OS can't be reached, keeping what was typed", async () => {
     vi.spyOn(globalThis, "fetch").mockRejectedValue(new TypeError("Failed to fetch"));
     render(<SignInPage workspace={workspace} onSignedIn={vi.fn()} />, { wrapper: FlashProvider });
     await signIn("correct horse");
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't reach Ember. Check your connection and try again.");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't reach Papaya OS. Check your connection and try again.");
     expect(screen.getByLabelText("Password")).toHaveValue("correct horse");
     expect(screen.getByRole("button", { name: "Sign in" })).toBeEnabled();
     expect(card()).not.toHaveClass("motion-safe:animate-shake");
@@ -161,9 +161,9 @@ describe("Sign-in attempt limit", () => {
 });
 
 describe("Version", () => {
-  it("shows Ember's version under the card", () => {
+  it("shows Papaya OS's version under the card", () => {
     render(<SignInPage workspace={workspace} onSignedIn={vi.fn()} />, { wrapper: FlashProvider });
-    expect(card().nextElementSibling).toHaveTextContent(/^Ember version 0\.1$/);
+    expect(card().nextElementSibling).toHaveTextContent(/^Version 0\.1$/);
     expect(screen.queryByRole("link", { name: /@/ })).not.toBeInTheDocument();
   });
 });
@@ -173,11 +173,11 @@ describe("Sign in with a display name", () => {
     const user = userEvent.setup();
     render(<SignInPage workspace={{ ...workspace, guestSignIn: true }} onSignedIn={vi.fn()} />, { wrapper: FlashProvider });
     await user.click(screen.getByRole("button", { name: "Join with just a name" }));
-    expect(screen.getByRole("heading", { name: "Welcome to Ember" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Welcome to Papaya OS" })).toBeInTheDocument();
     expect(screen.getByLabelText("Your name")).toHaveFocus();
 
     await user.click(screen.getByRole("button", { name: "Sign in" }));
-    expect(screen.getByRole("heading", { name: "Sign in to Ember" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Sign in to Papaya OS" })).toBeInTheDocument();
   });
 
   it("only asks for a password when it doesn't", () => {
@@ -204,16 +204,16 @@ describe("Workspace logo", () => {
   const logo = "/account/logo?v=20261017120000";
   const withLogo = { ...workspace, account: { ...workspace.account, logo }, guestSignIn: true };
 
-  it("shows the workspace's logo in place of Ember's flame", () => {
+  it("shows the workspace's logo in place of Papaya OS's flame", () => {
     render(<SignInPage workspace={withLogo} onSignedIn={vi.fn()} />, { wrapper: FlashProvider });
     expect(screen.getByRole("img", { name: "Account logo" })).toHaveAttribute("src", logo);
-    expect(screen.queryByRole("img", { name: "Ember" })).toBeNull();
+    expect(screen.queryByRole("img", { name: "Papaya OS" })).toBeNull();
   });
 
   it("shows it over joining with just a name too", async () => {
     render(<SignInPage workspace={withLogo} onSignedIn={vi.fn()} />, { wrapper: FlashProvider });
     await userEvent.click(screen.getByRole("button", { name: "Join with just a name" }));
-    expect(screen.getByRole("heading", { name: "Welcome to Ember" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Welcome to Papaya OS" })).toBeInTheDocument();
     expect(screen.getByRole("img", { name: "Account logo" })).toHaveAttribute("src", logo);
   });
 });
@@ -433,7 +433,7 @@ describe("Reset a forgotten password with an emailed code", () => {
   const sendsEmail = { ...workspace, passwordResetCodes: true };
   const resetIt = () => screen.queryByRole("link", { name: "Reset it" });
 
-  it("offers to reset a forgotten password under the form while Ember can send email, with the address typed", async () => {
+  it("offers to reset a forgotten password under the form while Papaya OS can send email, with the address typed", async () => {
     render(<SignInPage workspace={sendsEmail} onSignedIn={vi.fn()} />, { wrapper: FlashProvider });
     expect(resetIt()).toHaveAttribute("href", "/passwords/new");
     expect(resetIt()!.parentElement).toHaveTextContent("Forgot your password? Reset it");
@@ -443,7 +443,7 @@ describe("Reset a forgotten password with an emailed code", () => {
     expect(resetIt()).toHaveAttribute("href", "/passwords/new?email_address=ada%40example.com");
   });
 
-  it("doesn't while Ember can't send email, or while the card offers Papaya in place of the password form", async () => {
+  it("doesn't while Papaya OS can't send email, or while the card offers Papaya in place of the password form", async () => {
     render(<SignInPage workspace={workspace} onSignedIn={vi.fn()} />, { wrapper: FlashProvider });
     expect(resetIt()).not.toBeInTheDocument();
     cleanup();

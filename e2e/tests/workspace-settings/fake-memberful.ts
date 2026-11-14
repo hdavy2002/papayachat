@@ -5,8 +5,8 @@ import { MEMBERFUL_CALLBACK_PATH, MEMBERFUL_WEBHOOK_PATH } from "@ember/protocol
 import { MEMBERFUL_KEYS, MEMBERFUL_SITE_PORT } from "../../projects/workspace-settings";
 
 // A Memberful site for the Memberful specs, at the address the second test server's MEMBERFUL_URL names,
-// with what Ember asks of one (apps/worker/src/memberful-api.ts): its sign-in page, which lists its
-// members to sign in as and sends the browser back to Ember with a code, as Memberful's OAuth does; its
+// with what Papaya OS asks of one (apps/worker/src/memberful-api.ts): its sign-in page, which lists its
+// members to sign in as and sends the browser back to Papaya OS with a code, as Memberful's OAuth does; its
 // token endpoint and member API, which say who signed in; and its admin API, which says whose
 // subscriptions are active. Its webhooks come from the specs themselves, signed as Memberful signs them.
 
@@ -25,7 +25,7 @@ export interface FakeMemberful {
   close(): Promise<void>;
 }
 
-/** Starts the site, which sends people back to the Ember at `ember`, an origin. */
+/** Starts the site, which sends people back to the Papaya OS at `ember`, an origin. */
 export async function startFakeMemberful(ember: string): Promise<FakeMemberful> {
   const members = new Map<string, FakeMember>();
   const server = createServer((request, response) => {
@@ -43,8 +43,8 @@ export async function startFakeMemberful(ember: string): Promise<FakeMemberful> 
 }
 
 /**
- * Sends Ember a webhook from the site saying `member`'s subscription changed, signed with the webhook's
- * secret, as Memberful signs one, which has Ember ask the admin API about them.
+ * Sends Papaya OS a webhook from the site saying `member`'s subscription changed, signed with the webhook's
+ * secret, as Memberful signs one, which has Papaya OS ask the admin API about them.
  */
 export async function sendWebhook(request: APIRequestContext, member: FakeMember): Promise<void> {
   // Memberful's ids are numbers in its webhooks.
@@ -86,7 +86,7 @@ async function answer(request: IncomingMessage, response: ServerResponse, member
   if (request.method === "POST" && url.pathname === "/api/graphql") {
     if (bearer !== MEMBERFUL_KEYS.apiKey) return json(401, { error: "unauthorized" });
     const { query } = JSON.parse(await bodyOf(request)) as { query: string };
-    // Each member asked about by an alias of its own, as Ember asks, its id a JSON string.
+    // Each member asked about by an alias of its own, as Papaya OS asks, its id a JSON string.
     const data: Record<string, unknown> = {};
     for (const [, alias, id] of query.matchAll(/(m\d+): member\(id: ("(?:[^"\\]|\\.)*")\)/g)) {
       const member = members.get(JSON.parse(id!) as string);

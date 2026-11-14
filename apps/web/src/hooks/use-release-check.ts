@@ -4,16 +4,16 @@ import { checkForRelease, checkForReleaseAfresh } from "@/lib/api";
 import { whenIdle } from "@/lib/idle";
 import type { NamedRelease } from "@/lib/release-check";
 
-/** What the Worker says of Ember's releases, and Check for updates, which asks it afresh. */
+/** What the Worker says of Papaya OS's releases, and Check for updates, which asks it afresh. */
 export interface ReleaseChecking {
-  /** The release this Ember is and the newest one GitHub names, or null until the Worker answers, and for anyone but an administrator. */
+  /** The release this Papaya OS is and the newest one GitHub names, or null until the Worker answers, and for anyone but an administrator. */
   check: ReleaseCheck | null;
   /** Has the Worker ask GitHub again, as Check for updates does, settling once it's answered, or failing as asking failed. */
   checkAgain: () => Promise<void>;
 }
 
 /**
- * For an administrator, the release this Ember is and the newest one GitHub names, which the Worker is
+ * For an administrator, the release this Papaya OS is and the newest one GitHub names, which the Worker is
  * asked for once the page is `ready` and the browser is idle, and again for someone made an
  * administrator. Each time they open Admin (`inAdmin` on every page of community settings) it's asked
  * afresh, having the Worker ask GitHub again, as the project's owner asked (2026-11-05), though going on
@@ -58,7 +58,7 @@ export function useReleaseCheck(administrator: boolean, ready: boolean, inAdmin:
  * fails, so either answer can know the later release, and either the later beta, whenever each heard. A
  * release or a beta once out stays out, so together they name the later release either names, with when
  * GitHub last named it, and the later beta either names, while it's ahead of that release. An answer from
- * this Ember as another release, once one is deployed, replaces what was heard before.
+ * this Papaya OS as another release, once one is deployed, replaces what was heard before.
  */
 function together(kept: ReleaseCheck, answer: ReleaseCheck): ReleaseCheck {
   if (answer.release !== kept.release) return answer;

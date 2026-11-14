@@ -31,7 +31,7 @@ const named = (name: string): Account => ({ name, tagline: "", hideTranslationBu
 /** How a new workspace sends email: with the binding wrangler.jsonc declares, from no address yet. */
 const NEW_EMAIL: EmailSettings = { provider: "cloudflare", resendKey: null, cloudflare: true, from: null };
 
-/** Sets Ember up with Ada as its administrator, signed in. */
+/** Sets Papaya OS up with Ada as its administrator, signed in. */
 async function setUp(): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(ada) });
   expect(response.status).toBe(201);
@@ -76,14 +76,14 @@ describe("Community settings page", () => {
     const administrator = await setUp();
     const member = await joinAsGrace();
     const joinCode = await storedJoinCode();
-    expect(await (await settings(administrator)).json()).toEqual({ account: named("Ember"), joinCode, canAdminister: true, memberfulSite: null, memberfulWebhooks: false, turnstile: null, email: NEW_EMAIL, invitations: [], emailDomains: [], addresses: { deployed: null, others: [] }, assistant: null, huddles: null, cloudflareAccountId: null } satisfies WorkspaceSettings);
-    expect(await (await settings(member)).json()).toEqual({ account: named("Ember"), joinCode, canAdminister: false, memberfulSite: null, memberfulWebhooks: false, turnstile: null, email: NEW_EMAIL, invitations: [], emailDomains: [], addresses: { deployed: null, others: [] }, assistant: null, huddles: null, cloudflareAccountId: null } satisfies WorkspaceSettings);
+    expect(await (await settings(administrator)).json()).toEqual({ account: named("Papaya OS"), joinCode, canAdminister: true, memberfulSite: null, memberfulWebhooks: false, turnstile: null, email: NEW_EMAIL, invitations: [], emailDomains: [], addresses: { deployed: null, others: [] }, assistant: null, huddles: null, cloudflareAccountId: null } satisfies WorkspaceSettings);
+    expect(await (await settings(member)).json()).toEqual({ account: named("Papaya OS"), joinCode, canAdminister: false, memberfulSite: null, memberfulWebhooks: false, turnstile: null, email: NEW_EMAIL, invitations: [], emailDomains: [], addresses: { deployed: null, others: [] }, assistant: null, huddles: null, cloudflareAccountId: null } satisfies WorkspaceSettings);
   });
 
   it("gives someone who signed in with just a name no join code, which would let them stay once guests are turned away, unless they're an administrator", async () => {
     const administrator = await setUp();
     const guest = await signIn("Mallory");
-    expect(await (await settings(guest)).json()).toEqual({ account: named("Ember"), joinCode: null, canAdminister: false, memberfulSite: null, memberfulWebhooks: false, turnstile: null, email: NEW_EMAIL, invitations: [], emailDomains: [], addresses: { deployed: null, others: [] }, assistant: null, huddles: null, cloudflareAccountId: null } satisfies WorkspaceSettings);
+    expect(await (await settings(guest)).json()).toEqual({ account: named("Papaya OS"), joinCode: null, canAdminister: false, memberfulSite: null, memberfulWebhooks: false, turnstile: null, email: NEW_EMAIL, invitations: [], emailDomains: [], addresses: { deployed: null, others: [] }, assistant: null, huddles: null, cloudflareAccountId: null } satisfies WorkspaceSettings);
 
     // An administrator could make a new code anyway.
     const promoted = await api(`/api/account/users/${guest.user.id}`, { method: "PATCH", headers: as(administrator), body: JSON.stringify({ role: "administrator" }) });
@@ -99,7 +99,7 @@ describe("Community settings page", () => {
   it("has nothing to show before first run", async () => {
     const response = await settings(await signIn("Grace"));
     expect(response.status).toBe(404);
-    expect(await response.json()).toEqual({ error: "Ember isn't set up yet" });
+    expect(await response.json()).toEqual({ error: "Papaya OS isn't set up yet" });
   });
 });
 
@@ -119,21 +119,21 @@ describe("Rename the workspace", () => {
     const administrator = await setUp();
     const member = await joinAsGrace();
 
-    const response = await change(administrator, { name: "Ember Studio" });
+    const response = await change(administrator, { name: "Papaya OS Studio" });
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ account: named("Ember Studio") });
-    expect((await storedAccount()).name).toBe("Ember Studio");
+    expect(await response.json()).toEqual({ account: named("Papaya OS Studio") });
+    expect((await storedAccount()).name).toBe("Papaya OS Studio");
 
-    expect(await (await settings(member)).json()).toEqual({ account: named("Ember Studio"), joinCode: await storedJoinCode(), canAdminister: false, memberfulSite: null, memberfulWebhooks: false, turnstile: null, email: NEW_EMAIL, invitations: [], emailDomains: [], addresses: { deployed: null, others: [] }, assistant: null, huddles: null, cloudflareAccountId: null } satisfies WorkspaceSettings);
-    expect((await bootstrap(member)).account).toEqual(named("Ember Studio"));
+    expect(await (await settings(member)).json()).toEqual({ account: named("Papaya OS Studio"), joinCode: await storedJoinCode(), canAdminister: false, memberfulSite: null, memberfulWebhooks: false, turnstile: null, email: NEW_EMAIL, invitations: [], emailDomains: [], addresses: { deployed: null, others: [] }, assistant: null, huddles: null, cloudflareAccountId: null } satisfies WorkspaceSettings);
+    expect((await bootstrap(member)).account).toEqual(named("Papaya OS Studio"));
     // "Sign in to <name>", and the installed app's name.
-    expect((await bootstrap()).account).toEqual(named("Ember Studio"));
-    expect(await (await api("/webmanifest.json")).json()).toMatchObject({ name: "Ember Studio" });
+    expect((await bootstrap()).account).toEqual(named("Papaya OS Studio"));
+    expect(await (await api("/webmanifest.json")).json()).toMatchObject({ name: "Papaya OS Studio" });
   });
 
   it("saves the name as typed, even blank", async () => {
     const administrator = await setUp();
-    for (const name of ["  Ember Studio ", "", "x".repeat(MAX_ACCOUNT_NAME_LENGTH)]) {
+    for (const name of ["  Papaya OS Studio ", "", "x".repeat(MAX_ACCOUNT_NAME_LENGTH)]) {
       expect(await (await change(administrator, { name })).json()).toEqual({ account: named(name) });
       expect((await storedAccount()).name).toBe(name);
       expect((await bootstrap()).account).toEqual(named(name));
@@ -145,14 +145,14 @@ describe("Rename the workspace", () => {
     const long = "2026-01-01T00:00:00.000Z";
     await workspaceSql("UPDATE accounts SET updated_at = ?", long);
 
-    for (const body of [{ name: "Ember" }, {}]) {
+    for (const body of [{ name: "Papaya OS" }, {}]) {
       const response = await change(administrator, body);
       expect(response.status).toBe(200);
-      expect(await response.json()).toEqual({ account: named("Ember") });
-      expect(await storedAccount()).toEqual({ name: "Ember", updated_at: long });
+      expect(await response.json()).toEqual({ account: named("Papaya OS") });
+      expect(await storedAccount()).toEqual({ name: "Papaya OS", updated_at: long });
     }
 
-    await change(administrator, { name: "Ember Studio" });
+    await change(administrator, { name: "Papaya OS Studio" });
     expect((await storedAccount()).updated_at > long).toBe(true);
   });
 
@@ -162,10 +162,10 @@ describe("Rename the workspace", () => {
     const sockets = [await openWorkspaceSocket(administrator), await openWorkspaceSocket(grace)];
 
     // Neither a name saved unchanged nor a new join code changes what pages show.
-    await change(administrator, { name: "Ember" });
+    await change(administrator, { name: "Papaya OS" });
     await regenerate(administrator);
-    await change(administrator, { name: "Ember Studio" });
-    for (const socket of sockets) expect(await socket.next()).toEqual({ type: "account.updated", account: named("Ember Studio") });
+    await change(administrator, { name: "Papaya OS Studio" });
+    for (const socket of sockets) expect(await socket.next()).toEqual({ type: "account.updated", account: named("Papaya OS Studio") });
   });
 
   it("lets only administrators rename it, and tells anyone else so before looking at what they sent", async () => {
@@ -176,7 +176,7 @@ describe("Rename the workspace", () => {
       expect(response.status).toBe(403);
       expect(await response.json()).toEqual({ error: "Only administrators can change the workspace" });
     }
-    expect((await storedAccount()).name).toBe("Ember");
+    expect((await storedAccount()).name).toBe("Papaya OS");
   });
 
   it("checks who's an administrator as they are when they rename it", async () => {
@@ -200,19 +200,19 @@ describe("Rename the workspace", () => {
     const response = await change(administrator, body);
     expect(response.status).toBe(422);
     expect(await response.json()).toEqual({ error });
-    expect((await storedAccount()).name).toBe("Ember");
+    expect((await storedAccount()).name).toBe("Papaya OS");
   });
 
   it("asks who's signed in, and refuses a rename sent from another site", async () => {
     const administrator = await setUp();
     expect((await change(null, { name: "Anyone's" })).status).toBe(401);
     expect((await change(administrator, { name: "Phished" }, { "Sec-Fetch-Site": "cross-site" })).status).toBe(422);
-    expect((await storedAccount()).name).toBe("Ember");
+    expect((await storedAccount()).name).toBe("Papaya OS");
   });
 
   it("reads the name again after a rename whose answer was lost", async () => {
     const administrator = await setUp();
-    expect((await bootstrap()).account.name).toBe("Ember");
+    expect((await bootstrap()).account.name).toBe("Papaya OS");
     // On D1 a write can be saved and its answer lost on the way back.
     await runInDurableObject(workspaceStub(), (workspace: Workspace) => {
       const store = storeOf(workspace);
@@ -222,8 +222,8 @@ describe("Rename the workspace", () => {
         throw new Error("The database's answer was lost");
       });
     });
-    expect((await change(administrator, { name: "Ember Studio" })).status).toBe(500);
-    expect((await bootstrap()).account.name).toBe("Ember Studio");
+    expect((await change(administrator, { name: "Papaya OS Studio" })).status).toBe(500);
+    expect((await bootstrap()).account.name).toBe("Papaya OS Studio");
   });
 
   it("doesn't keep a name read while the workspace was being renamed", async () => {
@@ -236,18 +236,18 @@ describe("Rename the workspace", () => {
       let finishReading!: (account: JoinableAccount | null) => void;
       vi.spyOn(storeOf(workspace), "account").mockReturnValueOnce(new Promise((resolve) => (finishReading = resolve)));
       const reading = workspace.bootstrap(null, null, null);
-      expect(await workspace.changeAccount(credentials, { name: "Ember Studio" }, "ember.test")).toEqual(named("Ember Studio"));
-      finishReading({ ...named("Ember"), joinCode: "aB3d-Ef5h-iJ7k", updatedAt: new Date().toISOString(), storedLogo: null, emailFrom: null, resendApiKey: null, deployedAddress: null, otherAddresses: [], turnstileKeys: null, assistant: null, assistantMost: TOP_LEVELS, assistantInstructions: "", assistantPromptTemplate: null, huddles: null });
+      expect(await workspace.changeAccount(credentials, { name: "Papaya OS Studio" }, "ember.test")).toEqual(named("Papaya OS Studio"));
+      finishReading({ ...named("Papaya OS"), joinCode: "aB3d-Ef5h-iJ7k", updatedAt: new Date().toISOString(), storedLogo: null, emailFrom: null, resendApiKey: null, deployedAddress: null, otherAddresses: [], turnstileKeys: null, assistant: null, assistantMost: TOP_LEVELS, assistantInstructions: "", assistantPromptTemplate: null, huddles: null });
       await reading;
     });
-    expect((await bootstrap()).account.name).toBe("Ember Studio");
+    expect((await bootstrap()).account.name).toBe("Papaya OS Studio");
   });
 });
 
 describe("Workspace tagline", () => {
   const TAGLINE = "Engines for every occasion";
   /** The new workspace, with `tagline`. */
-  const tagged = (tagline: string): Account => ({ ...named("Ember"), tagline });
+  const tagged = (tagline: string): Account => ({ ...named("Papaya OS"), tagline });
 
   it("has none until an administrator gives it one", async () => {
     expect((await bootstrap()).account.tagline).toBe("");
@@ -276,7 +276,7 @@ describe("Workspace tagline", () => {
     // As long as it can be, once it's kept, though more was sent.
     const longest = "x".repeat(MAX_TAGLINE_LENGTH);
     expect(await (await change(administrator, { tagline: `  ${longest}\n` })).json()).toEqual({ account: tagged(longest) });
-    expect(await (await change(administrator, { tagline: " \n " })).json()).toEqual({ account: named("Ember") });
+    expect(await (await change(administrator, { tagline: " \n " })).json()).toEqual({ account: named("Papaya OS") });
     expect(JSON.parse((await storedSettings()).settings!)).toEqual({ restrict_room_creation_to_administrators: false, tagline: "" });
   });
 
@@ -286,11 +286,11 @@ describe("Workspace tagline", () => {
     await workspaceSql("UPDATE accounts SET updated_at = ?", long);
 
     // As workspace settings send both, with the tagline blank before there's one.
-    const unchanged = await change(administrator, { name: "Ember", tagline: "" });
-    expect(await unchanged.json()).toEqual({ account: named("Ember") });
+    const unchanged = await change(administrator, { name: "Papaya OS", tagline: "" });
+    expect(await unchanged.json()).toEqual({ account: named("Papaya OS") });
     expect(await storedSettings()).toEqual({ settings: '{"restrict_room_creation_to_administrators":false}', updated_at: long });
 
-    const changed = await change(administrator, { name: "Ember", tagline: TAGLINE });
+    const changed = await change(administrator, { name: "Papaya OS", tagline: TAGLINE });
     expect(await changed.json()).toEqual({ account: tagged(TAGLINE) });
     expect((await storedSettings()).updated_at > long).toBe(true);
   });
@@ -314,19 +314,19 @@ describe("Workspace tagline", () => {
       expect(response.status).toBe(403);
       expect(await response.json()).toEqual({ error: "Only administrators can change the workspace" });
     }
-    expect((await bootstrap()).account).toEqual(named("Ember"));
+    expect((await bootstrap()).account).toEqual(named("Papaya OS"));
   });
 
   it.each([
     ["a tagline that's too long", { tagline: "x".repeat(MAX_TAGLINE_LENGTH + 1) }],
     ["one that isn't text", { tagline: null }],
-    ["a good name beside a bad tagline", { name: "Ember Studio", tagline: [TAGLINE] }],
+    ["a good name beside a bad tagline", { name: "Papaya OS Studio", tagline: [TAGLINE] }],
   ])("refuses %s, changing nothing", async (_, body) => {
     const administrator = await setUp();
     const response = await change(administrator, body);
     expect(response.status).toBe(422);
     expect(await response.json()).toEqual({ error: TAGLINE_TOO_LONG });
-    expect((await bootstrap()).account).toEqual(named("Ember"));
+    expect((await bootstrap()).account).toEqual(named("Papaya OS"));
   });
 
   it.each([
@@ -345,7 +345,7 @@ describe("Workspace tagline", () => {
 
 describe("Navigation icons", () => {
   /** The new workspace, with `navigationIcons`. */
-  const iconed = (navigationIcons: Account["navigationIcons"]): Account => ({ ...named("Ember"), navigationIcons });
+  const iconed = (navigationIcons: Account["navigationIcons"]): Account => ({ ...named("Papaya OS"), navigationIcons });
   const storedIcons = async () => (JSON.parse((await storedSettings()).settings!) as { ember_navigation_icons?: unknown }).ember_navigation_icons;
 
   it("has none chosen until an administrator chooses some", async () => {
@@ -389,10 +389,10 @@ describe("Navigation icons", () => {
     await workspaceSql("UPDATE accounts SET updated_at = ?", long);
 
     // A slot given the icon it has, or its own while it has its own, changes nothing.
-    await change(administrator, { name: "Ember", navigationIcons: { home: "", activity: "iconoir:regular:bell" } });
+    await change(administrator, { name: "Papaya OS", navigationIcons: { home: "", activity: "iconoir:regular:bell" } });
     expect((await storedSettings()).updated_at).toBe(long);
 
-    const response = await change(administrator, { name: "Ember", tagline: "Engines", settings: { hideTranslationButtons: false }, navigationIcons: { admin: "settings" } });
+    const response = await change(administrator, { name: "Papaya OS", tagline: "Engines", settings: { hideTranslationButtons: false }, navigationIcons: { admin: "settings" } });
     expect((await response.json()) as { account: Account }).toMatchObject({ account: { tagline: "Engines", hideTranslationButtons: false, navigationIcons: { admin: "settings" } } });
     expect(JSON.parse((await storedSettings()).settings!)).toEqual({
       ember_default_room_order: [3, 1],
@@ -423,20 +423,20 @@ describe("Navigation icons", () => {
       expect(response.status).toBe(403);
       expect(await response.json()).toEqual({ error: "Only administrators can change the workspace" });
     }
-    expect((await bootstrap()).account).toEqual(named("Ember"));
+    expect((await bootstrap()).account).toEqual(named("Papaya OS"));
   });
 
   it.each([
     ["a slot it doesn't know", { navigationIcons: { profile: "coffee" } }],
     ["an icon that isn't in the catalog", { navigationIcons: { home: "iconoir:regular:../coffee-cup" } }],
     ["icons that aren't an object", { navigationIcons: ["coffee"] }],
-    ["a good name beside a bad icon", { name: "Ember Studio", navigationIcons: { home: "Coffee" } }],
+    ["a good name beside a bad icon", { name: "Papaya OS Studio", navigationIcons: { home: "Coffee" } }],
   ])("refuses %s, changing nothing", async (_, body) => {
     const administrator = await setUp();
     const response = await change(administrator, body);
     expect(response.status).toBe(422);
     expect(await response.json()).toEqual({ error: NAVIGATION_ICONS_REFUSED });
-    expect((await bootstrap()).account).toEqual(named("Ember"));
+    expect((await bootstrap()).account).toEqual(named("Papaya OS"));
   });
 
   it.each([
@@ -473,7 +473,7 @@ describe("Join link", () => {
 });
 
 describe("Translation buttons", () => {
-  const shown = { ...named("Ember"), hideTranslationButtons: false };
+  const shown = { ...named("Papaya OS"), hideTranslationButtons: false };
 
   it("hides them until an administrator shows them, before first run too", async () => {
     expect((await bootstrap()).account.hideTranslationButtons).toBe(true);
@@ -496,7 +496,7 @@ describe("Translation buttons", () => {
 
     await change(administrator, { settings: { hideTranslationButtons: true } });
     expect(JSON.parse((await storedSettings()).settings!)).toEqual({ restrict_room_creation_to_administrators: false, hide_translation_buttons: true });
-    expect((await bootstrap(grace)).account).toEqual(named("Ember"));
+    expect((await bootstrap(grace)).account).toEqual(named("Papaya OS"));
   });
 
   it.each([
@@ -530,13 +530,13 @@ describe("Translation buttons", () => {
     const long = "2026-01-01T00:00:00.000Z";
     await workspaceSql("UPDATE accounts SET updated_at = ?", long);
 
-    const unchanged = await change(administrator, { name: "Ember", settings: { hideTranslationButtons: true } });
-    expect(await unchanged.json()).toEqual({ account: named("Ember") });
+    const unchanged = await change(administrator, { name: "Papaya OS", settings: { hideTranslationButtons: true } });
+    expect(await unchanged.json()).toEqual({ account: named("Papaya OS") });
     expect(await storedSettings()).toEqual({ settings: '{"restrict_room_creation_to_administrators":false}', updated_at: long });
 
-    const changed = await change(administrator, { name: "Ember Studio", settings: { hideTranslationButtons: false } });
-    expect(await changed.json()).toEqual({ account: { ...shown, name: "Ember Studio" } });
-    expect((await storedAccount()).name).toBe("Ember Studio");
+    const changed = await change(administrator, { name: "Papaya OS Studio", settings: { hideTranslationButtons: false } });
+    expect(await changed.json()).toEqual({ account: { ...shown, name: "Papaya OS Studio" } });
+    expect((await storedAccount()).name).toBe("Papaya OS Studio");
     expect((await storedSettings()).updated_at > long).toBe(true);
   });
 
@@ -566,20 +566,20 @@ describe("Translation buttons", () => {
       expect(response.status).toBe(403);
       expect(await response.json()).toEqual({ error: "Only administrators can change the workspace" });
     }
-    expect((await bootstrap()).account).toEqual(named("Ember"));
+    expect((await bootstrap()).account).toEqual(named("Papaya OS"));
   });
 
   it.each([
     ["a setting it doesn't know", { settings: { restrictRoomCreationToAdministrators: true } }, "Unknown setting: restrictRoomCreationToAdministrators"],
     ["a setting that isn't true or false", { settings: { hideTranslationButtons: "false" } }, "Hide translation buttons must be true or false"],
     ["settings that aren't an object", { settings: "hide" }, "Settings must be a JSON object"],
-    ["a good change beside a bad one", { name: "Ember Studio", settings: { hideTranslationButtons: false, logo: "earth.png" } }, "Unknown setting: logo"],
+    ["a good change beside a bad one", { name: "Papaya OS Studio", settings: { hideTranslationButtons: false, logo: "earth.png" } }, "Unknown setting: logo"],
   ])("refuses %s, changing nothing", async (_, body, error) => {
     const administrator = await setUp();
     const response = await change(administrator, body);
     expect(response.status).toBe(422);
     expect(await response.json()).toEqual({ error });
-    expect((await bootstrap()).account).toEqual(named("Ember"));
+    expect((await bootstrap()).account).toEqual(named("Papaya OS"));
   });
 });
 
@@ -659,7 +659,7 @@ describe("Regenerate the join link", () => {
       vi.spyOn(storeOf(workspace), "account").mockReturnValueOnce(new Promise((resolve) => (finishReading = resolve)));
       const reading = workspace.bootstrap(null, null, null);
       const regenerated = await workspace.regenerateJoinCode(credentials);
-      finishReading({ ...named("Ember"), joinCode: old, updatedAt: new Date().toISOString(), storedLogo: null, emailFrom: null, resendApiKey: null, deployedAddress: null, otherAddresses: [], turnstileKeys: null, assistant: null, assistantMost: TOP_LEVELS, assistantInstructions: "", assistantPromptTemplate: null, huddles: null });
+      finishReading({ ...named("Papaya OS"), joinCode: old, updatedAt: new Date().toISOString(), storedLogo: null, emailFrom: null, resendApiKey: null, deployedAddress: null, otherAddresses: [], turnstileKeys: null, assistant: null, assistantMost: TOP_LEVELS, assistantInstructions: "", assistantPromptTemplate: null, huddles: null });
       await reading;
       return regenerated;
     });

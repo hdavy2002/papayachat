@@ -173,7 +173,7 @@ describe("Image, video and file previews", () => {
       const { article } = show(fileMessage(), { threaded });
       expect(article.querySelector(".message-content")).not.toBeInTheDocument();
       expect(within(article).getByText("Q3 report.pdf")).toBeInTheDocument();
-      // Hidden in Ember added to an iPhone's or iPad's home screen, which can't download.
+      // Hidden in Papaya OS added to an iPhone's or iPad's home screen, which can't download.
       const download = within(article).getByRole("link", { name: "Download Q3 report.pdf" });
       expect(download).toHaveAttribute("href", report.downloadUrl);
       expect(download).toHaveClass("ios-pwa:hidden");
@@ -370,13 +370,13 @@ describe("Message rows", () => {
   });
 
   it("follows @ember's name with a badge saying it's an agent, and nobody else's", () => {
-    const { article } = show(message({ creator: { id: "ember", name: "Ember" }, createdAt: "2026-10-12T15:04:00" }));
+    const { article } = show(message({ creator: { id: "ember", name: "Papaya OS" }, createdAt: "2026-10-12T15:04:00" }));
     const heading = within(article).getByRole("heading", { level: 3 });
-    expect(heading).toHaveTextContent(/^Ember Agent3:04 PM$/);
+    expect(heading).toHaveTextContent(/^Papaya OS Agent3:04 PM$/);
     expect(within(heading).getByText("Agent")).toHaveAttribute("data-slot", "badge");
     // A follow-up's heading holds only its time.
     cleanup();
-    expect(within(show(message({ creator: { id: "ember", name: "Ember" } }), { threaded: true }).article).queryByText("Agent")).not.toBeInTheDocument();
+    expect(within(show(message({ creator: { id: "ember", name: "Papaya OS" } }), { threaded: true }).article).queryByText("Agent")).not.toBeInTheDocument();
     cleanup();
     expect(within(show(message()).article).queryByText("Agent")).not.toBeInTheDocument();
   });

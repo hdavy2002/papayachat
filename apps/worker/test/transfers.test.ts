@@ -9,7 +9,7 @@ import { api, apiWith, builtPages, cookieOf, freshDeploy, shown, signIn, workspa
 const ada = { name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" };
 const SECRET = (env as unknown as Env).SESSION_SECRET;
 
-/** Sets Ember up with Ada as its administrator, signed in. */
+/** Sets Papaya OS up with Ada as its administrator, signed in. */
 async function setUp(): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(ada) });
   expect(response.status).toBe(201);

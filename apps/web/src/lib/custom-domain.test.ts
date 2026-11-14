@@ -23,7 +23,7 @@ afterEach(() => {
 });
 
 describe("Custom domain", () => {
-  it("moves a page to the same page at Ember's custom domain, naming this browser's push subscription there", async () => {
+  it("moves a page to the same page at Papaya OS's custom domain, naming this browser's push subscription there", async () => {
     vi.mocked(pushKey).mockResolvedValue(KEY);
     history.replaceState(null, "", "/rooms/general#top");
     await moveTo(DOMAIN);
@@ -44,7 +44,7 @@ describe("Custom domain", () => {
     expect(loadPage).toHaveBeenLastCalledWith(`http://${DOMAIN}/rooms/general`);
   });
 
-  it("moves no page at Ember's custom domain, nor workspace settings, nor any while Ember has none", async () => {
+  it("moves no page at Papaya OS's custom domain, nor workspace settings, nor any while Papaya OS has none", async () => {
     history.replaceState(null, "", "/rooms/general");
     expect(movesTo(DOMAIN)).toBe(true);
     expect(movesTo(location.host)).toBe(false);

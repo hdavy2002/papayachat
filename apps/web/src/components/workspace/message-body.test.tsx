@@ -269,7 +269,7 @@ describe("Link previews in messages", () => {
     expect(image).toHaveAttribute("src", "https://basecamp.com/og.png");
     expect(image).toHaveAttribute("alt", "");
     expect(image).toHaveAttribute("loading", "lazy");
-    // So the page's site doesn't learn which Ember shows it.
+    // So the page's site doesn't learn which Papaya OS shows it.
     expect(image).toHaveAttribute("referrerpolicy", "no-referrer");
   });
 

@@ -9,9 +9,9 @@ import slackPayloads from "./fixtures/slack_payloads.json";
 import { api, apiWith, connect, cookieOf, createRoom, freshDeploy, objectSql, roomSql, roomStub, sharedD1, shown, workspaceSql, type Session } from "./support";
 
 // What a Slack incoming webhook is sent, posted to a room at /rooms/<room id>/<bot key>/slack (bots/slack.ts),
-// so tools that post to Slack can post to Ember, answered as Slack's webhooks answer.
+// so tools that post to Slack can post to Papaya OS, answered as Slack's webhooks answer.
 
-/** Sets Ember up with a bot, which is in first run's general room. */
+/** Sets Papaya OS up with a bot, which is in first run's general room. */
 async function withBot(): Promise<{ administrator: Session; bot: BotSettings; general: RoomId }> {
   const setUp = await api("/api/first_run", { method: "POST", body: JSON.stringify({ name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" }) });
   expect(setUp.status).toBe(201);
@@ -600,7 +600,7 @@ describe("Bot cards", () => {
         },
         { type: "image", image_url: "https://example.com/chart.png", alt_text: "Error rate", title: { type: "plain_text", text: "Last hour :chart_with_upwards_trend:" } },
         { type: "section", text: { type: "mrkdwn", text: "Approve?" }, accessory: { type: "button", text: { type: "plain_text", text: "Open" }, url: "https://example.com/open", style: "danger" } },
-        // What only an app could answer goes, and a block Ember doesn't know keeps its text.
+        // What only an app could answer goes, and a block Papaya OS doesn't know keeps its text.
         { type: "input", label: { type: "plain_text", text: "Reason" }, element: { type: "plain_text_input", action_id: "reason" } },
         { type: "future_block", text: { type: "mrkdwn", text: "Unknown with *text*" } },
       ],

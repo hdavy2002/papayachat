@@ -44,7 +44,7 @@ async function sessionOf(response: APIResponse): Promise<Session> {
   return { user, cookie: { name: cookieName, value, url: new URL(response.url()).origin, httpOnly: true, sameSite: "Lax" } };
 }
 
-/** The administrator the first-run project sets Ember up with, whom every other suite can sign in as. */
+/** The administrator the first-run project sets Papaya OS up with, whom every other suite can sign in as. */
 export const ADMINISTRATOR = { name: "Ada Lovelace", emailAddress: "ada@example.com", password: "correct horse battery" };
 
 /**
@@ -99,7 +99,7 @@ export async function logOut(page: Page): Promise<void> {
 /** The `Cookie` header that carries a session, for clients other than the test's browsers. */
 export const cookieHeader = ({ cookie }: Session) => `${cookie.name}=${cookie.value}`;
 
-/** What Ember's email comes from with `address` as its From address, which has no name: the address under the workspace's name, as it is now. */
+/** What Papaya OS's email comes from with `address` as its From address, which has no name: the address under the workspace's name, as it is now. */
 export async function sentFrom(request: APIRequestContext, address: string): Promise<string> {
   const { account } = (await (await request.get("/api/bootstrap")).json()) as Bootstrap;
   return `${account.name} <${address}>`;
@@ -116,7 +116,7 @@ export const TURNSTILE_WIDGET = { siteKey: "0x4AAAAAAA-e2e-only-site-key", secre
 /** The token the fake Turnstile's check gives once it passes, for the widget whose site key is `siteKey`. */
 export const turnstileTokenFor = (siteKey: string) => `e2e-token-for-${siteKey}`;
 
-/** Turnstile's script, as pages load it from the one address Ember's policy lets it come from. */
+/** Turnstile's script, as pages load it from the one address Papaya OS's policy lets it come from. */
 const TURNSTILE_SCRIPT = /^https:\/\/challenges\.cloudflare\.com\/turnstile\/v0\/api\.js\?render=explicit$/;
 
 /**

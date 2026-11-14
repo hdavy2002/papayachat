@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-/** Ember's stock app icon, which `/account/logo` serves while the workspace has no logo. */
+/** Papaya OS's stock app icon, which `/account/logo` serves while the workspace has no logo. */
 export const STOCK_LOGO = "/logos/app-icon.png";
 
 /**

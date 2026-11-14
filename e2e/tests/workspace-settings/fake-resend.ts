@@ -4,12 +4,12 @@ import { administratorSession, cookieHeader, expect, SAME_ORIGIN } from "../../f
 import { RESEND_API_PORT, RESEND_KEY } from "../../projects/workspace-settings";
 
 // Resend's API for the email specs, at the address the second test server's RESEND_API_URL names, with
-// what Ember asks of it (apps/worker/src/mail.ts): it knows one API key, `RESEND_KEY`, which can only
+// what Papaya OS asks of it (apps/worker/src/mail.ts): it knows one API key, `RESEND_KEY`, which can only
 // send, as Resend suggests making, so that asked for its domains with it, it refuses as Resend does,
-// which tells Ember it's a key Resend has. It takes an email, or a batch of them, sent with that key, and
+// which tells Papaya OS it's a key Resend has. It takes an email, or a batch of them, sent with that key, and
 // keeps them, answering as Resend does, or refuses the next one as a spec says.
 
-/** An email as Ember sends one to Resend. */
+/** An email as Papaya OS sends one to Resend. */
 export interface SentEmail {
   from: string;
   to: string[];
@@ -77,13 +77,13 @@ async function bodyOf(request: IncomingMessage): Promise<string> {
   return body;
 }
 
-/** Gives Ember the API key this API takes, as the administrator does in Set up email. */
+/** Gives Papaya OS the API key this API takes, as the administrator does in Set up email. */
 export async function giveResendKey(request: APIRequestContext): Promise<void> {
   const response = await request.put("/api/account/resend_api_key", { data: { apiKey: RESEND_KEY }, headers: await asAdministrator(request) });
   expect(response.status(), await response.text()).toBe(200);
 }
 
-/** Takes Ember's Resend API key away, as a new workspace has none. */
+/** Takes Papaya OS's Resend API key away, as a new workspace has none. */
 export async function forgetResendKey(request: APIRequestContext): Promise<void> {
   const response = await request.delete("/api/account/resend_api_key", { headers: await asAdministrator(request) });
   expect(response.status(), await response.text()).toBe(200);

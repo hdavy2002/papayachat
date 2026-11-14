@@ -53,7 +53,7 @@ const ERROR_PAGES = {
 /** Iconoir's files served as they are: the upgrade page's globe and the installed app's shortcuts. */
 const PUBLIC_COPIES = { "globe.svg": "globe", "shortcuts/plus.svg": "plus", "shortcuts/user.svg": "user" };
 
-describe("Ember's icons", () => {
+describe("Papaya OS's icons", () => {
   describe("Iconoir icons", () => {
     it.each(Object.keys(iconoir))("draws %s exactly as Iconoir's file does, named for it", (name) => {
       const file = fileOf.get(name);
@@ -89,7 +89,7 @@ describe("Ember's icons", () => {
       expect(page(path)).toBe(files.get(file));
     });
 
-    it("bundles only Iconoir's files that Ember draws", () => {
+    it("bundles only Iconoir's files that Papaya OS draws", () => {
       const drawn = new Set([...Object.keys(iconoir).map((name) => fileOf.get(name)), ...toolbarFiles, ...Object.values(ERROR_PAGES).flat(), ...Object.values(PUBLIC_COPIES)]);
       expect([...files.keys()].filter((file) => !drawn.has(file))).toEqual([]);
     });

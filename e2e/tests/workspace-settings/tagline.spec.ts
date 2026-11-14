@@ -2,7 +2,7 @@ import type { Locator, Page } from "@playwright/test";
 import { expect, test } from "../../fixtures";
 import { signInAsAdministrator, useOwnAddress } from "../../fixtures";
 
-/** A tagline as long as Ember takes, in everyday words. */
+/** A tagline as long as Papaya OS takes, in everyday words. */
 const TAGLINE = "Engines and tea for every soul";
 
 /** The tagline right under the workspace's name, at the top of the conversations. */

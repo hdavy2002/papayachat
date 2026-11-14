@@ -51,7 +51,7 @@ describe("Set up the workspace", () => {
       signInWithMemberful: false,
       turnstileSiteKey: null,
       passwordResetCodes: false,
-      account: { name: "Ember", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo: null, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false },
+      account: { name: "Papaya OS", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo: null, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false },
       version: "0.5 beta 3",
       // The suite's key pair's public key, uncompressed, without padding.
       vapidPublicKey: "BEYXTBB5_jNhNzXDmx5KEU55Vbbd-u--Lk9rM5OFQvUkPIBwZJ9QzAq0zdEzFw6yTV8cTriz_qYBVicY02_VxTQ",
@@ -92,7 +92,7 @@ describe("Set up the workspace", () => {
     expect(response.headers.getSetCookie()).toEqual([expect.stringMatching(/^__Host-session_token=[\w-]{43}; Path=\/; Max-Age=34560000; HttpOnly; SameSite=Lax; Secure$/)]);
 
     const [account] = (await workspaceSql("SELECT name, join_code, settings, singleton_guard FROM accounts")) as Array<Record<string, unknown>>;
-    expect(account).toEqual({ name: "Ember", join_code: expect.stringMatching(/^[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}$/), settings: '{"restrict_room_creation_to_administrators":false}', singleton_guard: 0 });
+    expect(account).toEqual({ name: "Papaya OS", join_code: expect.stringMatching(/^[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}$/), settings: '{"restrict_room_creation_to_administrators":false}', singleton_guard: 0 });
 
     const [administrator] = (await workspaceSql("SELECT id, name, email_address, password_digest, role, status, guest FROM users")) as Array<Record<string, unknown>>;
     expect(administrator).toMatchObject({ id: user.id, name: "Ada Lovelace", email_address: "ada@example.com", role: 1, status: 0, guest: 0 });
@@ -111,7 +111,7 @@ describe("Set up the workspace", () => {
     expect(await workspaceSql("SELECT user_id, ip_address, user_agent FROM sessions")).toEqual([{ user_id: user.id, ip_address: "203.0.113.7", user_agent: "Ada's laptop" }]);
 
     const cookie = cookieOf(response);
-    expect(await bootstrap(cookie)).toMatchObject({ setup: "complete", account: { name: "Ember" }, user });
+    expect(await bootstrap(cookie)).toMatchObject({ setup: "complete", account: { name: "Papaya OS" }, user });
     const sidebar = (await (await api("/api/sidebar", { headers: { Cookie: cookie } })).json()) as Sidebar;
     // general is the first room, so it has the welcome card.
     expect(sidebar.rooms).toEqual([listedRoom(room), listedRoom({ ...room, id: random.id, name: "random" })]);
@@ -144,7 +144,7 @@ describe("Set up the workspace", () => {
   it.each([
     ["a name", { ...ada, name: "x".repeat(MAX_USER_NAME_LENGTH + 1) }, { error: NAME_TOO_LONG, field: "name" }],
     ["an email address", { ...ada, emailAddress: `${"x".repeat(MAX_EMAIL_ADDRESS_LENGTH - 11)}@example.com` }, { error: EMAIL_ADDRESS_TOO_LONG, field: "emailAddress" }],
-  ])("answers 422 to %s longer than Ember keeps, and creates nothing", async (_, form, body) => {
+  ])("answers 422 to %s longer than Papaya OS keeps, and creates nothing", async (_, form, body) => {
     const response = await setUp(form);
     expect(response.status).toBe(422);
     expect(await response.json()).toEqual(body);
@@ -152,7 +152,7 @@ describe("Set up the workspace", () => {
     for (const table of ["accounts", "users", "rooms", "sessions"]) expect(await count(table), table).toBe(0);
   });
 
-  it("takes a name and an email address as long as Ember keeps", async () => {
+  it("takes a name and an email address as long as Papaya OS keeps", async () => {
     const name = "x".repeat(MAX_USER_NAME_LENGTH);
     const emailAddress = `${"x".repeat(MAX_EMAIL_ADDRESS_LENGTH - 12)}@example.com`;
     expect((await setUp({ ...ada, name, emailAddress })).status).toBe(201);
@@ -180,7 +180,7 @@ describe("Set up the workspace", () => {
 
     const again = await setUp({ ...ada, name: "Mallory", emailAddress: "mallory@example.com" });
     expect(again.status).toBe(409);
-    expect(await again.json()).toEqual({ error: "Ember is already set up", redirect: "/" });
+    expect(await again.json()).toEqual({ error: "Papaya OS is already set up", redirect: "/" });
     expect(again.headers.get("Set-Cookie")).toBeNull();
     expect(await workspaceSql("SELECT name FROM users")).toEqual([{ name: "Ada Lovelace" }]);
 
@@ -229,7 +229,7 @@ const SETUP_PASSWORD = "correct horse battery staple";
 /** A setup password as the page sends it, percent-encoded, since a header can't hold every character a password can. */
 const encoded = (password: string) => encodeURIComponent(password);
 
-/** A post to setup as the Set up Ember page sends it, to a Worker with the given setup secrets in place of the suite's. */
+/** A post to setup as the Set up Papaya OS page sends it, to a Worker with the given setup secrets in place of the suite's. */
 interface SetupPost {
   /** The post's bearer token, or none. */
   token?: string;
@@ -253,7 +253,7 @@ function firstRunAt(url: string, { token, ip = "203.0.113.7", secret, password, 
 /** The same, to this suite's Worker, whose setup token is `SETUP_TOKEN` unless `secret` says otherwise. */
 const firstRunWith = (options: Partial<SetupPost>) => firstRunAt(`${origin}/api/first_run`, { secret: SETUP_TOKEN, ...options });
 
-/** What setting Ember up takes, as `/api/bootstrap` at `url` tells a Worker whose EMBER_SETUP_TOKEN is `secret` and EMBER_SETUP_PASSWORD `password`. */
+/** What setting Papaya OS up takes, as `/api/bootstrap` at `url` tells a Worker whose EMBER_SETUP_TOKEN is `secret` and EMBER_SETUP_PASSWORD `password`. */
 async function setupAccessAt(url: string, secret: string | undefined, password?: string): Promise<Bootstrap["setupAccess"]> {
   const response = await worker.fetch(new Request<unknown, IncomingRequestCfProperties>(`${url}/api/bootstrap`), {
     ...(env as unknown as Env),
@@ -268,7 +268,7 @@ const nothingCreated = async () => {
 };
 
 describe("Installer-protected setup link", () => {
-  it("sets Ember up only through the deploy's setup link: without its token the form is refused before it's read", async () => {
+  it("sets Papaya OS up only through the deploy's setup link: without its token the form is refused before it's read", async () => {
     expect(await setupAccessAt(origin, SETUP_TOKEN)).toBe("link");
     const refused = await firstRunWith({});
     expect(refused.status).toBe(403);
@@ -303,7 +303,7 @@ describe("Installer-protected setup link", () => {
     expect((await firstRunWith({ secret, token: SETUP_TOKEN })).status).toBe(201);
   });
 
-  it("checks the link before whether Ember is set up, so without it setup says nothing more", async () => {
+  it("checks the link before whether Papaya OS is set up, so without it setup says nothing more", async () => {
     expect((await setUp(ada)).status).toBe(201);
     expect((await firstRunWith({})).status).toBe(403);
     expect((await firstRunWith({ token: SETUP_TOKEN })).status).toBe(409);
@@ -338,7 +338,7 @@ const withPassword = (path: string, options: Omit<Partial<SetupPost>, "secret"> 
 describe("Setup password from the deploy form", () => {
   afterEach(() => vi.useRealTimers());
 
-  it("sets Ember up only with the setup password the deploy form asked for: without it the form is refused before it's read", async () => {
+  it("sets Papaya OS up only with the setup password the deploy form asked for: without it the form is refused before it's read", async () => {
     expect(await setupAccessAt(origin, undefined, SETUP_PASSWORD)).toBe("password");
     for (const body of [JSON.stringify(ada), "not a form"]) {
       const refused = await withPassword("/api/first_run", { body });
@@ -370,12 +370,12 @@ describe("Setup password from the deploy form", () => {
     expect((await firstRunAt(`${origin}/api/first_run/check`, { secret: SETUP_TOKEN, token: "0".repeat(64) })).status).toBe(403);
   });
 
-  it("checks the setup password before whether Ember is set up, then sends someone with it home", async () => {
+  it("checks the setup password before whether Papaya OS is set up, then sends someone with it home", async () => {
     expect((await withPassword("/api/first_run", { token: encoded(SETUP_PASSWORD) })).status).toBe(201);
     for (const path of ["/api/first_run/check", "/api/first_run"]) {
       expect((await withPassword(path, { token: encoded("not the password") })).status, path).toBe(403);
       const again = await withPassword(path, { token: encoded(SETUP_PASSWORD) });
-      expect([again.status, await again.json()], path).toEqual([409, { error: "Ember is already set up", redirect: "/" }]);
+      expect([again.status, await again.json()], path).toEqual([409, { error: "Papaya OS is already set up", redirect: "/" }]);
     }
     expect(await count("users")).toBe(1);
   });

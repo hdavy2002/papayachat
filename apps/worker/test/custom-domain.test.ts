@@ -21,19 +21,19 @@ import { api, apiWith, connect, cookieOf, freshDeploy, openWorkspaceSocket, orig
 
 const ada = { name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" };
 
-/** The address an administrator gives Ember in these tests, as the Cloudflare dashboard attached it to the Worker. */
+/** The address an administrator gives Papaya OS in these tests, as the Cloudflare dashboard attached it to the Worker. */
 const DOMAIN = "chat.example.com";
 
-/** Where a deploy puts Ember in these tests: the Worker named ember's workers.dev address. */
+/** Where a deploy puts Papaya OS in these tests: the Worker named ember's workers.dev address. */
 const DEPLOYED = "ember.kro.workers.dev";
 
 /** Every Mac's user agent on the same Chrome, whose reduced user agent says no more. */
 const CHROME_ON_A_MAC = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36";
 
 /** A new workspace as pages show it, with the custom domain `customDomain`. */
-const withDomain = (customDomain: string | null): Account => ({ name: "Ember", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo: null, customDomain, joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false });
+const withDomain = (customDomain: string | null): Account => ({ name: "Papaya OS", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo: null, customDomain, joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false });
 
-/** Sets Ember up with Ada as its administrator, signed in. */
+/** Sets Papaya OS up with Ada as its administrator, signed in. */
 async function setUp(): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(ada) });
   expect(response.status).toBe(201);
@@ -49,7 +49,7 @@ const at = (host: string, path: string, init: RequestInit<IncomingRequestCfPrope
 const change = (session: Session | null, host: string, body: unknown) =>
   at(host, "/api/account", { method: "PATCH", headers: as(session), body: JSON.stringify(body) });
 
-/** Makes `host` Ember's custom domain from a page there, as Use <address> does, or none, as Stop using it does. */
+/** Makes `host` Papaya OS's custom domain from a page there, as Use <address> does, or none, as Stop using it does. */
 async function use(session: Session, host: string, customDomain: string | null = host): Promise<void> {
   const response = await change(session, host, { customDomain });
   expect(response.status, await response.clone().text()).toBe(200);
@@ -68,10 +68,10 @@ async function open(host: string, session?: Session): Promise<Bootstrap> {
   return (await response.json()) as Bootstrap;
 }
 
-/** The addresses besides its own that Ember tells `session` of in workspace settings. */
+/** The addresses besides its own that Papaya OS tells `session` of in workspace settings. */
 const addressesFor = async (session: Session) => ((await (await api("/api/account", { headers: as(session) })).json()) as WorkspaceSettings).addresses;
 
-/** Sets Ember up with a bot, which is in first run's general room. */
+/** Sets Papaya OS up with a bot, which is in first run's general room. */
 async function withBot() {
   const administrator = await setUp();
   const response = await api("/api/account/bots", { method: "POST", headers: as(administrator), body: JSON.stringify({ name: "Build Bot" }) });
@@ -117,7 +117,7 @@ beforeEach(freshDeploy);
 afterEach(() => vi.restoreAllMocks());
 
 describe("Custom domain", () => {
-  it("makes the address the page asking is open at Ember's, which every page then learns", async () => {
+  it("makes the address the page asking is open at Papaya OS's, which every page then learns", async () => {
     const administrator = await setUp();
     const member = await signIn("Grace");
 
@@ -138,13 +138,13 @@ describe("Custom domain", () => {
     expect((await bootstrap()).account?.customDomain).toBeNull();
     await use(administrator, "chat.example.com:8443");
     expect((await bootstrap()).account?.customDomain).toBe("chat.example.com:8443");
-    // A port is part of the address, so the host alone is another, which must reach Ember too.
+    // A port is part of the address, so the host alone is another, which must reach Papaya OS too.
     const sent = internet({ with: () => Promise.reject(new TypeError("Network connection lost.")) });
     expect(await (await change(administrator, "chat.example.com:8443", { customDomain: DOMAIN })).json()).toEqual({ error: cantUse(DOMAIN, "nothing") });
     expect(sent.map(({ url }) => url)).toEqual([expect.stringMatching(probeAt(`https://${DOMAIN}`))]);
   });
 
-  it("refuses a domain the request didn't come to while it doesn't reach this Ember, changing nothing", async () => {
+  it("refuses a domain the request didn't come to while it doesn't reach this Papaya OS, changing nothing", async () => {
     const administrator = await setUp();
     const answer = { with: async (_: Request) => new Response() };
     const sent = internet(answer);
@@ -163,15 +163,15 @@ describe("Custom domain", () => {
       }
     }
     expect(cantUse(DOMAIN, "nothing")).toBe("Nothing answers at chat.example.com yet. Cloudflare can take a minute to add it, so try again soon.");
-    expect(cantUse(DOMAIN, "elsewhere")).toBe("Something else answers at chat.example.com, not Ember.");
+    expect(cantUse(DOMAIN, "elsewhere")).toBe("Something else answers at chat.example.com, not Papaya OS.");
     expect(sent).toHaveLength(4);
     // A name changed along with it isn't saved either.
-    expect((await change(administrator, "ember.test", { name: "Ember Studio", customDomain: DOMAIN })).status).toBe(422);
+    expect((await change(administrator, "ember.test", { name: "Papaya OS Studio", customDomain: DOMAIN })).status).toBe(422);
     expect((await bootstrap()).account).toEqual(withDomain(null));
     expect((await storedSettings()).custom_domain).toBeUndefined();
   });
 
-  it("takes where a deploy or wrangler dev puts Ember from a page there, as Go back does, and a name under localhost", async () => {
+  it("takes where a deploy or wrangler dev puts Papaya OS from a page there, as Go back does, and a name under localhost", async () => {
     const administrator = await setUp();
     for (const host of [DEPLOYED, "workers.dev", "localhost:8787", "localhost", "127.0.0.1:8787", "chat.localhost:8787"]) {
       await use(administrator, host);
@@ -272,7 +272,7 @@ describe("Custom domain", () => {
     expect(listed.headers.get("Link")).toMatch(new RegExp(`^<https://chat\\.example\\.com/rooms/${general}/${bot.key}/messages\\?before=`));
   });
 
-  it("names the address each request came to again once Ember stops using it", async () => {
+  it("names the address each request came to again once Papaya OS stops using it", async () => {
     const { administrator, bot, general } = await withBot();
     await use(administrator, DOMAIN);
     await use(administrator, DOMAIN, null);
@@ -353,7 +353,7 @@ function internet(answer: { with: (request: Request) => Promise<Response> }): Se
 const probeAt = (origin: string) => new RegExp(`^${origin.replace(/\./g, "\\.")}/api/custom_domain_probes/[\\w-]{32}$`);
 
 describe("Custom domain", () => {
-  it("checks that a domain reaches this Ember by asking it for a probe only this Ember waits for, once", async () => {
+  it("checks that a domain reaches this Papaya OS by asking it for a probe only this Papaya OS waits for, once", async () => {
     const administrator = await setUp();
     // As Cloudflare sends the domain to this Worker, once its dashboard has added it.
     const sent = internet({ with: (request) => exports.default.fetch(request) });
@@ -370,15 +370,15 @@ describe("Custom domain", () => {
     expect(sent[1]!.url).toMatch(probeAt("https://chat.example.com:8443"));
   });
 
-  it("says something else answers there when a site does, but not as this Ember", async () => {
+  it("says something else answers there when a site does, but not as this Papaya OS", async () => {
     const administrator = await setUp();
     const answer = { with: async (_: Request) => new Response() };
     internet(answer);
     for (const [what, response] of [
       ["a parked page", () => new Response("<html>Parked</html>", { headers: { "Content-Type": "text/html" } })],
       ["a site that answers anything", () => new Response(null, { status: 204 })],
-      // Another Ember's Workspace waits for no such probe, as another Worker's wouldn't.
-      ["another Ember", () => Response.json({ error: "Not found" }, { status: 404 })],
+      // Another Papaya OS's Workspace waits for no such probe, as another Worker's wouldn't.
+      ["another Papaya OS", () => Response.json({ error: "Not found" }, { status: 404 })],
       ["a guess at the answer", () => new Response(null, { status: 204, headers: { [PROBE_ANSWER_HEADER]: "a guess" } })],
       ["a redirect, which isn't followed", () => Response.redirect(`https://${DOMAIN}/elsewhere`, 302)],
       ["a failing site", () => new Response(null, { status: 500 })],
@@ -428,7 +428,7 @@ describe("Custom domain", () => {
     expect(sent).toEqual([]);
   });
 
-  it("refuses a domain that can't be Ember's, sending nothing", async () => {
+  it("refuses a domain that can't be Papaya OS's, sending nothing", async () => {
     const administrator = await setUp();
     const sent = internet({ with: (request) => exports.default.fetch(request) });
     for (const [domain, error] of [
@@ -464,14 +464,14 @@ describe("Custom domain", () => {
 });
 
 describe("Custom domain", () => {
-  /** Ember as a deploy left it, opened at its workers.dev address, with Ada as its administrator, signed in. */
+  /** Papaya OS as a deploy left it, opened at its workers.dev address, with Ada as its administrator, signed in. */
   async function deployed(): Promise<Session> {
     const administrator = await setUp();
     await open(DEPLOYED);
     return administrator;
   }
 
-  it("remembers where a deploy puts Ember from the pages opened there, which only administrators hear of", async () => {
+  it("remembers where a deploy puts Papaya OS from the pages opened there, which only administrators hear of", async () => {
     const administrator = await setUp();
     const member = await signIn("Grace");
     const sockets = [await openWorkspaceSocket(administrator), await openWorkspaceSocket(member)];
@@ -504,7 +504,7 @@ describe("Custom domain", () => {
     expect(await addressesFor(administrator)).toEqual({ deployed: null, others: [] } satisfies EmberAddresses);
   });
 
-  it("goes back to where a deploy puts Ember from any address, once a check finds it reaches Ember there", async () => {
+  it("goes back to where a deploy puts Papaya OS from any address, once a check finds it reaches Papaya OS there", async () => {
     const administrator = await deployed();
     await use(administrator, DOMAIN);
     // As Cloudflare sends the workers.dev address to this Worker.
@@ -514,13 +514,13 @@ describe("Custom domain", () => {
     expect(response.status, await response.clone().text()).toBe(200);
     expect(await response.json()).toEqual({ account: withDomain(DEPLOYED) });
     expect(sent.map(({ url }) => url)).toEqual([expect.stringMatching(probeAt(`https://${DEPLOYED}`))]);
-    // Pages at the domain it left move there, and the domain is remembered, as it reaches Ember until it's removed in Cloudflare.
+    // Pages at the domain it left move there, and the domain is remembered, as it reaches Papaya OS until it's removed in Cloudflare.
     expect((await open(DOMAIN)).account?.customDomain).toBe(DEPLOYED);
     expect(await addressesFor(administrator)).toEqual({ deployed: DEPLOYED, others: [DOMAIN] } satisfies EmberAddresses);
     expect(await storedSettings()).toMatchObject({ custom_domain: DEPLOYED, deployed_address: DEPLOYED, other_addresses: [DOMAIN] });
   });
 
-  it("goes back from the address a deploy puts Ember at without a check, as the request came there", async () => {
+  it("goes back from the address a deploy puts Papaya OS at without a check, as the request came there", async () => {
     const administrator = await deployed();
     await use(administrator, DOMAIN);
     const sent = internet({ with: (request) => exports.default.fetch(request) });
@@ -529,7 +529,7 @@ describe("Custom domain", () => {
     expect(await addressesFor(administrator)).toEqual({ deployed: DEPLOYED, others: [DOMAIN] } satisfies EmberAddresses);
   });
 
-  it("won't go back while Ember doesn't answer where a deploy put it, changing nothing", async () => {
+  it("won't go back while Papaya OS doesn't answer where a deploy put it, changing nothing", async () => {
     const administrator = await deployed();
     await use(administrator, DOMAIN);
     const answer = { with: async (_: Request) => new Response() };
@@ -539,7 +539,7 @@ describe("Custom domain", () => {
       ["no answer in time", () => Promise.reject(new DOMException("The operation was aborted due to timeout", "TimeoutError"))],
     ] as const) {
       answer.with = response;
-      const refused = await change(administrator, DOMAIN, { customDomain: DEPLOYED, name: "Ember Studio" });
+      const refused = await change(administrator, DOMAIN, { customDomain: DEPLOYED, name: "Papaya OS Studio" });
       expect([what, refused.status]).toEqual([what, 422]);
       expect(await refused.json()).toEqual({ error: cantGoBackTo(DEPLOYED) });
     }
@@ -547,11 +547,11 @@ describe("Custom domain", () => {
     expect(await addressesFor(administrator)).toEqual({ deployed: DEPLOYED, others: [] } satisfies EmberAddresses);
   });
 
-  it("goes back to no workers.dev or localhost address but where a deploy put Ember, sending nothing for another", async () => {
+  it("goes back to no workers.dev or localhost address but where a deploy put Papaya OS, sending nothing for another", async () => {
     const administrator = await setUp();
     await use(administrator, DOMAIN);
     const sent = internet({ with: (request) => exports.default.fetch(request) });
-    // Before a page there has told Ember where it is.
+    // Before a page there has told Papaya OS where it is.
     expect(await (await change(administrator, DOMAIN, { customDomain: DEPLOYED })).json()).toEqual({ error: NOT_THIS_ADDRESS });
     await open(DEPLOYED);
     for (const customDomain of ["ember-studio.kro.workers.dev", "localhost:8787", "127.0.0.1:8787"]) {
@@ -573,7 +573,7 @@ describe("Custom domain", () => {
     expect(sent).toEqual([]);
   });
 
-  it("makes a custom domain Ember's from any address, as Set up's Use does, once a check finds it reaches Ember there", async () => {
+  it("makes a custom domain Papaya OS's from any address, as Set up's Use does, once a check finds it reaches Papaya OS there", async () => {
     const administrator = await deployed();
     // As Cloudflare sends the domain to this Worker, once its dashboard has added it.
     const sent = internet({ with: (request) => exports.default.fetch(request) });
@@ -591,17 +591,17 @@ describe("Custom domain", () => {
     expect(sent).toHaveLength(2);
   });
 
-  it("won't make a domain Ember's from another address while it doesn't reach Ember, changing nothing", async () => {
+  it("won't make a domain Papaya OS's from another address while it doesn't reach Papaya OS, changing nothing", async () => {
     const administrator = await deployed();
     const answer = { with: async (_: Request) => new Response() };
     internet(answer);
     for (const [reaches, response] of [
       ["nothing", () => Promise.resolve(new Response("error code: 1016", { status: 530 }))],
-      // As when the domain is added to another Worker, or another Ember.
+      // As when the domain is added to another Worker, or another Papaya OS.
       ["elsewhere", () => Promise.resolve(Response.json({ error: "Not found" }, { status: 404 }))],
     ] as const) {
       answer.with = response;
-      const refused = await change(administrator, DEPLOYED, { customDomain: DOMAIN, name: "Ember Studio" });
+      const refused = await change(administrator, DEPLOYED, { customDomain: DOMAIN, name: "Papaya OS Studio" });
       expect([reaches, refused.status]).toEqual([reaches, 422]);
       expect(await refused.json()).toEqual({ error: cantUse(DOMAIN, reaches) });
     }
@@ -623,7 +623,7 @@ describe("Custom domain", () => {
     expect((await addressesFor(administrator)).others).toEqual(["team.example.com", "old.example.com"]);
   });
 
-  it("forgets a domain it moved away from once a check finds it no longer reaches Ember, and no other", async () => {
+  it("forgets a domain it moved away from once a check finds it no longer reaches Papaya OS, and no other", async () => {
     const administrator = await deployed();
     await use(administrator, DOMAIN);
     await use(administrator, "team.example.com");
@@ -837,7 +837,7 @@ describe("Custom domain", () => {
     expect(asked).toEqual([]);
   });
 
-  it("refuses a domain that can't be Ember's, asking nothing", async () => {
+  it("refuses a domain that can't be Papaya OS's, asking nothing", async () => {
     const administrator = await setUp();
     const asked = resolverWith({});
     for (const [domain, error] of [

@@ -12,8 +12,8 @@ export const JOIN_LINK: LinkSharing = {
   qrCodeLabel: "Show join link QR code",
   copyLabel: "Copy join link",
   shareLabel: "Share join link",
-  title: "Link to join Ember",
-  text: "Hit this link to join me in Ember and start chatting.",
+  title: "Link to join Papaya OS",
+  text: "Hit this link to join me in Papaya OS and start chatting.",
 };
 
 /** Open sign-up's page, absolute, where anyone may create an account while Open is on. */
@@ -36,5 +36,5 @@ export const EMAIL_SIGN_UP_LINK: LinkSharing = {
   qrCodeLabel: "Show email sign-up link QR code",
   copyLabel: "Copy email sign-up link",
   shareLabel: "Share email sign-up link",
-  text: "Hit this link to join me in Ember with your email address.",
+  text: "Hit this link to join me in Papaya OS with your email address.",
 };

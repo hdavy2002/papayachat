@@ -22,7 +22,7 @@ function platformOf(label: keyof typeof facts.platforms): Platform {
 }
 
 /**
- * What Campfire's `partial` says for the user agent `label`, as `linesOf` reads it, in Ember's name and at
+ * What Campfire's `partial` says for the user agent `label`, as `linesOf` reads it, in Papaya OS's name and at
  * this page's address, or null where Campfire leaves it out.
  */
 function golden(partial: string, label: string): string[] | null {
@@ -30,8 +30,8 @@ function golden(partial: string, label: string): string[] | null {
   if (html === undefined) throw new Error(`No golden for ${partial}_${label}`);
   if (!html.trim()) return null;
   const site = new URL("/", location.href).href;
-  const page = new DOMParser().parseFromString(html.replaceAll("Campfire", "Ember").replaceAll(`${facts.base_url}/`, site), "text/html");
-  // Install now, which only shows once the browser offers to install Ember, as tests below check.
+  const page = new DOMParser().parseFromString(html.replaceAll("Campfire", "Papaya OS").replaceAll(`${facts.base_url}/`, site), "text/html");
+  // Install now, which only shows once the browser offers to install Papaya OS, as tests below check.
   page.querySelector(".pwa__installer")?.remove();
   return linesOf(page.body);
 }
@@ -83,10 +83,10 @@ describe("Notification setup help", () => {
     expect(sectionsIn(container)).toEqual(PARTIALS.map((partial) => golden(partial, label)).filter((lines) => lines !== null));
   });
 
-  it("leaves out the system's settings in a browser tab, and how to install Ember in the installed app", () => {
+  it("leaves out the system's settings in a browser tab, and how to install Papaya OS in the installed app", () => {
     shownIn("browser");
     const { container, rerender } = render(<NotificationHelp platform={SAFARI_MAC} />);
-    expect([...container.querySelectorAll("details")].map(titleOf)).toEqual(["Check your Safari settings", "Install Ember as a web app."]);
+    expect([...container.querySelectorAll("details")].map(titleOf)).toEqual(["Check your Safari settings", "Install Papaya OS as a web app."]);
     shownIn("standalone");
     rerender(<NotificationHelp key="installed" platform={SAFARI_MAC} />);
     expect([...container.querySelectorAll("details")].map(titleOf)).toEqual(["Check your Safari settings", "Check your macOS settings"]);
@@ -95,8 +95,8 @@ describe("Notification setup help", () => {
   it("opens the one section it gives, and none of two or more", () => {
     shownIn("browser");
     const { container, rerender } = render(<NotificationHelp platform={SAFARI_IPHONE} />);
-    expect([...container.querySelectorAll("details")].map((details) => [titleOf(details), details.open])).toEqual([["Install Ember as a web app.", true]]);
-    expect(screen.getByText("To receive push notifications in Safari for iPhone, you must install Ember as a web app.")).toBeVisible();
+    expect([...container.querySelectorAll("details")].map((details) => [titleOf(details), details.open])).toEqual([["Install Papaya OS as a web app.", true]]);
+    expect(screen.getByText("To receive push notifications in Safari for iPhone, you must install Papaya OS as a web app.")).toBeVisible();
 
     rerender(<NotificationHelp platform={CHROME_MAC} />);
     expect([...container.querySelectorAll("details")].map((details) => [titleOf(details), details.open])).toEqual([["Check your Chrome settings", true]]);
@@ -143,14 +143,14 @@ describe("Install as an app", () => {
       Reflect.deleteProperty(navigator, "serviceWorker");
     });
 
-    /** The browser offering to install Ember, as Chromium does with `beforeinstallprompt`. */
+    /** The browser offering to install Papaya OS, as Chromium does with `beforeinstallprompt`. */
     function offerToInstall() {
       const offer = Object.assign(new Event("beforeinstallprompt", { cancelable: true }), { prompt: vi.fn(async () => ({ outcome: "accepted" })) });
       act(() => void dispatchEvent(offer));
       return offer;
     }
 
-    it("shows once the browser offers to install Ember, in place of the browser's own offer, and prompts to", () => {
+    it("shows once the browser offers to install Papaya OS, in place of the browser's own offer, and prompts to", () => {
       render(<InstallInstructions platform={SAFARI_MAC} />);
       expect(screen.queryByRole("button", { name: "Install now" })).not.toBeInTheDocument();
 
@@ -162,7 +162,7 @@ describe("Install as an app", () => {
       expect(screen.queryByRole("button", { name: "Install now" })).not.toBeInTheDocument();
     });
 
-    it("goes once Ember is installed", () => {
+    it("goes once Papaya OS is installed", () => {
       render(<InstallInstructions platform={SAFARI_MAC} />);
       offerToInstall();
       expect(screen.getByRole("button", { name: "Install now" })).toBeInTheDocument();

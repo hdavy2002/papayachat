@@ -3,7 +3,7 @@ import { cardAddress, prepareBody } from "@ember/richtext";
 
 // A bot's cards as the room keeps them (packages/protocol/src/cards.ts): what `parseCards` keeps of them,
 // their links and images on named hosts, as a link preview's are, and each text in the stored form, as
-// `prepareBody` keeps a body, with the plain text they add to their message's. Which host is this Ember's
+// `prepareBody` keeps a body, with the plain text they add to their message's. Which host is this Papaya OS's
 // is the page's to know, so each reader's app leaves out an address on it as it draws the card.
 
 /** A message's cards, and their plain text: a line for each part that has text, a field's title before its value. */

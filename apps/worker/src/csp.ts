@@ -9,8 +9,8 @@ import { urlOf } from "./request-url";
 // or inline, which React's style attributes, Lexxy and an administrator's custom CSS need; images from
 // this origin, any HTTPS host, since a preview shows its page's image, and data and blob URLs, which SVG
 // previews and photos being picked use; and sockets open to this host alone. Only the pages that show
-// Turnstile's check may load its script and frame: open sign-up's and those that ask Ember to email a
-// link to join or a code to reset a password, while Ember has a widget's keys, and the one Set up
+// Turnstile's check may load its script and frame: open sign-up's and those that ask Papaya OS to email a
+// link to join or a code to reset a password, while Papaya OS has a widget's keys, and the one Set up
 // Turnstile frames to check a widget's.
 
 /** Where browsers send what the policy blocked, which the Worker logs. */

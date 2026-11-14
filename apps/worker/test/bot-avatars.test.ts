@@ -20,7 +20,7 @@ afterEach(() => {
 const ada = { name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" };
 const grace = { name: "Grace Hopper", emailAddress: "grace@example.com", password: "compiler design" };
 
-/** Sets Ember up with Ada as its administrator, signed in. */
+/** Sets Papaya OS up with Ada as its administrator, signed in. */
 async function setUp(): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(ada) });
   expect(response.status).toBe(201);
@@ -174,7 +174,7 @@ describe("Add and edit a bot", () => {
 
     const form = await sent(botForm({ name: "Build Bot" }), administrator);
     const unbound = await apiWith({ FILES: undefined }, "/api/account/bots", { method: "POST", ...form });
-    expect([unbound.status, await unbound.json()]).toEqual([503, { error: "Ember isn't set up to store files" }]);
+    expect([unbound.status, await unbound.json()]).toEqual([503, { error: "Papaya OS isn't set up to store files" }]);
     expect(((await (await api("/api/account/bots", { headers: { Cookie: administrator.cookie } })).json()) as Bots).bots).toEqual([]);
 
     const plain = await sent(botForm({ name: "Build Bot" }, null), administrator);

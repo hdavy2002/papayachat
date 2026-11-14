@@ -17,7 +17,7 @@ interface Props {
 
 /**
  * The push subscriptions page, which nothing links to: each browser that turned notifications on for
- * you, oldest first, with Send test notification, which pushes "Ember Test" to it at once, and Delete
+ * you, oldest first, with Send test notification, which pushes "Papaya OS Test" to it at once, and Delete
  * subscription.
  */
 export function PushSubscriptionsPage({ back, onFailed }: Props) {

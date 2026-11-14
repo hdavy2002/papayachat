@@ -267,14 +267,14 @@ describe("A bot's profile", () => {
   });
 
   it("badges @ember's page as an agent's under its avatar, and no other bot's", async () => {
-    const ember: Person = { ...bender, id: "ember", name: "Ember" };
+    const ember: Person = { ...bender, id: "ember", name: "Papaya OS" };
     serve(found(ember));
     showPage(ember);
     expect(await avatar()).toBeVisible();
     const badge = screen.getByText("Agent");
     expect(badge).toHaveAttribute("data-slot", "badge");
     expect(badge.previousElementSibling).toContainElement(await avatar());
-    expect(directButton("Ember")).toBeVisible();
+    expect(directButton("Papaya OS")).toBeVisible();
     cleanup();
 
     serve(found(bender));
@@ -335,7 +335,7 @@ describe("A bot's profile", () => {
       expect(runsOn()).toHaveTextContent(/ Grace Brewster Hopper set it up\.$/);
     });
 
-    it("says what it does while Ember AI is off, but that it's no longer on this account, without the DM button", async () => {
+    it("says what it does while Papaya AI is off, but that it's no longer on this account, without the DM button", async () => {
       showAgent(HAIKU, {}, { ...recap, status: "deactivated" });
       expect(await heading()).toHaveTextContent(/^Recap$/);
       expect(screen.getByText("Sums up long threads")).toBeVisible();

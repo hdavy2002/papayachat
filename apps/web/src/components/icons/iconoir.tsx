@@ -2,7 +2,7 @@ import type { SVGProps } from "react";
 import { cn } from "@/lib/utils";
 
 // Iconoir's icons (iconoir.com), from the release pinned here: iconoir 7.12.1. The project's owner chose them for
-// every icon Ember draws but those people pick for rooms and the rail (room-icon.tsx) and the picture of Chrome's
+// every icon Papaya OS draws but those people pick for rooms and the rail (room-icon.tsx) and the picture of Chrome's
 // View site information button in the setup help (campfire.tsx). iconoir/ holds their files from the package's
 // icons/regular/, and iconoir/solid/ those from its icons/solid/, byte for byte, and icons.test.tsx checks each
 // icon here against its file.

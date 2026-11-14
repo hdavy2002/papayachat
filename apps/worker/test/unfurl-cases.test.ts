@@ -7,7 +7,7 @@ import answers from "./fixtures/opengraph_expected.json";
 
 // Replays the link previews recorded from Campfire (fixtures/README.md) on a fake Internet: each host's
 // DNS answers, and a server at the public ones that answers the recorded routes and 404s anything else.
-// Each preview, and the requests the server saw, must match the recording, except where Ember differs on
+// Each preview, and the requests the server saw, must match the recording, except where Papaya OS differs on
 // purpose (`DIFFERENCES`). DNS lookups aren't compared: this looks each host up once per preview, where
 // Campfire looks it up for every request.
 

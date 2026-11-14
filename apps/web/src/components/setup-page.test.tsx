@@ -8,13 +8,13 @@ import { SetupPage } from "./setup-page";
 
 vi.mock("@/lib/page", () => ({ loadPage: vi.fn() }));
 vi.mock("@/lib/previews", () => ({ avatarVariantOf: vi.fn(async () => new Blob(["variant"], { type: "image/webp" })) }));
-// The question about huddles has tests of its own (setup-huddles.test.tsx). Here, what opens Ember from it
+// The question about huddles has tests of its own (setup-huddles.test.tsx). Here, what opens Papaya OS from it
 // stands in for it, among the pages it loads with. Where those can't load is setup-page-unloaded.test.tsx's.
 vi.mock("@/components/workspace/pages", () => ({
   SetupHuddles: ({ onOpen }: { onOpen: () => void }) => (
     <section aria-label="The question about huddles">
       <button type="button" onClick={onOpen}>
-        Open Ember
+        Open Papaya OS
       </button>
     </section>
   ),
@@ -49,8 +49,8 @@ afterEach(() => {
 
 /** The question about huddles, which the form goes on to once it has made the workspace. */
 const huddlesQuestion = () => screen.findByRole("region", { name: "The question about huddles" });
-/** Opens Ember from it. */
-const openEmber = async () => userEvent.click(within(await huddlesQuestion()).getByRole("button", { name: "Open Ember" }));
+/** Opens Papaya OS from it. */
+const openEmber = async () => userEvent.click(within(await huddlesQuestion()).getByRole("button", { name: "Open Papaya OS" }));
 
 const preview = () => screen.getByRole("img", { name: "Avatar preview" });
 const photoField = () => screen.getByLabelText("Upload profile image (optional)", { exact: false });
@@ -61,11 +61,11 @@ const sent = () => vi.mocked(fetch).mock.calls.at(-1)![1]!.body;
 describe("Set up the workspace", () => {
   it("asks for the administrator's name, email address and password", () => {
     render(<SetupPage placeholders={DEFAULTS} access="open" onSetUp={() => {}} />);
-    expect(document.title).toBe("Set up Ember");
-    expect(screen.getByRole("region", { name: "Set up Ember" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { level: 1, name: "Set up Ember" })).toBeInTheDocument();
+    expect(document.title).toBe("Set up Papaya OS");
+    expect(screen.getByRole("region", { name: "Set up Papaya OS" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: "Set up Papaya OS" })).toBeInTheDocument();
     expect(screen.getByText("Create the admin account for your workspace.")).toBeInTheDocument();
-    expect(screen.getByRole("img", { name: "Ember" })).toHaveAttribute("src", "/ember-icon.png");
+    expect(screen.getByRole("img", { name: "Papaya OS" })).toHaveAttribute("src", "/ember-icon.png");
 
     const name = screen.getByLabelText("Name");
     expect(name).toHaveFocus();
@@ -107,12 +107,12 @@ describe("Set up the workspace", () => {
     render(<SetupPage placeholders={DEFAULTS} access="open" onSetUp={onSetUp} />);
     await fillIn("correct horse");
 
-    // Still setting Ember up, at its address, until the question is answered.
+    // Still setting Papaya OS up, at its address, until the question is answered.
     expect(await huddlesQuestion()).toBeInTheDocument();
     expect(screen.queryByLabelText("Name")).not.toBeInTheDocument();
     expect(onSetUp).not.toHaveBeenCalled();
     expect(location.pathname).toBe("/first_run");
-    expect(document.title).toBe("Set up Ember");
+    expect(document.title).toBe("Set up Papaya OS");
     const [path, init] = fetch.mock.calls[0]!;
     expect(path).toBe("/api/first_run");
     expect(init).toMatchObject({ method: "POST" });
@@ -153,18 +153,18 @@ describe("Set up the workspace", () => {
     expect(screen.getByRole("button", { name: "Continue" })).toBeEnabled();
   });
 
-  it("goes home when someone else set Ember up first", async () => {
-    answer(409, { error: "Ember is already set up", redirect: "/" });
+  it("goes home when someone else set Papaya OS up first", async () => {
+    answer(409, { error: "Papaya OS is already set up", redirect: "/" });
     render(<SetupPage placeholders={DEFAULTS} access="open" onSetUp={() => {}} />);
     await fillIn("correct horse");
     await waitFor(() => expect(loadPage).toHaveBeenCalledWith("/"));
   });
 
-  it("says so when Ember can't be reached, and lets you try again", async () => {
+  it("says so when Papaya OS can't be reached, and lets you try again", async () => {
     const fetch = vi.spyOn(globalThis, "fetch").mockRejectedValueOnce(new TypeError("Failed to fetch"));
     render(<SetupPage placeholders={DEFAULTS} access="open" onSetUp={() => {}} />);
     const user = await fillIn("correct horse");
-    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't reach Ember. Check your connection and try again.");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't reach Papaya OS. Check your connection and try again.");
 
     fetch.mockResolvedValueOnce(Response.json(workspace, { status: 201 }));
     await user.click(screen.getByRole("button", { name: "Continue" }));
@@ -236,12 +236,12 @@ describe("Set up the workspace", () => {
   });
 
   it("lets go of a photo the Worker refuses, saying why, so the form can be sent without it", async () => {
-    const fetch = answer(503, { error: "Ember isn't set up to store files", field: "avatar" });
+    const fetch = answer(503, { error: "Papaya OS isn't set up to store files", field: "avatar" });
     render(<SetupPage placeholders={DEFAULTS} access="open" onSetUp={() => {}} />);
     await userEvent.upload(photoField(), moon());
     const user = await fillIn("correct horse");
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Ember isn't set up to store files");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Papaya OS isn't set up to store files");
     expect(preview()).toHaveAttribute("src", avatarPlaceholder);
     expect(photoField()).toHaveValue("");
     fetch.mockResolvedValue(Response.json(workspace, { status: 201 }));
@@ -283,9 +283,9 @@ describe("Installer-protected setup link", () => {
   it("asks for the setup link, saying where it is and what to do without it, in the form's place", () => {
     history.replaceState(null, "", "/first_run");
     render(<SetupPage placeholders={DEFAULTS} access="link" onSetUp={() => {}} />);
-    expect(document.title).toBe("Set up Ember");
-    expect(screen.getByRole("heading", { level: 1, name: "Set up Ember" })).toBeInTheDocument();
-    expect(screen.getByText("Ember is waiting for its administrator.")).toBeInTheDocument();
+    expect(document.title).toBe("Set up Papaya OS");
+    expect(screen.getByRole("heading", { level: 1, name: "Set up Papaya OS" })).toBeInTheDocument();
+    expect(screen.getByText("Papaya OS is waiting for its administrator.")).toBeInTheDocument();
     expect(linkShape()).toBeInTheDocument();
     expect(screen.getByText("pnpm run deploy")).toBeInTheDocument();
     // Without the link, a setup password set in the dashboard opens setup instead.
@@ -307,7 +307,7 @@ describe("Installer-protected setup link", () => {
     expect(location.hash).toBe("");
   });
 
-  it("says nobody can set Ember up while the deployment has neither a setup password nor a token, and how to give it a password", () => {
+  it("says nobody can set Papaya OS up while the deployment has neither a setup password nor a token, and how to give it a password", () => {
     render(<SetupPage placeholders={DEFAULTS} access="closed" onSetUp={() => {}} />);
     expect(screen.getByText("Nobody can set it up yet.")).toBeInTheDocument();
     expect(screen.getByText("This deployment has no setup password, so nobody can set it up.")).toBeInTheDocument();
@@ -355,15 +355,15 @@ describe("Setup password", () => {
   it("asks for the setup password first, in the form's place, saying what to do if it's forgotten", () => {
     history.replaceState(null, "", "/first_run");
     render(<SetupPage placeholders={DEFAULTS} access="password" onSetUp={() => {}} />);
-    expect(document.title).toBe("Set up Ember");
-    expect(screen.getByRole("heading", { level: 1, name: "Set up Ember" })).toBeInTheDocument();
-    expect(screen.getByText("Ember is waiting for its administrator.")).toBeInTheDocument();
+    expect(document.title).toBe("Set up Papaya OS");
+    expect(screen.getByRole("heading", { level: 1, name: "Set up Papaya OS" })).toBeInTheDocument();
+    expect(screen.getByText("Papaya OS is waiting for its administrator.")).toBeInTheDocument();
     const field = setupPasswordField();
     expect(field).toHaveFocus();
     expect(field).toMatchObject({ type: "password", required: true });
     // Nothing for a password manager to fill in or keep.
     expect(field).toHaveAttribute("autocomplete", "off");
-    expect(field).toHaveAccessibleDescription("The one you gave Ember when you deployed it.");
+    expect(field).toHaveAccessibleDescription("The one you gave Papaya OS when you deployed it.");
     expect(screen.getByText("EMBER_SETUP_PASSWORD")).toBeInTheDocument();
     expect(screen.getByText(/a new value in the Cloudflare dashboard, in this Worker's Settings under Variables and Secrets, then type that one/)).toBeInTheDocument();
     expect(screen.queryByLabelText("Name")).not.toBeInTheDocument();
@@ -402,13 +402,13 @@ describe("Setup password", () => {
   });
 
   it("says why the Worker refused a setup password, beneath its field, and lets it be typed again", async () => {
-    const fetch = answers([403, { error: "That isn't this Ember's setup password" }], [204, null]);
+    const fetch = answers([403, { error: "That isn't this Papaya OS's setup password" }], [204, null]);
     render(<SetupPage placeholders={DEFAULTS} access="password" onSetUp={() => {}} />);
     const user = await typeSetupPassword("not the password");
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("That isn't this Ember's setup password");
+    expect(await screen.findByRole("alert")).toHaveTextContent("That isn't this Papaya OS's setup password");
     const field = setupPasswordField();
-    expect(field).toHaveAccessibleDescription("That isn't this Ember's setup password");
+    expect(field).toHaveAccessibleDescription("That isn't this Papaya OS's setup password");
     expect(field).toHaveAttribute("aria-invalid", "true");
     expect(field).toHaveValue("");
     expect(field).toHaveFocus();
@@ -430,16 +430,16 @@ describe("Setup password", () => {
     expect(screen.getByRole("button", { name: "Continue" })).toBeEnabled();
   });
 
-  it("says so when Ember can't be reached", async () => {
+  it("says so when Papaya OS can't be reached", async () => {
     vi.spyOn(globalThis, "fetch").mockRejectedValue(new TypeError("Failed to fetch"));
     render(<SetupPage placeholders={DEFAULTS} access="password" onSetUp={() => {}} />);
     await typeSetupPassword(password);
-    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't reach Ember. Check your connection and try again.");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't reach Papaya OS. Check your connection and try again.");
     expect(setupPasswordField()).toHaveValue(password);
   });
 
-  it("goes home where someone else set Ember up first", async () => {
-    answers([409, { error: "Ember is already set up", redirect: "/" }]);
+  it("goes home where someone else set Papaya OS up first", async () => {
+    answers([409, { error: "Papaya OS is already set up", redirect: "/" }]);
     render(<SetupPage placeholders={DEFAULTS} access="password" onSetUp={() => {}} />);
     await typeSetupPassword(password);
     await waitFor(() => expect(loadPage).toHaveBeenCalledWith("/"));
@@ -458,7 +458,7 @@ describe("Setup password", () => {
     for (const call of fetch.mock.calls) expect(authorizationOf(call)).toBe(`Bearer ${token}`);
   });
 
-  it("opens the form with the setup link where Ember couldn't be reached to check it, as the form has it checked again", async () => {
+  it("opens the form with the setup link where Papaya OS couldn't be reached to check it, as the form has it checked again", async () => {
     const token = "e2e1".repeat(16);
     history.replaceState(null, "", `/first_run#token=${token}`);
     const fetch = vi.spyOn(globalThis, "fetch").mockRejectedValueOnce(new TypeError("Failed to fetch")).mockResolvedValueOnce(Response.json(workspace, { status: 201 }));
@@ -473,9 +473,9 @@ describe("Setup password", () => {
 
   it("asks for the setup password where the setup link it opens with is out of date", async () => {
     history.replaceState(null, "", `/first_run#token=${"0".repeat(64)}`);
-    const fetch = answers([403, { error: "That isn't this Ember's setup password" }], [204, null]);
+    const fetch = answers([403, { error: "That isn't this Papaya OS's setup password" }], [204, null]);
     render(<SetupPage placeholders={DEFAULTS} access="password" onSetUp={() => {}} />);
-    expect(await screen.findByRole("alert")).toHaveTextContent("That setup link is out of date. Type this Ember's setup password instead.");
+    expect(await screen.findByRole("alert")).toHaveTextContent("That setup link is out of date. Type this Papaya OS's setup password instead.");
     expect(setupPasswordField()).toHaveFocus();
     expect(screen.getByRole("button", { name: "Continue" })).toBeEnabled();
     expect(screen.queryByLabelText("Name")).not.toBeInTheDocument();

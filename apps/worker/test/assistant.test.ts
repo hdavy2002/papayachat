@@ -17,7 +17,7 @@ import { API_TOKEN_CHANGED, API_TOKEN_NEEDED } from "../src/assistant/settings";
 import type { Env } from "../src/env";
 import { api, apiWith, connect, cookieOf, createRoom, freshDeploy, openWorkspaceSocket, post, shown, startDirect, WITH_THE_FLAME, workspaceSql, type Session } from "./support";
 
-// Ember AI's setup on the AI assistant tab, the @ember account it adds, and its reserved name.
+// Papaya AI's setup on the AI assistant tab, the @ember account it adds, and its reserved name.
 
 const ada = { name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" };
 const grace = { name: "Grace Hopper", emailAddress: "grace@example.com", password: "compiler design" };
@@ -25,7 +25,7 @@ const grace = { name: "Grace Hopper", emailAddress: "grace@example.com", passwor
 /** A Cloudflare account's ID and an API token of its, as an administrator copies them from the dashboard. */
 const ACCOUNT_ID = "0123456789abcdef0123456789abcdef";
 const API_TOKEN = "an-api-token-with-ai-gateway-run_0123456";
-/** What Set up Ember AI sends for Claude Sonnet. */
+/** What Set up Papaya AI sends for Claude Sonnet. */
 const SETUP = { accountId: ACCOUNT_ID, apiToken: API_TOKEN, model: "anthropic/claude-sonnet-5.5" } satisfies AssistantSetup;
 /** Where the account's default gateway passes requests on to each provider's own API, as Ember asks Claude and GPT. */
 const PROVIDER_ENDPOINTS = `https://gateway.ai.cloudflare.com/v1/${ACCOUNT_ID}/default`;
@@ -56,21 +56,21 @@ async function joinAsGrace(): Promise<Session> {
 
 const as = (session?: Session | null): Record<string, string> => (session ? { Cookie: session.cookie } : {});
 
-/** Sets Ember AI up as `session`, as Set up Ember AI does, on a deployment whose bindings differ from this suite's by `changes`. */
+/** Sets Papaya AI up as `session`, as Set up Papaya AI does, on a deployment whose bindings differ from this suite's by `changes`. */
 const setUpAssistant = (session: Session | null, setup: unknown, changes: Partial<Env> = {}) =>
   apiWith(changes, "/api/account/assistant", { method: "PUT", headers: as(session), body: JSON.stringify(setup) });
 
-/** Sets Ember AI up as `administrator` with `setup`, which has to work. */
+/** Sets Papaya AI up as `administrator` with `setup`, which has to work. */
 async function saved(administrator: Session, setup: unknown = SETUP): Promise<AssistantSaved> {
   const response = await setUpAssistant(administrator, setup);
   expect(response.status, await response.clone().text()).toBe(200);
   return (await response.json()) as AssistantSaved;
 }
 
-/** Turns Ember AI off as `session`, as turning off its card's switch does. */
+/** Turns Papaya AI off as `session`, as turning off its card's switch does. */
 const turnOff = (session: Session | null) => api("/api/account/assistant", { method: "DELETE", headers: as(session) });
 
-/** Ember AI as the workspace's settings show it to `session`. */
+/** Papaya AI as the workspace's settings show it to `session`. */
 const assistantSettings = async (session: Session) => ((await (await api("/api/account", { headers: as(session) })).json()) as WorkspaceSettings).assistant;
 
 /** The account's settings, as the database keeps them. */
@@ -154,8 +154,8 @@ function fakeGateway(answer: GatewayAnswer = answering(HELLO)): SentToGateway[] 
 beforeEach(freshDeploy);
 afterEach(() => vi.restoreAllMocks());
 
-describe("Ember AI", () => {
-  describe("Set up Ember AI", () => {
+describe("Papaya AI", () => {
+  describe("Set up Papaya AI", () => {
     it("keeps the model once it answers a test question through the account's default gateway, its API token sealed", async () => {
       const administrator = await setUp();
       const member = await joinAsGrace();
@@ -190,7 +190,7 @@ describe("Ember AI", () => {
         models: [KEPT_CLAUDE],
         web_tools: [],
         web_tools_asked_at: expect.any(String) as unknown,
-        // As every model Ember AI kept was asked through its provider's endpoint first, once one answers.
+        // As every model Papaya AI kept was asked through its provider's endpoint first, once one answers.
         provider_endpoints_tried_at: null,
       });
       expect(JSON.stringify(await workspaceSql("SELECT * FROM accounts"))).not.toContain(API_TOKEN);
@@ -299,7 +299,7 @@ describe("Ember AI", () => {
       expect(await workspaceSql("SELECT id FROM users WHERE role = 2")).toEqual([{ id: ASSISTANT_ID }]);
     });
 
-    it("keeps nothing of a change that kept the API token once Ember AI was turned off while the model answered", async () => {
+    it("keeps nothing of a change that kept the API token once Papaya AI was turned off while the model answered", async () => {
       const administrator = await setUp();
       fakeGateway();
       await saved(administrator);
@@ -368,8 +368,8 @@ describe("Ember AI", () => {
     });
 
     it.each([
-      ["Claude", SETUP.model, ANTHROPIC_ENDPOINT, "Ember asks Claude through AI Gateway's Anthropic endpoint, which didn't take Ember AI's API token."],
-      ["GPT", "openai/gpt-6.1-sol", OPENAI_ENDPOINT, "Ember asks OpenAI's models through AI Gateway's OpenAI endpoint, which didn't take Ember AI's API token."],
+      ["Claude", SETUP.model, ANTHROPIC_ENDPOINT, "Papaya OS asks Claude through AI Gateway's Anthropic endpoint, which didn't take Papaya AI's API token."],
+      ["GPT", "openai/gpt-6.1-sol", OPENAI_ENDPOINT, "Papaya OS asks OpenAI's models through AI Gateway's OpenAI endpoint, which didn't take Papaya AI's API token."],
     ])("refuses an API token %s's endpoint doesn't take, as one without AI Gateway Run, on its field, saying what to add, and keeps nothing", async (_, model, endpoint, lead) => {
       const administrator = await setUp();
       const requests = fakeGateway(refusingRun);
@@ -515,7 +515,7 @@ describe("Ember AI", () => {
     });
   });
 
-  describe("Turn Ember AI off", () => {
+  describe("Turn Papaya AI off", () => {
     it("forgets the API token and deactivates @ember, which keeps its DMs, and tells everyone's workspace sockets", async () => {
       const administrator = await setUp();
       const member = await joinAsGrace();

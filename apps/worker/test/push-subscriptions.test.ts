@@ -277,7 +277,7 @@ describe("Save push subscriptions", () => {
   describe("removing and banning", () => {
     const administrator = { name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" };
 
-    /** Sets Ember up with Ada as its administrator, and signs Grace in, each with a subscription. */
+    /** Sets Papaya OS up with Ada as its administrator, and signs Grace in, each with a subscription. */
     async function setUp(): Promise<{ ada: Session; grace: Session }> {
       const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(administrator) });
       expect(response.status).toBe(201);
@@ -305,7 +305,7 @@ describe("Save push subscriptions", () => {
 });
 
 describe("Push subscriptions page", () => {
-  it("pushes \"Ember Test\" to one of your subscriptions at once, with a new UUID, opening this page, badged with your conversations marked unread", async () => {
+  it("pushes \"Papaya OS Test\" to one of your subscriptions at once, with a new UUID, opening this page, badged with your conversations marked unread", async () => {
     const ada = await signIn("Ada");
     const browser = await pushBrowser();
     await saved(ada, { ...subscription(), p256dhKey: browser.p256dh, authKey: browser.auth });
@@ -321,7 +321,7 @@ describe("Push subscriptions page", () => {
       expect(pushed[i]!.endpoint).toBe(subscription().endpoint);
       const { title, options } = JSON.parse(await browser.open(pushed[i]!.body)) as { title: string; options: { body: string } };
       expect({ title, options }).toEqual({
-        title: "Ember Test",
+        title: "Papaya OS Test",
         options: { body: expect.stringMatching(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/), icon: "/account/logo", data: { path: `${origin}${PUSH_SUBSCRIPTIONS_PATH}`, badge: 2 } },
       });
       bodies.push(options.body);

@@ -33,9 +33,9 @@ async function openEmail(page: Page) {
 }
 
 test.describe("Sending email", () => {
-  test("the administrator sets up Resend with an API key Ember checks, a From address and a test email", async ({ page, baseURL }) => {
+  test("the administrator sets up Resend with an API key Papaya OS checks, a From address and a test email", async ({ page, baseURL }) => {
     const email = await openEmail(page);
-    await expect(email).toContainText("Ember can't send email yet, so it can't email invitations, the links people at your email domains join with, or codes to reset a forgotten password.");
+    await expect(email).toContainText("Papaya OS can't send email yet, so it can't email invitations, the links people at your email domains join with, or codes to reset a forgotten password.");
     await email.getByRole("button", { name: "Set up email" }).click();
     const setup = page.getByRole("dialog");
     await expect(setup).toHaveAccessibleName("Set up email");
@@ -66,23 +66,23 @@ test.describe("Sending email", () => {
         subject: expect.stringMatching(/^Test email from /) as unknown,
       }),
     ]);
-    expect(resend.sent.at(-1)!.text).toContain(`, at ${baseURL}.\n\nIt reached you, so Ember can send email.`);
+    expect(resend.sent.at(-1)!.text).toContain(`, at ${baseURL}.\n\nIt reached you, so Papaya OS can send email.`);
     expect(resend.sent.at(-1)!.html).toContain(`<a href="${baseURL}">${baseURL}</a>`);
     await setup.getByRole("button", { name: "Done" }).click();
     await expect(setup).toBeHidden();
-    await expect(email).toContainText('Ember sends email from "Acme, Inc." <chat@acme.example> with Resend.');
+    await expect(email).toContainText('Papaya OS sends email from "Acme, Inc." <chat@acme.example> with Resend.');
 
-    // Membership shows what Ember kept.
+    // Membership shows what Papaya OS kept.
     await page.reload();
     const kept = page.getByRole("region", { name: "Email", exact: true });
-    await expect(kept).toContainText('Ember sends email from "Acme, Inc." <chat@acme.example> with Resend.');
+    await expect(kept).toContainText('Papaya OS sends email from "Acme, Inc." <chat@acme.example> with Resend.');
 
     // Stop sending email takes the From address away, once it's confirmed.
     page.once("dialog", (dialog) => void dialog.accept());
     await kept.getByRole("button", { name: "Stop sending email" }).click();
-    await expect(kept).toContainText("Ember can't send email yet");
+    await expect(kept).toContainText("Papaya OS can't send email yet");
     await page.reload();
-    await expect(page.getByRole("region", { name: "Email", exact: true })).toContainText("Ember can't send email yet");
+    await expect(page.getByRole("region", { name: "Email", exact: true })).toContainText("Papaya OS can't send email yet");
   });
 
   test("Set up email refuses a From address that isn't one, and the card says why Resend refused a test email", async ({ page, request }) => {
@@ -90,18 +90,18 @@ test.describe("Sending email", () => {
     const email = await openEmail(page);
     await email.getByRole("button", { name: "Set up email" }).click();
     const setup = page.getByRole("dialog");
-    // Ember has a key, so Resend is chosen already, and its step needs no other.
+    // Papaya OS has a key, so Resend is chosen already, and its step needs no other.
     await expect(setup.getByRole("radio", { name: "Resend" })).toBeChecked();
     await setup.getByRole("button", { name: "Continue" }).click();
     await expect(setup.getByRole("textbox", { name: "API key" })).toHaveAccessibleDescription(
-      "Ember has a Resend API key already. Paste another to send with it instead.",
+      "Papaya OS has a Resend API key already. Paste another to send with it instead.",
     );
     await setup.getByRole("button", { name: "Continue" }).click();
     await setup.getByRole("textbox", { name: "From" }).fill("Acme");
     await setup.getByRole("button", { name: "Continue" }).click();
     await expect(setup.getByRole("alert")).toHaveText(EMAIL_FROM_REFUSED);
     await setup.getByRole("button", { name: "Close" }).click();
-    await expect(email).toContainText("Ember can't send email yet");
+    await expect(email).toContainText("Papaya OS can't send email yet");
 
     await giveFrom(request, "chat@acme.example");
     await page.reload();

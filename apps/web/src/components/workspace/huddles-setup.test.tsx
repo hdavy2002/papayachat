@@ -8,10 +8,10 @@ import { HUDDLES_ON, HuddlesSetup, SETUP_EXPLAINED } from "./huddles-setup";
 
 /** A Realtime SFU app's keys, as an administrator copies them from Cloudflare's dashboard. */
 const APP = { appId: "2a95132c15732412d22c1476fa83f27a", appSecret: "66bcf64aa8907b9f9d90ac17746a77ce394c393b92b3916633dc02846e608ad4" };
-/** The Cloudflare account Ember is deployed to. */
+/** The Cloudflare account Papaya OS is deployed to. */
 const ACCOUNT_ID = "0123456789abcdef0123456789abcdef";
 
-/** Answers giving Ember the app's keys as the server would, or as `saved` says. */
+/** Answers giving Papaya OS the app's keys as the server would, or as `saved` says. */
 function serve(saved: () => Response | Promise<Response> = () => Response.json({ huddles: { appId: APP.appId } })) {
   return vi.spyOn(globalThis, "fetch").mockImplementation(async (input, init) => {
     if (`${init?.method} ${String(input)}` === "PUT /api/account/huddles") return saved();
@@ -45,7 +45,7 @@ const appIdField = () => screen.getByRole("textbox", { name: "App ID" });
 const appSecretField = () => screen.getByRole("textbox", { name: "App Secret" });
 const dashboardButton = () => screen.getByRole("link", { name: "Open Cloudflare's dashboard" });
 /** What the line under the secret says of it while there's nothing else to say. */
-const SECRET_KEPT = "Ember keeps it encrypted.";
+const SECRET_KEPT = "Papaya OS keeps it encrypted.";
 
 /** Types the app's keys, as given, and saves them. */
 async function giveKeys(user: ReturnType<typeof userEvent.setup>, app: { appId: string; appSecret: string } = APP) {
@@ -68,7 +68,7 @@ describe("Set up huddles", () => {
     const [app, keys] = within(screen.getByRole("list", { name: "Steps to set up huddles" })).getAllByRole("listitem");
     expect(within(app!).getByRole("heading", { level: 3, name: "Create an SFU app in Cloudflare" })).toBeVisible();
     expect(app).toHaveTextContent("Open Realtime, choose Serverless SFU, and create an app. Any name will do.");
-    // Without the account Ember is deployed to, the dashboard asks which.
+    // Without the account Papaya OS is deployed to, the dashboard asks which.
     expect(within(app!).getByRole("link")).toBe(dashboardButton());
     expect(dashboardButton()).toHaveAttribute("href", "https://dash.cloudflare.com/?to=/:account/realtime/sfu");
     expect(dashboardButton()).toHaveAttribute("target", "_blank");
@@ -88,7 +88,7 @@ describe("Set up huddles", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
-  it("opens the dashboard at the account Ember is deployed to, once the deploy has given it", async () => {
+  it("opens the dashboard at the account Papaya OS is deployed to, once the deploy has given it", async () => {
     serve();
     showSetup({ deployedAccountId: ACCOUNT_ID });
     await dialog("Set up huddles");
@@ -228,8 +228,8 @@ describe("Set up huddles", () => {
     await dialog("Set up huddles");
     expect(appIdField()).toHaveValue(APP.appId);
     expect(appSecretField()).toHaveValue("");
-    // Said under the secret, in the place of what Ember does with it.
-    expect(appSecretField()).toHaveAccessibleDescription("Ember has an app's keys already. Give another app's to run huddles through it instead.");
+    // Said under the secret, in the place of what Papaya OS does with it.
+    expect(appSecretField()).toHaveAccessibleDescription("Papaya OS has an app's keys already. Give another app's to run huddles through it instead.");
     expect(screen.queryByText(SECRET_KEPT)).not.toBeInTheDocument();
     expect(button("Save")).toBeDisabled();
 

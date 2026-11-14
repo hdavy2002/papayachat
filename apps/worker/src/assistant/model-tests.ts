@@ -4,10 +4,10 @@ import type { Env } from "../env";
 import type { MovedModel } from "../workspace-store";
 import { ask, thinkingLevelsOf, type Gateway, type Question } from "./gateway";
 
-// The test question Ember asks a model before it keeps it, and the move of the models it kept before it
+// The test question Papaya OS asks a model before it keeps it, and the move of the models it kept before it
 // asked Claude and GPT through their providers' own endpoints (`formatOf`) onto those.
 
-/** What Set up Ember AI asks the model before Ember keeps it, so that it's known to answer. */
+/** What Set up Papaya AI asks the model before Papaya OS keeps it, so that it's known to answer. */
 export const TEST_QUESTION: Question = {
   instructions: `You are ${ASSISTANT_NAME}, the AI assistant in a team's chat, where people ask you things by mentioning @ember. An administrator has just set you up.`,
   turns: [{ role: "user", text: "Say hello to the team in one short sentence." }],
@@ -15,14 +15,14 @@ export const TEST_QUESTION: Question = {
   maxTokens: 2_000,
 };
 
-/** How long Set up Ember AI waits for each answer to its test question. */
+/** How long Set up Papaya AI waits for each answer to its test question. */
 export const TEST_TIMEOUT_MS = 30_000;
 
 /** The levels of thinking the model `gateway` names takes in its format, as it answers the test question, @ember's unless it's another `question`, again at each (`thinkingLevelsOf`). */
 export const testedLevelsOf = (env: Env, gateway: Gateway, question = TEST_QUESTION) => thinkingLevelsOf(env, gateway, question, TEST_TIMEOUT_MS);
 
 /**
- * How many requests one move of the models Ember AI kept before it asked Claude and GPT through
+ * How many requests one move of the models Papaya AI kept before it asked Claude and GPT through
  * their providers' endpoints makes there at most, of the 50 subrequests an invocation on the Free plan
  * can make: the test question for each model it asks, and for each that answers, the same again at each
  * level of thinking.
@@ -42,7 +42,7 @@ export interface ProviderMoves {
 }
 
 /**
- * The models `saved` lists, the ones people can pick and the agents', that Ember AI asks through
+ * The models `saved` lists, the ones people can pick and the agents', that Papaya AI asks through
  * Cloudflare's REST API and that answer the test question through AI Gateway's endpoint for their
  * provider, as `gateway`'s account and API token ask it, with the levels of thinking each takes there,
  * which needn't be those it took where it was. They're asked one after another, so that none waits out
@@ -71,7 +71,7 @@ export async function providerMovesOf(env: Env, gateway: Pick<Gateway, "accountI
   return { moves, done: true };
 }
 
-/** Each model of `saved` in a format of Cloudflare's REST API whose provider's endpoint Ember asks first now, with that endpoint's format, once each. */
+/** Each model of `saved` in a format of Cloudflare's REST API whose provider's endpoint Papaya OS asks first now, with that endpoint's format, once each. */
 function movableIn(saved: readonly Pick<AssistantModel, "id" | "format">[]): Omit<MovedModel, "thinkingLevels">[] {
   const movable = new Map<string, Omit<MovedModel, "thinkingLevels">>();
   for (const { id, format: from } of saved) {

@@ -11,7 +11,7 @@ const NEW_EMAIL: Email = { provider: "cloudflare", resendKey: null, cloudflare: 
 /** Answers Send me a test email as the server would, or as `tested` says, and Stop sending email as `stopped` says. */
 function serve(
   tested: () => Response | Promise<Response> = () => Response.json({ to: "ada@example.com" }),
-  stopped: () => Response | Promise<Response> = () => Response.json({ account: { name: "Ember" } }),
+  stopped: () => Response | Promise<Response> = () => Response.json({ account: { name: "Papaya OS" } }),
 ) {
   return vi.spyOn(globalThis, "fetch").mockImplementation(async (input, init) => {
     switch (`${init?.method} ${String(input)}`) {
@@ -47,10 +47,10 @@ const stopButton = () => screen.queryByRole("button", { name: "Stop sending emai
 afterEach(() => vi.restoreAllMocks());
 
 describe("Sending email", () => {
-  it("says Ember can't send email yet, and what that keeps it from, with Set up email", async () => {
+  it("says Papaya OS can't send email yet, and what that keeps it from, with Set up email", async () => {
     serve();
     const { user, onSetUp } = showCard(NEW_EMAIL);
-    expect(card()).toHaveTextContent("Ember can't send email yet, so it can't email invitations, the links people at your email domains join with, or codes to reset a forgotten password.");
+    expect(card()).toHaveTextContent("Papaya OS can't send email yet, so it can't email invitations, the links people at your email domains join with, or codes to reset a forgotten password.");
     expect(testButton()).not.toBeInTheDocument();
     expect(stopButton()).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Set up email" }));
@@ -60,22 +60,22 @@ describe("Sending email", () => {
   it.each<[string, Email]>([
     ["a From address but nothing to send with", { ...NEW_EMAIL, provider: null, cloudflare: false, from: "chat@example.com" }],
     ["a Resend API key but no From address", { ...NEW_EMAIL, provider: "resend", resendKey: "saved" }],
-  ])("says Ember can't send email yet with %s", (_, email) => {
+  ])("says Papaya OS can't send email yet with %s", (_, email) => {
     serve();
     showCard(email);
-    expect(card()).toHaveTextContent("Ember can't send email yet");
+    expect(card()).toHaveTextContent("Papaya OS can't send email yet");
     expect(screen.getByRole("button", { name: "Set up email" })).toBeInTheDocument();
     expect(testButton()).not.toBeInTheDocument();
   });
 
   it.each<[string, Email]>([
-    ["with Cloudflare Email Service", { ...NEW_EMAIL, from: "Ember <ember@example.com>" }],
-    ["with Resend", { ...NEW_EMAIL, provider: "resend", resendKey: "saved", from: "Ember <ember@example.com>" }],
-    ["with Resend, with the API key in RESEND_API_KEY", { ...NEW_EMAIL, provider: "resend", resendKey: "secret", from: "Ember <ember@example.com>" }],
-  ])("says Ember sends email from its From address %s, with Change, Stop sending email and a test email", async (sentWith, email) => {
+    ["with Cloudflare Email Service", { ...NEW_EMAIL, from: "Papaya OS <ember@example.com>" }],
+    ["with Resend", { ...NEW_EMAIL, provider: "resend", resendKey: "saved", from: "Papaya OS <ember@example.com>" }],
+    ["with Resend, with the API key in RESEND_API_KEY", { ...NEW_EMAIL, provider: "resend", resendKey: "secret", from: "Papaya OS <ember@example.com>" }],
+  ])("says Papaya OS sends email from its From address %s, with Change, Stop sending email and a test email", async (sentWith, email) => {
     serve();
     const { user, onSetUp } = showCard(email);
-    expect(card()).toHaveTextContent(`Ember sends email from Ember <ember@example.com> ${sentWith}.`);
+    expect(card()).toHaveTextContent(`Papaya OS sends email from Papaya OS <ember@example.com> ${sentWith}.`);
     expect(testButton()).toBeEnabled();
     expect(stopButton()).toBeEnabled();
     await user.click(screen.getByRole("button", { name: "Change" }));
@@ -84,17 +84,17 @@ describe("Sending email", () => {
 
   it("puts its buttons in one row under what it says, as Custom domain's card does", () => {
     serve();
-    showCard({ ...NEW_EMAIL, from: "Ember <ember@example.com>" });
+    showCard({ ...NEW_EMAIL, from: "Papaya OS <ember@example.com>" });
     const buttons = within(card()).getAllByRole("button");
     expect(buttons.map((button) => button.textContent)).toEqual(["Send me a test email", "Change", "Stop sending email"]);
     expect(new Set(buttons.map((button) => button.parentElement)).size).toBe(1);
   });
 
   it("takes the From address away once the administrator confirms Stop sending email", async () => {
-    const answer = held(() => Response.json({ account: { name: "Ember" } }));
+    const answer = held(() => Response.json({ account: { name: "Papaya OS" } }));
     const fetch = serve(undefined, answer.answered);
     const sure = vi.spyOn(window, "confirm").mockReturnValueOnce(false).mockReturnValueOnce(true);
-    const { user, answered, onStopped } = showCard({ ...NEW_EMAIL, from: "Ember <ember@example.com>" });
+    const { user, answered, onStopped } = showCard({ ...NEW_EMAIL, from: "Papaya OS <ember@example.com>" });
     await user.click(stopButton()!);
     expect(sure).toHaveBeenCalledWith(CONFIRM_STOP_EMAIL);
     expect(fetch).not.toHaveBeenCalled();
@@ -104,7 +104,7 @@ describe("Sending email", () => {
     expect(stopButton()).toBeDisabled();
     expect(screen.getByRole("button", { name: "Change" })).toBeDisabled();
     await answer.answer();
-    expect(answered).toHaveBeenCalledWith({ name: "Ember" });
+    expect(answered).toHaveBeenCalledWith({ name: "Papaya OS" });
     expect(onStopped).toHaveBeenCalledOnce();
     expect(stopButton()).toBeEnabled();
   });
@@ -112,7 +112,7 @@ describe("Sending email", () => {
   it("leaves Stop sending email that failed to the page's alerts", async () => {
     serve(undefined, () => Response.json({ error: "Only administrators can change the workspace" }, { status: 403 }));
     vi.spyOn(window, "confirm").mockReturnValue(true);
-    const { user, onStopped, onFailed } = showCard({ ...NEW_EMAIL, from: "Ember <ember@example.com>" });
+    const { user, onStopped, onFailed } = showCard({ ...NEW_EMAIL, from: "Papaya OS <ember@example.com>" });
     await user.click(stopButton()!);
     await waitFor(() => expect(onFailed).toHaveBeenCalledWith(new ApiError(403, "Only administrators can change the workspace")));
     expect(onStopped).not.toHaveBeenCalled();
@@ -122,7 +122,7 @@ describe("Sending email", () => {
   it("sends a test email, and says where it went", async () => {
     const answer = held(() => Response.json({ to: "ada@example.com" }));
     serve(answer.answered);
-    const { user } = showCard({ ...NEW_EMAIL, from: "Ember <ember@example.com>" });
+    const { user } = showCard({ ...NEW_EMAIL, from: "Papaya OS <ember@example.com>" });
     await user.click(testButton()!);
     expect(screen.getByRole("status")).toHaveTextContent("Sending a test email…");
     expect(testButton()).toBeDisabled();
@@ -144,10 +144,10 @@ describe("Sending email", () => {
   it.each([
     [502, "Resend refused it: The example.com domain is not verified."],
     [503, CANT_SEND_EMAIL],
-    [422, "Give Ember a From address first."],
+    [422, "Give Papaya OS a From address first."],
   ])("says why the test email wasn't sent when the server answers %i", async (status, error) => {
     serve(() => Response.json({ error }, { status }));
-    const { user, onFailed } = showCard({ ...NEW_EMAIL, provider: "resend", resendKey: "saved", from: "Ember <ember@example.com>" });
+    const { user, onFailed } = showCard({ ...NEW_EMAIL, provider: "resend", resendKey: "saved", from: "Papaya OS <ember@example.com>" });
     await user.click(testButton()!);
     expect(await screen.findByText(error, { selector: "[role=status]" })).toBeInTheDocument();
     expect(onFailed).not.toHaveBeenCalled();

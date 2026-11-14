@@ -21,7 +21,7 @@ type Props = ComponentProps<typeof Sidebar>;
 const agent = (id: string, name: string): DirectoryUser => ({ id, name, bio: null, role: "bot", status: "active", avatarUrl: `/users/${id}/avatar`, agent: true });
 
 /** The workspace, as it's set up. */
-const EMBER: Account = { name: "Ember", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo: null, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false };
+const EMBER: Account = { name: "Papaya OS", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo: null, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false };
 
 /**
  * The sidebar, with `props` in place of an unstarred one listing `rooms` with none open, in `account`'s
@@ -29,7 +29,7 @@ const EMBER: Account = { name: "Ember", tagline: "", hideTranslationButtons: tru
  */
 function renderSidebar(props: Partial<Props> = {}, account = EMBER, people: readonly DirectoryUser[] = []) {
   const all: Props = {
-    workspaceName: "Ember",
+    workspaceName: "Papaya OS",
     meId: "u1",
     rooms,
     favorites: unstarred,
@@ -606,7 +606,7 @@ describe("Group DMs and DM names", () => {
     render(
       <PeopleContext value={new Map([[renamed.id, renamed]])}>
         <Sidebar
-          {...{ workspaceName: "Ember", meId: ada!.id, loaded: true, suggestions: [], favorites: unstarred, sharedOrder: [], huddles: {}, currentRoomId: null, unreadOnly: false }}
+          {...{ workspaceName: "Papaya OS", meId: ada!.id, loaded: true, suggestions: [], favorites: unstarred, sharedOrder: [], huddles: {}, currentRoomId: null, unreadOnly: false }}
           {...{ onSelect: vi.fn(), onNewDirect: vi.fn(), onStartDirect: vi.fn(), onStarred: vi.fn(), onSessionChanged: vi.fn() }}
           rooms={[direct("d1", [ada!, grace!])]}
         />
@@ -616,12 +616,12 @@ describe("Group DMs and DM names", () => {
   });
 
   it("badges a DM with @ember alone as an agent's after its name, but not a group DM it's in", () => {
-    const ember: User = { id: "ember", name: "Ember" };
+    const ember: User = { id: "ember", name: "Papaya OS" };
     renderSidebar({ rooms: [direct("d1", [ada!, ember], false, at(2)), direct("d2", [ada!, ember, grace!], false, at(1))] });
     const [alone, group] = directRows();
-    expect(alone).toHaveAccessibleName("Direct message with Ember Agent");
+    expect(alone).toHaveAccessibleName("Direct message with Papaya OS Agent");
     expect(within(alone!).getByText("Agent")).toHaveAttribute("data-slot", "badge");
-    expect(group).toHaveAccessibleName("Direct message with Ember, Grace");
+    expect(group).toHaveAccessibleName("Direct message with Papaya OS, Grace");
   });
 
   it("badges a DM with any agent alone, as the people directory lists it, but not one with another bot", () => {

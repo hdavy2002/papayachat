@@ -43,8 +43,8 @@ export const waitFor = ({ maxTokens }: Question) => Math.max(LEAST_WAIT_MS, maxT
 /**
  * Who answers a question: @ember, or an AI agent, by its id, or null for one not saved yet, which an
  * administrator tries, its name, its instructions, an agent's own, or what administrators added to
- * @ember's, if anything, and what Ember adds around them, as administrators changed it, or null for
- * Ember's own.
+ * @ember's, if anything, and what Papaya OS adds around them, as administrators changed it, or null for
+ * Papaya OS's own.
  */
 export interface Answerer {
   id: UserId | null;
@@ -185,7 +185,7 @@ const MAX_SOURCE_LINK_LENGTH = MAX_MESSAGE_HTML_LENGTH / (2 * MAX_SOURCES);
  * to what one message holds, which cuts the answer, as its sources are what it says it came from: to as
  * many of its cards as fit, each whole, and as much of its Markdown as fits beside them. Only the
  * addresses people wrote in the conversation it read, `written`, and its sources' are fetched for it,
- * and none on Ember's own `ownHosts` for its preview.
+ * and none on Papaya OS's own `ownHosts` for its preview.
  */
 export function answerOf(text: string, sources: readonly Source[] = [], written: readonly string[] = [], ownHosts: readonly string[] = [], name = ASSISTANT_NAME): Answer {
   const named = literally(name);
@@ -208,7 +208,7 @@ const literally = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 /**
  * Which web addresses an answer may have fetched: where the links in what people wrote in the
  * conversation @ember read, `written`, go, as their messages show them (`linkedUrls`), and the pages it
- * came from, its `sources`, but for its preview none on Ember's own `ownHosts`, as the composer asks for
+ * came from, its `sources`, but for its preview none on Papaya OS's own `ownHosts`, as the composer asks for
  * none. Its model reads what everyone wrote, and pages anyone can write, so an address it made up could
  * carry any of that to a host of anyone's choosing. Only whole addresses count, as the start of one can
  * be another site's: https://example.com starts https://example.com.au/.
@@ -375,18 +375,18 @@ export function previewAttachment({ url, image, title, description }: LinkPrevie
 
 
 /** Where each person picks how much @ember thinks and writes for them, and the model it answers them with, as its notes name it. */
-const YOUR_LEVELS = "Ember AI on your profile";
+const YOUR_LEVELS = "Papaya AI on your profile";
 
 /** What @ember says when it can't answer, for each reason it can't, and while its API token doesn't open. */
 export const NOTES: Record<RefusalReason | "unopened token", string> = {
-  token: `I can't answer right now: Cloudflare didn't take Ember AI's API token. An administrator can give it another under ${AI_SETTINGS}.`,
-  account: `I can't answer right now: Cloudflare can't find Ember AI's account. An administrator can set it up again under ${AI_SETTINGS}.`,
+  token: `I can't answer right now: Cloudflare didn't take Papaya AI's API token. An administrator can give it another under ${AI_SETTINGS}.`,
+  account: `I can't answer right now: Cloudflare can't find Papaya AI's account. An administrator can set it up again under ${AI_SETTINGS}.`,
   credits: "I can't answer right now: the AI Gateway credits that pay for my model have run out. An administrator can top them up in AI Gateway.",
   model: `I can't answer right now: AI Gateway didn't take my question for its model. An administrator can choose another model under ${AI_SETTINGS}.`,
   retired: `I can't answer right now: Cloudflare no longer runs my model. An administrator can choose another model under ${AI_SETTINGS}.`,
   busy: "I can't answer right now: AI Gateway is turning requests away, or a spend limit was reached. Try again later.",
   neurons:
-    "I can't answer right now: Ember AI's Cloudflare account has used the Neurons Workers AI runs my model on free each day, which start again at midnight UTC. An administrator can move the account to Workers Paid, or have AI Gateway's credits pay for Workers AI, to go on before then.",
+    "I can't answer right now: Papaya AI's Cloudflare account has used the Neurons Workers AI runs my model on free each day, which start again at midnight UTC. An administrator can move the account to Workers Paid, or have AI Gateway's credits pay for Workers AI, to go on before then.",
   "too long": "I can't answer that here: the conversation is longer than my model reads at once. Try asking in a new thread.",
   unanswered: "I couldn't answer: AI Gateway didn't answer in time. Try again in a moment.",
   nothing: "I couldn't answer: my model answered with nothing. Try asking again.",
@@ -395,7 +395,7 @@ export const NOTES: Record<RefusalReason | "unopened token", string> = {
   "guardrails answer": "I can't answer that: AI Gateway's Guardrails blocked my answer. An administrator can change what they block in AI Gateway.",
   dlp: "I can't answer that: AI Gateway's Data Loss Prevention blocked the question, or the messages I read with it. An administrator can change its policies in AI Gateway.",
   "dlp answer": "I can't answer that: AI Gateway's Data Loss Prevention blocked my answer. An administrator can change its policies in AI Gateway.",
-  "unopened token": `I can't answer right now: Ember AI's API token no longer opens here. An administrator can set it up again under ${AI_SETTINGS}.`,
+  "unopened token": `I can't answer right now: Papaya AI's API token no longer opens here. An administrator can set it up again under ${AI_SETTINGS}.`,
 };
 
 /** What an agent says instead, for the reasons only administrators, who set it up, can do something about. */
@@ -408,5 +408,5 @@ export const PICKED_MODEL_NOTES: Partial<Record<RefusalReason, string>> = {
   credits: `I can't answer right now: the AI Gateway credits that pay for the model you picked have run out. An administrator can top them up in AI Gateway, or you can pick another model under ${YOUR_LEVELS}.`,
   model: `I can't answer right now: AI Gateway didn't take my question for the model you picked. Pick another model under ${YOUR_LEVELS}.`,
   retired: `I can't answer right now: Cloudflare no longer runs the model you picked. Pick another model under ${YOUR_LEVELS}.`,
-  neurons: `I can't answer right now: Ember AI's Cloudflare account has used the Neurons Workers AI runs the model you picked on free each day, which start again at midnight UTC. Pick a model Workers AI doesn't run under ${YOUR_LEVELS}, or an administrator can move the account to Workers Paid, or have AI Gateway's credits pay for Workers AI.`,
+  neurons: `I can't answer right now: Papaya AI's Cloudflare account has used the Neurons Workers AI runs the model you picked on free each day, which start again at midnight UTC. Pick a model Workers AI doesn't run under ${YOUR_LEVELS}, or an administrator can move the account to Workers Paid, or have AI Gateway's credits pay for Workers AI.`,
 };

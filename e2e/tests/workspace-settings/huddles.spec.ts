@@ -41,7 +41,7 @@ async function openHuddles(page: Page) {
 }
 
 test.describe("Set up huddles", () => {
-  test("the administrator gives Ember an SFU app's keys, which Cloudflare starts a session with, and Ember keeps them", async ({ page }) => {
+  test("the administrator gives Papaya OS an SFU app's keys, which Cloudflare starts a session with, and Papaya OS keeps them", async ({ page }) => {
     const huddles = await openHuddles(page);
     await expect(huddles).toContainText("Huddles let people in a room talk to each other live.");
     const huddlesSwitch = huddles.getByRole("switch", { name: "Audio and video chat" });
@@ -50,7 +50,7 @@ test.describe("Set up huddles", () => {
 
     const setup = page.getByRole("dialog");
     await expect(setup).toHaveAccessibleName("Set up huddles");
-    // The dashboard opens at the account Ember is deployed to.
+    // The dashboard opens at the account Papaya OS is deployed to.
     await expect(setup.getByRole("link", { name: "Open Cloudflare's dashboard" })).toHaveAttribute(
       "href",
       `https://dash.cloudflare.com/${AI_GATEWAY_ACCOUNT.accountId}/realtime/sfu`,
@@ -82,13 +82,13 @@ test.describe("Set up huddles", () => {
     await expect(huddles).toContainText(`Huddles run through the Realtime SFU app ${SFU_APP.appId} in your Cloudflare account.`);
     await expect(huddlesSwitch).toBeChecked();
 
-    // Ember keeps the keys, and Change keys starts from the app's ID, asking for its secret again.
+    // Papaya OS keeps the keys, and Change keys starts from the app's ID, asking for its secret again.
     await page.reload();
     await expect(huddlesCard(page).getByRole("switch", { name: "Audio and video chat" })).toBeChecked();
     await huddlesCard(page).getByRole("button", { name: "Change keys" }).click();
     await expect(page.getByRole("dialog").getByRole("textbox", { name: "App ID" })).toHaveValue(SFU_APP.appId);
     await expect(page.getByRole("dialog").getByRole("textbox", { name: "App Secret" })).toHaveValue("");
-    await expect(page.getByRole("dialog")).toContainText("Ember has an app's keys already.");
+    await expect(page.getByRole("dialog")).toContainText("Papaya OS has an app's keys already.");
   });
 
   test("the administrator turns huddles off, once they're sure, which forgets the app's keys", async ({ page, request }) => {
@@ -181,7 +181,7 @@ test.describe("A huddle", () => {
     // She hears herself join, and then, as she's alone in it, the huddle's music.
     await expect.poll(() => soundsHeard(page), { timeout: 15_000 }).toEqual(["joined", "music"]);
 
-    // Grace, who joins Ember with the join link, sees it going on in the room's header and at the end of
+    // Grace, who joins Papaya OS with the join link, sees it going on in the room's header and at the end of
     // its row in her sidebar, and its link opens the room at the preview.
     const { joinCode } = (await (await request.get("/api/account", { headers })).json()) as WorkspaceSettings;
     const context = await browser.newContext({ baseURL, ignoreHTTPSErrors: true });

@@ -138,7 +138,7 @@ describe("Add and edit a bot", () => {
     expect(within(incoming()).queryAllByRole("textbox")).toEqual([]);
     expect(within(outgoing()).getByRole("textbox", { name: "Webhook URL" })).toBe(urlField());
     expect(urlField()).toHaveAccessibleDescription(
-      "Optional. Ember sends every message that @mentions the bot or is sent to it in a DM to this webhook URL, then posts whatever it answers within 30 seconds.",
+      "Optional. Papaya OS sends every message that @mentions the bot or is sent to it in a DM to this webhook URL, then posts whatever it answers within 30 seconds.",
     );
     // Name, then in, then out, then Save changes.
     expect(nameField().compareDocumentPosition(incoming())).toBe(Node.DOCUMENT_POSITION_FOLLOWING);

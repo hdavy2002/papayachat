@@ -5,7 +5,7 @@
 fake public addresses. The second is what Campfire answered for each: the response, the DNS lookups
 and the requests the server received.
 
-`../unfurl-cases.test.ts` replays them. Where Ember answers differently on purpose, it says so there,
+`../unfurl-cases.test.ts` replays them. Where Papaya OS answers differently on purpose, it says so there,
 case by case.
 
 # A recorded push
@@ -23,7 +23,7 @@ answers a bot's webhook can give: its status, headers and body, gzipped or late.
 Campfire's `Webhook#deliver` made of each: the request it sent, the webhook's status, and the text or
 file the bot said back, or what it raised.
 
-`../webhook-replies.test.ts` replays them. Where Ember answers differently on purpose, it says so
+`../webhook-replies.test.ts` replays them. Where Papaya OS answers differently on purpose, it says so
 there.
 
 # Recorded files
@@ -33,7 +33,7 @@ what Active Storage made of file names, and the blobs of the thumbnails, posters
 made, with their metadata and the images themselves. `ruby_core.json`'s `byte_ranges` are what Rack
 made of each Range header.
 
-`../files.test.ts` checks Ember's file types, metadata, names and byte ranges against them, and
+`../files.test.ts` checks Papaya OS's file types, metadata, names and byte ranges against them, and
 `../uploads.test.ts` uploads some of the images. The worker tests can't read files inside workerd,
 so `vitest.config.ts` hands them the images as Base64.
 

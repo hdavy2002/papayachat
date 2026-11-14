@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { SetupPage } from "./setup-page";
 
-// Set up Ember where the pages few visits need can't load, as when the connection drops once the form is
+// Set up Papaya OS where the pages few visits need can't load, as when the connection drops once the form is
 // sent: the question about huddles is among them.
 vi.mock("@/components/workspace/pages", () => {
   throw new TypeError("Failed to fetch dynamically imported module");

@@ -101,7 +101,7 @@ export const AVATAR_PATH = "/api/users/me/avatar";
 export const AVATAR_BOX = 512;
 
 /**
- * The largest avatar Ember takes, in decimal bytes: the Worker reads an avatar into memory to keep it,
+ * The largest avatar Papaya OS takes, in decimal bytes: the Worker reads an avatar into memory to keep it,
  * and a Worker has 128 MB for every request at once.
  */
 export const MAX_AVATAR_SIZE = 16_000_000;
@@ -119,7 +119,7 @@ export const LOGO_PATH = "/api/account/logo";
 /** The boxes a logo's variants fit within, as Campfire's `:large` and `:small` scale it. */
 export const LOGO_BOXES = { large: 512, small: 192 } as const;
 
-/** The largest logo Ember takes, as for an avatar. */
+/** The largest logo Papaya OS takes, as for an avatar. */
 export const MAX_LOGO_SIZE = MAX_AVATAR_SIZE;
 
 /** What the Worker's 413 and the app say of a larger one. */

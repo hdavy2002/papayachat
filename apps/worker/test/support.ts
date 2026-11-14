@@ -34,12 +34,12 @@ import { workspace, type Workspace } from "../src/workspace";
 
 export const origin = "https://ember.test";
 
-/** The deploy's setup token, which the suite's Worker is bound with (vitest.config.ts) and `api` sends to set Ember up. */
+/** The deploy's setup token, which the suite's Worker is bound with (vitest.config.ts) and `api` sends to set Papaya OS up. */
 export const SETUP_TOKEN = "fedcba9876543210".repeat(4);
 
 /**
  * `init` as the app's own pages send it to `path`: writes carry the `Sec-Fetch-Site` browsers add, and
- * setting Ember up carries the setup link's token, as the Set up Ember page sends it.
+ * setting Papaya OS up carries the setup link's token, as the Set up Papaya OS page sends it.
  */
 function fromOwnPages<Cf>(path: string, init: RequestInit<Cf>): RequestInit<Cf> {
   const headers = new Headers(init.headers);
@@ -57,7 +57,7 @@ export const apiWith = (changes: Partial<Env>, path: string, init: RequestInit<I
   worker.fetch(new Request(new URL(path, origin), fromOwnPages(path, init)), { ...(env as unknown as Env), ...changes });
 
 /**
- * What Ember AI's settings say of @ember's avatar while it's Ember's flame, as it is until an
+ * What Papaya AI's settings say of @ember's avatar while it's Papaya OS's flame, as it is until an
  * administrator uploads one: its address, at whichever version.
  */
 export const WITH_THE_FLAME = { avatarUrl: expect.stringMatching(/^\/users\/ember\.[\w-]+\/avatar\?v=\d{14}(?:&|$)/) as string, avatar: false };
@@ -81,7 +81,7 @@ export function recordedImage(name: string): Uint8Array {
   return Uint8Array.from(atob(TEST_RECORDED_IMAGES[name]!), (c) => c.charCodeAt(0));
 }
 
-/** A digest as Ember made them before scrypt: PBKDF2-SHA256 at the 100,000 iterations Web Crypto allows on Workers. */
+/** A digest as Papaya OS made them before scrypt: PBKDF2-SHA256 at the 100,000 iterations Web Crypto allows on Workers. */
 export async function pbkdf2Digest(password: string): Promise<string> {
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveBits"]);
@@ -292,7 +292,7 @@ async function restartWorkspace(): Promise<void> {
 }
 
 /**
- * A model kept before Ember stopped offering it, as a copy set up then keeps it: its ID, its name, the
+ * A model kept before Papaya OS stopped offering it, as a copy set up then keeps it: its ID, its name, the
  * format Cloudflare's REST API took it in, and the levels of thinking it took its test question at.
  */
 export interface KeptModel {
@@ -303,8 +303,8 @@ export interface KeptModel {
 }
 
 /**
- * Has Ember AI, which is on, answer everyone with `model`, which Ember no longer offers, as a copy set
- * up before Ember stopped offering it does, with it and `others` the models people can pick, as the
+ * Has Papaya AI, which is on, answer everyone with `model`, which Papaya OS no longer offers, as a copy set
+ * up before Papaya OS stopped offering it does, with it and `others` the models people can pick, as the
  * Workspace finds when it next opens.
  */
 export async function answerWithKeptModel(model: KeptModel, ...others: KeptModel[]): Promise<void> {
@@ -319,8 +319,8 @@ export async function answerWithKeptModel(model: KeptModel, ...others: KeptModel
 }
 
 /**
- * Adds `models`, which Ember no longer offers, to those people can pick, after the others, as a copy set
- * up before Ember stopped offering them has them, as the Workspace finds when it next opens.
+ * Adds `models`, which Papaya OS no longer offers, to those people can pick, after the others, as a copy set
+ * up before Papaya OS stopped offering them has them, as the Workspace finds when it next opens.
  */
 export async function addKeptModels(...models: KeptModel[]): Promise<void> {
   const [{ settings }] = (await workspaceSql("SELECT settings FROM accounts")) as [{ settings: string }];
@@ -330,7 +330,7 @@ export async function addKeptModels(...models: KeptModel[]): Promise<void> {
   await restartWorkspace();
 }
 
-/** Has the agent `agentId` answer with `model`, which Ember no longer offers, as an agent made before Ember stopped offering it does. */
+/** Has the agent `agentId` answer with `model`, which Papaya OS no longer offers, as an agent made before Papaya OS stopped offering it does. */
 export async function agentWithKeptModel(agentId: UserId, { id, name, format, thinkingLevels }: KeptModel): Promise<void> {
   await workspaceSql("UPDATE agents SET model = ?, model_name = ?, format = ?, thinking_levels = ? WHERE user_id = ?", id, name, format, JSON.stringify(thinkingLevels), agentId);
   await restartWorkspace();

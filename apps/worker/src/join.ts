@@ -43,9 +43,9 @@ import type { NewPerson } from "./workspace-store";
 // except that the form posts to /api/join/<code>. Before first run, there's no join code to match yet,
 // so every link is a 404. An administrator can turn the link off, and while Papaya is members only
 // (memberful.ts) it's off too: either way it sends people to sign in. Signing up at /join, with no code,
-// is Ember's own: anyone may while an administrator lets them, within its limits, and with Turnstile's
-// check while Ember has a widget's keys. So is joining with an invitation's link, whichever ways to join
-// are on, with the address it was sent to, and with a link someone asks Ember to email an address at the
+// is Papaya OS's own: anyone may while an administrator lets them, within its limits, and with Turnstile's
+// check while Papaya OS has a widget's keys. So is joining with an invitation's link, whichever ways to join
+// are on, with the address it was sent to, and with a link someone asks Papaya OS to email an address at the
 // workspace's email domains, while an administrator lets those domains in.
 
 /** What the join form answers while Papaya is members only: why, and where to go instead. */
@@ -84,7 +84,7 @@ export async function joinPage(request: Request, env: Env, code: string): Promis
 
 /**
  * `GET /join`: the join page without a code, for someone signed out while anyone may sign up, or else
- * sign-in, which says signing up is closed. Its policy lets Turnstile's check load, while Ember has a
+ * sign-in, which says signing up is closed. Its policy lets Turnstile's check load, while Papaya OS has a
  * widget's keys.
  */
 export async function signUpPage(request: Request, env: Env): Promise<Response> {
@@ -110,7 +110,7 @@ export async function invitationPage(request: Request, env: Env): Promise<Respon
  * domains, and the page that link opens, which holds its secret in the fragment, as an invitation's
  * does, so the Worker can't tell the two apart. The app sends someone signed in home, and anyone else
  * to sign in while Email domain is off, once the secret is out of the address. Its policy lets
- * Turnstile's check load, while Ember has a widget's keys.
+ * Turnstile's check load, while Papaya OS has a widget's keys.
  */
 export async function emailSignUpPage(request: Request, env: Env): Promise<Response> {
   if (request.method !== "GET" && request.method !== "HEAD") return empty(404);
@@ -159,7 +159,7 @@ export async function join(request: Request, env: Env, code: string): Promise<Re
 /**
  * `POST /api/join`: adds the person the open sign-up form describes, as `join` adds someone with the
  * join link, while anyone may sign up, and else answers 403 before the form is read, sending them to
- * sign in. Turnstile's check comes first, while Ember has a widget's keys, and else the limits that
+ * sign in. Turnstile's check comes first, while Papaya OS has a widget's keys, and else the limits that
  * stand in for it, all before the photo is stored or the password hashed: past the limit from the
  * address, or once the workspace's new people for the hour have filled it, it answers 429.
  */
@@ -194,7 +194,7 @@ export async function signUp(request: Request, env: Env): Promise<Response> {
   return formAnswer({ user } satisfies { user: Me }, 201, sessionCookie(request, token));
 }
 
-/** What a link Ember emailed answers once it doesn't work, which its page says too, for each kind of link. */
+/** What a link Papaya OS emailed answers once it doesn't work, which its page says too, for each kind of link. */
 const LINKS_GONE: Record<EmailLinkKind, string> = { invitation: INVITATION_GONE, email_domain: EMAIL_LINK_GONE };
 
 const linkGone = (kind: EmailLinkKind) => formAnswer({ error: LINKS_GONE[kind] }, 404);
@@ -235,8 +235,8 @@ export async function joinWithEmailLink(request: Request, env: Env, kind: EmailL
  * it, while Email domain lets in its domain, answering 202 whether or not it has an account already,
  * which it's emailed about instead, so that the answer never says who has one. While Email domain is off
  * it answers 403 before the body is read, sending them to sign in, and an address at another domain is
- * refused on its field. Turnstile's check comes next, while Ember has a widget's keys, and else the
- * network's limit, which stands in for it. It answers 503 while Ember can't send email, and 502 when the
+ * refused on its field. Turnstile's check comes next, while Papaya OS has a widget's keys, and else the
+ * network's limit, which stands in for it. It answers 503 while Papaya OS can't send email, and 502 when the
  * provider refuses the email.
  */
 export async function askForEmailLink(request: Request, env: Env): Promise<Response> {

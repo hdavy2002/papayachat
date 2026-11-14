@@ -1,23 +1,23 @@
 import type { ModelFormat } from "@ember/protocol/assistant";
 import { isMessages, isObject, isResponses } from "./formats";
 
-// Tools Ember runs for a model. A model is given each tool's name, what it does and what it takes, and may
-// answer with calls of them in place of an answer; Ember runs each and asks the model again, with what it
+// Tools Papaya OS runs for a model. A model is given each tool's name, what it does and what it takes, and may
+// answer with calls of them in place of an answer; Papaya OS runs each and asks the model again, with what it
 // said and what each call came to, until it answers. Each format writes all of that its own way:
 // Anthropic's Messages (https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview), OpenAI's
 // Responses, which xAI's has too (https://developers.openai.com/api/docs/guides/function-calling), and
 // Chat Completions, which Cloudflare's REST API takes Grok's requests in. Workers AI's models, asked in a
 // format of their own, are given none of them (`takesEmbersTools`), and Grok, in Chat Completions, is given
-// Ember's own for searching the web among them, while it may search (gateway.ts).
+// Papaya OS's own for searching the web among them, while it may search (gateway.ts).
 
-/** The most calls of Ember's tools one answer makes, as the model reads the conversation again after each round of them. */
+/** The most calls of Papaya OS's tools one answer makes, as the model reads the conversation again after each round of them. */
 export const TOOL_CALLS_PER_ANSWER = 5;
 
 /** What a model is told of a call an answer has no calls left for. */
 export const NO_CALLS_LEFT = "Not run: this answer has made all the tool calls it may. Answer with what you have.";
 
 /**
- * A tool Ember runs: its name, what it does and when to use it, in words its model reads, the JSON Schema
+ * A tool Papaya OS runs: its name, what it does and when to use it, in words its model reads, the JSON Schema
  * of the object it takes, and what a call with `input` comes to, as the model reads it. One that throws a
  * `ToolError` tells the model why; any other failure tells it only that the tool failed.
  */
@@ -54,7 +54,7 @@ export function toolsIn(format: ModelFormat, tools: readonly EmberTool[]): Recor
 }
 
 /**
- * The calls of Ember's tools the model's answer `body` makes in `format`, when it stopped to make them:
+ * The calls of Papaya OS's tools the model's answer `body` makes in `format`, when it stopped to make them:
  * none for one cut short, whose last call may be half written, or for a tool its provider runs.
  */
 export function toolCallsIn(format: ModelFormat, body: unknown): ToolCall[] {
@@ -119,7 +119,7 @@ function inputOf(input: unknown): Record<string, unknown> | null {
 
 function whyFailed(name: string, error: unknown): string {
   if (error instanceof ToolError) return error.message;
-  console.error(`Ember's tool ${name} failed:`, error);
+  console.error(`Papaya OS's tool ${name} failed:`, error);
   return `${name} failed. Answer without it.`;
 }
 

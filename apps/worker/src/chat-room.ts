@@ -110,7 +110,7 @@ export const EMPTY = "Your message is empty.";
 /** Why the room changes nothing of a bot's message with cards that a person edits, as the editor can't hold a card. */
 const HAS_CARDS = "Messages with cards can't be edited.";
 /** What the room tells a tab running an app older than its protocol, whose messages and edits it refuses. */
-const OUTDATED = "Ember has been updated. Reload the page to keep chatting.";
+const OUTDATED = "Papaya OS has been updated. Reload the page to keep chatting.";
 /**
  * What the room tells a socket from a banned IP address that tries to change something, as the app says
  * of the 429 the Worker answers such a request with.
@@ -203,16 +203,16 @@ const ANSWERS_WAITING = 100;
 /** How often @ember says again that it's typing while it answers, as apps forget typing they haven't heard of for 5 seconds. */
 const TYPING_AGAIN_MS = 3_000;
 
-/** Why the room posts nothing for a question for @ember: Ember AI was turned off, or @ember taken out of the room. */
-const ASSISTANT_GONE = "Ember AI has been turned off, or @ember is no longer in the room";
-/** Why it posts nothing for a question for an agent: Ember AI was turned off, or the agent deleted or taken out of the room. */
-const AGENT_GONE = "Ember AI has been turned off, or the agent has been deleted or is no longer in the room";
+/** Why the room posts nothing for a question for @ember: Papaya AI was turned off, or @ember taken out of the room. */
+const ASSISTANT_GONE = "Papaya AI has been turned off, or @ember is no longer in the room";
+/** Why it posts nothing for a question for an agent: Papaya AI was turned off, or the agent deleted or taken out of the room. */
+const AGENT_GONE = "Papaya AI has been turned off, or the agent has been deleted or is no longer in the room";
 
 /** Why the room posts nothing for a question for the bot `botId`, @ember or an agent, which is no longer there to answer. */
 const answererGone = (botId: UserId) => (botId === ASSISTANT_ID ? ASSISTANT_GONE : AGENT_GONE);
 
-/** Who answers as the bot `botId`, as the room's logs name them: Ember AI, as @ember, or an agent, by its id. */
-const answererOf = (botId: UserId) => (botId === ASSISTANT_ID ? "Ember AI" : `Agent ${botId}`);
+/** Who answers as the bot `botId`, as the room's logs name them: Papaya AI, as @ember, or an agent, by its id. */
+const answererOf = (botId: UserId) => (botId === ASSISTANT_ID ? "Papaya AI" : `Agent ${botId}`);
 
 /**
  * What @ember or an agent says to a question: its model's answer, or the note saying why it has none, the
@@ -1414,7 +1414,7 @@ export class ChatRoom extends DurableObject<Env> {
 
   /**
    * Answers a question for @ember or an agent, the bot `question` names, in its turn: the message as it
-   * is by then, while Ember AI is on and the bot is in the room, and nothing once either isn't, typing
+   * is by then, while Papaya AI is on and the bot is in the room, and nothing once either isn't, typing
    * while it works, and posting what the model answers, or a note saying why it can't. Each is logged,
    * without what was asked or answered, and one the queue has no room for is dropped.
    */
@@ -1439,7 +1439,7 @@ export class ChatRoom extends DurableObject<Env> {
   /**
    * What the bot `access` finds, @ember or an agent, says to `message`, `question`'s message, with what
    * it reads of the conversation, as its instructions say, using the web as Search the web lets it, and
-   * searching the room for what was written before that, where its model takes Ember's tools: its
+   * searching the room for what was written before that, where its model takes Papaya OS's tools: its
    * answer in Markdown, at its levels, @ember's the asker's, with the model they picked, if they did,
    * ending with an ellipsis when the model was cut short, the pages it came from, and what people wrote
    * in what it read, or the note it posts when its model doesn't answer, saying why, which the room logs.
@@ -1471,7 +1471,7 @@ export class ChatRoom extends DurableObject<Env> {
     const entries = await workspace(this.env)
       .directoryEntries(writers)
       .catch((error: unknown) => {
-        console.error("Could not find who wrote what Ember AI read", error);
+        console.error("Could not find who wrote what Papaya AI read", error);
         return [];
       });
     return new Set(entries.flatMap(({ id, role }) => (role === "bot" ? [] : [id])));
@@ -1493,9 +1493,9 @@ export class ChatRoom extends DurableObject<Env> {
    * the cards of the Slack payloads it writes after that, the pages it came from after it, and a preview
    * of its first web link below it, as the composer adds one, the pictures, in its cards too, and the
    * link only at addresses people wrote or of the pages it came from, and the link
-   * on none of Ember's own `addresses` (`answerOf`). Like a bot's reply, it reaches the room as any
-   * message does, but goes to no bot, @ember and the agents among them. It's posted only while Ember AI
-   * is on and the bot in the room, and `message` still there, so that turning Ember AI off, deleting the
+   * on none of Papaya OS's own `addresses` (`answerOf`). Like a bot's reply, it reaches the room as any
+   * message does, but goes to no bot, @ember and the agents among them. It's posted only while Papaya AI
+   * is on and the bot in the room, and `message` still there, so that turning Papaya AI off, deleting the
    * agent, taking the bot out of the room or deleting the question while the model answers posts
    * nothing. Answers why the room keeps nothing of it, if it doesn't.
    */
@@ -1528,7 +1528,7 @@ export class ChatRoom extends DurableObject<Env> {
     return unfurler(this.env)
       .unfurl(url)
       .catch((error: unknown) => {
-        console.error("Could not unfurl the link in Ember AI's answer", error);
+        console.error("Could not unfurl the link in Papaya AI's answer", error);
         return null;
       });
   }

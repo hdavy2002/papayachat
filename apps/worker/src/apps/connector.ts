@@ -10,7 +10,7 @@ import { readApp, type ReadApp } from "./mcp";
  * link's preview does.
  */
 export class AppConnector extends DurableObject<Env> {
-  /** `readApp`: the tools of the app at `url`, asked with `token`, or why Ember couldn't read them. */
+  /** `readApp`: the tools of the app at `url`, asked with `token`, or why Papaya OS couldn't read them. */
   read(url: string, token: string | null): Promise<ReadApp | AppRefused> {
     return readApp(url, token);
   }

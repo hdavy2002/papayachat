@@ -14,12 +14,12 @@ import { workspace } from "./workspace";
 
 // People's avatars, as Campfire's Users::AvatarsController serves them: an image at the address
 // avatar-tokens.ts makes, for people signed in: the variant of the picture they uploaded, or their
-// initials, or the bot picture for a bot, or Ember's flame for @ember.
+// initials, or the bot picture for a bot, or Papaya OS's flame for @ember.
 
 /** `expires_in 30.minutes, public: true, stale_while_revalidate: 1.week` */
 const CACHE_CONTROL = "max-age=1800, public, stale-while-revalidate=604800";
 
-/** Where the built app has @ember's picture: Ember's flame in white on the app icon's sunset. */
+/** Where the built app has @ember's picture: Papaya OS's flame in white on the app icon's sunset. */
 const FLAME = "/assistant-avatar.svg";
 
 /** Rails' `/users/:user_id/avatar`, which takes the token as the id. */
@@ -57,10 +57,10 @@ export async function showAvatar(request: Request, env: Env, token: string): Pro
   return owner.bot ? image(request, DEFAULT_BOT_AVATAR, true) : image(request, avatarSvg(userId, owner.name), false);
 }
 
-/** @ember's picture: Ember's flame, from the built app's files. */
+/** @ember's picture: Papaya OS's flame, from the built app's files. */
 async function flame(request: Request, env: Env): Promise<Response> {
   const icon = await env.ASSETS.fetch(new URL(FLAME, request.url));
-  if (!icon.ok) throw new Error(`Ember's flame answered ${icon.status}`);
+  if (!icon.ok) throw new Error(`Papaya OS's flame answered ${icon.status}`);
   const bytes = new Uint8Array(await icon.arrayBuffer());
   const etag = await etagOf(bytes);
   const headers = new Headers({ ETag: etag, "Cache-Control": CACHE_CONTROL });

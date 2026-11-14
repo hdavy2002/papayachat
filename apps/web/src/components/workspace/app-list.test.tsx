@@ -27,7 +27,7 @@ const loaded = () => waitFor(() => expect(card()).toHaveAttribute("aria-busy", "
 afterEach(() => vi.restoreAllMocks());
 
 describe("The Apps card", () => {
-  it("lists each app connected, by name, with where its server is and how many tools Ember read, and a link to its page", async () => {
+  it("lists each app connected, by name, with where its server is and how many tools Papaya OS read, and a link to its page", async () => {
     serve();
     showList();
     await loaded();

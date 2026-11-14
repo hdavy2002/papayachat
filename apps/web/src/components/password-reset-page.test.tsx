@@ -92,12 +92,12 @@ afterEach(() => {
 });
 
 describe("Reset a forgotten password with an emailed code", () => {
-  it("asks for an email address, then for the code Ember emailed it with a new password", async () => {
+  it("asks for an email address, then for the code Papaya OS emailed it with a new password", async () => {
     const fetch = serve(asked);
     open();
     expect(document.title).toBe("Reset your password");
     expect(screen.getByRole("heading", { level: 1, name: "Reset your password" })).toBeInTheDocument();
-    expect(screen.getByText("Enter your email address, and Ember will email you a code to choose a new password with.")).toBeInTheDocument();
+    expect(screen.getByText("Enter your email address, and Papaya OS will email you a code to choose a new password with.")).toBeInTheDocument();
     expect(emailField()).toHaveFocus();
     expect(emailField()).toHaveAttribute("autocomplete", "username");
     expect(screen.getByRole("link", { name: "Sign in" })).toHaveAttribute("href", "/session/new");
@@ -105,7 +105,7 @@ describe("Reset a forgotten password with an emailed code", () => {
     await ask();
     expect(fetch).toHaveBeenCalledExactlyOnceWith("/api/password_resets", expect.objectContaining({ method: "POST", body: JSON.stringify({ emailAddress: "ada@example.com" }) }));
     expect(
-      screen.getByText("If ada@example.com has an account here, Ember emailed it a code that works for 15 minutes. If it hasn't arrived soon, look in your spam folder."),
+      screen.getByText("If ada@example.com has an account here, Papaya OS emailed it a code that works for 15 minutes. If it hasn't arrived soon, look in your spam folder."),
     ).toBeInTheDocument();
     expect(codeField()).toHaveFocus();
     expect(codeField()).toHaveAttribute("inputmode", "numeric");
@@ -145,7 +145,7 @@ describe("Reset a forgotten password with an emailed code", () => {
     expect(emailField()).toHaveValue("");
   });
 
-  it("asks for the code Ember emailed the address it sent, though the field changes while it's sending", async () => {
+  it("asks for the code Papaya OS emailed the address it sent, though the field changes while it's sending", async () => {
     let answer!: (response: Response) => void;
     const fetch = vi.spyOn(globalThis, "fetch").mockImplementationOnce(() => new Promise<Response>((resolve) => (answer = resolve)));
     fetch.mockImplementationOnce(async () => Response.json({ user: ada }, { status: 201 }));
@@ -169,7 +169,7 @@ describe("Reset a forgotten password with an emailed code", () => {
     expect(screen.getByRole("link", { name: "Sign in" })).toHaveAttribute("href", "/session/new?email_address=ada%40example.com");
   });
 
-  it("waits for Turnstile's check while Ember has a widget's keys, sending its token, and draws it afresh to ask again", async () => {
+  it("waits for Turnstile's check while Papaya OS has a widget's keys, sending its token, and draws it afresh to ask again", async () => {
     const fetch = serve(refused(TURNSTILE_FAILED, "turnstile"), asked);
     const { turnstile, pass } = fakeTurnstile();
     open("/passwords/new", checked);
@@ -194,7 +194,7 @@ describe("Reset a forgotten password with an emailed code", () => {
   it.each([
     { status: 429, error: PASSWORD_RESETS_LIMITED },
     { status: 503, error: CANT_EMAIL_CODES },
-  ])("says why Ember emailed no code, keeping the address typed: $error", async ({ status, error }) => {
+  ])("says why Papaya OS emailed no code, keeping the address typed: $error", async ({ status, error }) => {
     serve(refused(error, undefined, status));
     open();
     await userEvent.type(emailField(), "ada@example.com");
@@ -204,15 +204,15 @@ describe("Reset a forgotten password with an emailed code", () => {
     expect(emailMe()).toBeEnabled();
   });
 
-  it("says so when it can't reach Ember", async () => {
+  it("says so when it can't reach Papaya OS", async () => {
     serve(unreachable);
     open();
     await userEvent.type(emailField(), "ada@example.com");
     await userEvent.click(emailMe());
-    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't reach Ember. Check your connection and try again.");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't reach Papaya OS. Check your connection and try again.");
   });
 
-  it("says Ember can't email a code while it can't send email, with no form", () => {
+  it("says Papaya OS can't email a code while it can't send email, with no form", () => {
     open("/passwords/new?email_address=ada%40example.com", { ...workspace, passwordResetCodes: false });
     expect(screen.getByRole("heading", { level: 1, name: "Reset your password" })).toBeInTheDocument();
     expect(screen.getByText(CANT_EMAIL_CODES)).toBeInTheDocument();
@@ -275,12 +275,12 @@ describe("Reset a forgotten password with an emailed code", () => {
     expect(screen.getByRole("button", { name: "Reset password" })).toBeEnabled();
   });
 
-  it("says so when it can't reach Ember to reset it, keeping what was typed", async () => {
+  it("says so when it can't reach Papaya OS to reset it, keeping what was typed", async () => {
     serve(asked, unreachable);
     open();
     await ask();
     await reset();
-    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't reach Ember. Check your connection and try again.");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't reach Papaya OS. Check your connection and try again.");
     expect(codeField()).toHaveValue("12345678");
     expect(screen.getByRole("button", { name: "Reset password" })).toBeEnabled();
   });

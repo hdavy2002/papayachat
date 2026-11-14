@@ -7,23 +7,23 @@ import { SETUP_TOKEN } from "../../projects/first-run";
 import { AI_GATEWAY_ACCOUNT, SETTINGS_FIRST_RUN, SFU_APP } from "../../projects/workspace-settings";
 import { startFakeSfu } from "../workspace-settings/fake-sfu";
 
-// Each test server starts empty, so this sets it up through the Set up Ember page before any other suite
+// Each test server starts empty, so this sets it up through the Set up Papaya OS page before any other suite
 // runs; they then find the workspace, its general and random rooms, and its administrator there. The
 // server has a setup token, as a deployed Worker has, so the page takes the setup link that carries it,
 // which `wrangler dev` on localhost without one wouldn't ask for.
 //
-// Setup asks whether to turn huddles on before it opens Ember. The main test server has no SFU of the
+// Setup asks whether to turn huddles on before it opens Papaya OS. The main test server has no SFU of the
 // tests' to ask, so there the answer is Not now. The second asks the Realtime SFU the huddles spec fakes,
 // so there setup turns huddles on, and the test turns them off again once it has seen them on, which
 // leaves the workspace as the other suites expect a new one: huddles off.
 
-/** Answers setup's question by setting huddles up: the two steps, with the app's keys the faked SFU knows, and on to Ember. */
+/** Answers setup's question by setting huddles up: the two steps, with the app's keys the faked SFU knows, and on to Papaya OS. */
 async function setUpHuddles(page: Page) {
   const sfu = await startFakeSfu();
   try {
     await page.getByRole("button", { name: "Set up huddles" }).click();
     await expect(page.getByRole("heading", { level: 1, name: "Set up huddles" })).toBeFocused();
-    // The dashboard opens at the account Ember is deployed to.
+    // The dashboard opens at the account Papaya OS is deployed to.
     await expect(page.getByRole("link", { name: "Open Cloudflare's dashboard" })).toHaveAttribute("href", `https://dash.cloudflare.com/${AI_GATEWAY_ACCOUNT.accountId}/realtime/sfu`);
     const [appId, appSecret] = [page.getByRole("textbox", { name: "App ID" }), page.getByRole("textbox", { name: "App Secret" })];
     await expect(appSecret).toHaveCSS("-webkit-text-security", "disc");
@@ -42,14 +42,14 @@ async function setUpHuddles(page: Page) {
     await expect(page.getByRole("heading", { level: 1, name: "Huddles are on" })).toBeFocused();
     expect(sfu.asked.at(-1)).toEqual({ method: "POST", path: `/v1/apps/${SFU_APP.appId}/sessions/new`, authorization: `Bearer ${SFU_APP.appSecret}` });
     await expect(page).toHaveURL(/\/first_run$/);
-    await page.getByRole("button", { name: "Open Ember" }).click();
+    await page.getByRole("button", { name: "Open Papaya OS" }).click();
   } finally {
     await sfu.close();
   }
 }
 
 test.describe("Set up the workspace", () => {
-  test("whoever has the setup link sets up Ember and lands in general as its administrator", async ({ page, request }) => {
+  test("whoever has the setup link sets up Papaya OS and lands in general as its administrator", async ({ page, request }) => {
     const { setup, setupAccess } = (await (await request.get("/api/bootstrap")).json()) as Bootstrap;
     test.skip(setup === "complete", "The test server was set up by an earlier run, which reuseExistingServer kept");
     expect(setupAccess).toBe("link");
@@ -57,9 +57,9 @@ test.describe("Set up the workspace", () => {
     // Without the link, the page says to open it, and the form's post is refused before it's read.
     await page.goto("/");
     await expect(page).toHaveURL(/\/first_run$/);
-    await expect(page).toHaveTitle("Set up Ember");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Set up Ember");
-    await expect(page.getByText("Ember is waiting for its administrator.")).toBeVisible();
+    await expect(page).toHaveTitle("Set up Papaya OS");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Set up Papaya OS");
+    await expect(page.getByText("Papaya OS is waiting for its administrator.")).toBeVisible();
     await expect(page.getByText(`${new URL(page.url()).origin}/first_run#token=…`)).toBeVisible();
     await expect(page.getByLabel("Name")).toHaveCount(0);
     // Sent as the app's own page would send it, since over HTTPS a write that doesn't say so is refused as cross-site.
@@ -68,7 +68,7 @@ test.describe("Set up the workspace", () => {
       data: { name: "Mallory", emailAddress: "mallory@example.com", password: "12345678" },
     });
     expect(withoutLink.status()).toBe(403);
-    expect(await withoutLink.json()).toEqual({ error: "Open the setup link the deploy printed to set up Ember" });
+    expect(await withoutLink.json()).toEqual({ error: "Open the setup link the deploy printed to set up Papaya OS" });
 
     // The link's token leaves the address as the page opens, and goes with the form instead.
     await page.goto(`/first_run#token=${SETUP_TOKEN}`);
@@ -110,7 +110,7 @@ test.describe("Set up the workspace", () => {
     // The workspace is made, and before it opens, setup asks about huddles, still at its own address.
     await expect(page.getByRole("heading", { level: 1, name: "Would you like to enable audio and video chat?" })).toBeFocused();
     await expect(page).toHaveURL(/\/first_run$/);
-    await expect(page).toHaveTitle("Set up Ember");
+    await expect(page).toHaveTitle("Set up Papaya OS");
     const withHuddles = test.info().project.name === SETTINGS_FIRST_RUN;
     if (withHuddles) await setUpHuddles(page);
     else await page.getByRole("button", { name: "Not now" }).click();
@@ -133,7 +133,7 @@ test.describe("Set up the workspace", () => {
     await expect(rooms).toHaveCount(2);
     await expect(rooms).toContainText(["general", "random"]);
     // general, the first room, welcomes them with the link that invites everyone else.
-    await expect(page.getByRole("heading", { level: 2, name: "Welcome to Ember" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 2, name: "Welcome to Papaya OS" })).toBeVisible();
     await expect(page.getByRole("textbox", { name: "Share to invite more people" })).toHaveValue(/\/join\/[A-Za-z\d]{4}-[A-Za-z\d]{4}-[A-Za-z\d]{4}$/);
     // Setup took the page's place, so Back doesn't return to it.
     expect(await page.evaluate(() => history.length)).toBe(length);
@@ -144,7 +144,7 @@ test.describe("Set up the workspace", () => {
     await page.goto("/first_run");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("general");
     expect(new URL(page.url()).pathname).not.toBe("/first_run");
-    // The link is spent: with its token the form is told Ember is set up, and without it nothing more.
+    // The link is spent: with its token the form is told Papaya OS is set up, and without it nothing more.
     const again = await request.post("/api/first_run", {
       headers: { "Sec-Fetch-Site": "same-origin", Authorization: `Bearer ${SETUP_TOKEN}` },
       data: { name: "Mallory", emailAddress: "mallory@example.com", password: "12345678" },

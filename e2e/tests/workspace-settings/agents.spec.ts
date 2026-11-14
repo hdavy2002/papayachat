@@ -7,11 +7,11 @@ import { ANTHROPIC_PATH, CARD_HEADER, CARD_LINK, CARD_QUESTION, CARDED, CHAT_COM
 
 // The AI assistant tab's Agents card, New agent and an agent's page, with Try it, an agent answering a
 // mention, and its badge and profile, on the second test server, through the AI Gateway this spec fakes.
-// Each test starts with Ember AI on Claude Sonnet 5.5, and leaves the workspace as a new one is: no
-// agents, and Ember AI off.
+// Each test starts with Papaya AI on Claude Sonnet 5.5, and leaves the workspace as a new one is: no
+// agents, and Papaya AI off.
 
 const SONNET = "anthropic/claude-sonnet-5.5";
-/** xAI's Grok, which Ember asks through Cloudflare's REST API, and through AI Gateway's xAI endpoint to search the web. */
+/** xAI's Grok, which Papaya OS asks through Cloudflare's REST API, and through AI Gateway's xAI endpoint to search the web. */
 const GROK = "xai/grok-4.7";
 
 let gateway: FakeGateway;
@@ -23,7 +23,7 @@ test.beforeEach(async ({ request }) => {
 });
 test.afterEach(async ({ request }) => {
   const headers = await asAdministrator(request);
-  // Agents are deleted while Ember AI is on, which keeps them while it's off.
+  // Agents are deleted while Papaya AI is on, which keeps them while it's off.
   const listed = await request.get("/api/account/agents", { headers });
   expect(listed.status(), await listed.text()).toBe(200);
   for (const { id } of ((await listed.json()) as Agents).agents) {
@@ -71,7 +71,7 @@ const rowOf = (card: Locator, name: string) => card.getByRole("listitem").filter
 test.describe("Agents", () => {
   test("the administrator makes an agent on New agent, trying it first, and it answers a mention in a room", async ({ page }) => {
     const card = await openAgents(page);
-    await expect(namesIn(card)).toHaveText(["Ember"]);
+    await expect(namesIn(card)).toHaveText(["Papaya OS"]);
     await card.getByRole("link", { name: "New agent" }).click();
     await expect(page.getByRole("heading", { level: 1, name: "New agent" })).toBeVisible();
     await expect(page).toHaveTitle("New agent");
@@ -96,7 +96,7 @@ test.describe("Agents", () => {
 
     // Making it asks its model a test question, then goes back to the tab, which lists it.
     await page.getByRole("button", { name: "Create agent" }).click();
-    await expect(namesIn(card)).toHaveText(["Ember", "Recap"]);
+    await expect(namesIn(card)).toHaveText(["Papaya OS", "Recap"]);
     await expect(rowOf(card, "Recap")).toContainText("Sums up threads into decisions and to-dos.Claude Sonnet 5.5 · Every open room");
 
     // It's in every open room, where someone mentions it.
@@ -120,7 +120,7 @@ test.describe("Agents", () => {
     expect((asked.body.messages as Array<{ role: string; content: string }>).at(-1)).toEqual({ role: "user", content: `Ada Lovelace: @Recap ${question}` });
   });
 
-  test("the administrator changes an agent on its page, which Ember keeps, then deletes it, once they're sure", async ({ page, request }) => {
+  test("the administrator changes an agent on its page, which Papaya OS keeps, then deletes it, once they're sure", async ({ page, request }) => {
     const scout = await makeAgent(request, "Scout");
     const card = await openAgents(page);
     await card.getByRole("link", { name: "Edit Scout" }).click();
@@ -147,7 +147,7 @@ test.describe("Agents", () => {
       body: { tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }, { type: "web_fetch_20250910", name: "web_fetch", max_uses: 3 }] },
     });
 
-    // Ember keeps it.
+    // Papaya OS keeps it.
     await card.getByRole("link", { name: "Edit Scout" }).click();
     await expect(page).toHaveURL(new RegExp(`/account/agents/${scout.id}/edit$`));
     await page.reload();
@@ -157,13 +157,13 @@ test.describe("Agents", () => {
 
     page.once("dialog", (dialog) => void dialog.accept());
     await page.getByRole("button", { name: "Delete Scout" }).click();
-    await expect(namesIn(card)).toHaveText(["Ember"]);
+    await expect(namesIn(card)).toHaveText(["Papaya OS"]);
     // Its page is gone.
     const gone = await page.goto(`/account/agents/${scout.id}/edit`);
     expect(gone!.status()).toBe(404);
   });
 
-  test("an agent on Grok searches the web with Ember's own tool, once the administrator turns Search the web on", async ({ page, request }) => {
+  test("an agent on Grok searches the web with Papaya OS's own tool, once the administrator turns Search the web on", async ({ page, request }) => {
     await makeAgent(request, "Scout", GROK);
     // Its test question went to Cloudflare's REST API, in Chat Completions, as AI Gateway's credits pay for Grok there.
     const throughRest = { path: CHAT_COMPLETIONS_PATH, authorization: `Bearer ${AI_GATEWAY_ACCOUNT.apiToken}` };
@@ -173,13 +173,13 @@ test.describe("Agents", () => {
 
     const webSearch = page.getByRole("switch", { name: "Search the web" });
     await webSearch.click();
-    // Ember's own tool only searches, so it doesn't read pages of its own.
+    // Papaya OS's own tool only searches, so it doesn't read pages of its own.
     await expect(webSearch).toHaveAccessibleDescription(
       "Scout searches the web when a question needs it, at most 5 times an answer, and lists the pages it used under its answer. AI Gateway's credits pay for each search.",
     );
     await page.getByRole("button", { name: "Save changes" }).click();
     await expect(rowOf(card, "Scout")).toContainText("Grok 4.7 · Searches the web");
-    // It's still asked there, given Ember's tool, which Ember runs with Cloudflare's Web Search API through the same gateway.
+    // It's still asked there, given Papaya OS's tool, which Papaya OS runs with Cloudflare's Web Search API through the same gateway.
     const searched = gateway.asked.filter(({ body }) => "tools" in body).at(-1);
     expect(searched).toMatchObject({ ...throughRest, body: { model: GROK, tools: [{ type: "function", function: { name: "web_search" } }] } });
     expect(gateway.asked.findLast(({ path }) => path === `/accounts/${AI_GATEWAY_ACCOUNT.accountId}/ai/websearch/`)).toMatchObject({
@@ -190,15 +190,15 @@ test.describe("Agents", () => {
     expect(gateway.asked.some(({ path }) => path.includes("/grok/"))).toBe(false);
   });
 
-  test("the administrator modifies what Ember adds around an agent's instructions, with caution, which Ember keeps until Use Ember's own puts its own back", async ({ page, request }) => {
+  test("the administrator modifies what Papaya OS adds around an agent's instructions, with caution, which Papaya OS keeps until Use Papaya OS's own puts its own back", async ({ page, request }) => {
     const scout = await makeAgent(request, "Scout");
     const card = await openAgents(page);
     await card.getByRole("link", { name: "Edit Scout" }).click();
-    await page.getByText("What Ember adds around them").click();
+    await page.getByText("What Papaya OS adds around them").click();
     const caution = page.getByRole("region", { name: "Modify with caution" });
     await expect(caution).toContainText("Every answer Scout gives starts from these words.");
     await caution.getByRole("button", { name: "Modify" }).click();
-    const template = page.getByRole("textbox", { name: "What Ember adds around them" });
+    const template = page.getByRole("textbox", { name: "What Papaya OS adds around them" });
     await expect(template).toBeFocused();
     await expect(template).toHaveValue(/^You are \{\{name\}\}, an AI agent in the team chat "\{\{community\}\}"\./);
     await template.fill("You are {{name}}, the scout of {{community}}.\n\n{{instructions}}\n\nAnswer {{asker}} in {{where}}.");
@@ -213,18 +213,18 @@ test.describe("Agents", () => {
 
     await page.getByRole("button", { name: "Save changes" }).click();
     await expect(rowOf(card, "Scout")).toBeVisible();
-    // Ember keeps it.
+    // Papaya OS keeps it.
     await page.goto(`/account/agents/${scout.id}/edit`);
     await expect(page.getByText("Modified", { exact: true })).toBeVisible();
-    await page.getByText("What Ember adds around them").click();
+    await page.getByText("What Papaya OS adds around them").click();
     await expect(template).toHaveValue("You are {{name}}, the scout of {{community}}.\n\n{{instructions}}\n\nAnswer {{asker}} in {{where}}.");
 
-    await page.getByRole("button", { name: "Use Ember's own" }).click();
+    await page.getByRole("button", { name: "Use Papaya OS's own" }).click();
     await expect(page.getByText("Modified", { exact: true })).toBeHidden();
     await page.getByRole("button", { name: "Save changes" }).click();
     await expect(rowOf(card, "Scout")).toBeVisible();
     await page.goto(`/account/agents/${scout.id}/edit`);
-    await page.getByText("What Ember adds around them").click();
+    await page.getByText("What Papaya OS adds around them").click();
     await expect(page.getByRole("region", { name: "Modify with caution" }).getByRole("button", { name: "Modify" })).toBeVisible();
     await expect(page.getByText("Modified", { exact: true })).toBeHidden();
   });

@@ -2,16 +2,16 @@ import shippedModelsFile from "../../../models.json" with { type: "json" };
 import { ASSISTANT_ID } from "./index.ts";
 import { parseTemplate } from "./prompts.ts";
 
-// Ember AI, which answers as @ember through Cloudflare's AI Gateway, as administrators set it up on the
+// Papaya AI, which answers as @ember through Cloudflare's AI Gateway, as administrators set it up on the
 // AI assistant tab of workspace settings through `/api/account/assistant`.
 
 /**
- * The API formats Ember asks a model in: the providers' own, which AI Gateway's endpoint for each
+ * The API formats Papaya OS asks a model in: the providers' own, which AI Gateway's endpoint for each
  * provider passes on as they are, Anthropic's Messages, OpenAI's Responses and xAI's Responses, each the
  * provider's whole API, where Grok can search the web too, Workers AI's, which is Chat Completions on
- * Cloudflare's REST API with Ember's own tool for searching the web, and the three that REST API takes a
+ * Cloudflare's REST API with Papaya OS's own tool for searching the web, and the three that REST API takes a
  * model's requests in, at `/ai/v1/messages`, `/ai/v1/responses` and `/ai/v1/chat/completions`, which
- * Ember asks only a model kept from before it offered just its own list in, in the one it took then.
+ * Papaya OS asks only a model kept from before it offered just its own list in, in the one it took then.
  */
 export const MODEL_FORMATS = ["messages", "responses", "chat", "xai", "anthropic", "openai", "workers"] as const;
 export type ModelFormat = (typeof MODEL_FORMATS)[number];
@@ -24,8 +24,8 @@ export type ProviderFormat = (typeof PROVIDER_FORMATS)[number];
 export const isProviderFormat = (format: ModelFormat): format is ProviderFormat => (PROVIDER_FORMATS as readonly ModelFormat[]).includes(format);
 
 /**
- * A model @ember can answer with, as Ember offers it, or as it was kept before Ember stopped offering it:
- * its ID, what to call it, the format AI Gateway takes its requests in, and what it costs, for one Ember
+ * A model @ember can answer with, as Papaya OS offers it, or as it was kept before Papaya OS stopped offering it:
+ * its ID, what to call it, the format AI Gateway takes its requests in, and what it costs, for one Papaya OS
  * offers.
  */
 export interface AssistantModel {
@@ -36,7 +36,7 @@ export interface AssistantModel {
   /**
    * The levels of thinking it takes, as Cloudflare's model search lists them for one of Workers AI's, or
    * else as asking it at each found when an administrator added it, since nothing else says reliably:
-   * left out for one Ember hasn't asked at each, which is asked at any.
+   * left out for one Papaya OS hasn't asked at each, which is asked at any.
    */
   thinkingLevels?: ThinkingLevel[];
 }
@@ -48,7 +48,7 @@ export interface ModelPrice {
 }
 
 /**
- * A model Ember offers, as Set up Ember AI, Add a model and the agents' pages list it: with what it may
+ * A model Papaya OS offers, as Set up Papaya AI, Add a model and the agents' pages list it: with what it may
  * do on the web, when that's less than its format has tools for (`WEB_TOOLS_IN`), and, for one that its
  * maker, or Cloudflare for Workers AI's, plans to stop running, the day it does, as YYYY-MM-DD.
  */
@@ -58,9 +58,9 @@ export interface OfferedModel extends AssistantModel {
 }
 
 /**
- * The models Ember offers an administrator, as `POST /api/account/assistant/offered` answers: those the
- * models file lists (`parseModelsFile`), then Workers AI's that take Ember's tool for searching the web,
- * as Cloudflare's model search lists them for the account, the one Set up Ember AI starts at, and why
+ * The models Papaya OS offers an administrator, as `POST /api/account/assistant/offered` answers: those the
+ * models file lists (`parseModelsFile`), then Workers AI's that take Papaya OS's tool for searching the web,
+ * as Cloudflare's model search lists them for the account, the one Set up Papaya AI starts at, and why
  * Workers AI's aren't among them, when they aren't.
  */
 export interface OfferedModels {
@@ -70,33 +70,33 @@ export interface OfferedModels {
 }
 
 /**
- * The models file, models.json in Ember's repository, which every copy of Ember reads from its main
+ * The models file, models.json in Papaya OS's repository, which every copy of Papaya OS reads from its main
  * branch once a day, so that a model can be offered, or stop being, without an update: Anthropic's,
  * OpenAI's and xAI's, each asked in its provider's own format through AI Gateway's endpoint for that
  * provider, with what AI Gateway's credits pay for it, at its provider's prices, and what it may do on
- * the web, and the one Set up Ember AI starts at.
+ * the web, and the one Set up Papaya AI starts at.
  */
 export interface ModelsFile {
   models: OfferedModel[];
   suggested: string;
 }
 
-/** The version of the models file this Ember reads: it reads none written for another. */
+/** The version of the models file this Papaya OS reads: it reads none written for another. */
 export const MODELS_FILE_VERSION = 1;
 
-/** The most models Ember reads from the models file. */
+/** The most models Papaya OS reads from the models file. */
 const MAX_FILE_MODELS = 50;
 
 /** The most a million tokens can cost, read or written, as the models file says, in US dollars. */
 const MAX_PRICE = 1_000;
 
 /**
- * The models file `data` gives, or null when it can't be one: its version isn't this Ember's, or it lists
- * no model Ember can offer. It can't say anything but what's offered: each model is named by its ID, which
+ * The models file `data` gives, or null when it can't be one: its version isn't this Papaya OS's, or it lists
+ * no model Papaya OS can offer. It can't say anything but what's offered: each model is named by its ID, which
  * starts with its provider's, Anthropic's, OpenAI's or xAI's, and gives the format it's asked in, so that
  * the file names no address, and it has a name, a price, and what it may do on the web, of what that
  * format has tools for, and may have the day its maker stops running it, as YYYY-MM-DD. A model that
- * isn't all of that is left out, as is any field Ember doesn't know, so that a later Ember's file still
+ * isn't all of that is left out, as is any field Papaya OS doesn't know, so that a later Papaya OS's file still
  * lists what this one can offer. The model it starts at is the one it suggests, while it lists it, or
  * else its first.
  */
@@ -114,7 +114,7 @@ export function parseModelsFile(data: unknown): ModelsFile | null {
   return { models: [...listed.values()], suggested };
 }
 
-/** The model an entry of the models file lists, or null when it isn't one Ember can offer (`parseModelsFile`). */
+/** The model an entry of the models file lists, or null when it isn't one Papaya OS can offer (`parseModelsFile`). */
 function fileModelOf(entry: unknown): OfferedModel | null {
   const given = objectIn(entry);
   const id = typeof given.id === "string" ? modelOf(given.id) : null;
@@ -131,9 +131,9 @@ function fileModelOf(entry: unknown): OfferedModel | null {
 }
 
 /**
- * The format Ember asks a model the models file lists in: its provider's own, or Chat Completions,
+ * The format Papaya OS asks a model the models file lists in: its provider's own, or Chat Completions,
  * through Cloudflare's REST API, for Grok, as AI Gateway's credits don't pay for it at its xAI endpoint,
- * where it searches with Ember's own tool, or null for anyone else's.
+ * where it searches with Papaya OS's own tool, or null for anyone else's.
  */
 const offeredFormatOf = (id: string): ModelFormat | null => providerFormatOf(id) ?? (isXaiModel(id) ? "chat" : null);
 
@@ -154,20 +154,20 @@ export const offeredModelOf = (model: string, offered: readonly OfferedModel[]) 
 export const isWorkersAiModel = (model: string) => model.startsWith("@cf/");
 
 /**
- * Whether Ember no longer offers `model`, as the Worker lists the models it does, `offered`: it isn't
+ * Whether Papaya OS no longer offers `model`, as the Worker lists the models it does, `offered`: it isn't
  * among them, and isn't one of Workers AI's while those couldn't be listed, `workersAi` saying why, as
- * Ember may offer it still.
+ * Papaya OS may offer it still.
  */
 export const noLongerOffered = (model: string, offered: readonly OfferedModel[], workersAi: string | null) =>
   !offeredModelOf(model, offered) && !(isWorkersAiModel(model) && workersAi !== null);
 
-/** Whether `model` is one of xAI's, Grok, which searches the web with Ember's own tool in Chat Completions. */
+/** Whether `model` is one of xAI's, Grok, which searches the web with Papaya OS's own tool in Chat Completions. */
 export const isXaiModel = (model: string) => model.startsWith("xai/");
 
 /**
- * The format of `model`'s provider's own API, which Ember asks it in through AI Gateway's endpoint for
+ * The format of `model`'s provider's own API, which Papaya OS asks it in through AI Gateway's endpoint for
  * that provider, where the gateway's credits pay: Anthropic's Messages for Claude and OpenAI's Responses
- * for GPT, or null for anyone else's model, Grok among them, which Ember asks through Cloudflare's REST
+ * for GPT, or null for anyone else's model, Grok among them, which Papaya OS asks through Cloudflare's REST
  * API.
  */
 export function providerFormatOf(model: string): ProviderFormat | null {
@@ -175,19 +175,19 @@ export function providerFormatOf(model: string): ProviderFormat | null {
   return model.startsWith("openai/") ? "openai" : null;
 }
 
-/** What to call `model`: its name in `models`, or else in the models file this Ember shipped with, or else its ID. */
+/** What to call `model`: its name in `models`, or else in the models file this Papaya OS shipped with, or else its ID. */
 export const modelName = (model: string, models: readonly AssistantModel[] = []) =>
   (models.find(({ id }) => id === model) ?? ASSISTANT_MODELS.find(({ id }) => id === model))?.name ?? model;
 
 /** The most models administrators can let people pick from, the one @ember answers everyone else with among them. */
 export const MAX_ASSISTANT_MODELS = 20;
 
-/** The longest name Ember keeps for a model, where Cloudflare's are a few words. */
+/** The longest name Papaya OS keeps for a model, where Cloudflare's are a few words. */
 export const MAX_MODEL_NAME_LENGTH = 100;
 
 /**
  * The model's name `text` gives, without the spaces around it, or null when it can't be one: one line of
- * text no longer than Ember keeps, without characters that show nothing or turn the text around.
+ * text no longer than Papaya OS keeps, without characters that show nothing or turn the text around.
  */
 export function modelNameOf(text: unknown): string | null {
   const name = typeof text === "string" ? text.trim() : "";
@@ -244,7 +244,7 @@ export const LEVEL_NAMES: Record<ThinkingLevel | AnswerLength, string> = { off: 
 /** The levels of @ember's answers to someone who hasn't picked their own. */
 export const DEFAULT_LEVELS: AnswerLevels = { thinking: "low", length: "medium" };
 
-/** The most each dial goes to until an administrator sets less: the top, as Ember adds no limits of its own. */
+/** The most each dial goes to until an administrator sets less: the top, as Papaya OS adds no limits of its own. */
 export const TOP_LEVELS: AnswerLevels = { thinking: "high", length: "long" };
 
 /** `levels`, each no higher than `most`'s. */
@@ -255,7 +255,7 @@ export function withinMost(levels: AnswerLevels, most: AnswerLevels): AnswerLeve
 
 /**
  * The level of thinking a model that takes `taken` is asked for in place of `level`: `level` when it
- * takes it, as a model Ember hasn't asked at each level (undefined) is taken to, or else the nearest
+ * takes it, as a model Papaya OS hasn't asked at each level (undefined) is taken to, or else the nearest
  * below it that it takes, or else above it, as one that can't think as little as `level` is asked for as
  * little as it can, or null for one that takes none, which thinks as much as it decides.
  */
@@ -271,8 +271,8 @@ export type AnswerLevelChanges = Partial<AnswerLevels>;
 
 /**
  * What `PATCH /api/account/assistant` changes: the most one dial or both go to for anyone's questions,
- * which of the models people can pick @ember answers everyone else with, the instructions Ember adds to
- * @ember's own, "" for none, or what Ember adds around them, null for Ember's own.
+ * which of the models people can pick @ember answers everyone else with, the instructions Papaya OS adds to
+ * @ember's own, "" for none, or what Papaya OS adds around them, null for Papaya OS's own.
  */
 export interface AssistantChanges extends AnswerLevelChanges {
   model?: string;
@@ -295,7 +295,7 @@ export const LEVELS_REFUSED = "Choose a level the dial has.";
 export const MODEL_NOT_LISTED = "Choose one of the models an administrator added.";
 
 /**
- * The longest instructions Ember takes, for @ember to add to its own or for an agent: about 2,500 tokens,
+ * The longest instructions Papaya OS takes, for @ember to add to its own or for an agent: about 2,500 tokens,
  * a quarter of the longest conversation it reads.
  */
 export const MAX_INSTRUCTIONS_LENGTH = 10_000;
@@ -306,7 +306,7 @@ export const INSTRUCTIONS_TOO_LONG = `Instructions can be at most ${MAX_INSTRUCT
 /**
  * The changes `data` gives, as @ember's page sends them, or why they can't be changes: they change
  * nothing, or give a level a dial doesn't have, a model that can't be one, instructions that aren't text
- * or are longer than Ember takes, or what Ember adds around them a template it doesn't take
+ * or are longer than Papaya OS takes, or what Papaya OS adds around them a template it doesn't take
  * (`parseTemplate`). Instructions are saved without the spaces around them, and so are templates.
  */
 export function parseAssistantChanges(data: unknown): AssistantChanges | { error: string } {
@@ -330,7 +330,7 @@ export function parseAssistantChanges(data: unknown): AssistantChanges | { error
 /**
  * Your changes `data` gives, as your profile sends them, or why they can't be changes, as `parseAssistantChanges`
  * says, where a null model leaves yours to administrators. @ember's instructions aren't yours to change,
- * nor what Ember adds around them.
+ * nor what Papaya OS adds around them.
  */
 export function parseYourAssistantChanges(data: unknown): YourAssistantChanges | { error: string } {
   const { instructions: _, promptTemplate: __, ...given } = objectIn(data);
@@ -365,7 +365,7 @@ export const PAGES_READ_PER_ANSWER = 3;
 
 /**
  * What a model may do on the web in each format, with the tools AI Gateway passes on in it, or, for
- * Workers AI's and Grok, in Chat Completions, Ember's own tool for searching, which Ember runs with
+ * Workers AI's and Grok, in Chat Completions, Papaya OS's own tool for searching, which Papaya OS runs with
  * Cloudflare's Web Search API (`searchFormatOf` says which models in Chat Completions take it).
  */
 export const WEB_TOOLS_IN: Record<ModelFormat, readonly WebTool[]> = {
@@ -379,7 +379,7 @@ export const WEB_TOOLS_IN: Record<ModelFormat, readonly WebTool[]> = {
 };
 
 /**
- * The format Ember asks `model` in: the one `models` list it with, or the one the models file this Ember
+ * The format Papaya OS asks `model` in: the one `models` list it with, or the one the models file this Papaya OS
  * shipped with lists it in, or else its provider's own (`providerFormatOf`), or Workers AI's, for one of
  * Workers AI's, or Chat Completions, through Cloudflare's REST API, for anyone else's.
  */
@@ -390,9 +390,9 @@ export function formatOf(model: string, models: readonly AssistantModel[] = []):
 
 /**
  * The format `model`, which took its test question in `format`, searches the web in: that one, when it
- * has tools for the web, but Chat Completions, where Ember gives its own tool for searching only to Grok,
+ * has tools for the web, but Chat Completions, where Papaya OS gives its own tool for searching only to Grok,
  * whichever format it was saved in, as AI Gateway's credits pay for that, and to Workers AI's in their own
- * format, as for one kept from before Ember gave them that, or null for a model that can't search.
+ * format, as for one kept from before Papaya OS gave them that, or null for a model that can't search.
  */
 export function searchFormatOf(model: string, format: ModelFormat): ModelFormat | null {
   if (isXaiModel(model)) return "chat";
@@ -415,14 +415,14 @@ export function webToolsOf(model: string, format: ModelFormat, offered: readonly
 }
 
 /**
- * Ember AI as the AI assistant tab shows it to administrators while it's on: the Cloudflare account it
+ * Papaya AI as the AI assistant tab shows it to administrators while it's on: the Cloudflare account it
  * asks through, the model it answers anyone with who hasn't picked another, the models people can pick
  * from, that one among them, in the order they were added, the most each dial goes to for anyone's
  * questions, and what @ember does on the web: what it may while Search the web is on, nothing while it's
  * off, or null when the model that answers everyone can't: Anthropic's and OpenAI's have tools for it
- * that AI Gateway passes on, and Grok and Workers AI's take Ember's own, which searches with Cloudflare's Web
- * Search API, but others kept from before have none (`searchFormatOf`). Then the instructions Ember adds
- * to @ember's own, what Ember adds around them, and @ember's avatar.
+ * that AI Gateway passes on, and Grok and Workers AI's take Papaya OS's own, which searches with Cloudflare's Web
+ * Search API, but others kept from before have none (`searchFormatOf`). Then the instructions Papaya OS adds
+ * to @ember's own, what Papaya OS adds around them, and @ember's avatar.
  */
 export interface AssistantSettings {
   accountId: string;
@@ -430,19 +430,19 @@ export interface AssistantSettings {
   models: AssistantModel[];
   most: AnswerLevels;
   webTools: WebTool[] | null;
-  /** What Ember adds to @ember's own instructions, as administrators write them, or "" for nothing, which stays while Ember AI is off. */
+  /** What Papaya OS adds to @ember's own instructions, as administrators write them, or "" for nothing, which stays while Papaya AI is off. */
   instructions: string;
-  /** What Ember adds around them (`promptAround`), as administrators changed it, or null for Ember's own, which stays while Ember AI is off too. */
+  /** What Papaya OS adds around them (`promptAround`), as administrators changed it, or null for Papaya OS's own, which stays while Papaya AI is off too. */
   promptTemplate: string | null;
-  /** @ember's avatar, as the people directory gives it (`DirectoryUser.avatarUrl`): the picture an administrator uploaded, or Ember's flame. */
+  /** @ember's avatar, as the people directory gives it (`DirectoryUser.avatarUrl`): the picture an administrator uploaded, or Papaya OS's flame. */
   avatarUrl: string;
-  /** Whether an administrator uploaded @ember's avatar, which Use Ember's flame takes away, though one that can't be resized shows the flame. */
+  /** Whether an administrator uploaded @ember's avatar, which Use Papaya OS's flame takes away, though one that can't be resized shows the flame. */
   avatar: boolean;
 }
 
 /**
  * What `PATCH /api/account/assistant` answers once it has saved a change, `DELETE /api/account/assistant/models`
- * a model's removal, and `PUT` and `DELETE /api/account/assistant/avatar` a change to @ember's avatar: Ember AI
+ * a model's removal, and `PUT` and `DELETE /api/account/assistant/avatar` a change to @ember's avatar: Papaya AI
  * as it is then.
  */
 export interface AssistantChanged {
@@ -450,7 +450,7 @@ export interface AssistantChanged {
 }
 
 /**
- * @ember's answers to you while Ember AI is on, as your profile shows them: the levels of each dial,
+ * @ember's answers to you while Papaya AI is on, as your profile shows them: the levels of each dial,
  * yours, or where they start until you pick, no higher than the most administrators allow, which it
  * shows too, the model you picked, while it's one people can pick, even the one administrators chose
  * for everyone, or else null, when @ember answers you with whichever they choose, the one they chose,
@@ -464,13 +464,13 @@ export interface YourAssistant {
   models: AssistantModel[];
 }
 
-/** What `PATCH /api/users/me/assistant` answers: your levels and model as they are then, or null while Ember AI is off. */
+/** What `PATCH /api/users/me/assistant` answers: your levels and model as they are then, or null while Papaya AI is off. */
 export interface YourAssistantChanged {
   assistant: YourAssistant | null;
 }
 
-/** What the AI assistant tab says when a change to the most each dial goes to comes while Ember AI is off. */
-export const ASSISTANT_OFF = "Ember AI is off. Turn it on first.";
+/** What the AI assistant tab says when a change to the most each dial goes to comes while Papaya AI is off. */
+export const ASSISTANT_OFF = "Papaya AI is off. Turn it on first.";
 
 /** What `PUT /api/account/assistant/web_search` takes: whether @ember searches the web, as the Search the web switch says. */
 export interface WebSearchChange {
@@ -484,7 +484,7 @@ export function parseWebSearchChange(data: unknown): WebSearchChange | null {
 }
 
 /**
- * What `PUT /api/account/assistant/web_search` answers once it has changed Search the web: Ember AI as
+ * What `PUT /api/account/assistant/web_search` answers once it has changed Search the web: Papaya AI as
  * it is then, and, once it's turned on, what its model said when it searched, or else null.
  */
 export interface WebSearchChanged {
@@ -495,18 +495,18 @@ export interface WebSearchChanged {
 /** Why a change to Search the web is refused before anything's asked. */
 export const WEB_SEARCH_REFUSED = "Say whether @ember searches the web.";
 
-/** Why Search the web can't turn on for the model called `name`, which has no tool for it that AI Gateway passes on, nor Ember. */
+/** Why Search the web can't turn on for the model called `name`, which has no tool for it that AI Gateway passes on, nor Papaya OS. */
 export const cannotSearchWith = (name: string) =>
-  `${name} can't search the web through AI Gateway, but the models Ember offers can. Choose one under Models or Change.`;
+  `${name} can't search the web through AI Gateway, but the models Papaya OS offers can. Choose one under Models or Change.`;
 
-/** Why it didn't turn on once the model was asked: Ember AI was changed or turned off meanwhile, or Search the web was. */
-export const WEB_SEARCH_CHANGED = "Ember AI changed while its model searched. Try again.";
+/** Why it didn't turn on once the model was asked: Papaya AI was changed or turned off meanwhile, or Search the web was. */
+export const WEB_SEARCH_CHANGED = "Papaya AI changed while its model searched. Try again.";
 
 /**
- * The Cloudflare account Ember AI asks through, as Set up Ember AI gives it: its ID, and an API token of
+ * The Cloudflare account Papaya AI asks through, as Set up Papaya AI gives it: its ID, and an API token of
  * its with the AI Gateway Run permission, which AI Gateway's endpoint for each provider takes, and Workers
  * AI Read and AI Gateway Read, which Cloudflare's model search and Web Search API take, which a change can
- * leave out to keep the one Ember has.
+ * leave out to keep the one Papaya OS has.
  */
 export interface AssistantKeys {
   accountId: string;
@@ -514,45 +514,45 @@ export interface AssistantKeys {
 }
 
 /**
- * What Set up Ember AI gives `PUT /api/account/assistant`: the account, and the ID of the model to answer
- * anyone with who hasn't picked another, one Ember offers.
+ * What Set up Papaya AI gives `PUT /api/account/assistant`: the account, and the ID of the model to answer
+ * anyone with who hasn't picked another, one Papaya OS offers.
  */
 export interface AssistantSetup extends AssistantKeys {
   model: string;
 }
 
-/** What Add a model gives `POST /api/account/assistant/models`: the ID of a model Ember offers. */
+/** What Add a model gives `POST /api/account/assistant/models`: the ID of a model Papaya OS offers. */
 export interface NewAssistantModel {
   model: string;
 }
 
 /**
  * What `PUT /api/account/assistant` answers once the model answered its test question, and `POST
- * /api/account/assistant/models` once the model it adds did: Ember AI as it is then, and what the model said.
+ * /api/account/assistant/models` once the model it adds did: Papaya AI as it is then, and what the model said.
  */
 export interface AssistantSaved {
   assistant: AssistantSettings;
   greeting: string;
 }
 
-/** What `DELETE /api/account/assistant` answers: Ember AI is off. */
+/** What `DELETE /api/account/assistant` answers: Papaya AI is off. */
 export interface AssistantForgotten {
   assistant: null;
 }
 
-/** A field of Set up Ember AI, which a refusal can be about. */
+/** A field of Set up Papaya AI, which a refusal can be about. */
 export type AssistantField = "accountId" | "apiToken" | "model";
 
-/** The longest model ID Ember takes, where its are a few dozen characters. */
+/** The longest model ID Papaya OS takes, where its are a few dozen characters. */
 export const MAX_MODEL_LENGTH = 200;
 
-/** The longest API token Ember takes, which goes in a header of each request to Cloudflare. */
+/** The longest API token Papaya OS takes, which goes in a header of each request to Cloudflare. */
 const MAX_API_TOKEN_LENGTH = 200;
 
-/** Why Set up Ember AI's fields are refused before Cloudflare is asked about them. */
+/** Why Set up Papaya AI's fields are refused before Cloudflare is asked about them. */
 export const ACCOUNT_ID_REFUSED = "An account ID is 32 letters and digits. Search the Cloudflare dashboard for Copy account ID to copy it.";
 export const API_TOKEN_REFUSED = "Paste an API token from Account API tokens in the Cloudflare dashboard.";
-export const MODEL_REFUSED = "Choose one of the models Ember offers.";
+export const MODEL_REFUSED = "Choose one of the models Papaya OS offers.";
 
 /** The Cloudflare account ID `text` gives, without the spaces around it and in small letters, or null when it can't be one: 32 hexadecimal digits. */
 export function accountIdOf(text: string): string | null {
@@ -576,8 +576,8 @@ export function modelOf(text: string): string | null {
 }
 
 /**
- * The account Set up Ember AI asks through, as it sends it, or why it can't be one, on the field it's
- * about. A blank API token is left out, keeping the one Ember has.
+ * The account Set up Papaya AI asks through, as it sends it, or why it can't be one, on the field it's
+ * about. A blank API token is left out, keeping the one Papaya OS has.
  */
 export function parseAssistantKeys(data: unknown): AssistantKeys | { error: string; field: AssistantField } {
   const given = objectIn(data);
@@ -591,7 +591,7 @@ export function parseAssistantKeys(data: unknown): AssistantKeys | { error: stri
 }
 
 /**
- * What `PUT /api/account/assistant` gives Ember, as Set up Ember AI sends it, or why it can't be one, on
+ * What `PUT /api/account/assistant` gives Papaya OS, as Set up Papaya AI sends it, or why it can't be one, on
  * the field it's about, as `parseAssistantKeys` reads the account and `parseNewAssistantModel` the model.
  */
 export function parseAssistantSetup(data: unknown): AssistantSetup | { error: string; field: AssistantField } {
@@ -603,7 +603,7 @@ export function parseAssistantSetup(data: unknown): AssistantSetup | { error: st
 
 /**
  * The model `POST /api/account/assistant/models` adds, as Add a model sends it, or why it can't be one: it
- * has no model ID. Whether Ember offers it is the Worker's to say, as the models it offers change.
+ * has no model ID. Whether Papaya OS offers it is the Worker's to say, as the models it offers change.
  */
 export function parseNewAssistantModel(data: unknown): NewAssistantModel | { error: string; field: "model" } {
   const given = objectIn(data);
@@ -618,19 +618,19 @@ export const DEFAULT_MODEL_KEPT = "@ember answers everyone with this model. Choo
 export const MODELS_FULL = `People can pick from at most ${MAX_ASSISTANT_MODELS} models. Remove one first.`;
 
 /** What the AI assistant tab tells anyone but an administrator. */
-export const ASSISTANT_FORBIDDEN = "Only administrators can set up Ember AI";
+export const ASSISTANT_FORBIDDEN = "Only administrators can set up Papaya AI";
 
 // Last, as reading it takes what's above.
 
-/** The models file this Ember shipped with, which it offers until it has read the one on Ember's main branch, and whenever it can't. */
+/** The models file this Papaya OS shipped with, which it offers until it has read the one on Papaya OS's main branch, and whenever it can't. */
 const SHIPPED = parseModelsFile(shippedModelsFile)!;
 
 /**
- * The models the models file this Ember shipped with lists (`ModelsFile`). A model kept from before Ember
+ * The models the models file this Papaya OS shipped with lists (`ModelsFile`). A model kept from before Papaya OS
  * offered only those the file lists and Workers AI's answers still, as it was kept. Wherever one of these
- * is listed, Ember calls it by its name here, unless it's kept by another.
+ * is listed, Papaya OS calls it by its name here, unless it's kept by another.
  */
 export const ASSISTANT_MODELS: readonly OfferedModel[] = SHIPPED.models;
 
-/** The model Set up Ember AI starts at, as the models file this Ember shipped with suggests: the one that costs least of those that both search the web and read pages. */
+/** The model Set up Papaya AI starts at, as the models file this Papaya OS shipped with suggests: the one that costs least of those that both search the web and read pages. */
 export const SUGGESTED_MODEL = SHIPPED.suggested;

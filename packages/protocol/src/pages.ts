@@ -214,7 +214,7 @@ export const EMAIL_SIGN_UP_PATH = "/join/email";
 export const emailSignUpLink = (token: string) => `${EMAIL_SIGN_UP_PATH}#token=${token}`;
 
 /**
- * The page where someone who forgot their password asks Ember to email them a code, then gives the code
+ * The page where someone who forgot their password asks Papaya OS to email them a code, then gives the code
  * with a new password, at the address Rails' authentication generator gives its own, and which the
  * Worker answers itself.
  */
@@ -223,7 +223,7 @@ export const PASSWORD_RESET_PATH = "/passwords/new";
 /**
  * The page Set up Turnstile draws a widget's check in, in a frame of its own: the Worker answers it
  * itself, with a policy that lets Turnstile's script load there, where the app's pages let it load only
- * where people sign up or ask Ember to email them. The fragment names the site key.
+ * where people sign up or ask Papaya OS to email them. The fragment names the site key.
  */
 export const TURNSTILE_CHECK_PATH = "/account/turnstile_check";
 

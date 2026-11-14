@@ -32,7 +32,7 @@ import { api, apiWith, builtPages, cookieOf, freshDeploy, shown, withWorkspaceEn
 const ada = { name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" };
 const grace = { name: "Grace Hopper", emailAddress: "grace@example.com", password: "compiler design" };
 
-const FROM = "Ember <ember@example.com>";
+const FROM = "Papaya OS <ember@example.com>";
 /** The keys of a deployment whose members may sign in with Papaya. */
 const MEMBERFUL_KEYS = { MEMBERFUL_URL: "https://example.memberful.com/", MEMBERFUL_CLIENT_ID: "ember-client-id", MEMBERFUL_CLIENT_SECRET: "ember-client-secret" };
 /** Turnstile's test keys: a site key whose check always passes, and a secret key, which this suite's fake siteverify takes. */
@@ -51,7 +51,7 @@ async function change(administrator: Session, body: unknown, changes: Partial<En
   expect(response.status, await response.clone().text()).toBe(200);
 }
 
-/** Sets Ember up with Ada as its administrator, signed in, with `emailFrom` as its From address. */
+/** Sets Papaya OS up with Ada as its administrator, signed in, with `emailFrom` as its From address. */
 async function setUp({ emailFrom = FROM }: { emailFrom?: string | null } = {}): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(ada) });
   expect(response.status).toBe(201);
@@ -123,7 +123,7 @@ async function emailing(run: () => Promise<void>, refusal?: () => unknown): Prom
   return sent;
 }
 
-/** Asks for a code for `emailAddress`, which has to be answered as asked, answering the emails Ember sent. */
+/** Asks for a code for `emailAddress`, which has to be answered as asked, answering the emails Papaya OS sent. */
 async function asked(emailAddress: string, options: Parameters<typeof ask>[1] = {}): Promise<EmailMessageBuilder[]> {
   return emailing(async () => {
     const response = await ask(emailAddress, options);
@@ -135,7 +135,7 @@ async function asked(emailAddress: string, options: Parameters<typeof ask>[1] = 
 /** The code in an email. */
 const codeIn = (email: EmailMessageBuilder) => /Your code: (\d+)/.exec(email.text ?? "")![1]!;
 
-/** Asks for a code for `emailAddress`, which has an account, answering the code Ember emailed. */
+/** Asks for a code for `emailAddress`, which has an account, answering the code Papaya OS emailed. */
 async function codeFor(emailAddress: string): Promise<string> {
   const [email, ...more] = await asked(emailAddress);
   expect(more).toEqual([]);
@@ -171,7 +171,7 @@ beforeEach(freshDeploy);
 afterEach(() => vi.restoreAllMocks());
 
 describe("Reset a forgotten password with an emailed code", () => {
-  it("is offered while Ember can send email, from the From address an administrator gave it", async () => {
+  it("is offered while Papaya OS can send email, from the From address an administrator gave it", async () => {
     expect((await bootstrap()).passwordResetCodes).toBe(false);
     const administrator = await setUp({ emailFrom: null });
     expect((await bootstrap()).passwordResetCodes).toBe(false);
@@ -214,10 +214,10 @@ describe("Reset a forgotten password with an emailed code", () => {
       const code = codeIn(email!);
       expect(code).toMatch(/^[0-9]{8}$/);
       expect(email).toEqual({
-        from: { name: "Ember", email: "ember@example.com" },
+        from: { name: "Papaya OS", email: "ember@example.com" },
         to: "ada@example.com",
-        subject: "Reset your password at Ember",
-        text: `Someone asked to reset the password for this email address at Ember.\n\nYour code: ${code}\n\nEnter it within ${PASSWORD_RESET_CODE_MINUTES} minutes, with a new password, where you asked for it. Don't give it to anyone.\n\nIf you didn't ask, you can ignore this email: your password stays as it is.\n`,
+        subject: "Reset your password at Papaya OS",
+        text: `Someone asked to reset the password for this email address at Papaya OS.\n\nYour code: ${code}\n\nEnter it within ${PASSWORD_RESET_CODE_MINUTES} minutes, with a new password, where you asked for it. Don't give it to anyone.\n\nIf you didn't ask, you can ignore this email: your password stays as it is.\n`,
         html: expect.stringContaining(`>${code}</strong>`) as unknown,
       });
 
@@ -290,7 +290,7 @@ describe("Reset a forgotten password with an emailed code", () => {
         const response = await api("/api/email_links", { method: "POST", headers: { "CF-Connecting-IP": nextAddress() }, body: JSON.stringify({ emailAddress: "ada@example.com" }) });
         expect(response.status).toBe(202);
       });
-      expect(joining).toMatchObject([{ subject: "You already have an account at Ember" }]);
+      expect(joining).toMatchObject([{ subject: "You already have an account at Papaya OS" }]);
 
       const sent: EmailMessageBuilder[] = [];
       for (let n = 1; n <= EMAILS_PER_ADDRESS; n++) sent.push(...(await asked("ada@example.com")));
@@ -329,7 +329,7 @@ describe("Reset a forgotten password with an emailed code", () => {
       });
     });
 
-    it("says so while Ember can't send email", async () => {
+    it("says so while Papaya OS can't send email", async () => {
       const administrator = await setUp();
       await withWorkspaceEnv({ EMAIL: undefined }, async () => {
         const unsendable = await ask("ada@example.com");
@@ -454,7 +454,7 @@ describe("Reset a forgotten password with an emailed code", () => {
       expect((await reset("ada@example.com", code)).status).toBe(201);
     });
 
-    it("refuses a code that can't be one, and a password Ember won't take, on their fields, trying nothing", async () => {
+    it("refuses a code that can't be one, and a password Papaya OS won't take, on their fields, trying nothing", async () => {
       await setUp();
       const code = await codeFor("ada@example.com");
       const refusals: Array<[code: string, password: string, answer: unknown]> = [

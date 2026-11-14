@@ -222,7 +222,7 @@ test.describe("Formatting toolbar", () => {
     const ada = await members.signIn("Ada");
     const grace = await members.signIn("Grace");
     await formattingOptions(ada).click();
-    await ada.composer().fill("Ember");
+    await ada.composer().fill("Papaya OS");
     await ada.composer().press("ControlOrMeta+a");
     await tool(ada, "Link").click();
     const field = toolbar(ada).getByRole("dialog", { name: "Link" });
@@ -230,7 +230,7 @@ test.describe("Formatting toolbar", () => {
     await expect(address).toBeFocused();
     await address.fill("https://example.com/");
     await field.getByRole("button", { name: "Link", exact: true }).click();
-    await expect(ada.composer().getByRole("link", { name: "Ember" })).toHaveAttribute("href", "https://example.com/");
+    await expect(ada.composer().getByRole("link", { name: "Papaya OS" })).toHaveAttribute("href", "https://example.com/");
 
     await tool(ada, "Link").click();
     await expect(address).toHaveValue("https://example.com/");
@@ -246,13 +246,13 @@ test.describe("Formatting toolbar", () => {
     await address.fill("https://example.com/");
     await address.press("Enter");
     await ada.composer().press("ControlOrMeta+Enter");
-    await expect(grace.message("Ember").getByRole("link", { name: "Ember" })).toHaveAttribute("href", "https://example.com/");
+    await expect(grace.message("Papaya OS").getByRole("link", { name: "Papaya OS" })).toHaveAttribute("href", "https://example.com/");
   });
 
   test("shows the toolbar with its Link field on Ctrl or Cmd+K, and shuts it again as the field closes", async ({ members }) => {
     const ada = await members.signIn("Ada");
     const grace = await members.signIn("Grace");
-    await ada.composer().fill("Ember");
+    await ada.composer().fill("Papaya OS");
     await ada.composer().press("ControlOrMeta+a");
     await ada.composer().press("ControlOrMeta+k");
     const address = toolbar(ada).getByPlaceholder("Enter a URL…");
@@ -270,7 +270,7 @@ test.describe("Formatting toolbar", () => {
     await expect(ada.composer()).toBeFocused();
     // Enter sends again, as it does while the toolbar is shut.
     await ada.composer().press("Enter");
-    await expect(grace.message("Ember").getByRole("link", { name: "Ember" })).toHaveAttribute("href", "https://example.com/");
+    await expect(grace.message("Papaya OS").getByRole("link", { name: "Papaya OS" })).toHaveAttribute("href", "https://example.com/");
 
     // Opened by Formatting options, the toolbar stays.
     await formattingOptions(ada).click();
@@ -349,12 +349,12 @@ test.describe("Pasting into the composer", () => {
 
     await ada.composer().press("ControlOrMeta+a");
     await ada.composer().press("Delete");
-    await ada.composer().pressSequentially("Ember");
+    await ada.composer().pressSequentially("Papaya OS");
     await ada.composer().press("ControlOrMeta+a");
     await paste(ada, "https://example.com/");
-    await expect(ada.composer()).toHaveText("Ember");
+    await expect(ada.composer()).toHaveText("Papaya OS");
     await ada.composer().press("Enter");
-    await expect(grace.message("Ember").getByRole("link", { name: "Ember" })).toHaveAttribute("href", "https://example.com/");
+    await expect(grace.message("Papaya OS").getByRole("link", { name: "Papaya OS" })).toHaveAttribute("href", "https://example.com/");
   });
 
   test("converts pasted Markdown, keeping its line breaks, and pastes other text as it is", async ({ members }) => {

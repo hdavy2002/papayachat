@@ -10,7 +10,7 @@ import type { Env } from "../src/env";
 import type { Workspace } from "../src/workspace";
 import { addKeptModels, agentWithKeptModel, answerWithKeptModel, api, connect, cookieOf, freshDeploy, post, shown, workspaceSql, workspaceStub, type Client, type KeptModel, type Session } from "./support";
 
-// Moving the models Ember AI kept before it asked Claude and GPT through their providers' own
+// Moving the models Papaya AI kept before it asked Claude and GPT through their providers' own
 // endpoints on AI Gateway first, the agents' too, once, at the first answers after it's set up.
 
 const ACCOUNT_ID = "0123456789abcdef0123456789abcdef";
@@ -20,7 +20,7 @@ const CLOUDFLARE_API = `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_
 const PROVIDER_ENDPOINTS = `https://gateway.ai.cloudflare.com/v1/${ACCOUNT_ID}/default`;
 const ANTHROPIC_ENDPOINT = `${PROVIDER_ENDPOINTS}/anthropic/v1/messages`;
 const OPENAI_ENDPOINT = `${PROVIDER_ENDPOINTS}/openai/responses`;
-/** Claude and GPT, which their providers' endpoints take, and Grok and one of Workers AI's, which Ember asks through Cloudflare's REST API. */
+/** Claude and GPT, which their providers' endpoints take, and Grok and one of Workers AI's, which Papaya OS asks through Cloudflare's REST API. */
 const [SONNET, HAIKU, GPT, GROK, GLM] = ["anthropic/claude-sonnet-5.5", "anthropic/claude-haiku-5.5", "openai/gpt-6.1-sol", "xai/grok-4.7", "@cf/zai-org/glm-4.7-flash"];
 const ALL_LEVELS = [...THINKING_LEVELS];
 /** Claude and GPT models as Cloudflare's REST API takes them, one more than a move asks through their providers' endpoints. */
@@ -37,12 +37,12 @@ const REST_ASKED: Array<{ id: string; name: string; format: ModelFormat }> = [
 ];
 /** The one of `REST_ASKED` a move has no room for, as it moves. */
 const LAST_MOVED = { id: "openai/gpt-6-luna", from: "responses", format: "openai", thinkingLevels: ALL_LEVELS };
-/** `model` as Ember AI kept it, at every level of thinking, as it did a model before it asked it through its provider's endpoint. */
+/** `model` as Papaya AI kept it, at every level of thinking, as it did a model before it asked it through its provider's endpoint. */
 const keptAs = (model: Omit<KeptModel, "thinkingLevels">): KeptModel => ({ ...model, thinkingLevels: ALL_LEVELS });
 /** The model `id` of `REST_ASKED`, kept as Cloudflare's REST API takes it. */
 const restAsked = (id: string) => keptAs(REST_ASKED.find((model) => model.id === id)!);
 const KEPT_GLM = keptAs({ id: GLM, name: "GLM-4.7 Flash", format: "chat" });
-/** Grok as Ember AI kept it, and keeps asking it, through Cloudflare's REST API. */
+/** Grok as Papaya AI kept it, and keeps asking it, through Cloudflare's REST API. */
 const KEPT_GROK = keptAs({ id: GROK, name: "Grok 4.7", format: "chat" });
 /** What the test question asks a model, at each level of thinking too. */
 const SAY_HELLO = "Say hello to the team in one short sentence.";
@@ -68,7 +68,7 @@ const SEARCHED = [
   { type: "text", text: "AI Gateway is Cloudflare's proxy for AI models.", citations: [{ type: "web_search_result_location", ...DOCS, encrypted_index: "e", cited_text: "…" }] },
 ];
 
-/** Whether the providers' endpoints take Ember AI's API token, as they do one with AI Gateway Run. */
+/** Whether the providers' endpoints take Papaya AI's API token, as they do one with AI Gateway Run. */
 let run: boolean;
 /** The models, by their providers' names for them, that their providers' endpoints don't know. */
 let unknownThere: string[];
@@ -120,7 +120,7 @@ afterEach(() => vi.restoreAllMocks());
 
 const as = (session: Session) => ({ Cookie: session.cookie });
 
-/** Sets Ember up with Ada as its administrator, signed in, answering her session and the general room. */
+/** Sets Papaya OS up with Ada as its administrator, signed in, answering her session and the general room. */
 async function setUp(): Promise<{ ada: Session; general: RoomId }> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify({ name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" }) });
   expect(response.status).toBe(201);
@@ -129,7 +129,7 @@ async function setUp(): Promise<{ ada: Session; general: RoomId }> {
   return { ada, general };
 }
 
-/** Sets Ember AI up as `administrator`, with `model` answering everyone, which has to work. */
+/** Sets Papaya AI up as `administrator`, with `model` answering everyone, which has to work. */
 async function setUpAssistant(administrator: Session, model: string): Promise<void> {
   const response = await api("/api/account/assistant", { method: "PUT", headers: as(administrator), body: JSON.stringify({ accountId: ACCOUNT_ID, apiToken: API_TOKEN, model }) });
   expect(response.status, await response.clone().text()).toBe(200);
@@ -149,7 +149,7 @@ async function makeAgent(administrator: Session, name: string, model: string): P
   return ((await response.json()) as AgentAnswer).agent;
 }
 
-/** Ember AI as the account's settings keep it. */
+/** Papaya AI as the account's settings keep it. */
 const storedAssistant = async () =>
   (JSON.parse(((await workspaceSql("SELECT settings FROM accounts")) as [{ settings: string }])[0].settings) as {
     assistant: { format: string; models: Array<{ id: string; format: string; thinking_levels?: string[] }>; web_tools: string[]; provider_endpoints_tried_at: string | null };
@@ -176,7 +176,7 @@ async function ask(client: Client, bot: Pick<User, "id">): Promise<Message> {
   }
 }
 
-/** Waits for Ember to have asked Ember AI's models through their providers' endpoints, which it does in the background. */
+/** Waits for Papaya OS to have asked Papaya AI's models through their providers' endpoints, which it does in the background. */
 const tried = () => vi.waitFor(async () => expect((await storedAssistant()).provider_endpoints_tried_at).toEqual(expect.any(String)), { timeout: 5_000 });
 
 /** Waits for the move onto the providers' endpoints that the Workspace makes in the background, if it's making one, to end. */
@@ -193,14 +193,14 @@ const movedCount = async () => (await storedModels())[1].filter(([id, format]) =
 
 const EMBER = { id: ASSISTANT_ID };
 
-describe("Models Ember AI asked through Cloudflare's REST API", () => {
+describe("Models Papaya AI asked through Cloudflare's REST API", () => {
   it("move onto their providers' endpoints at the first answer after it's set up, the agents' too, at the levels they take there, keeping what they do on the web", async () => {
     const { ada, general } = await setUp();
     vi.spyOn(console, "error").mockImplementation(() => {});
     vi.spyOn(console, "log").mockImplementation(() => {});
     await setUpAssistant(ada, SONNET);
     const [recap, scout] = [await makeAgent(ada, "Recap", HAIKU), await makeAgent(ada, "Scout", GPT)];
-    // Kept while Ember AI's API token had no AI Gateway Run, so they were asked through Cloudflare's REST API,
+    // Kept while Papaya AI's API token had no AI Gateway Run, so they were asked through Cloudflare's REST API,
     // and Search the web turned on before Grok was added, as turning it on would ask Grok through xAI's endpoint.
     await answerWithKeptModel(restAsked(SONNET));
     await turnOnWebSearch(ada);
@@ -248,13 +248,13 @@ describe("Models Ember AI asked through Cloudflare's REST API", () => {
     client.close();
   });
 
-  it("stay where they are while their providers' endpoints don't take the API token, and are asked there again once Ember AI is set up again", async () => {
+  it("stay where they are while their providers' endpoints don't take the API token, and are asked there again once Papaya AI is set up again", async () => {
     const { ada, general } = await setUp();
     vi.spyOn(console, "error").mockImplementation(() => {});
     const logged = vi.spyOn(console, "log").mockImplementation(() => {});
     await setUpAssistant(ada, SONNET);
     const recap = await makeAgent(ada, "Recap", HAIKU);
-    // Kept while Ember AI's API token had no AI Gateway Run, as it still hasn't.
+    // Kept while Papaya AI's API token had no AI Gateway Run, as it still hasn't.
     await answerWithKeptModel(restAsked(SONNET), restAsked(GPT));
     await agentWithKeptModel(recap.id, restAsked(HAIKU));
     run = false;
@@ -311,17 +311,17 @@ describe("Models Ember AI asked through Cloudflare's REST API", () => {
     client.close();
   });
 
-  it("are asked there again at the next answer after Ember AI is set up again while a move asks them, whatever that move finds", async () => {
+  it("are asked there again at the next answer after Papaya AI is set up again while a move asks them, whatever that move finds", async () => {
     const { ada, general } = await setUp();
     vi.spyOn(console, "error").mockImplementation(() => {});
     vi.spyOn(console, "log").mockImplementation(() => {});
     await setUpAssistant(ada, SONNET);
-    // Kept while Ember AI's API token had no AI Gateway Run, as it still hasn't.
+    // Kept while Papaya AI's API token had no AI Gateway Run, as it still hasn't.
     await answerWithKeptModel(restAsked(SONNET), restAsked(GPT));
     run = false;
     const release = holdNextThere();
 
-    // The first answer's move waits for the endpoint to refuse the token while the token gets AI Gateway Run and Ember AI is set up again with it.
+    // The first answer's move waits for the endpoint to refuse the token while the token gets AI Gateway Run and Papaya AI is set up again with it.
     const client = await connect(general, ada);
     await ask(client, EMBER);
     await vi.waitFor(() => expect(holding).toBeNull(), { timeout: 5_000 });

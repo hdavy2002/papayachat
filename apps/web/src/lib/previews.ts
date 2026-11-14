@@ -2,7 +2,7 @@ import { AVATAR_BOX, isPreviewableSize, isPreviewed, isVariable, LOGO_BOXES, PRE
 
 // Previews of files, which the uploader's browser makes and the app sends before a file's last part, where
 // Campfire makes them on the server: a picture's thumbnail, as its `:thumb` variant resizes it to fit
-// 1200×800, and a video's poster, which Campfire's ffmpeg takes from its first frame and Ember from a
+// 1200×800, and a video's poster, which Campfire's ffmpeg takes from its first frame and Papaya OS from a
 // tenth of a second in, past the blank frame some browsers draw at the start. Both are still, so an
 // animated picture's is its first frame. An avatar's variant is made as a picture's thumbnail is, to fit
 // 512×512, as Campfire's `:square` variant resizes it, and a logo's two as PNGs within 512×512 and

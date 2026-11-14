@@ -168,7 +168,7 @@ const CACHED_SESSIONS = 10_000;
 const SIGN_IN_ATTEMPTS = 10;
 const SIGN_IN_WINDOW_MS = 3 * 60 * 1000;
 /**
- * The limit on tries at a deployment's setup password while Ember waits to be set up: 10 in a fixed
+ * The limit on tries at a deployment's setup password while Papaya OS waits to be set up: 10 in a fixed
  * 10-minute window, from anywhere, which the Workspace's storage keeps under SETUP_TRY_WINDOW.
  */
 const SETUP_TRIES = 10;
@@ -184,7 +184,7 @@ const KEPT_WORKERS_AI_MODELS = "keptWorkersAiModels";
  */
 const SIGN_UP_WINDOW_MS = 60 * 60 * 1000;
 /**
- * The hour of the limits on asking Ember to email someone, a link to join at the email domains or a code
+ * The hour of the limits on asking Papaya OS to email someone, a link to join at the email domains or a code
  * to reset a password: the asks from an IP address are counted in a fixed one, and the times an address
  * is emailed in one that starts as it's first asked for, which the Workspace keeps.
  */
@@ -308,10 +308,10 @@ const accountOf = (
   huddles,
 });
 
-/** The parts of the account that Ember AI's settings are made of. */
+/** The parts of the account that Papaya AI's settings are made of. */
 type AssistantAccount = Pick<JoinableAccount, "assistant" | "assistantMost" | "assistantInstructions" | "assistantPromptTemplate">;
 
-/** Ember AI as the AI assistant tab shows `account`'s to administrators, but for @ember's avatar, or null while it's off. */
+/** Papaya AI as the AI assistant tab shows `account`'s to administrators, but for @ember's avatar, or null while it's off. */
 const assistantSettingsOf = ({ assistant, assistantMost, assistantInstructions, assistantPromptTemplate }: AssistantAccount): Omit<AssistantSettings, "avatarUrl" | "avatar"> | null =>
   assistant && {
     accountId: assistant.accountId,
@@ -330,11 +330,11 @@ const assistantSettingsOf = ({ assistant, assistantMost, assistantInstructions, 
  */
 type AskedAs = Pick<Gateway, "accountId" | "model" | "format">;
 
-/** Whether Ember AI, as `saved`, answers everyone as `asked` says: through its account, with its model, in its format. */
+/** Whether Papaya AI, as `saved`, answers everyone as `asked` says: through its account, with its model, in its format. */
 const isAskedAs = (saved: SavedAssistant, asked: AskedAs) => saved.accountId === asked.accountId && saved.model === asked.model && saved.format === asked.format;
 
 /**
- * What @ember may do on the web, and when that was asked for, once Ember AI, `saved`, or off for null,
+ * What @ember may do on the web, and when that was asked for, once Papaya AI, `saved`, or off for null,
  * changes at `changedAt` to answer everyone as `asked` says: as they were, for the same account and model
  * in the same format, and else nothing, as of then, as another account or model may not take the same
  * tools, so that a test Search the web began before then can't turn it on.
@@ -342,7 +342,7 @@ const isAskedAs = (saved: SavedAssistant, asked: AskedAs) => saved.accountId ===
 const webToolsKept = (saved: SavedAssistant | null, asked: AskedAs, changedAt: string): Pick<SavedAssistant, "webTools" | "webToolsAskedAt"> =>
   saved && isAskedAs(saved, asked) ? { webTools: saved.webTools, webToolsAskedAt: saved.webToolsAskedAt } : { webTools: [], webToolsAskedAt: changedAt };
 
-/** Ember AI as `assistant` has it, but for each of its models that one of `moves` moves from the format it's in, asked as the move says. */
+/** Papaya AI as `assistant` has it, but for each of its models that one of `moves` moves from the format it's in, asked as the move says. */
 function movedIn(assistant: SavedAssistant, moves: readonly MovedModel[]): SavedAssistant {
   const moveOf = (id: string, format: ModelFormat) => moves.find((move) => move.id === id && move.from === format);
   const models = assistant.models.map((model) => {
@@ -352,7 +352,7 @@ function movedIn(assistant: SavedAssistant, moves: readonly MovedModel[]): Saved
   return { ...assistant, format: moveOf(assistant.model, assistant.format)?.format ?? assistant.format, models };
 }
 
-/** The hosts Ember knows reach it, as `account` keeps them: its custom domain, where a deploy puts it, and the domains it moved away from. */
+/** The hosts Papaya OS knows reach it, as `account` keeps them: its custom domain, where a deploy puts it, and the domains it moved away from. */
 const addressesOf = (account: Pick<JoinableAccount, "customDomain" | "deployedAddress" | "otherAddresses">): string[] =>
   [account.customDomain, account.deployedAddress, ...account.otherAddresses].filter((address) => address !== null);
 
@@ -372,8 +372,8 @@ const answeringModelOf = (assistant: SavedAssistant, picked: SavedModel | null):
 /**
  * How `model`, saved in a format and with the levels of thinking it takes, as `saved` says, is asked: as
  * it's saved, but for one of Workers AI's that the model search lists, `workersAi`, which is asked in
- * Workers AI's format, where it takes Ember's tool for searching the web, at the levels the search lists,
- * as one saved before Ember read the search was asked in Chat Completions, at the levels it was tested at.
+ * Workers AI's format, where it takes Papaya OS's tool for searching the web, at the levels the search lists,
+ * as one saved before Papaya OS read the search was asked in Chat Completions, at the levels it was tested at.
  */
 function askedAs(model: string, saved: { format: ModelFormat; thinkingLevels?: ThinkingLevel[] }, workersAi: readonly OfferedModel[]): { format: ModelFormat; thinkingLevels?: ThinkingLevel[] } {
   const listed = isWorkersAiModel(model) ? offeredModelOf(model, workersAi) : undefined;
@@ -382,7 +382,7 @@ function askedAs(model: string, saved: { format: ModelFormat; thinkingLevels?: T
 
 /**
  * @ember's answers to someone who `picked` their levels and model, as their profile shows them with
- * `account`'s most and models, or null while Ember AI is off.
+ * `account`'s most and models, or null while Papaya AI is off.
  */
 function yourAssistantOf(account: Pick<JoinableAccount, "assistant" | "assistantMost"> | null, picked: AssistantPicks | null): YourAssistant | null {
   if (!account?.assistant) return null;
@@ -390,14 +390,14 @@ function yourAssistantOf(account: Pick<JoinableAccount, "assistant" | "assistant
   return { levels: levelsOf(picked, most), most, model: pickedModelOf(assistant, picked)?.id ?? null, defaultModel: assistant.model, models: assistant.models };
 }
 
-/** What Set up Ember AI chose to answer everyone with: how AI Gateway asks it, and what Ember offers it as, if it says. */
+/** What Set up Papaya AI chose to answer everyone with: how AI Gateway asks it, and what Papaya OS offers it as, if it says. */
 type ChosenModel = Gateway & { name?: string };
 
 /**
- * The models people can pick once Set up Ember AI has chosen `chosen` to answer everyone with: those of
- * `previous`, Ember AI as it was, with `chosen` in place of the one that answered everyone, without it
- * twice, or `chosen` alone, as when Ember AI was off, so that the models stay as many as administrators
- * added. `chosen` is called by the name Ember offers it by, when it's given, or else as it was listed.
+ * The models people can pick once Set up Papaya AI has chosen `chosen` to answer everyone with: those of
+ * `previous`, Papaya AI as it was, with `chosen` in place of the one that answered everyone, without it
+ * twice, or `chosen` alone, as when Papaya AI was off, so that the models stay as many as administrators
+ * added. `chosen` is called by the name Papaya OS offers it by, when it's given, or else as it was listed.
  */
 function modelsAfterSetup(previous: SavedAssistant | null, { model, name, format, thinkingLevels }: ChosenModel): SavedModel[] {
   const models = previous?.models ?? [];
@@ -424,13 +424,13 @@ export interface AskedModel extends Pick<AgentSetup, "model" | "modelName" | "fo
 export const asksModel = (agent: Pick<AgentSetup, "model" | "webTools">, changes: AgentChanges): boolean =>
   (changes.model !== undefined && changes.model !== agent.model) || (changes.webSearch === true && agent.webTools.length === 0);
 
-/** An agent's setup, of what it does, its instructions and what Ember adds around them, and its levels, with its model as `asked` found it. */
+/** An agent's setup, of what it does, its instructions and what Papaya OS adds around them, and its levels, with its model as `asked` found it. */
 const setupOf = (
   { description, instructions, promptTemplate, levels }: Pick<AgentSetup, "description" | "instructions" | "promptTemplate" | "levels">,
   { model, modelName, format, thinkingLevels, webTools }: Pick<AgentSetup, "model" | "modelName" | "format" | "thinkingLevels" | "webTools">,
 ): AgentSetup => ({ description, instructions, promptTemplate, model, modelName, format, thinkingLevels, levels, webTools });
 
-/** Whether two lists of the levels of thinking a model takes are the same, null for a model Ember hasn't asked at each. */
+/** Whether two lists of the levels of thinking a model takes are the same, null for a model Papaya OS hasn't asked at each. */
 const sameLevels = (levels: ThinkingLevel[] | null, others: ThinkingLevel[] | null): boolean =>
   levels === null || others === null ? levels === others : levels.length === others.length && levels.every((level) => others.includes(level));
 
@@ -465,7 +465,7 @@ export interface Credentials {
 }
 
 /** What first run names the workspace. */
-export const ACCOUNT_NAME = "Ember";
+export const ACCOUNT_NAME = "Papaya OS";
 /**
  * The open rooms first run makes, everyone's to begin with, as a Slack workspace's are. The first,
  * general, is the workspace's first room, which first run opens and the welcome card shows in.
@@ -528,10 +528,10 @@ export interface BotAccess {
 }
 
 /**
- * @ember or an AI agent as a room asks Ember AI to answer a question there (`Workspace.answererIn`): how
- * Ember AI asks AI Gateway with its model, or null while its API token doesn't open, its instructions,
+ * @ember or an AI agent as a room asks Papaya AI to answer a question there (`Workspace.answererIn`): how
+ * Papaya AI asks AI Gateway with its model, or null while its API token doesn't open, its instructions,
  * the community's name, which it's told, how much it thinks and how long it answers, what it may do on
- * the web, and Ember's own addresses, whose pages its answers don't preview.
+ * the web, and Papaya OS's own addresses, whose pages its answers don't preview.
  */
 export interface AssistantAccess extends BotAccess {
   gateway: Gateway | null;
@@ -539,7 +539,7 @@ export interface AssistantAccess extends BotAccess {
   picked: boolean;
   /** An agent's instructions, or those administrators added to @ember's. */
   instructions: string;
-  /** What Ember adds around them, as administrators changed it, or null for Ember's own. */
+  /** What Papaya OS adds around them, as administrators changed it, or null for Papaya OS's own. */
   promptTemplate: string | null;
   community: string;
   levels: AnswerLevels;
@@ -547,13 +547,13 @@ export interface AssistantAccess extends BotAccess {
   webTools: WebTool[];
   /** Whether Search the web is on, which `webTools` doesn't show for a model that can't search. */
   webSearchOn: boolean;
-  /** The hosts Ember knows reach it, as `location.host` writes them: its custom domain, where a deploy puts it, and the domains it moved away from. */
+  /** The hosts Papaya OS knows reach it, as `location.host` writes them: its custom domain, where a deploy puts it, and the domains it moved away from. */
   addresses: string[];
 }
 
 /**
  * What Try it asks an agent with (`Workspace.agentTrial`): the administrator who asks, the account and
- * API token Ember AI asks AI Gateway through, the community's name and Ember's addresses, as a question
+ * API token Papaya AI asks AI Gateway through, the community's name and Papaya OS's addresses, as a question
  * for an agent has them, and the agent as it's saved, if it is, by its id, with its model and that
  * model's name, the format that took its test question and what it may do on the web.
  */
@@ -566,7 +566,7 @@ export interface AgentTrialAccess {
 }
 
 /**
- * The same, as the bot API has it, with Ember's custom domain, which the API's links name, or null while it
+ * The same, as the bot API has it, with Papaya OS's custom domain, which the API's links name, or null while it
  * has none, and whether the bot has a webhook, where the room reports clicks on its cards' buttons that act.
  */
 export interface BotKeyAccess extends BotAccess {
@@ -606,25 +606,25 @@ export type SignUpRefusal = "closed" | "full";
 
 /**
  * Why a change to the account changes nothing: Open and Papaya's Members only can't both be on
- * ("conflict"), and Email domain can't be on without a domain to let in, nor be turned on while Ember
+ * ("conflict"), and Email domain can't be on without a domain to let in, nor be turned on while Papaya OS
  * can't send email, since it emails people the links they join with.
  */
 export type AccountRefusal = "conflict" | "no email domains" | "no email";
 
 /**
- * What asking for a link to join with an address at the email domains came to: "asked", whatever Ember
+ * What asking for a link to join with an address at the email domains came to: "asked", whatever Papaya OS
  * emailed, if anything, "off" while Email domain doesn't let the address's domain in, "limited" past the
- * network's limit, "unsendable" while Ember can't send email, and "unsent" when the provider refused to.
+ * network's limit, "unsendable" while Papaya OS can't send email, and "unsent" when the provider refused to.
  */
 export type EmailLinkAsk = "asked" | "off" | "limited" | "unsendable" | "unsent";
 
 /**
- * What asking for a code to reset a password came to: "asked", whatever Ember goes on to email, if
- * anything, "limited" past the network's limit, and "unsendable" while Ember can't send email.
+ * What asking for a code to reset a password came to: "asked", whatever Papaya OS goes on to email, if
+ * anything, "limited" past the network's limit, and "unsendable" while Papaya OS can't send email.
  */
 export type PasswordResetAsk = "asked" | "limited" | "unsendable";
 
-/** A new code for Ember to email to reset a password: the code, which only the email holds, and its digest, which the Workspace keeps in its place. */
+/** A new code for Papaya OS to email to reset a password: the code, which only the email holds, and its digest, which the Workspace keeps in its place. */
 export interface NewResetCode {
   code: string;
   digest: string;
@@ -637,7 +637,7 @@ export interface NewResetCode {
  */
 export type TestEmail = SentTestEmail | { status: 422 | 502 | 503; refusal: string };
 
-/** A new link for Ember to email: its secret, which only the link holds, and the secret's digest, which the Workspace keeps in its place. */
+/** A new link for Papaya OS to email: its secret, which only the link holds, and the secret's digest, which the Workspace keeps in its place. */
 export interface NewEmailLink {
   token: string;
   digest: string;
@@ -659,11 +659,11 @@ function invitationTimes(): Pick<SavedInvitation, "createdAt" | "expiresAt"> {
 }
 
 /** Why there's no test email without a From address. */
-const NO_EMAIL_FROM = "Give Ember a From address first.";
+const NO_EMAIL_FROM = "Give Papaya OS a From address first.";
 /** Why there's no test email to an administrator without an email address. */
 const NO_EMAIL_ADDRESS = "Your profile has no email address to send it to.";
 
-/** The workspace as pages show it before first run: named "Ember" and looking as a new one does, with huddles off. */
+/** The workspace as pages show it before first run: named "Papaya OS" and looking as a new one does, with huddles off. */
 export const ACCOUNT_BEFORE_SETUP: Account = { name: ACCOUNT_NAME, ...NEW_ACCOUNT_LOOKS, logo: null, huddles: false };
 
 /** A join link's code: 12 random letters and digits in fours, like aB3d-Ef5h-iJ7k. */
@@ -730,7 +730,7 @@ const PICTURE_RESERVATION_MS = 60 * 60 * 1000;
 const legacyRooms = (env: Env): RoomId[] => (env.LEGACY_ROOMS ?? "").split(",").map((id) => id.trim()).filter(isRoomId);
 
 /**
- * Where a connected app is asked: its server's address, and the token Ember sends it, if it has one,
+ * Where a connected app is asked: its server's address, and the token Papaya OS sends it, if it has one,
  * with the token as it's kept, sealed, which with the address says whether the app is still asked
  * there once its server has answered.
  */
@@ -806,9 +806,9 @@ export class Workspace extends DurableObject<Env> {
   private readonly probes = new Map<string, { answer: string; until: number }>();
   /** The last change asked for, which the next one waits for (see `oneAtATime`). */
   private lastChange: Promise<unknown> = Promise.resolve();
-  /** Ember AI's models being asked through their providers' endpoints, while they are (see `moveToProviderEndpoints`). */
+  /** Papaya AI's models being asked through their providers' endpoints, while they are (see `moveToProviderEndpoints`). */
   private movingToProviderEndpoints: Promise<void> | null = null;
-  /** Counts the times Ember AI is set up, changed or turned off, so a move onto the providers' endpoints that overlapped one isn't kept. */
+  /** Counts the times Papaya AI is set up, changed or turned off, so a move onto the providers' endpoints that overlapped one isn't kept. */
   private assistantSetups = 0;
   /** The last delivery of revocations, which the next one waits for (see `deliverRevocations`). */
   private lastDelivery: Promise<unknown> = Promise.resolve();
@@ -908,8 +908,8 @@ export class Workspace extends DurableObject<Env> {
 
   /**
    * Waits a while for a custom domain check's `probe`, which `takeProbe` then answers with `answer`.
-   * There's one Workspace, which only this Ember reaches, so a domain that answers the probe reaches
-   * this Ember (custom-domain.ts, `reachOf`). A check takes seconds, so probes are only kept in memory,
+   * There's one Workspace, which only this Papaya OS reaches, so a domain that answers the probe reaches
+   * this Papaya OS (custom-domain.ts, `reachOf`). A check takes seconds, so probes are only kept in memory,
    * and only the latest few.
    */
   expectProbe(probe: string, answer: string): void {
@@ -963,9 +963,9 @@ export class Workspace extends DurableObject<Env> {
    * What the app asks first: the account, if it's set up, who `credentials` signs in, if anyone, whether
    * the sign-in page offers Sign in with Papaya at `memberfulSite`, the deployment's Papaya site, or
    * null without its keys (`offersMemberfulSignIn`), and whether it offers to email a code to reset a
-   * password, which it does while Ember can send email, and the site key of the Turnstile widget an
-   * administrator gave Ember, while it has one (`savedTurnstileKeys`). A page opened at `deployedAddress`,
-   * where a deploy puts Ember, which it's null anywhere else, tells Ember where that is.
+   * password, which it does while Papaya OS can send email, and the site key of the Turnstile widget an
+   * administrator gave Papaya OS, while it has one (`savedTurnstileKeys`). A page opened at `deployedAddress`,
+   * where a deploy puts Papaya OS, which it's null anywhere else, tells Papaya OS where that is.
    */
   async bootstrap(
     credentials: Credentials | null,
@@ -976,7 +976,7 @@ export class Workspace extends DurableObject<Env> {
       this.joinableAccount(),
       credentials && this.me(credentials),
       this.offersMemberfulSignIn(memberfulSite),
-      deployedAddress && this.rememberDeployedAddress(deployedAddress).catch((error) => console.error("Could not remember where a deploy puts Ember", error)),
+      deployedAddress && this.rememberDeployedAddress(deployedAddress).catch((error) => console.error("Could not remember where a deploy puts Papaya OS", error)),
     ]);
     const turnstile = account && (await this.openedTurnstileKeys(account));
     return {
@@ -989,7 +989,7 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * Remembers `address` as where a deploy puts Ember, unless it's known already, as it is but once the
+   * Remembers `address` as where a deploy puts Papaya OS, unless it's known already, as it is but once the
    * Worker's workers.dev address changes. Pages don't show it, so it changes nothing they'd hear of.
    */
   private async rememberDeployedAddress(address: string): Promise<void> {
@@ -1002,12 +1002,12 @@ export class Workspace extends DurableObject<Env> {
     });
   }
 
-  /** Where a deploy puts Ember, as the latest page opened there told it, or null until one has. */
+  /** Where a deploy puts Papaya OS, as the latest page opened there told it, or null until one has. */
   async deployedAddress(): Promise<string | null> {
     return (await this.joinableAccount())?.deployedAddress ?? null;
   }
 
-  /** Forgets `address` as a custom domain Ember moved away from, a check having found it no longer reaches Ember. */
+  /** Forgets `address` as a custom domain Papaya OS moved away from, a check having found it no longer reaches Papaya OS. */
   async forgetOtherAddress(address: string): Promise<void> {
     await this.oneAtATime(async () => {
       const account = await this.joinableAccount();
@@ -1075,7 +1075,7 @@ export class Workspace extends DurableObject<Env> {
    * is then: "forbidden" unless they're an administrator, why it changes nothing, as `AccountRefusal`
    * has it, or null without a valid session. Members only turns Papaya on with it, and turning
    * Papaya off turns Members only off. Everyone's workspace sockets hear of a change, a new custom
-   * domain included, which tabs open at another address then point to. Moving to one, Ember remembers
+   * domain included, which tabs open at another address then point to. Moving to one, Papaya OS remembers
    * the custom domain it moves away from, and `host`, the address the change was asked at, as they reach
    * it too (`othersAfterMove`).
    */
@@ -1164,9 +1164,9 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * Gives Ember `apiKey`, a Resend API key the Worker has checked with Resend, to send email with, kept
+   * Gives Papaya OS `apiKey`, a Resend API key the Worker has checked with Resend, to send email with, kept
    * sealed under SESSION_SECRET (`seal`), or takes the one it has away with null, as the person
-   * `credentials` signs in, answering how Ember sends email then: "forbidden" unless they're an
+   * `credentials` signs in, answering how Papaya OS sends email then: "forbidden" unless they're an
    * administrator, or null without a valid session. Pages show nothing of it, so no socket hears of it.
    */
   async changeResendApiKey(credentials: Credentials, apiKey: string | null): Promise<EmailSettings | "forbidden" | null> {
@@ -1177,23 +1177,23 @@ export class Workspace extends DurableObject<Env> {
     });
   }
 
-  /** How Ember sends email, as Membership shows it, with the From address and Resend API key `account` has. */
+  /** How Papaya OS sends email, as Membership shows it, with the From address and Resend API key `account` has. */
   private async emailSettings(account: Pick<JoinableAccount, "emailFrom" | "resendApiKey">): Promise<EmailSettings> {
     const sender = await this.senderOf(account);
     const resendKey = sender?.provider !== "resend" ? null : sender.secret ? "secret" : "saved";
     return { provider: sender?.provider ?? null, resendKey, cloudflare: Boolean(this.env.EMAIL), from: account.emailFrom };
   }
 
-  /** What sends Ember's email (`senderOf`), with the Resend API key `account` keeps sealed, while it opens. */
+  /** What sends Papaya OS's email (`senderOf`), with the Resend API key `account` keeps sealed, while it opens. */
   private async senderOf(account: Pick<JoinableAccount, "resendApiKey">): Promise<Sender | null> {
     const sealed = account.resendApiKey;
     const savedKey = sealed === null ? null : await unseal(this.env.SESSION_SECRET, "resend-api-key", sealed);
-    // Sealed under a SESSION_SECRET since changed, it's as if Ember had none, until an administrator gives it one again.
-    if (sealed !== null && savedKey === null) console.error("The Resend API key Ember was given doesn't open under SESSION_SECRET, so it isn't used.");
+    // Sealed under a SESSION_SECRET since changed, it's as if Papaya OS had none, until an administrator gives it one again.
+    if (sealed !== null && savedKey === null) console.error("The Resend API key Papaya OS was given doesn't open under SESSION_SECRET, so it isn't used.");
     return senderOf(this.env, savedKey);
   }
 
-  /** What sends the workspace's email, and the mailbox it comes from (`fromOf`), while Ember can send email from the From address `account` has, or else null. */
+  /** What sends the workspace's email, and the mailbox it comes from (`fromOf`), while Papaya OS can send email from the From address `account` has, or else null. */
   private async emailSender(account: Pick<JoinableAccount, "name" | "emailFrom" | "resendApiKey">): Promise<{ sender: Sender; from: Mailbox } | null> {
     const from = fromOf(account);
     const sender = from === null ? null : await this.senderOf(account);
@@ -1201,7 +1201,7 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * Whether Ember can send email from the From address `account` has, as `emailSender` says, but without
+   * Whether Papaya OS can send email from the From address `account` has, as `emailSender` says, but without
    * opening a Resend API key an administrator gave it, as every page's first request asks: one sealed under
    * a SESSION_SECRET since changed counts, though it no longer sends.
    */
@@ -1210,9 +1210,9 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * Gives Ember `keys`, the keys of a Turnstile widget whose check the Worker has seen pass with them, to
+   * Gives Papaya OS `keys`, the keys of a Turnstile widget whose check the Worker has seen pass with them, to
    * check people with, its secret key sealed under SESSION_SECRET (`seal`), or takes the ones it has away
-   * with null, as the person `credentials` signs in, answering whether Ember keeps a widget's keys then:
+   * with null, as the person `credentials` signs in, answering whether Papaya OS keeps a widget's keys then:
    * "forbidden" unless they're an administrator, or null without a valid session. Only signed-out pages
    * show the site key, so no socket hears of it.
    */
@@ -1226,9 +1226,9 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * The keys of the Turnstile widget an administrator gave Ember, its secret key opened, which the Worker
+   * The keys of the Turnstile widget an administrator gave Papaya OS, its secret key opened, which the Worker
    * checks people with while the deployment has none of its own, or null while there are none, or while
-   * the secret key doesn't open under SESSION_SECRET, as once that's changed, when it's as if Ember had
+   * the secret key doesn't open under SESSION_SECRET, as once that's changed, when it's as if Papaya OS had
    * none until an administrator gives it a widget's keys again.
    */
   async savedTurnstileKeys(): Promise<TurnstileKeys | null> {
@@ -1241,7 +1241,7 @@ export class Workspace extends DurableObject<Env> {
     const saved = account.turnstileKeys;
     if (!saved) return null;
     const secretKey = await unseal(this.env.SESSION_SECRET, "turnstile-secret-key", saved.sealedSecretKey);
-    if (secretKey === null) console.error("The Turnstile secret key Ember was given doesn't open under SESSION_SECRET, so it isn't used.");
+    if (secretKey === null) console.error("The Turnstile secret key Papaya OS was given doesn't open under SESSION_SECRET, so it isn't used.");
     return secretKey === null ? null : { siteKey: saved.siteKey, secretKey };
   }
 
@@ -1286,7 +1286,7 @@ export class Workspace extends DurableObject<Env> {
   private async openedHuddleApp({ huddles: saved }: Pick<JoinableAccount, "huddles">): Promise<SfuApp | null> {
     if (!saved) return null;
     const appSecret = await unseal(this.env.SESSION_SECRET, "sfu-app-secret", saved.sealedAppSecret);
-    if (appSecret === null) console.error("The SFU app secret Ember was given doesn't open under SESSION_SECRET, so huddles are off.");
+    if (appSecret === null) console.error("The SFU app secret Papaya OS was given doesn't open under SESSION_SECRET, so huddles are off.");
     return appSecret === null ? null : { appId: saved.appId, appSecret };
   }
 
@@ -1304,18 +1304,18 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * Turns Ember AI on as the person `credentials` signs in, asking AI Gateway as `chosen` says, which the
+   * Turns Papaya AI on as the person `credentials` signs in, asking AI Gateway as `chosen` says, which the
    * Worker has had the model answer a test question with, its API token sealed under SESSION_SECRET
-   * (`seal`), or changes it while it's on, or turns it off with null, answering Ember AI as the AI
+   * (`seal`), or changes it while it's on, or turns it off with null, answering Papaya AI as the AI
    * assistant tab then shows it: "forbidden" unless they're an administrator, or null without a valid
    * session. Turning it on adds @ember, or lets it back as it was, in every open room, and turning it
    * off deactivates @ember, as deleting a bot does, and forgets the models people could pick. The agents
    * go and come back with it, each as it was. Everyone's workspace sockets hear of @ember either way, and
-   * of the agents when it's turned on or off. A change that kept the API token Ember had, as
-   * `keptToken` says, changes nothing ("changed") once that's no longer Ember's token: Ember AI was turned
+   * of the agents when it's turned on or off. A change that kept the API token Papaya OS had, as
+   * `keptToken` says, changes nothing ("changed") once that's no longer Papaya OS's token: Papaya AI was turned
    * off while the model answered, which forgot it, or set up again with another. What @ember may do on
    * the web stays as Search the web found it while the account, the model that answers everyone and its
-   * format do (`webToolsKept`), and turns off otherwise, as setting Ember AI up after it was off does.
+   * format do (`webToolsKept`), and turns off otherwise, as setting Papaya AI up after it was off does.
    */
   async changeAssistant(credentials: Credentials, chosen: ChosenModel | null, keptToken = false): Promise<{ assistant: AssistantSettings | null } | "forbidden" | "changed" | null> {
     return this.administerAccount(credentials, async (account) => {
@@ -1341,11 +1341,11 @@ export class Workspace extends DurableObject<Env> {
 
   /**
    * Changes the most each of @ember's dials goes to for anyone's questions, which of the models people
-   * can pick it answers everyone else with, what Ember adds to its instructions, and what it adds around
-   * them, by `changes`, as the administrator `credentials` signs in, answering Ember AI as the AI
+   * can pick it answers everyone else with, what Papaya OS adds to its instructions, and what it adds around
+   * them, by `changes`, as the administrator `credentials` signs in, answering Papaya AI as the AI
    * assistant tab then shows it: "off" while it's off, "not listed" for a model people can't pick,
    * "forbidden" for anyone else, and null without a valid session. Choosing another model turns Search
-   * the web off, as Set up Ember AI choosing one does (`webToolsKept`).
+   * the web off, as Set up Papaya AI choosing one does (`webToolsKept`).
    */
   async changeAssistantSettings(
     credentials: Credentials,
@@ -1363,11 +1363,11 @@ export class Workspace extends DurableObject<Env> {
 
   /**
    * Changes what @ember may do on the web to `webTools`, as Search the web was asked to at `askedAt` while
-   * Ember AI is on, as the administrator `credentials` signs in, answering Ember AI as the AI assistant tab
+   * Papaya AI is on, as the administrator `credentials` signs in, answering Papaya AI as the AI assistant tab
    * then shows it: "off" while it's off, "forbidden" for anyone else, and null without a valid session.
    * The change, whose tools Search the web found the model `tested` took, asks the models `moved` in the
    * formats they search in from then on, with the levels of thinking they take there, each that's still
-   * in the format it was tested from, and changes nothing ("changed") once Ember AI answers everyone
+   * in the format it was tested from, and changes nothing ("changed") once Papaya AI answers everyone
    * through another account or with another model, or in another format than `tested`'s, or once a change
    * to Search the web asked for after it has been saved, as when it's turned off while the model searched,
    * which this change doesn't undo.
@@ -1389,9 +1389,9 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * Adds `model`, which the Worker has had answer a test question through Ember AI as `tested` asks AI
+   * Adds `model`, which the Worker has had answer a test question through Papaya AI as `tested` asks AI
    * Gateway, to the models people can pick, or changes it there, as the administrator `credentials` signs
-   * in, answering Ember AI as the AI assistant tab then shows it: "off" while it's off, "changed" once it
+   * in, answering Papaya AI as the AI assistant tab then shows it: "off" while it's off, "changed" once it
    * asks with another account or API token than `tested`'s, as after it was turned off and set up again
    * while the model answered, "full" when people can pick as many as they can already, "forbidden" for
    * anyone else, and null without a valid session.
@@ -1418,7 +1418,7 @@ export class Workspace extends DurableObject<Env> {
 
   /**
    * Takes model `modelId` out of the models people can pick, as the administrator `credentials` signs in,
-   * answering Ember AI as the AI assistant tab then shows it: "off" while it's off, "everyone's" for the
+   * answering Papaya AI as the AI assistant tab then shows it: "off" while it's off, "everyone's" for the
    * one @ember answers everyone else with, which stays, "forbidden" for anyone else, and null without a
    * valid session. Whoever picked it has @ember answer them with that one then.
    */
@@ -1434,9 +1434,9 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * Stores Ember AI as `assistant` has it, while it's on, the most of each dial as `most`, what Ember adds
+   * Stores Papaya AI as `assistant` has it, while it's on, the most of each dial as `most`, what Papaya OS adds
    * to @ember's instructions as `instructions`, and what it adds around them as `promptTemplate`,
-   * answering Ember AI as the AI assistant tab then shows it.
+   * answering Papaya AI as the AI assistant tab then shows it.
    */
   private async storeAssistant(
     account: JoinableAccount,
@@ -1452,18 +1452,18 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * Gives @ember `avatar`, which R2 has stored under a key `reservePicture` reserved, in place of Ember's
+   * Gives @ember `avatar`, which R2 has stored under a key `reservePicture` reserved, in place of Papaya OS's
    * flame or the one it had, or takes the one it was given away with null, bringing back the flame, as the
-   * administrator `credentials` signs in, answering Ember AI as the AI assistant tab then shows it: "off"
+   * administrator `credentials` signs in, answering Papaya AI as the AI assistant tab then shows it: "off"
    * while it's off, "forbidden" for anyone else, and null without a valid session. R2 deletes the avatar
    * it had, and everyone's workspace sockets hear of the change, which gives @ember's avatar a new address.
-   * The avatar stays while Ember AI is off, as @ember's messages do.
+   * The avatar stays while Papaya AI is off, as @ember's messages do.
    */
   async changeAssistantAvatar(credentials: Credentials, avatar: StoredPicture | null): Promise<{ assistant: AssistantSettings } | "off" | "forbidden" | null> {
     return this.inALaterSecond(() =>
       this.administerAccount(credentials, async (account) => {
         if (!account.assistant) return "off";
-        // Turning Ember AI on adds @ember, so it's there.
+        // Turning Papaya AI on adds @ember, so it's there.
         const ember = (await this.store.personWithAvatar(ASSISTANT_ID))!;
         const previous = ember.avatar?.key ?? null;
         // Taking away an avatar that isn't there changes nothing.
@@ -1481,14 +1481,14 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * Ember AI as the AI assistant tab shows `account`'s to administrators, with @ember's avatar, or null
+   * Papaya AI as the AI assistant tab shows `account`'s to administrators, with @ember's avatar, or null
    * while it's off. Turning it on adds @ember, in the batch that saves it, so it's there while it's on.
    */
   private async assistantSettings(account: AssistantAccount): Promise<AssistantSettings | null> {
     const settings = assistantSettingsOf(account);
     if (!settings) return null;
     const ember = await this.store.personWithAvatar(ASSISTANT_ID);
-    if (!ember) throw new Error("Ember AI is on without @ember");
+    if (!ember) throw new Error("Papaya AI is on without @ember");
     const { avatarUrl } = await this.directoryUser(ember);
     return { ...settings, avatarUrl, avatar: ember.avatar !== null };
   }
@@ -1498,7 +1498,7 @@ export class Workspace extends DurableObject<Env> {
    * model it answers them with, by `changes`, answering @ember's answers to them as their profile then
    * shows them: "not listed" for a model people can't pick, which changes nothing, or null without a
    * valid session. A null model leaves theirs to administrators, whichever they choose, while a model
-   * stays theirs, even the one @ember answers everyone with, and is kept only while Ember AI is on, when
+   * stays theirs, even the one @ember answers everyone with, and is kept only while Papaya AI is on, when
    * there are models to pick.
    */
   async changeYourAssistant(credentials: Credentials, changes: YourAssistantChanges): Promise<{ assistant: YourAssistant | null } | "not listed" | null> {
@@ -1514,7 +1514,7 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * How Ember AI asks AI Gateway, its API token opened, with what the model that answers everyone is
+   * How Papaya AI asks AI Gateway, its API token opened, with what the model that answers everyone is
    * called, while it's on, or else null, as when the token doesn't open under SESSION_SECRET, once that's
    * changed, until an administrator sets it up again.
    */
@@ -1525,7 +1525,7 @@ export class Workspace extends DurableObject<Env> {
     return gateway && { ...gateway, name: modelName(gateway.model, assistant.models) };
   }
 
-  /** The models people can pick from while Ember AI is on, the one that answers everyone among them, or none while it's off. */
+  /** The models people can pick from while Papaya AI is on, the one that answers everyone among them, or none while it's off. */
   async assistantModels(): Promise<SavedModel[]> {
     return (await this.joinableAccount())?.assistant?.models ?? [];
   }
@@ -1561,8 +1561,8 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * What answers through the Cloudflare account `accountId` go by of the models Ember offers: the models
-   * the models file the Workspace last read lists, from where this Ember reads it, or else the one it
+   * What answers through the Cloudflare account `accountId` go by of the models Papaya OS offers: the models
+   * the models file the Workspace last read lists, from where this Papaya OS reads it, or else the one it
    * shipped with, and Workers AI's that the model search last listed for that account, as they're kept.
    */
   private async offeredForAnswers(accountId: string): Promise<{ file: readonly OfferedModel[]; workersAi: readonly OfferedModel[] }> {
@@ -1571,11 +1571,11 @@ export class Workspace extends DurableObject<Env> {
     return { file: read?.models ?? ASSISTANT_MODELS, workersAi: workersAi?.models ?? [] };
   }
 
-  /** How Ember AI asks AI Gateway as `account` keeps it, as `assistantGateway` answers it. */
+  /** How Papaya AI asks AI Gateway as `account` keeps it, as `assistantGateway` answers it. */
   private async openedAssistant({ assistant: saved }: Pick<JoinableAccount, "assistant">): Promise<Gateway | null> {
     if (!saved) return null;
     const apiToken = await unseal(this.env.SESSION_SECRET, "ai-gateway-token", saved.sealedApiToken);
-    if (apiToken === null) console.error("The API token Ember AI was given doesn't open under SESSION_SECRET, so it isn't used.");
+    if (apiToken === null) console.error("The API token Papaya AI was given doesn't open under SESSION_SECRET, so it isn't used.");
     return apiToken === null ? null : { accountId: saved.accountId, apiToken, model: saved.model, format: saved.format };
   }
 
@@ -1583,7 +1583,7 @@ export class Workspace extends DurableObject<Env> {
    * Sends the person `credentials` signs in a test email, at their email address, from the workspace's
    * From address, as Membership's Send me a test email does, answering the address it went to, or why it
    * wasn't sent, as `TestEmail` has it: "forbidden" unless they're an administrator, or null without a
-   * valid session. `origin` is Ember's address, which the email names.
+   * valid session. `origin` is Papaya OS's address, which the email names.
    */
   async sendTestEmail(credentials: Credentials, origin: string): Promise<TestEmail | "forbidden" | null> {
     const user = await this.authenticate(credentials);
@@ -1604,8 +1604,8 @@ export class Workspace extends DurableObject<Env> {
    * signs in, answering what came of each, in order: "forbidden" unless they're an administrator, or null
    * without a valid session. An address someone has an account with already, whatever its case, isn't
    * invited, and one invited already gets a new link in place of its old one. The links are emailed from
-   * the From address while Ember can send email, and the answer holds each one that wasn't, for the
-   * administrator to send themselves. `origin` is Ember's address, where links go.
+   * the From address while Papaya OS can send email, and the answer holds each one that wasn't, for the
+   * administrator to send themselves. `origin` is Papaya OS's address, where links go.
    */
   async invite(credentials: Credentials, invitations: Array<{ emailAddress: string; link: NewEmailLink }>, origin: string): Promise<Invited | "forbidden" | null> {
     const user = await this.authenticate(credentials);
@@ -1661,7 +1661,7 @@ export class Workspace extends DurableObject<Env> {
 
   /**
    * Emails each of `invitations`, from `inviter`, with its link at `origin`, from the workspace's From
-   * address while Ember can send email, and records what came of it, answering each invitation as
+   * address while Papaya OS can send email, and records what came of it, answering each invitation as
    * administrators see it, with its link when it wasn't emailed.
    */
   private async deliverInvitations(
@@ -1859,7 +1859,7 @@ export class Workspace extends DurableObject<Env> {
    * domain lets in `domain`, its domain, which takes the place of any it was sent before once the
    * provider has the email, unless they've joined since, or, if someone has an account with it already,
    * whatever its case, an email saying so, with a link to sign in. Asks from `ip` count against its limit
-   * while they're `limited`, as they are while Ember lacks Turnstile's keys. Once the address has been
+   * while they're `limited`, as they are while Papaya OS lacks Turnstile's keys. Once the address has been
    * emailed as often as it is in an hour, an ask sends nothing, though it answers "asked", as it does for
    * an address with an account, so that the answer never says who has one, and the link sent last still
    * works. An email the provider refuses reaches nobody, so it isn't counted, and changes no link.
@@ -1903,7 +1903,7 @@ export class Workspace extends DurableObject<Env> {
 
   /**
    * Counts an open sign-up from `ip` against its limit, while sign-ups are `limited`, as they are while
-   * Ember lacks Turnstile's keys, then checks it can go on, all before the Worker hashes its password:
+   * Papaya OS lacks Turnstile's keys, then checks it can go on, all before the Worker hashes its password:
    * "closed" unless anyone may sign up, "limited" past the address's limit, "full" once the workspace
    * has let in as many new people as it does in an hour, "taken" if someone has the email address
    * already, and else "begun".
@@ -2458,7 +2458,7 @@ export class Workspace extends DurableObject<Env> {
    * Emails a code to reset their password, the one `code` holds, to whoever has exactly the email address
    * `emailAddress`, as sign-in matches it, while they're active and have a password, from the workspace's
    * From address. Asks from `ip` count against the network's limit while they're `limited`, as they are
-   * while Ember lacks Turnstile's keys. It answers "asked" before anything is emailed, and whether or not
+   * while Papaya OS lacks Turnstile's keys. It answers "asked" before anything is emailed, and whether or not
    * anyone has the address, so that neither the answer nor how soon it comes says who has an account: the
    * code is emailed afterwards, one at a time with the others asked for (`emailResetCode`).
    */
@@ -2840,7 +2840,7 @@ export class Workspace extends DurableObject<Env> {
     return removed;
   }
 
-  /** Whether `userId` is @ember's or an agent's, which go with Ember AI, on the AI assistant tab, so that removing or banning them finds nobody. */
+  /** Whether `userId` is @ember's or an agent's, which go with Papaya AI, on the AI assistant tab, so that removing or banning them finds nobody. */
   private async goesWithEmberAi(userId: UserId): Promise<boolean> {
     return userId === ASSISTANT_ID || this.store.isAgent(userId);
   }
@@ -2980,7 +2980,7 @@ export class Workspace extends DurableObject<Env> {
 
   /**
    * The agents, by name, as the AI assistant tab lists them to the person `credentials` signs in: "off"
-   * while Ember AI is off, "forbidden" unless that's an administrator, or null without a valid session.
+   * while Papaya AI is off, "forbidden" unless that's an administrator, or null without a valid session.
    */
   async agents(credentials: Credentials): Promise<Agent[] | "off" | "forbidden" | null> {
     const allowed = await this.mayAdministerAgents(credentials);
@@ -2989,7 +2989,7 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * Agent `agentId` as its page shows it to the person `credentials` signs in: "off" while Ember AI is
+   * Agent `agentId` as its page shows it to the person `credentials` signs in: "off" while Papaya AI is
    * off, "forbidden" unless that's an administrator, "not found" unless `agentId` is an agent's, or null
    * without a valid session.
    */
@@ -3017,7 +3017,7 @@ export class Workspace extends DurableObject<Env> {
 
   /**
    * What the person `credentials` signs in asks agent `agentId` with, as it's saved, or an agent not saved
-   * yet, for null, as they try it (`AgentTrialAccess`): "off" while Ember AI is off, or its API token
+   * yet, for null, as they try it (`AgentTrialAccess`): "off" while Papaya AI is off, or its API token
    * doesn't open, "not found" unless `agentId` is an agent's, "forbidden" unless that's an administrator,
    * or null without a valid session.
    */
@@ -3039,7 +3039,7 @@ export class Workspace extends DurableObject<Env> {
    * Makes `agent` as the person `credentials` signs in, with its model as asking it found it (`asked`),
    * and `avatar`, which R2 has stored under a key `reservePicture` reserved, if it's given one: a bot
    * without a key, in every open room or the ones `agent` picks, and everyone's workspace sockets hear of
-   * it. Answers it as its page shows it: "off" while Ember AI is off, "set up again" once Ember AI asks AI
+   * it. Answers it as its page shows it: "off" while Papaya AI is off, "set up again" once Papaya AI asks AI
    * Gateway through another account or API token than the model was asked through, "full" when there
    * are as many agents as there can be, "name taken" for a name in use (`namesInUse`, `sameName`),
    * "forbidden" unless that's an administrator, or null without a valid session.
@@ -3068,9 +3068,9 @@ export class Workspace extends DurableObject<Env> {
    * changed at `asked.changedAt`, and gives it `avatar.picture`, which R2 has stored under a key
    * `reservePicture` reserved, or takes away the one it was given, for null, as `changeAvatar` gives
    * someone theirs. It records who changed it, and when, once anything did, and everyone's workspace
-   * sockets hear of a new name or avatar. Answers it as its page then shows it: "off" while Ember AI is
+   * sockets hear of a new name or avatar. Answers it as its page then shows it: "off" while Papaya AI is
    * off, "changed" once the agent was changed since its model was asked, or it needs asking now, "set up
-   * again" once Ember AI asks AI Gateway through another account or API token than the model was asked
+   * again" once Papaya AI asks AI Gateway through another account or API token than the model was asked
    * through, "name taken" for a name someone else uses (`namesInUse`), "not found" unless `agentId` is
    * an agent's, "forbidden" unless that's an administrator, or null without a valid session.
    */
@@ -3113,7 +3113,7 @@ export class Workspace extends DurableObject<Env> {
   /**
    * Deletes agent `agentId` as the person `credentials` signs in, deactivating it as deleting a bot does:
    * it leaves every room but its DMs, and its messages stay, while what made it an agent goes, so that
-   * its name is free again. Answers "off" while Ember AI is off, "not found" unless `agentId` is an
+   * its name is free again. Answers "off" while Papaya AI is off, "not found" unless `agentId` is an
    * agent's, "forbidden" unless that's an administrator, or null without a valid session. Everyone's
    * workspace sockets hear of it.
    */
@@ -3128,7 +3128,7 @@ export class Workspace extends DurableObject<Env> {
 
   /**
    * The connected apps, by name, as the AI assistant tab lists them to the person `credentials` signs
-   * in: "off" while Ember AI is off, "forbidden" unless that's an administrator, or null without a valid
+   * in: "off" while Papaya AI is off, "forbidden" unless that's an administrator, or null without a valid
    * session, as the agents are, whose tools they are.
    */
   async connectedApps(credentials: Credentials): Promise<AppSummary[] | "off" | "forbidden" | null> {
@@ -3255,14 +3255,14 @@ export class Workspace extends DurableObject<Env> {
     return seal(this.env.SESSION_SECRET, "app-token", `${appId}\n${token}`);
   }
 
-  /** The token Ember sends `app`, or null when it has none, or one that doesn't open, as after SESSION_SECRET changes. */
+  /** The token Papaya OS sends `app`, or null when it has none, or one that doesn't open, as after SESSION_SECRET changes. */
   private async appToken({ id, sealedToken }: Pick<StoredApp, "id" | "sealedToken">): Promise<string | null> {
     const opened = sealedToken === null ? null : await unseal(this.env.SESSION_SECRET, "app-token", sealedToken);
     return opened?.startsWith(`${id}\n`) ? opened.slice(id.length + 1) : null;
   }
 
   /**
-   * Whether the person `credentials` signs in can set up agents now, or else why not: "off" while Ember
+   * Whether the person `credentials` signs in can set up agents now, or else why not: "off" while Papaya OS
    * AI is off, "forbidden" unless they're an administrator, or null without a valid session.
    */
   private async mayAdministerAgents(credentials: Credentials): Promise<true | "off" | "forbidden" | null> {
@@ -3274,7 +3274,7 @@ export class Workspace extends DurableObject<Env> {
 
   /**
    * Makes `change` to the agents as the person `credentials` signs in, one change at a time, if they're
-   * an administrator then, while Ember AI is on, answering what it does: "off" while Ember AI is off,
+   * an administrator then, while Papaya AI is on, answering what it does: "off" while Papaya AI is off,
    * "forbidden" for anyone else, or null without a valid session.
    */
   private async administerAgents<T>(credentials: Credentials, change: (user: User, account: JoinableAccount) => Promise<T>): Promise<T | "off" | "forbidden" | null> {
@@ -3288,7 +3288,7 @@ export class Workspace extends DurableObject<Env> {
     });
   }
 
-  /** Whether Ember AI, as `account` keeps it, asks AI Gateway through the account and API token `through` names. */
+  /** Whether Papaya AI, as `account` keeps it, asks AI Gateway through the account and API token `through` names. */
   private async asksThrough(account: JoinableAccount, through: AskedModel["through"]): Promise<boolean> {
     const opened = await this.openedAssistant(account);
     return opened !== null && opened.accountId === through.accountId && opened.apiToken === through.apiToken;
@@ -3302,7 +3302,7 @@ export class Workspace extends DurableObject<Env> {
 
   /**
    * Whether someone or a bot called `name`, or someone new, for null, takes an agent's name by being
-   * called `rename`, which nobody can, whether Ember AI is on or off, unless it was theirs already.
+   * called `rename`, which nobody can, whether Papaya AI is on or off, unless it was theirs already.
    */
   private async takesAgentsName(name: string | null, rename: string): Promise<boolean> {
     if (name !== null && sameName(name, rename)) return false;
@@ -3373,7 +3373,7 @@ export class Workspace extends DurableObject<Env> {
     if (!user) return null;
     return this.closingSockets(async () => {
       if (!(await this.store.isAdministrator(user.id))) return "forbidden";
-      // As when banning, @ember and the agents go with Ember AI, which lifting a ban would otherwise
+      // As when banning, @ember and the agents go with Papaya AI, which lifting a ban would otherwise
       // bring back, and an agent kept to the open rooms picked would be put in every one.
       const person = (await this.goesWithEmberAi(userId)) ? null : await this.store.person(userId);
       if (!person) return "not found";
@@ -3765,7 +3765,7 @@ export class Workspace extends DurableObject<Env> {
    * the browser's user agent, answering false without a valid session, or if it ends before the
    * subscription is saved, as a password reset can on D1. Given none, it only checks the session, for a
    * subscription that's refused. It replaces the subscription of theirs it names, the one the same
-   * browser had at the address it moved from to Ember's custom domain.
+   * browser had at the address it moved from to Papaya OS's custom domain.
    */
   async savePushSubscription(credentials: Credentials, subscription: PushSubscriptionSave | null): Promise<boolean> {
     const session = await this.session(credentials);
@@ -3820,7 +3820,7 @@ export class Workspace extends DurableObject<Env> {
 
   /**
    * The active bot a bot API key names by `botId` and `token`, if it's in room `roomId`, with when this
-   * checked and Ember's custom domain: "not found" when it isn't, as `set_room` answers then, or null
+   * checked and Papaya OS's custom domain: "not found" when it isn't, as `set_room` answers then, or null
    * unless `token` is the bot's token now, or the one its webhook's deliveries give it in that room now.
    */
   async botInRoom(botId: UserId, token: string, roomId: RoomId): Promise<BotKeyAccess | "not found" | null> {
@@ -3842,7 +3842,7 @@ export class Workspace extends DurableObject<Env> {
    * bot in the room with a webhook, so that deleting a bot, taking it out of the room or removing its
    * webhook stops what's on its way to it, and a new URL or key takes effect at once. The key it gives
    * the bot in the room's address is the webhook's own there, which stops working once the webhook
-   * delivers elsewhere or goes, or the bot is given a new key, so a server Ember has stopped delivering
+   * delivers elsewhere or goes, or the bot is given a new key, so a server Papaya OS has stopped delivering
    * to can't go on posting as the bot, nor reading its rooms.
    */
   async botWebhook(roomId: RoomId, botId: UserId): Promise<WebhookAccess | null> {
@@ -3872,7 +3872,7 @@ export class Workspace extends DurableObject<Env> {
   /**
    * The bot `botId` that answers a question in room `roomId` that `askerId` asked, @ember or an AI agent,
    * as the question finds it when its turn comes and again before its answer is posted (`assistantIn`,
-   * `agentIn`): null once Ember AI is off, or the bot isn't in the room, so that what's on its way stops.
+   * `agentIn`): null once Papaya AI is off, or the bot isn't in the room, so that what's on its way stops.
    */
   async answererIn(roomId: RoomId, botId: UserId, askerId: UserId): Promise<AssistantAccess | null> {
     return botId === ASSISTANT_ID ? this.assistantIn(roomId, askerId) : this.agentIn(roomId, botId);
@@ -3881,9 +3881,9 @@ export class Workspace extends DurableObject<Env> {
   /**
    * @ember in room `roomId`, with when this checked, how it asks AI Gateway, or null while its API token
    * doesn't open (`assistantGateway`), with the model whoever asked, `askerId`, picked, while people can
-   * pick it, the instructions administrators added and what Ember adds around them, the community's
+   * pick it, the instructions administrators added and what Papaya OS adds around them, the community's
    * name, what @ember may do on the web, with whichever model answers, of what its format has tools for,
-   * and Ember's addresses: null once Ember AI is off or @ember isn't in the room, so that turning Ember
+   * and Papaya OS's addresses: null once Papaya AI is off or @ember isn't in the room, so that turning Papaya OS
    * AI off, or taking @ember out of a room, stops what's on its way there.
    */
   private async assistantIn(roomId: RoomId, askerId: UserId): Promise<AssistantAccess | null> {
@@ -3907,9 +3907,9 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * Agent `agentId` in room `roomId`, as `assistantIn` finds @ember: asking AI Gateway through Ember AI's
-   * account and API token, with its own model, instructions, what Ember adds around them, and levels, and
-   * what it may do on the web, of what its model's format has tools for: null once Ember AI is off, or
+   * Agent `agentId` in room `roomId`, as `assistantIn` finds @ember: asking AI Gateway through Papaya AI's
+   * account and API token, with its own model, instructions, what Papaya OS adds around them, and levels, and
+   * what it may do on the web, of what its model's format has tools for: null once Papaya AI is off, or
    * the agent is deleted or taken out of the room.
    */
   private async agentIn(roomId: RoomId, agentId: UserId): Promise<AssistantAccess | null> {
@@ -3927,7 +3927,7 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * Has Ember AI, `assistant`, ask the models it asks through Cloudflare's REST API, the agents' too, that
+   * Has Papaya AI, `assistant`, ask the models it asks through Cloudflare's REST API, the agents' too, that
    * their providers' own endpoints answer through `gateway`'s account and API token there from then on,
    * as it asks Claude and GPT there first now: once after each time it's set up, as the first
    * answer after that finds it, in the background, a few models at each answer (`providerMovesOf`).
@@ -3942,12 +3942,12 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
-   * Asks the models people can pick, and the agents' models, that Ember AI asks through Cloudflare's
+   * Asks the models people can pick, and the agents' models, that Papaya AI asks through Cloudflare's
    * REST API, the test question through their providers' endpoints (`providerMovesOf`), then, one change
    * at a time with the others, has each that answered asked there, wherever it's still where it was,
-   * with the levels of thinking it took there, while Ember AI still asks through `gateway`'s account and
+   * with the levels of thinking it took there, while Papaya AI still asks through `gateway`'s account and
    * API token, which the endpoints answered, and records when unless there are more to ask at the next
-   * answer. Set up again while they were asked, Ember AI keeps none of it, even with the same API token,
+   * answer. Set up again while they were asked, Papaya AI keeps none of it, even with the same API token,
    * which may have been given AI Gateway Run since, and the next answer asks them again. What @ember and
    * the agents may do on the web stays as it was, since a provider's own endpoint takes the tools the
    * REST API passed on to it.

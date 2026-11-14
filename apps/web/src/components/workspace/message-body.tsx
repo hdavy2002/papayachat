@@ -127,7 +127,7 @@ function holdsOnlyAList(item: DisplayElement): boolean {
 
 /**
  * An image another site serves, as a link preview's or a bot card's is: loaded once it's near the
- * screen, and without a referrer, so the site doesn't learn which Ember shows it. The site still sees
+ * screen, and without a referrer, so the site doesn't learn which Papaya OS shows it. The site still sees
  * the reader's IP address, which only serving the image through the Worker would hide.
  */
 export function RemoteImage(props: Omit<ComponentProps<"img">, "referrerPolicy">) {

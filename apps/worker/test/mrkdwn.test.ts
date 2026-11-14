@@ -89,7 +89,7 @@ describe("Slack-compatible webhooks", () => {
       expect(emojiNamed("raised_hand", 2.5)).toBe("✋");
     });
 
-    it("leaves web addresses written out alone, for Ember to link as it shows them", () => {
+    it("leaves web addresses written out alone, for Papaya OS to link as it shows them", () => {
       expect(mrkdwnHtml("see https://example.com/_a_/b_c:tada: and *this*")).toBe("<p>see https://example.com/_a_/b_c:tada: and <strong>this</strong></p>");
       expect(mrkdwnHtml("https://example.com/?a=1&amp;b=2")).toBe("<p>https://example.com/?a=1&amp;b=2</p>");
     });

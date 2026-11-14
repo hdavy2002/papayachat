@@ -60,7 +60,7 @@ export const hasBody = (object: R2Object): object is R2ObjectBody => "body" in o
 const dispositionOf = (request: Request) => urlOf(request).searchParams.getAll("disposition").at(-1) ?? "inline";
 
 /**
- * What a GET or HEAD of a file's address answers. An address Ember didn't make, a file R2 doesn't have,
+ * What a GET or HEAD of a file's address answers. An address Papaya OS didn't make, a file R2 doesn't have,
  * and a Worker with no bucket bound all answer an empty 404.
  */
 export async function serveFile(request: Request, env: Env, { key, signature, preview }: FileAddress): Promise<Response> {

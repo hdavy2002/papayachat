@@ -5,22 +5,22 @@ import type { Env } from "./env";
 import { urlOf } from "./request-url";
 import { workspace, type Credentials } from "./workspace";
 
-// Ember's address, which an administrator gives it in Workspace settings (`Account.customDomain`): a
-// custom domain, or where a deploy puts Ember once they go back there, the address the app moves to from
-// any other Ember answers at, and the one the bot API's links name.
+// Papaya OS's address, which an administrator gives it in Workspace settings (`Account.customDomain`): a
+// custom domain, or where a deploy puts Papaya OS once they go back there, the address the app moves to from
+// any other Papaya OS answers at, and the one the bot API's links name.
 
-/** Why an address is refused as Ember's when it isn't the one the request came to, a custom domain, nor where a deploy puts Ember. */
-export const NOT_THIS_ADDRESS = "Open Ember at that address to make it Ember's";
+/** Why an address is refused as Papaya OS's when it isn't the one the request came to, a custom domain, nor where a deploy puts Papaya OS. */
+export const NOT_THIS_ADDRESS = "Open Papaya OS at that address to make it Papaya OS's";
 
-/** Why Ember can't go back to `address`, where a deploy puts it, when a check finds it doesn't reach Ember there, as when its workers.dev address is off. */
+/** Why Papaya OS can't go back to `address`, where a deploy puts it, when a check finds it doesn't reach Papaya OS there, as when its workers.dev address is off. */
 export const cantGoBackTo = (address: string) =>
-  `Ember doesn't answer at ${address} now, so it can't go back there. In Cloudflare, check that the Worker's workers.dev address is on, under Domains & Routes.`;
+  `Papaya OS doesn't answer at ${address} now, so it can't go back there. In Cloudflare, check that the Worker's workers.dev address is on, under Domains & Routes.`;
 
-/** Why `address`, a custom domain, can't be Ember's when a check finds it `reaches` something else, or nothing yet. */
+/** Why `address`, a custom domain, can't be Papaya OS's when a check finds it `reaches` something else, or nothing yet. */
 export const cantUse = (address: string, reaches: Exclude<CustomDomainReach, "ember">) =>
-  reaches === "elsewhere" ? `Something else answers at ${address}, not Ember.` : `Nothing answers at ${address} yet. Cloudflare can take a minute to add it, so try again soon.`;
+  reaches === "elsewhere" ? `Something else answers at ${address}, not Papaya OS.` : `Nothing answers at ${address} yet. Cloudflare can take a minute to add it, so try again soon.`;
 
-/** Where a domain answers a check's probe, `/api/custom_domain_probes/<probe>`, if it reaches this Ember. */
+/** Where a domain answers a check's probe, `/api/custom_domain_probes/<probe>`, if it reaches this Papaya OS. */
 const PROBE_PREFIX = "/api/custom_domain_probes/";
 const PROBE_PATH = /^\/api\/custom_domain_probes\/([\w-]{32})$/;
 /** The header a probe's answer comes in. */
@@ -29,10 +29,10 @@ export const PROBE_ANSWER_HEADER = "X-Ember-Probe";
 const CHECK_DEADLINE_MS = 10_000;
 
 /**
- * Why `request` can't make `address` Ember's, or null when it can, so that Ember never sends people to a
+ * Why `request` can't make `address` Papaya OS's, or null when it can, so that Papaya OS never sends people to a
  * host that doesn't reach this Worker: it can be the address the request came to, the one the page
- * asking is open at, or, once a probe finds Ember answers there, which only an administrator's request,
- * as `credentials` signs one in, sends, a custom domain or where a deploy puts Ember, as a page there
+ * asking is open at, or, once a probe finds Papaya OS answers there, which only an administrator's request,
+ * as `credentials` signs one in, sends, a custom domain or where a deploy puts Papaya OS, as a page there
  * told the Workspace. Null, for none, always can.
  */
 export async function addressRefusal(address: string | null | undefined, request: Request, env: Env, credentials: Credentials): Promise<string | null> {
@@ -45,13 +45,13 @@ export async function addressRefusal(address: string | null | undefined, request
   return address === deployed ? cantGoBackTo(address) : cantUse(address, reaches);
 }
 
-/** The address `request` came to, if it's where a deploy or `wrangler dev` puts Ember: its workers.dev address, or a local one. */
+/** The address `request` came to, if it's where a deploy or `wrangler dev` puts Papaya OS: its workers.dev address, or a local one. */
 export function deployedAddressOf(request: Request): string | null {
   const { host, hostname } = urlOf(request);
   return isHost(host) && !canBeCustomDomain(hostname) ? host : null;
 }
 
-/** The origin of Ember's address: its custom domain, by the scheme `request` came by, or the request's own origin while it has none. */
+/** The origin of Papaya OS's address: its custom domain, by the scheme `request` came by, or the request's own origin while it has none. */
 export function originFor(request: Request, customDomain: string | null): string {
   const url = urlOf(request);
   return customDomain === null ? url.origin : `${url.protocol}//${customDomain}`;
@@ -68,8 +68,8 @@ const isUnreached = (status: number) => (status >= 520 && status <= 527) || stat
 
 /**
  * What `domain` reaches, asked by the scheme `request` came by, as Workspace settings' checks ask before
- * an administrator makes it Ember's address. The Workspace waits for a probe only this check knows, so
- * an answer to it comes from this Ember: "ember". No answer in time, or only Cloudflare's for an origin
+ * an administrator makes it Papaya OS's address. The Workspace waits for a probe only this check knows, so
+ * an answer to it comes from this Papaya OS: "ember". No answer in time, or only Cloudflare's for an origin
  * it can't reach, is "nothing", and any other, a redirect included, "elsewhere". Nothing is sent but the
  * probe, and nothing of the answer is read but its header.
  */
@@ -91,7 +91,7 @@ export async function reachOf(request: Request, env: Env, domain: string): Promi
 /** The probe `pathname` asks for, if it's a probe's address. */
 export const probeOf = (pathname: string) => PROBE_PATH.exec(pathname)?.[1] ?? null;
 
-/** Answers a check's `probe`, once, if the Workspace waits for it, which only this Ember's does. */
+/** Answers a check's `probe`, once, if the Workspace waits for it, which only this Papaya OS's does. */
 export async function answerProbe(env: Env, probe: string): Promise<Response> {
   const answer = await workspace(env).takeProbe(probe);
   if (answer === null) return Response.json({ error: "Not found" }, { status: 404 });

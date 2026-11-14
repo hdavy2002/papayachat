@@ -5,7 +5,7 @@ import { api, cookieOf, createRoom, freshDeploy, openWorkspaceSocket, shown, sig
 
 const ada = { name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" };
 
-/** Sets Ember up with Ada as its administrator, signed in. */
+/** Sets Papaya OS up with Ada as its administrator, signed in. */
 async function setUp(): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(ada) });
   expect(response.status).toBe(201);
@@ -54,7 +54,7 @@ describe("Only administrators create rooms (setting)", () => {
     const administrator = await setUp();
     const grace = await signIn("Grace");
     const sockets = [await openWorkspaceSocket(administrator), await openWorkspaceSocket(grace)];
-    const restricted: Account = { name: "Ember", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: true, logo: null, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false };
+    const restricted: Account = { name: "Papaya OS", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: true, logo: null, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false };
 
     const response = await restrict(administrator, true);
     expect(response.status).toBe(200);

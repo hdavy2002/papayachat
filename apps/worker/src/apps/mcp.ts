@@ -7,9 +7,9 @@ import { VERSION } from "../version";
 
 // Asking an app, an MCP server an administrator connected, over Streamable HTTP, with the Model Context
 // Protocol's own client (https://github.com/modelcontextprotocol/typescript-sdk), pinned to one version.
-// Ember gives it the way out: every request goes to the address the administrator gave, a name that
+// Papaya OS gives it the way out: every request goes to the address the administrator gave, a name that
 // resolves only to public addresses, or this machine's, and a redirect isn't followed, so a server can't
-// send Ember, or the token, anywhere else. Only JSON comes back, and none of a server's code runs here.
+// send Papaya OS, or the token, anywhere else. Only JSON comes back, and none of a server's code runs here.
 // Every request, the lookups of the name among them, ends at one deadline, as the client doesn't pass
 // its own to all of them, and the answers together may be only so long, as the client reads each whole.
 
@@ -18,14 +18,14 @@ export const READ_DEADLINE_MS = 20_000;
 
 /** The most characters of a tool's name, as the protocol recommends. */
 const MAX_TOOL_NAME_LENGTH = 128;
-/** The most characters of the JSON Schema of what a tool takes that Ember keeps: a tool with more is left out. */
+/** The most characters of the JSON Schema of what a tool takes that Papaya OS keeps: a tool with more is left out. */
 export const MAX_TOOL_SCHEMA_LENGTH = 8_000;
-/** The most pages of tools Ember asks an app for. */
+/** The most pages of tools Papaya OS asks an app for. */
 const MAX_PAGES = 10;
-/** The most bytes Ember reads of what's answered while it reads an app's tools, all the answers together. */
+/** The most bytes Papaya OS reads of what's answered while it reads an app's tools, all the answers together. */
 export const MAX_READ_BYTES = 4_000_000;
 
-/** A tool as Ember keeps it: as its page shows it, with the JSON Schema of what it takes, and a fingerprint of all that. */
+/** A tool as Papaya OS keeps it: as its page shows it, with the JSON Schema of what it takes, and a fingerprint of all that. */
 export interface ReadTool {
   name: string;
   title: string | null;
@@ -34,7 +34,7 @@ export interface ReadTool {
   fingerprint: string;
 }
 
-/** What reading an app found: what its server calls itself, its tools, and how many more it has than Ember keeps. */
+/** What reading an app found: what its server calls itself, its tools, and how many more it has than Papaya OS keeps. */
 export interface ReadApp {
   serverName: string | null;
   tools: ReadTool[];
@@ -52,7 +52,7 @@ interface Held {
 
 /**
  * The tools of the app at `url`, asked with `token`, if it takes one: what its server calls itself and
- * each tool it lists, up to as many as Ember keeps, or why Ember couldn't read them, in words for the
+ * each tool it lists, up to as many as Papaya OS keeps, or why Papaya OS couldn't read them, in words for the
  * administrator who's connecting it, on the field it's about.
  */
 export async function readApp(url: string, token: string | null, send: Send = fetch): Promise<ReadApp | AppRefused> {
@@ -67,12 +67,12 @@ export async function readApp(url: string, token: string | null, send: Send = fe
     requestInit: { redirect: "manual" },
     ...(token !== null && { authProvider: { token: async () => token } }),
   });
-  const client = new Client({ name: "Ember", version: VERSION });
+  const client = new Client({ name: "Papaya OS", version: VERSION });
   try {
     await client.connect(transport, { signal: held.deadline });
     const { listed, more } = await listedTools(client, held.deadline);
     const tools = await keptTools(listed);
-    if (tools.length === 0) return { error: `${address.host} answered, but it has no tools Ember can use.`, field: "url" };
+    if (tools.length === 0) return { error: `${address.host} answered, but it has no tools Papaya OS can use.`, field: "url" };
     return { serverName: client.getServerVersion()?.name?.slice(0, 100) ?? null, tools, toolsLeftOut: listed.length - tools.length + (more ? 1 : 0) };
   } catch (error) {
     return whyUnread(address, token, error, held);
@@ -92,7 +92,7 @@ function heldTo(held: Held, send: Send): Send {
     const counted = new TransformStream<Uint8Array, Uint8Array>({
       transform(chunk, controller) {
         held.bytesLeft -= chunk.byteLength;
-        if (held.bytesLeft < 0) controller.error(new TypeError("The answer is longer than Ember reads."));
+        if (held.bytesLeft < 0) controller.error(new TypeError("The answer is longer than Papaya OS reads."));
         else controller.enqueue(chunk);
       },
     });
@@ -102,7 +102,7 @@ function heldTo(held: Held, send: Send): Send {
 
 /**
  * The tools `client`'s server lists, a page at a time, each asked for by itself, as the client's own walk
- * through them all would read every page a server has: up to as many pages as Ember asks for, and whether
+ * through them all would read every page a server has: up to as many pages as Papaya OS asks for, and whether
  * the server has more.
  */
 async function listedTools(client: Client, signal: AbortSignal): Promise<{ listed: unknown[]; more: boolean }> {
@@ -119,7 +119,7 @@ async function listedTools(client: Client, signal: AbortSignal): Promise<{ liste
   return { listed, more: cursor !== undefined };
 }
 
-/** The first of `listed` Ember can use, as it keeps them, up to as many as it keeps of an app: the rest aren't read. */
+/** The first of `listed` Papaya OS can use, as it keeps them, up to as many as it keeps of an app: the rest aren't read. */
 async function keptTools(listed: readonly unknown[]): Promise<ReadTool[]> {
   const kept: ReadTool[] = [];
   for (const tool of listed) {
@@ -131,7 +131,7 @@ async function keptTools(listed: readonly unknown[]): Promise<ReadTool[]> {
 }
 
 /**
- * Why Ember won't ask the host of `address`, if it won't: its name has to resolve, and only to public
+ * Why Papaya OS won't ask the host of `address`, if it won't: its name has to resolve, and only to public
  * addresses, unless it's this machine, within what asking it is held to.
  */
 async function guardedHost(address: URL, send: Send, held: Held): Promise<AppRefused | null> {
@@ -142,16 +142,16 @@ async function guardedHost(address: URL, send: Send, held: Held): Promise<AppRef
   } catch (error) {
     if (held.deadline.aborted) return { error: tookTooLong(address.host), field: "url" };
     if (!(error instanceof GuardError)) throw error;
-    return { error: `Ember couldn't find ${address.host} on the Internet. Check the address.`, field: "url" };
+    return { error: `Papaya OS couldn't find ${address.host} on the Internet. Check the address.`, field: "url" };
   }
 }
 
 const tookTooLong = (host: string) => `${host} took too long to answer.`;
-const saidTooMuch = (host: string) => `${host} answered with more than Ember reads.`;
+const saidTooMuch = (host: string) => `${host} answered with more than Papaya OS reads.`;
 
 /**
- * A tool as an app lists it, `listed`, as Ember keeps it, or null for one it can't use: without a name
- * the protocol allows, or taking more than Ember keeps. Its description is cut to what Ember keeps.
+ * A tool as an app lists it, `listed`, as Papaya OS keeps it, or null for one it can't use: without a name
+ * the protocol allows, or taking more than Papaya OS keeps. Its description is cut to what Papaya OS keeps.
  */
 async function readTool(listed: unknown): Promise<ReadTool | null> {
   if (typeof listed !== "object" || listed === null) return null;
@@ -170,7 +170,7 @@ async function readTool(listed: unknown): Promise<ReadTool | null> {
 }
 
 /**
- * A fingerprint of a tool as Ember keeps it: SHA-256 of its name, title, description and what it takes,
+ * A fingerprint of a tool as Papaya OS keeps it: SHA-256 of its name, title, description and what it takes,
  * with every object's keys in order, so that it changes when what a model is told of the tool does.
  */
 export async function fingerprintOf(tool: Omit<ReadTool, "fingerprint">): Promise<string> {
@@ -186,7 +186,7 @@ function inOrder(value: unknown): unknown {
 }
 
 /**
- * Why Ember couldn't read the tools of the app at `address`, asked with `token`, from what went wrong
+ * Why Papaya OS couldn't read the tools of the app at `address`, asked with `token`, from what went wrong
  * within what asking it was held to, or at its end. Only the kind of failure is logged: a server writes what its answers say,
  * which the client quotes in its errors, and could write the token there.
  */
@@ -201,14 +201,14 @@ function whyUnread(address: URL, token: string | null, error: unknown, held: Hel
   if (error instanceof InsufficientScopeError) return { error: `${host} took that token, but says it doesn't allow this. Give one that does.`, field: "token" };
   if (error instanceof UnauthorizedError || status === 401 || status === 403) {
     return token === null
-      ? { error: `${host} asks for a sign-in. Give a token for it, if it has one: Ember can't sign in to an app any other way yet.`, field: "token" }
+      ? { error: `${host} asks for a sign-in. Give a token for it, if it has one: Papaya OS can't sign in to an app any other way yet.`, field: "token" }
       : { error: `${host} didn't take that token.`, field: "token" };
   }
-  if (status !== null && status >= 300 && status < 400) return { error: `${host} sends that address on to another, which Ember doesn't follow. Give the address it ends at.`, field: "url" };
+  if (status !== null && status >= 300 && status < 400) return { error: `${host} sends that address on to another, which Papaya OS doesn't follow. Give the address it ends at.`, field: "url" };
   if (status === 404 || status === 405) return { error: `${host} has no MCP server at that address. Check the address, which often ends in /mcp.`, field: "url" };
   if (status !== null) return { error: `${host} answered ${status}. Try again in a moment.`, field: "url" };
   if (error instanceof SdkError && error.code === SdkErrorCode.RequestTimeout) return { error: tookTooLong(host), field: "url" };
   if (error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError")) return { error: tookTooLong(host), field: "url" };
-  if (error instanceof TypeError) return { error: `Ember couldn't reach ${host}. Check the address.`, field: "url" };
+  if (error instanceof TypeError) return { error: `Papaya OS couldn't reach ${host}. Check the address.`, field: "url" };
   return { error: `${host} didn't answer as an MCP server does. Check the address, which often ends in /mcp.`, field: "url" };
 }

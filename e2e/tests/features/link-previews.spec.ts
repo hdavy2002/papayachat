@@ -96,7 +96,7 @@ test.describe("Link previews in messages", () => {
     expect((await box(image)).x).toBeGreaterThan((await box(title)).x + (await box(title)).width);
   });
 
-  test("loads a preview's image without a referrer, so its site doesn't learn which Ember shows it", async ({ members }) => {
+  test("loads a preview's image without a referrer, so its site doesn't learn which Papaya OS shows it", async ({ members }) => {
     const ada = await members.signIn("Ada");
     const grace = await members.signIn("Grace");
     await previewWith(ada, basecamp);

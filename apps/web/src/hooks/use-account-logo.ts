@@ -19,7 +19,7 @@ export function useAccountLogo(logo: string | null): void {
 }
 
 /**
- * Points the page's `rel` link at `href`, without the size index.html gives Ember's own icon, answering
+ * Points the page's `rel` link at `href`, without the size index.html gives Papaya OS's own icon, answering
  * what points it back.
  */
 function pointLink(rel: string, href: string): () => void {

@@ -129,25 +129,25 @@ export interface JoinableAccount extends Omit<Account, "logo" | "huddles"> {
   joinCode: string;
   updatedAt: string;
   storedLogo: StoredPicture | null;
-  /** The address Ember's email comes from, as `mailboxText` writes it, or null while an administrator hasn't given one. */
+  /** The address Papaya OS's email comes from, as `mailboxText` writes it, or null while an administrator hasn't given one. */
   emailFrom: string | null;
-  /** The Resend API key an administrator gave Ember to send email with, sealed (`seal`), or null while they haven't given one. */
+  /** The Resend API key an administrator gave Papaya OS to send email with, sealed (`seal`), or null while they haven't given one. */
   resendApiKey: string | null;
-  /** The keys of the Turnstile widget an administrator gave Ember to check people with, or null while they haven't given one's. */
+  /** The keys of the Turnstile widget an administrator gave Papaya OS to check people with, or null while they haven't given one's. */
   turnstileKeys: SavedTurnstileKeys | null;
-  /** How Ember AI asks AI Gateway, while an administrator has it on, or else null. */
+  /** How Papaya AI asks AI Gateway, while an administrator has it on, or else null. */
   assistant: SavedAssistant | null;
-  /** The most each of @ember's dials goes to for anyone's questions, as administrators set it, whether Ember AI is on or not. */
+  /** The most each of @ember's dials goes to for anyone's questions, as administrators set it, whether Papaya AI is on or not. */
   assistantMost: AnswerLevels;
-  /** What Ember adds to @ember's own instructions, as administrators write them, or "" for nothing, whether Ember AI is on or not. */
+  /** What Papaya OS adds to @ember's own instructions, as administrators write them, or "" for nothing, whether Papaya AI is on or not. */
   assistantInstructions: string;
-  /** What Ember adds around them, as administrators changed it, or null for Ember's own, whether Ember AI is on or not. */
+  /** What Papaya OS adds around them, as administrators changed it, or null for Papaya OS's own, whether Papaya AI is on or not. */
   assistantPromptTemplate: string | null;
   /** The SFU app huddles run through, while an administrator has them on, or else null. */
   huddles: SavedHuddles | null;
-  /** Where a deploy puts Ember, as the latest page opened there told it, or null until one has (`EmberAddresses.deployed`). */
+  /** Where a deploy puts Papaya OS, as the latest page opened there told it, or null until one has (`EmberAddresses.deployed`). */
   deployedAddress: string | null;
-  /** The custom domains Ember has moved away from, newest first, which may still reach it (`EmberAddresses.others`). */
+  /** The custom domains Papaya OS has moved away from, newest first, which may still reach it (`EmberAddresses.others`). */
   otherAddresses: string[];
 }
 
@@ -164,14 +164,14 @@ export interface SavedHuddles {
 }
 
 /**
- * How Ember AI asks AI Gateway, as the account keeps it: the Cloudflare account, its API token sealed
+ * How Papaya AI asks AI Gateway, as the account keeps it: the Cloudflare account, its API token sealed
  * (`seal`), the model it answers anyone with who hasn't picked another, and the format the model took
  * its test question in, the models people can pick from, that one among them, in the order they were
  * added, what @ember may do on the web, which Search the web found the model that answers everyone could
  * when it was turned on, or nothing while it's off, and when that was asked for, if Search the web has
- * been turned on or off for that model. Then when Ember asked the models it asks through Cloudflare's
+ * been turned on or off for that model. Then when Papaya OS asked the models it asks through Cloudflare's
  * REST API, the agents' too, whether their providers' own endpoints answer them, which it does once
- * after each time Ember AI is set up, or null until it has.
+ * after each time Papaya AI is set up, or null until it has.
  */
 export interface SavedAssistant {
   accountId: string;
@@ -185,7 +185,7 @@ export interface SavedAssistant {
 }
 
 /**
- * A model that Ember asks in another format from now on than the one it was saved in, `from`, as one of
+ * A model that Papaya OS asks in another format from now on than the one it was saved in, `from`, as one of
  * Workers AI's searches the web in theirs, or any model its provider's own endpoint answers, with the
  * levels of thinking it takes there, which asking it at each found.
  */
@@ -198,7 +198,7 @@ export interface MovedModel {
 
 /**
  * A model people can pick, as the account keeps it: its ID, its name, the format it took its test
- * question in, and the levels of thinking it takes, once Ember has asked it at each.
+ * question in, and the levels of thinking it takes, once Papaya OS has asked it at each.
  */
 export type SavedModel = Pick<AssistantModel, "id" | "name" | "format" | "thinkingLevels">;
 
@@ -305,14 +305,14 @@ export interface AssistantPicks {
 export interface NewLinkedPerson {
   id: UserId;
   name: string;
-  /** Their Papaya account's email address, or null for one Ember can't keep. */
+  /** Their Papaya account's email address, or null for one Papaya OS can't keep. */
   emailAddress: string | null;
 }
 
 /**
  * An account elsewhere, as `issuer`, the address of the Papaya site it's on, and `subject`, its member
  * id there, name it, and what it says of itself: its name and email address there, or null for either
- * it didn't say, or Ember didn't keep, for one linked before it kept them.
+ * it didn't say, or Papaya OS didn't keep, for one linked before it kept them.
  */
 export interface LinkedAccount {
   issuer: string;
@@ -405,7 +405,7 @@ export interface NewStoredBot {
 }
 
 /**
- * What makes a bot an agent, as the agents table keeps it: what it does, its instructions and what Ember
+ * What makes a bot an agent, as the agents table keeps it: what it does, its instructions and what Papaya OS
  * adds around them, the model it answers with, what that's called, the format it took its test question
  * in and the levels of thinking it takes, how much it thinks and how long it answers, and what it may do
  * on the web.
@@ -413,19 +413,19 @@ export interface NewStoredBot {
 export interface AgentSetup {
   description: string;
   instructions: string;
-  /** What Ember adds around the instructions, as an administrator changed it, or null for Ember's own. */
+  /** What Papaya OS adds around the instructions, as an administrator changed it, or null for Papaya OS's own. */
   promptTemplate: string | null;
   model: string;
   modelName: string;
   format: ModelFormat;
-  /** The levels of thinking its model takes, or null for one Ember hasn't asked at each, as for an agent made before Ember did. */
+  /** The levels of thinking its model takes, or null for one Papaya OS hasn't asked at each, as for an agent made before Papaya OS did. */
   thinkingLevels: ThinkingLevel[] | null;
   levels: AnswerLevels;
   webTools: WebTool[];
 }
 
 /**
- * An agent as a question for it finds it: its name, its instructions and what Ember adds around them, its
+ * An agent as a question for it finds it: its name, its instructions and what Papaya OS adds around them, its
  * model, that model's format and the levels of thinking it takes, its levels and what it may do on the web.
  */
 export interface AnsweringAgent extends Pick<AgentSetup, "instructions" | "promptTemplate" | "model" | "format" | "thinkingLevels" | "levels" | "webTools"> {
@@ -999,12 +999,12 @@ const storedAgent = (row: AgentRow, rooms: AgentRoom[]): StoredAgent => ({
 const agentsFormatIn = (kept: string): ModelFormat => (isModelFormat(kept) ? kept : "chat");
 
 /**
- * How an agent answers, as the agents table keeps it: its instructions and what Ember adds around them,
+ * How an agent answers, as the agents table keeps it: its instructions and what Papaya OS adds around them,
  * its model's format and the levels of thinking it takes, its levels and what it may do on the web.
  */
 type AnsweringColumns = Pick<AgentSettingsRow, "instructions" | "prompt_template" | "format" | "thinking_levels" | "thinking" | "answer_length" | "web_tools">;
 
-/** How an agent answers, as `row` keeps it. What can't be a format or a level, as nothing Ember writes is, reads as where @ember's start, and as untested levels of thinking. */
+/** How an agent answers, as `row` keeps it. What can't be a format or a level, as nothing Papaya OS writes is, reads as where @ember's start, and as untested levels of thinking. */
 const answeringOf = (row: AnsweringColumns): Pick<AgentSetup, "instructions" | "promptTemplate" | "format" | "thinkingLevels" | "levels" | "webTools"> => ({
   instructions: row.instructions,
   promptTemplate: row.prompt_template,
@@ -1085,28 +1085,28 @@ const taglineIn = (settings: Record<string, unknown> | null) => (typeof settings
 /** The account's custom domain, which its settings keep as `custom_domain`, or null while it has none. */
 const customDomainIn = (settings: Record<string, unknown> | null) => (typeof settings?.custom_domain === "string" ? settings.custom_domain : null);
 
-/** Where a deploy puts Ember, which the account's settings keep as `deployed_address`, or null until a page there told it. */
+/** Where a deploy puts Papaya OS, which the account's settings keep as `deployed_address`, or null until a page there told it. */
 const deployedAddressIn = (settings: Record<string, unknown> | null) =>
   typeof settings?.deployed_address === "string" && isHost(settings.deployed_address) ? settings.deployed_address : null;
 
-/** The custom domains Ember has moved away from, newest first, which the account's settings keep as `other_addresses`. */
+/** The custom domains Papaya OS has moved away from, newest first, which the account's settings keep as `other_addresses`. */
 function otherAddressesIn(settings: Record<string, unknown> | null): string[] {
   const kept = settings?.other_addresses;
   if (!Array.isArray(kept)) return [];
   return [...new Set(kept.filter((address: unknown): address is string => typeof address === "string" && isHost(address)))].slice(0, MAX_OTHER_ADDRESSES);
 }
 
-/** The address Ember's email comes from, which the account's settings keep as `email_from`, as `mailboxText` writes it, or null while it has none. */
+/** The address Papaya OS's email comes from, which the account's settings keep as `email_from`, as `mailboxText` writes it, or null while it has none. */
 function emailFromIn(settings: Record<string, unknown> | null): string | null {
   const mailbox = typeof settings?.email_from === "string" ? mailboxOf(settings.email_from) : null;
   return mailbox && mailboxText(mailbox);
 }
 
-/** The Resend API key an administrator gave Ember, sealed, which the account's settings keep as `resend_api_key`, or null while it has none. */
+/** The Resend API key an administrator gave Papaya OS, sealed, which the account's settings keep as `resend_api_key`, or null while it has none. */
 const resendApiKeyIn = (settings: Record<string, unknown> | null) => (typeof settings?.resend_api_key === "string" ? settings.resend_api_key : null);
 
 /**
- * The keys of the Turnstile widget an administrator gave Ember, which the account's settings keep as
+ * The keys of the Turnstile widget an administrator gave Papaya OS, which the account's settings keep as
  * `turnstile_keys`, both together, `{ site_key, secret_key }`, the secret key sealed, or null while it
  * has none.
  */
@@ -1129,13 +1129,13 @@ function huddlesIn(settings: Record<string, unknown> | null): SavedHuddles | nul
 }
 
 /**
- * How Ember AI asks AI Gateway, which the account's settings keep as `assistant`, `{ account_id,
+ * How Papaya AI asks AI Gateway, which the account's settings keep as `assistant`, `{ account_id,
  * api_token, model, format, models, web_tools, web_tools_asked_at, provider_endpoints_tried_at }`, the
- * API token sealed, or null while it's off. Its models are `[{ id, name, format, thinking_levels }]`, which Ember AI set up
+ * API token sealed, or null while it's off. Its models are `[{ id, name, format, thinking_levels }]`, which Papaya AI set up
  * before people could pick has none of: it then has its own model alone, as it does when they leave it
- * out. A model added before Ember asked models at each level of thinking has no `thinking_levels`. Without
- * `web_tools`, as Ember AI was kept before Search the web, @ember does nothing on the web, and without
- * `provider_endpoints_tried_at`, as it was kept before Ember asked Claude and GPT through their providers'
+ * out. A model added before Papaya OS asked models at each level of thinking has no `thinking_levels`. Without
+ * `web_tools`, as Papaya AI was kept before Search the web, @ember does nothing on the web, and without
+ * `provider_endpoints_tried_at`, as it was kept before Papaya OS asked Claude and GPT through their providers'
  * endpoints, their models are yet to be asked there.
  */
 function assistantIn(settings: Record<string, unknown> | null): SavedAssistant | null {
@@ -1180,7 +1180,7 @@ function savedModelsIn(kept: unknown): SavedModel[] {
 
 const isModelFormat = (format: unknown): format is ModelFormat => (MODEL_FORMATS as readonly unknown[]).includes(format);
 
-/** The levels of thinking `kept` lists, as Ember keeps those a model takes, in order, or undefined when it isn't a list. */
+/** The levels of thinking `kept` lists, as Papaya OS keeps those a model takes, in order, or undefined when it isn't a list. */
 const thinkingLevelsIn = (kept: unknown): ThinkingLevel[] | undefined => (Array.isArray(kept) ? THINKING_LEVELS.filter((level) => kept.includes(level)) : undefined);
 
 /**
@@ -1193,13 +1193,13 @@ function assistantMostIn(settings: Record<string, unknown> | null): AnswerLevels
   return { thinking: levelIn(THINKING_LEVELS, thinking) ?? TOP_LEVELS.thinking, length: levelIn(ANSWER_LENGTHS, length) ?? TOP_LEVELS.length };
 }
 
-/** What Ember adds to @ember's own instructions, which the account's settings keep as `assistant_instructions`, or "" for nothing. */
+/** What Papaya OS adds to @ember's own instructions, which the account's settings keep as `assistant_instructions`, or "" for nothing. */
 function assistantInstructionsIn(settings: Record<string, unknown> | null): string {
   const kept = settings?.assistant_instructions;
   return typeof kept === "string" ? kept : "";
 }
 
-/** What Ember adds around them, which the account's settings keep as `assistant_prompt_template`, or null for Ember's own. */
+/** What Papaya OS adds around them, which the account's settings keep as `assistant_prompt_template`, or null for Papaya OS's own. */
 function assistantPromptTemplateIn(settings: Record<string, unknown> | null): string | null {
   const kept = settings?.assistant_prompt_template;
   return typeof kept === "string" ? kept : null;
@@ -1208,7 +1208,7 @@ function assistantPromptTemplateIn(settings: Record<string, unknown> | null): st
 /** `kept` as one of a dial's `levels`, or null when it isn't one. */
 const levelIn = <T extends string>(levels: readonly T[], kept: unknown): T | null => ((levels as readonly unknown[]).includes(kept) ? (kept as T) : null);
 
-/** Ember AI as the account's settings keep it (`assistantIn`), or null for off. */
+/** Papaya AI as the account's settings keep it (`assistantIn`), or null for off. */
 const assistantSetting = (assistant: SavedAssistant | null) =>
   JSON.stringify(
     assistant && {
@@ -1267,7 +1267,7 @@ function emailDomainsIn(settings: Record<string, unknown> | null): string[] {
 
 /**
  * The navigation icons the account's settings keep as `ember_navigation_icons`: an object of slots,
- * where any other value is none, and a slot or an icon Ember doesn't know is left out.
+ * where any other value is none, and a slot or an icon Papaya OS doesn't know is left out.
  */
 function navigationIconsIn(settings: Record<string, unknown> | null): NavigationIcons {
   const stored = settings?.ember_navigation_icons;
@@ -2029,7 +2029,7 @@ const ACTIVE_AGENT = `SELECT ${AGENT_COLUMNS}, users.avatar_key, users.avatar_va
 /**
  * Agent ?2 as a question for it in room ?1 finds it, when its turn comes and again before its answer is
  * posted: its name, its model, and how it answers. Nothing unless it's an active agent in the room, so
- * that turning Ember AI off, deleting the agent or taking it out of the room stops what's on its way.
+ * that turning Papaya AI off, deleting the agent or taking it out of the room stops what's on its way.
  */
 const ANSWERING_AGENT = `SELECT users.name, agents.model, agents.instructions, agents.prompt_template, agents.format, agents.thinking_levels, agents.thinking,
     agents.answer_length, agents.web_tools
@@ -2068,7 +2068,7 @@ const LEAVE_UNPICKED_ROOMS = `DELETE FROM memberships WHERE user_id = ?1 AND roo
   AND EXISTS (SELECT 1 FROM rooms WHERE rooms.id = memberships.room_id AND rooms.kind = 'open')`;
 
 /**
- * Keeps the open rooms each active agent kept to the open rooms picked is in, as Ember AI is turned off,
+ * Keeps the open rooms each active agent kept to the open rooms picked is in, as Papaya AI is turned off,
  * so that turning it on again puts it back in them.
  */
 const KEEP_AGENTS_ROOMS = `UPDATE agents SET kept_rooms = (SELECT json_group_array(memberships.room_id) FROM memberships JOIN rooms ON rooms.id = memberships.room_id
@@ -2082,10 +2082,10 @@ const AGENTS_LEAVE_SHARED_ROOMS = `DELETE FROM memberships WHERE user_id IN (SEL
 /** Deactivates every active agent, recording when. */
 const DEACTIVATE_AGENTS = `UPDATE users SET status = ${DEACTIVATED}, updated_at = ? WHERE status = ${ACTIVE} AND id IN (SELECT user_id FROM agents)`;
 
-/** Lets every agent back, as turning Ember AI on does, recording when. */
+/** Lets every agent back, as turning Papaya AI on does, recording when. */
 const ACTIVATE_AGENTS = `UPDATE users SET status = ${ACTIVE}, updated_at = ? WHERE status = ${DEACTIVATED} AND id IN (SELECT user_id FROM agents)`;
 
-/** Puts each agent kept to the open rooms picked back in the ones it was in when Ember AI was turned off, of those still open. */
+/** Puts each agent kept to the open rooms picked back in the ones it was in when Papaya AI was turned off, of those still open. */
 const RESTORE_AGENTS_ROOMS = `INSERT INTO memberships (room_id, user_id, created_at, updated_at)
   SELECT rooms.id, agents.user_id, ?1, ?1 FROM agents, json_each(agents.kept_rooms) AS kept JOIN rooms ON rooms.id = kept.value
   WHERE agents.every_open_room = 0 AND rooms.kind = 'open' ON CONFLICT DO NOTHING`;
@@ -2095,7 +2095,7 @@ const GRANT_OPEN_ROOMS_TO_AGENTS = `INSERT INTO memberships (room_id, user_id, c
   SELECT rooms.id, agents.user_id, ?1, ?1 FROM agents, rooms WHERE agents.every_open_room = 1 AND rooms.kind = 'open' ON CONFLICT DO NOTHING`;
 
 /**
- * Adds @ember, the bot Ember AI answers as, without a token, so its key opens nothing, or lets it back,
+ * Adds @ember, the bot Papaya AI answers as, without a token, so its key opens nothing, or lets it back,
  * as it was, once it was turned off, so that its answers stay its own.
  */
 const ACTIVATE_ASSISTANT = `INSERT INTO users (id, name, role, created_at, updated_at) VALUES (?1, ?2, ${BOT}, ?3, ?3)
@@ -2168,7 +2168,7 @@ const SAVE_PUSH_SUBSCRIPTION = `INSERT INTO push_subscriptions (user_id, endpoin
 /**
  * Forgets someone's, ?1's, push subscription with the P-256 key ?2, but the one at ?3 they're saving, as
  * they save it in session ?4, if it hasn't ended: the one the same browser had at the address its page
- * moved from to Ember's custom domain, which would have every push come twice. A key is one browser's,
+ * moved from to Papaya OS's custom domain, which would have every push come twice. A key is one browser's,
  * where a user agent can be every Mac's on the same Chrome, so no other browser's goes.
  */
 const FORGET_REPLACED_PUSH_SUBSCRIPTION = `DELETE FROM push_subscriptions WHERE user_id = ?1 AND p256dh_key = ?2 AND endpoint <> ?3
@@ -2563,12 +2563,12 @@ export class WorkspaceStore {
     ]);
   }
 
-  /** Remembers `address` as where a deploy puts Ember, which pages don't show. */
+  /** Remembers `address` as where a deploy puts Papaya OS, which pages don't show. */
   async rememberDeployedAddress(address: string): Promise<void> {
     await this.db.run(REMEMBER_DEPLOYED_ADDRESS, JSON.stringify(address));
   }
 
-  /** Remembers `addresses` as the custom domains Ember has moved away from, which pages don't show. */
+  /** Remembers `addresses` as the custom domains Papaya OS has moved away from, which pages don't show. */
   async rememberOtherAddresses(addresses: string[]): Promise<void> {
     await this.db.run(REMEMBER_OTHER_ADDRESSES, JSON.stringify(addresses));
   }
@@ -2843,7 +2843,7 @@ export class WorkspaceStore {
   }
 
   /**
-   * Counts a time someone asked Ember to email `emailAddress`, whatever its case, at `now`: a link to join
+   * Counts a time someone asked Papaya OS to email `emailAddress`, whatever its case, at `now`: a link to join
    * with it at the email domains, or a code to reset its password. Answers how many times it's been asked
    * for in the hour its count is of, and when that hour began, which starts again once `since` is past,
    * when the counts whose hour is over are forgotten.
@@ -3736,24 +3736,24 @@ export class WorkspaceStore {
     return row ? { name: row.name, model: row.model, ...answeringOf(row) } : null;
   }
 
-  /** What agent `agentId`'s page tells everyone of it, whether Ember AI is on or off, or null unless it's an agent. */
+  /** What agent `agentId`'s page tells everyone of it, whether Papaya AI is on or off, or null unless it's an agent. */
   async agentProfile(agentId: UserId): Promise<AgentProfile | null> {
     const [row] = await this.db.all<{ description: string; model: string; model_name: string; created_by: UserId; created_by_name: string }>(AGENT_PROFILE, agentId);
     return row ? { description: row.description, model: row.model, modelName: row.model_name, setUpBy: { id: row.created_by, name: row.created_by_name } } : null;
   }
 
-  /** The models the agents answer with, whether Ember AI is on or off, each with a format an agent asks it in, once each. */
+  /** The models the agents answer with, whether Papaya AI is on or off, each with a format an agent asks it in, once each. */
   async agentModels(): Promise<Pick<AssistantModel, "id" | "format">[]> {
     const rows = await this.db.all<{ model: string; format: string }>(`SELECT DISTINCT model, format FROM agents`);
     return rows.map((row) => ({ id: row.model, format: agentsFormatIn(row.format) }));
   }
 
-  /** Every agent, whether Ember AI is on or off, as the people directory lists it. */
+  /** Every agent, whether Papaya AI is on or off, as the people directory lists it. */
   async agentEntries(): Promise<DirectoryEntry[]> {
     return (await this.db.all<DirectoryRow>(AGENTS_LISTED)).map(directoryEntry);
   }
 
-  /** Whether `userId` is an agent's, whether Ember AI is on or off. */
+  /** Whether `userId` is an agent's, whether Papaya AI is on or off. */
   async isAgent(userId: UserId): Promise<boolean> {
     return (await this.db.all(`SELECT 1 FROM agents WHERE user_id = ?`, userId)).length > 0;
   }
@@ -3891,10 +3891,10 @@ export class WorkspaceStore {
   }
 
   /**
-   * Turns Ember AI on as `assistant` has it, or changes it while it's on, in one batch: saves it in the
+   * Turns Papaya AI on as `assistant` has it, or changes it while it's on, in one batch: saves it in the
    * account's settings, recording when, adds @ember, or lets it back as it was, and puts it in every open
    * room, as someone who joins is, and lets every agent back, in every open room, or the ones picked it
-   * was in when Ember AI was turned off, of those still open.
+   * was in when Papaya AI was turned off, of those still open.
    */
   async turnOnAssistant(assistant: SavedAssistant, now: string): Promise<void> {
     await this.db.batch([
@@ -3910,7 +3910,7 @@ export class WorkspaceStore {
   }
 
   /**
-   * Turns Ember AI off, in one batch: forgets how it asked AI Gateway, recording when, and deactivates
+   * Turns Papaya AI off, in one batch: forgets how it asked AI Gateway, recording when, and deactivates
    * @ember as removing someone does, taking it out of every room but its DMs. It has no sessions to end,
    * nor an email address to free. Its messages stay. Every agent goes the same way, its setup kept, and
    * with it the open rooms it's in, if it's kept to the ones picked.
@@ -4003,8 +4003,8 @@ export class WorkspaceStore {
   }
 
   /**
-   * Changes Ember AI while it's on to `assistant`, the most each of @ember's dials goes to for anyone's
-   * questions to `most`, what Ember adds to @ember's instructions to `instructions`, and what it adds
+   * Changes Papaya AI while it's on to `assistant`, the most each of @ember's dials goes to for anyone's
+   * questions to `most`, what Papaya OS adds to @ember's instructions to `instructions`, and what it adds
    * around them to `promptTemplate`, null for its own, in one batch, without recording when, as no page's
    * address goes by any of them.
    */
@@ -4018,7 +4018,7 @@ export class WorkspaceStore {
   }
 
   /**
-   * Saves Ember AI as `assistant` has it, without recording when, and has each agent whose model and
+   * Saves Papaya AI as `assistant` has it, without recording when, and has each agent whose model and
    * format a move of `moves` names asked as the move says, in one batch.
    */
   async moveModels(assistant: SavedAssistant, moves: readonly MovedModel[]): Promise<void> {

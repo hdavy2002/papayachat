@@ -243,7 +243,7 @@ test.describe("Save push subscriptions", () => {
       const signingOut = laptop.waitForRequest((request) => request.method() === "DELETE" && new URL(request.url()).pathname === "/api/session");
       await logOut(laptop);
       expect((await signingOut).postDataJSON()).toEqual({ pushSubscriptionEndpoint: laptops });
-      await expect(laptop.getByRole("heading", { name: "Sign in to Ember" })).toBeVisible();
+      await expect(laptop.getByRole("heading", { name: "Sign in to Papaya OS" })).toBeVisible();
       expect(unsubscribed).toBe(true);
 
       const { subscriptions } = (await (await phone.request.get("/api/push-subscriptions")).json()) as PushSubscriptions;

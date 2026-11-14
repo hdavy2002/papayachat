@@ -36,15 +36,15 @@ const ada: Me = { id: "0mgk3x2a9b4c5d", name: "Ada Lovelace", administrator: tru
 const SONNET = "anthropic/claude-sonnet-5.5";
 const GPT = "openai/gpt-6.1-sol";
 const GROK = "xai/grok-4.7";
-/** One of Workers AI's, which Ember no longer offers, kept by a copy set up before, in the format Cloudflare's REST API took it in. */
+/** One of Workers AI's, which Papaya OS no longer offers, kept by a copy set up before, in the format Cloudflare's REST API took it in. */
 const GLM = { id: "@cf/zai-org/glm-4.7-flash", name: "GLM-4.7 Flash", format: "chat" } as const;
 /** One of Workers AI's that the model search lists, as one that takes tools. */
 const GEMMA: OfferedModel = { id: "@cf/google/gemma-4-26b-a4b-it", name: "Gemma 4 26B", format: "workers", price: { input: 0.1, output: 0.3 }, thinkingLevels: [] };
 
-/** The models Ember offers through Ember AI's account, as the Worker lists them: those it shipped with, then Workers AI's. */
+/** The models Papaya OS offers through Papaya AI's account, as the Worker lists them: those it shipped with, then Workers AI's. */
 const OFFERED: OfferedModels = { models: [...ASSISTANT_MODELS, GEMMA], suggested: SUGGESTED_MODEL, workersAi: null };
 
-/** Ember AI on Claude Sonnet 5.5. */
+/** Papaya AI on Claude Sonnet 5.5. */
 const ON: Assistant = {
   accountId: "0123456789abcdef0123456789abcdef",
   model: SONNET,
@@ -86,10 +86,10 @@ const RECAP: AgentSettings = {
   changedAt: "2026-11-09T12:00:00.000Z",
 };
 
-/** Recap on a model Ember no longer offers, kept since before, which can't search the web. */
+/** Recap on a model Papaya OS no longer offers, kept since before, which can't search the web. */
 const KEPT: AgentSettings = { ...RECAP, model: GLM.id, modelName: GLM.name, format: GLM.format };
 
-/** What Ember adds around an agent's instructions, as an administrator modified it. */
+/** What Papaya OS adds around an agent's instructions, as an administrator modified it. */
 const SCRIBE = "You are {{name}}, the scribe of {{community}}.\n\n{{instructions}}\n\nAnswer {{asker}} in at most {{words}} words.";
 
 /** What Try it's model says, as a message of its keeps it, and how long it took. */
@@ -99,12 +99,12 @@ type Answer = () => Response | Promise<Response>;
 const answer = (agent: AgentSettings, status = 200) => Response.json({ agent }, { status });
 const refused = (status: number, error: string, field?: string) => Response.json({ error, field }, { status });
 
-/** Where the pages ask for the models Ember offers. */
+/** Where the pages ask for the models Papaya OS offers. */
 const LISTING = "POST /api/account/assistant/offered";
 
 /**
  * Answers the pages' requests as the server does for an administrator, or as `read`, `offered`, `loaded`,
- * `sent`, `tried` and `deleted` say: reading Ember AI and the models Ember offers, loading the agent,
+ * `sent`, `tried` and `deleted` say: reading Papaya AI and the models Papaya OS offers, loading the agent,
  * making or changing it or taking away its avatar, Try it, and deleting it.
  */
 function serve({
@@ -175,17 +175,17 @@ const chosenRooms = () => screen.getByRole("radio", { name: "Only the rooms I ch
 const tryIt = () => screen.getByRole("region", { name: "Try it" });
 const question = () => within(tryIt()).getByRole("textbox", { name: "Question" });
 const status = () => screen.getAllByRole("status").at(-1)!;
-/** What Ember adds around the instructions, the box that asks for care before it's modified, and the template, once Modify is pressed. */
-const around = () => screen.getByText("What Ember adds around them").closest("details")!;
+/** What Papaya OS adds around the instructions, the box that asks for care before it's modified, and the template, once Modify is pressed. */
+const around = () => screen.getByText("What Papaya OS adds around them").closest("details")!;
 const caution = () => screen.getByRole("region", { name: "Modify with caution" });
 const modify = () => within(caution()).getByRole("button", { name: "Modify" });
-const templateBox = () => screen.getByRole("textbox", { name: "What Ember adds around them" });
-const useEmbersOwn = () => within(caution()).getByRole("button", { name: "Use Ember's own" });
+const templateBox = () => screen.getByRole("textbox", { name: "What Papaya OS adds around them" });
+const useEmbersOwn = () => within(caution()).getByRole("button", { name: "Use Papaya OS's own" });
 const avatarField = () => screen.getByLabelText("Upload the agent's avatar");
 const cost = () => screen.queryByText(/an answer at these levels costs at most about/);
 const robot = () => new File(["robot"], "robot.png", { type: "image/png" });
 
-/** The page's form, once Ember AI has loaded, and the agent, for its settings. */
+/** The page's form, once Papaya AI has loaded, and the agent, for its settings. */
 const loaded = async () => {
   await waitFor(() => expect(screen.getByRole("button", { name: /^(?:Create agent|Save changes)$/ })).toBeInTheDocument());
   return nameField();
@@ -205,7 +205,7 @@ const requests = () =>
     return [`${init?.method ?? "GET"} ${String(input)}`, body] as [string, unknown];
   });
 
-/** The same, but for reading what it shows, and listing the models Ember offers. */
+/** The same, but for reading what it shows, and listing the models Papaya OS offers. */
 const sent = () => requests().filter(([request]) => !request.startsWith("GET ") && request !== LISTING);
 
 /** Whether the page went back to the AI assistant tab. */
@@ -358,7 +358,7 @@ describe("New agent", () => {
     expect(onFailed).not.toHaveBeenCalled();
   });
 
-  it("goes to the AI assistant tab once Ember AI is found off as it's sent, saying so", async () => {
+  it("goes to the AI assistant tab once Papaya AI is found off as it's sent, saying so", async () => {
     serve({ sent: () => refused(409, ASSISTANT_OFF) });
     const { user, onFailed } = showNewAgent();
     await fillIn(user);
@@ -368,7 +368,7 @@ describe("New agent", () => {
     expect(onFailed).not.toHaveBeenCalled();
   });
 
-  it("offers the models Ember offers through Ember AI's account, by their makers, then Workers AI's, saying what the one chosen costs", async () => {
+  it("offers the models Papaya OS offers through Papaya AI's account, by their makers, then Workers AI's, saying what the one chosen costs", async () => {
     showNewAgent();
     await loaded();
     expect(requests().filter(([request]) => request === LISTING)).toEqual([[LISTING, { accountId: ON.accountId }]]);
@@ -379,7 +379,7 @@ describe("New agent", () => {
     );
   });
 
-  it("lets one of Workers AI's search the web with Ember's own tool, which doesn't read pages, saying what it costs", async () => {
+  it("lets one of Workers AI's search the web with Papaya OS's own tool, which doesn't read pages, saying what it costs", async () => {
     const { user } = showNewAgent();
     await fillIn(user);
     await user.selectOptions(modelMenu(), GEMMA.id);
@@ -395,15 +395,15 @@ describe("New agent", () => {
     await waitFor(() => expect(sent()).toEqual([["POST /api/account/agents", expect.objectContaining({ model: GEMMA.id, webSearch: true })]]));
   });
 
-  it("offers the models Ember shipped with when the Worker couldn't list them, saying Workers AI's aren't listed", async () => {
+  it("offers the models Papaya OS shipped with when the Worker couldn't list them, saying Workers AI's aren't listed", async () => {
     serve({ offered: () => Response.json({ error: "Something went wrong" }, { status: 500 }) });
     showNewAgent();
     await loaded();
     expect(within(modelMenu()).getAllByRole("option").map((option) => option.getAttribute("value"))).toEqual(ASSISTANT_MODELS.map(({ id }) => id));
-    expect(screen.getByText("Workers AI's models aren't listed, as Ember couldn't list them. Try again in a moment.")).toBeInTheDocument();
+    expect(screen.getByText("Workers AI's models aren't listed, as Papaya OS couldn't list them. Try again in a moment.")).toBeInTheDocument();
   });
 
-  it("starts at the model Ember suggests when @ember answers with one Ember no longer offers, which it doesn't list", async () => {
+  it("starts at the model Papaya OS suggests when @ember answers with one Papaya OS no longer offers, which it doesn't list", async () => {
     serve({ read: () => Response.json({ assistant: { ...ON, model: GLM.id, models: [GLM], webTools: null }, cloudflareAccountId: null }) });
     showNewAgent();
     await loaded();
@@ -411,7 +411,7 @@ describe("New agent", () => {
     expect(within(modelMenu()).getAllByRole("option").map((option) => option.getAttribute("value"))).toEqual(OFFERED.models.map(({ id }) => id));
   });
 
-  it("lets Grok search the web without reading pages, as Ember's own tool only searches", async () => {
+  it("lets Grok search the web without reading pages, as Papaya OS's own tool only searches", async () => {
     const { user } = showNewAgent();
     await fillIn(user);
     await user.selectOptions(modelMenu(), GROK);
@@ -438,10 +438,10 @@ describe("New agent", () => {
     expect(cost()).toHaveTextContent("At GPT-6 Luna's prices, an answer at these levels costs at most about 2¢, and most far less, besides what searching the web costs.");
   });
 
-  it("shows what Ember adds around the instructions, as the agent reads it when the administrator writes to it directly", async () => {
+  it("shows what Papaya OS adds around the instructions, as the agent reads it when the administrator writes to it directly", async () => {
     const { user } = showNewAgent();
     await user.type(await loaded(), "Recap");
-    const preview = screen.getByText("What Ember adds around them").closest("details")!;
+    const preview = screen.getByText("What Papaya OS adds around them").closest("details")!;
     expect(preview).toHaveTextContent(`You are Recap, an AI agent in the team chat "Analytical Engines". People ask you things by mentioning @Recap in a room or a thread`);
     expect(preview).toHaveTextContent("Answer the last one, which Ada Lovelace wrote, in at most about 400 words.");
     expect(preview).toHaveTextContent("You can't search the web or open links.");
@@ -498,7 +498,7 @@ describe("New agent", () => {
     expect(onFailed).not.toHaveBeenCalled();
   });
 
-  it("sends an administrator to the AI assistant tab while Ember AI is off, saying so", async () => {
+  it("sends an administrator to the AI assistant tab while Papaya AI is off, saying so", async () => {
     serve({ read: () => Response.json({ assistant: null, cloudflareAccountId: null }) });
     const { onFailed } = showNewAgent();
     expect(await screen.findByRole("alert")).toHaveTextContent(ASSISTANT_OFF);
@@ -569,7 +569,7 @@ describe("Try it", () => {
     expect(sent()).toEqual([]);
   });
 
-  it("asks with what Ember adds around the instructions as it's modified, before it's saved", async () => {
+  it("asks with what Papaya OS adds around the instructions as it's modified, before it's saved", async () => {
     const { user } = showNewAgent();
     await fillIn(user);
     await user.click(modify());
@@ -589,17 +589,17 @@ describe("Try it", () => {
   });
 });
 
-describe("What Ember adds around them", () => {
-  it("keeps Ember's own until Modify is pressed, asking for care first, then shows it with what each placeholder stands for", async () => {
+describe("What Papaya OS adds around them", () => {
+  it("keeps Papaya OS's own until Modify is pressed, asking for care first, then shows it with what each placeholder stands for", async () => {
     const { user } = showNewAgent();
     await user.type(await loaded(), "Recap");
-    await user.click(screen.getByText("What Ember adds around them"));
+    await user.click(screen.getByText("What Papaya OS adds around them"));
     expect(around()).toHaveAttribute("open");
     expect(within(around()).queryByText("Modified")).toBeNull();
     expect(within(caution()).getByRole("heading", { level: 3, name: "Modify with caution" })).toBeInTheDocument();
     expect(caution()).toHaveTextContent(cautionFor("Recap"));
     expect(modify()).toHaveAccessibleDescription(cautionFor("Recap"));
-    expect(screen.queryByRole("textbox", { name: "What Ember adds around them" })).toBeNull();
+    expect(screen.queryByRole("textbox", { name: "What Papaya OS adds around them" })).toBeNull();
 
     await user.click(modify());
     expect(templateBox()).toHaveValue(AGENT_TEMPLATE);
@@ -611,7 +611,7 @@ describe("What Ember adds around them", () => {
     expect(sent()).toEqual([]);
   });
 
-  it("makes the agent with what Ember adds around its instructions as it's modified, shown as the agent reads it", async () => {
+  it("makes the agent with what Papaya OS adds around its instructions as it's modified, shown as the agent reads it", async () => {
     const { user } = showNewAgent();
     await fillIn(user);
     await user.click(modify());
@@ -626,7 +626,7 @@ describe("What Ember adds around them", () => {
     expect(sent()).toEqual([["POST /api/account/agents", expect.objectContaining({ instructions: "Sum up the conversation so far as decisions and to-dos.", promptTemplate: SCRIBE })]]);
   });
 
-  it("says why Ember can't take what's typed as it's typed, refusing to send the page or ask the agent until it can, opening to say so", async () => {
+  it("says why Papaya OS can't take what's typed as it's typed, refusing to send the page or ask the agent until it can, opening to say so", async () => {
     const { user } = showNewAgent();
     await fillIn(user);
     await user.click(modify());
@@ -651,7 +651,7 @@ describe("What Ember adds around them", () => {
     expect(sent()).toEqual([]);
   });
 
-  it("shows what an administrator modified, which Use Ember's own puts back, saved as Ember's own, which then changes as Ember does", async () => {
+  it("shows what an administrator modified, which Use Papaya OS's own puts back, saved as Papaya OS's own, which then changes as Papaya OS does", async () => {
     serve({ loaded: () => answer({ ...RECAP, promptTemplate: SCRIBE }) });
     const { user } = showSettings();
     await loaded();
@@ -670,7 +670,7 @@ describe("What Ember adds around them", () => {
   });
 
   it("says why the server refused it in it, opening it, until it changes", async () => {
-    const refusal = "Ember can't take this.";
+    const refusal = "Papaya OS can't take this.";
     serve({ sent: () => refused(422, refusal, "promptTemplate") });
     const { user, onFailed } = showSettings();
     await loaded();
@@ -775,13 +775,13 @@ describe("An agent's settings", () => {
     expect(thinking()).toHaveAccessibleDescription("Claude Sonnet 5.5 can't be told how much to think, so it decides for itself, up to about 2,000 tokens.");
   });
 
-  it("keeps a model Ember no longer offers on the menu, saying so, without saying what an answer costs, while it isn't changed", async () => {
+  it("keeps a model Papaya OS no longer offers on the menu, saying so, without saying what an answer costs, while it isn't changed", async () => {
     serve({ loaded: () => answer(KEPT) });
     const { user } = showSettings();
     await loaded();
     expect(modelMenu()).toHaveValue(GLM.id);
     expect(within(modelMenu()).getAllByRole("option").at(-1)).toHaveTextContent("GLM-4.7 Flash (no longer offered)");
-    expect(modelMenu()).toHaveAccessibleDescription("Ember no longer offers this model. It answers as it did until you choose one that Ember offers.");
+    expect(modelMenu()).toHaveAccessibleDescription("Papaya OS no longer offers this model. It answers as it did until you choose one that Papaya OS offers.");
     expect(cost()).toBeNull();
 
     // Chosen again once another is, it's nothing to save.
@@ -792,7 +792,7 @@ describe("An agent's settings", () => {
     expect(location.pathname).toBe("/rooms/general");
   });
 
-  it("keeps one of Workers AI's on the menu while the Worker couldn't list them, saying why, rather than that Ember no longer offers it", async () => {
+  it("keeps one of Workers AI's on the menu while the Worker couldn't list them, saying why, rather than that Papaya OS no longer offers it", async () => {
     const unlisted = "Workers AI's models aren't listed, as Cloudflare didn't take the API token for them. Add the Workers AI Read permission to it in the Cloudflare dashboard.";
     serve({
       loaded: () => answer({ ...RECAP, model: GEMMA.id, modelName: GEMMA.name, format: GEMMA.format }),
@@ -824,7 +824,7 @@ describe("An agent's settings", () => {
     expect(sent()).toEqual([[`PATCH /api/account/agents/${RECAP.id}`, { description: "Sums up threads." }]]);
   });
 
-  it("says a model Ember no longer offers that can't search can't, refusing Search the web with it before sending anything, until one Ember offers is chosen", async () => {
+  it("says a model Papaya OS no longer offers that can't search can't, refusing Search the web with it before sending anything, until one Papaya OS offers is chosen", async () => {
     serve({ loaded: () => answer(KEPT) });
     const { user } = showSettings();
     await loaded();

@@ -20,8 +20,8 @@ import { bearerTokenOf, isSecretToken, isToken, secretOf } from "./secrets";
 import { workspace } from "./workspace";
 
 // First run, which creates the workspace and its first administrator, at Campfire's paths, except that
-// the form posts to /api/first_run. Whoever deployed Ember sets it up, and nobody else. Deploy to
-// Cloudflare's form asks them to make up a setup password, EMBER_SETUP_PASSWORD, which the Set up Ember
+// the form posts to /api/first_run. Whoever deployed Papaya OS sets it up, and nobody else. Deploy to
+// Cloudflare's form asks them to make up a setup password, EMBER_SETUP_PASSWORD, which the Set up Papaya OS
 // page asks for. A deploy from a terminal makes EMBER_SETUP_TOKEN instead, for a Worker with neither, and
 // prints the setup link that ends in it (apps/worker/scripts/deploy.ts), which the page reads off the
 // address's fragment. The page sends either as the form's bearer token, so the first stranger to find a
@@ -33,22 +33,22 @@ import { workspace } from "./workspace";
 // Campfire is.
 
 /** What `POST /api/first_run` answers without the setup password, where the deployment has one. */
-export const SETUP_PASSWORD_NEEDED = "Type the setup password you gave Ember when you deployed it";
+export const SETUP_PASSWORD_NEEDED = "Type the setup password you gave Papaya OS when you deployed it";
 /** What it answers to one that isn't the deployment's. */
-export const SETUP_PASSWORD_REFUSED = "That isn't this Ember's setup password";
+export const SETUP_PASSWORD_REFUSED = "That isn't this Papaya OS's setup password";
 /** What it answers without the setup link's token, where the deployment has a token and no setup password. */
-export const SETUP_LINK_NEEDED = "Open the setup link the deploy printed to set up Ember";
+export const SETUP_LINK_NEEDED = "Open the setup link the deploy printed to set up Papaya OS";
 /** What it answers to a token that isn't this deployment's. */
 export const SETUP_LINK_REFUSED = "This setup link isn't this deployment's. Open the one its latest deploy printed";
 /** What it answers past the deployment's limit of tries at its setup password. */
 export const SETUP_TRIES_LIMITED = "Too many tries at the setup password. Please wait a few minutes and try again.";
 /** What it answers while the deployment has neither a setup password nor a setup token. */
 export const NO_SETUP_PASSWORD = "This deployment has no setup password, so nobody can set it up until it's given one";
-/** What setup answers once Ember is set up. */
-const ALREADY_SET_UP = { error: "Ember is already set up", redirect: "/" };
+/** What setup answers once Papaya OS is set up. */
+const ALREADY_SET_UP = { error: "Papaya OS is already set up", redirect: "/" };
 
 /**
- * What the Set up Ember form suggests, as `/api/bootstrap` tells the app: the deployment's own name and
+ * What the Set up Papaya OS form suggests, as `/api/bootstrap` tells the app: the deployment's own name and
  * email address, else Kevin Rose's. A blank setting counts as unset.
  */
 export const setupPlaceholdersOf = (env: Env): SetupPlaceholders => ({
@@ -111,7 +111,7 @@ async function isOneOf(given: string[], secrets: string[]): Promise<boolean> {
 }
 
 /**
- * Why `request` may not set Ember up, or null where it brings this deployment's setup token or password,
+ * Why `request` may not set Papaya OS up, or null where it brings this deployment's setup token or password,
  * or setup is open to it. A token is too long to guess, so it opens setup whatever the tries at the
  * password, while each try at a password counts against the deployment's limit before it's checked, so
  * tries sent at once count as surely as tries sent one by one.
@@ -130,7 +130,7 @@ async function setupRefusal(request: Request, env: Env): Promise<Response | null
 
 const isSetUp = async (env: Env) => (await workspace(env).account()) !== null;
 
-/** `/first_run`: the Set up Ember page, which is the app's own, until the workspace exists. */
+/** `/first_run`: the Set up Papaya OS page, which is the app's own, until the workspace exists. */
 async function setupForm(request: Request, env: Env, format: string | undefined): Promise<Response> {
   // Campfire's `prevent_repeats`: once the workspace exists, setup sends everyone home.
   if (await isSetUp(env)) return home(request);
@@ -153,7 +153,7 @@ export async function setupPage(request: Request, env: Env): Promise<Response> {
 }
 
 /**
- * `POST /api/first_run/check`: whether the request's bearer token opens setup, so the Set up Ember page
+ * `POST /api/first_run/check`: whether the request's bearer token opens setup, so the Set up Papaya OS page
  * can say a setup password is wrong before the rest of its form is filled in. It answers 204 where it
  * does, or where setup is open to the request, and otherwise refuses it as `POST /api/first_run` would,
  * counting a try at the password against the same limit.
@@ -166,7 +166,7 @@ export async function checkSetup(request: Request, env: Env): Promise<Response> 
 }
 
 /**
- * `POST /api/first_run`: creates the workspace with the person the Set up Ember form describes as its
+ * `POST /api/first_run`: creates the workspace with the person the Set up Papaya OS form describes as its
  * first administrator, with the photo it brings, and signs this browser in as them.
  */
 export async function firstRun(request: Request, env: Env): Promise<Response> {

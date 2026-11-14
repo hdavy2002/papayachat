@@ -13,7 +13,7 @@ const RECOVERY_TOKEN = "0123456789abcdef".repeat(4);
 /** How much of a body arrives at a time. */
 const CHUNK = 64 * 1024;
 
-/** Sets Ember up with Ada as its administrator, signed in. */
+/** Sets Papaya OS up with Ada as its administrator, signed in. */
 async function setUp(): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(ada) });
   expect(response.status).toBe(201);
@@ -26,10 +26,10 @@ type Route = [method: string, path: string, headers: Record<string, string>];
 /** The route's method and address, which say which one failed. */
 const labelOf = ([method, path]: Route) => `${method} ${path}`;
 
-/** Setting Ember up, which reads its form only before it's set up. */
+/** Setting Papaya OS up, which reads its form only before it's set up. */
 const FIRST_RUN: Route = ["POST", "/api/first_run", {}];
 
-/** What the other routes need once Ember is set up, with Open and Email domain on: Ada, signed in as its administrator, a bot and a room, and the join code. */
+/** What the other routes need once Papaya OS is set up, with Open and Email domain on: Ada, signed in as its administrator, a bot and a room, and the join code. */
 interface Ember {
   ada: Session;
   bot: UserId;
@@ -38,7 +38,7 @@ interface Ember {
 }
 
 /**
- * Sets Ember up, with a bot and a room, letting anyone sign up, and people at an email domain ask for a
+ * Sets Papaya OS up, with a bot and a room, letting anyone sign up, and people at an email domain ask for a
  * link, so that open sign-up's form and Email domain's are read.
  */
 async function setUpEmber(): Promise<Ember> {

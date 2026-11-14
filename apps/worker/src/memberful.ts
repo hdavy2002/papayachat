@@ -144,7 +144,7 @@ function keptStateOf(request: Request): { state: string; returnPath: string; con
 
 /**
  * `GET /auth/memberful`, Sign in with Papaya: sends the browser to sign in at the Papaya site,
- * keeping a new state and the page `return_to` names in a cookie, to come back to Ember's address, its
+ * keeping a new state and the page `return_to` names in a cookie, to come back to Papaya OS's address, its
  * custom domain if it has one, where Papaya sends the browser back. Before first run it goes home,
  * and while it isn't offered (`Workspace.offersMemberfulSignIn`), back to sign in, which says Papaya
  * is off, or isn't set up while it's on without the deployment's keys.
@@ -169,7 +169,7 @@ export async function startMemberfulSignIn(request: Request, env: Env): Promise<
  * the password they gave against, or "" without one, to an account at the Papaya site, to come back
  * to the page `returnTo` names: where to sign in there, and the `Set-Cookie` that keeps the state it
  * goes with, whose digest the Workspace keeps for the callback. Null unless the deployment has
- * Papaya's keys and the Workspace kept it (`startMemberfulConnection`). Asked at an address Ember has
+ * Papaya's keys and the Workspace kept it (`startMemberfulConnection`). Asked at an address Papaya OS has
  * moved from to its custom domain, as a tab left open there is, it starts nothing, and answers that page
  * at the custom domain instead, to sign in and connect there.
  */

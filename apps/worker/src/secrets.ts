@@ -1,4 +1,4 @@
-// The secrets a person hands Ember from outside, each 32 random bytes as hex (`openssl rand -hex 32`):
+// The secrets a person hands Papaya OS from outside, each 32 random bytes as hex (`openssl rand -hex 32`):
 // EMBER_SETUP_TOKEN, which the deploy's setup link carries (setup.ts), and EMBER_RECOVERY_TOKEN, which
 // apps/worker/scripts/reset-password.ts sends (recovery.ts). Each arrives as a request's bearer token
 // and is compared in constant time, as the setup password a person makes up is (setup.ts).

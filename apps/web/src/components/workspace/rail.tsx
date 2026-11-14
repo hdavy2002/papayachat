@@ -85,7 +85,7 @@ interface Props {
   workspaceName: string;
   current: RailPage;
   activity: Activity;
-  /** The release of Ember out since this one, such as "0.2", which Admin marks for an administrator, or null for none. */
+  /** The release of Papaya OS out since this one, such as "0.2", which Admin marks for an administrator, or null for none. */
   newRelease: string | null;
   /** Opens New direct message, which DMs does in place, from the link that opened it. */
   onNewDirect: (opener: HTMLElement) => void;
@@ -93,7 +93,7 @@ interface Props {
 
 /**
  * The persistent navigation rail, drawn with the icons an administrator chose in Community settings, or
- * else with Iconoir's, as the project's owner chose. Admin has a dot while a newer release of Ember is
+ * else with Iconoir's, as the project's owner chose. Admin has a dot while a newer release of Papaya OS is
  * out, which General, where it goes, tells of.
  */
 export function Rail({ me, workspaceName, current, activity, newRelease, onNewDirect }: Props) {
@@ -108,7 +108,7 @@ export function Rail({ me, workspaceName, current, activity, newRelease, onNewDi
     >
       <PageLink
         href="/"
-        aria-label="Ember home"
+        aria-label="Papaya OS home"
         title={workspaceName}
         aria-current={marked === "home" ? "page" : undefined}
         className="mb-1 flex size-14 shrink-0 items-center justify-center rounded-[10px]"
@@ -132,7 +132,7 @@ export function Rail({ me, workspaceName, current, activity, newRelease, onNewDi
         label={me.administrator ? "Admin" : "Workspace"}
         href={WORKSPACE_SETTINGS_PATH}
         current={marked === "workspace"}
-        notice={newRelease === null ? undefined : `Ember ${newRelease} is available`}
+        notice={newRelease === null ? undefined : `Papaya OS ${newRelease} is available`}
       />
       <AppearanceMenu />
       {/* Your avatar, at 36px, links to your profile, where you log out. */}

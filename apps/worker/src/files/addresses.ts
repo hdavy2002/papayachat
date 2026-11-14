@@ -4,8 +4,8 @@ import { hmacKey } from "../hmac";
 import { escapePath } from "./filename";
 
 // The addresses that show and download a room's files, /files/<key>/<signature>/<name>: the signature
-// says Ember made the address, so nobody can guess one, and as there, it never expires. The name is
-// there for whoever saves the file, but what it's saved as is the name Ember keeps. A file's preview is
+// says Papaya OS made the address, so nobody can guess one, and as there, it never expires. The name is
+// there for whoever saves the file, but what it's saved as is the name Papaya OS keeps. A file's preview is
 // at /previews/<key>/<signature>/<name>, under the same signature.
 
 const encoder = new TextEncoder();

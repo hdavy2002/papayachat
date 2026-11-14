@@ -5,14 +5,14 @@
 
 /** Cloudflare's DNS over HTTPS, which `node:dns` also uses in a Worker. */
 const DNS_OVER_HTTPS = "https://cloudflare-dns.com/dns-query";
-/** The types of record Ember looks up, by the numbers its answers give them. */
+/** The types of record Papaya OS looks up, by the numbers its answers give them. */
 const RECORD_TYPES = { A: 1, NS: 2, CNAME: 5, SOA: 6, MX: 15, TXT: 16, AAAA: 28 } as const;
 const NOERROR = 0;
 const NXDOMAIN = 3;
 /** The most names `zoneOf` asks about, going up past names that are aliases. */
 const MAX_ZONE_LOOKUPS = 3;
 
-/** A type of record Ember looks up. */
+/** A type of record Papaya OS looks up. */
 export type RecordType = keyof typeof RECORD_TYPES;
 
 /** What asks Cloudflare's resolver: the Worker's own `fetch`, with a signal, or a test's stand-in. */

@@ -70,7 +70,7 @@ describe("Private sign-in link", () => {
     expect(loadPage).not.toHaveBeenCalled();
   });
 
-  it("leaves the page blank without asking Ember when the address holds no link", () => {
+  it("leaves the page blank without asking Papaya OS when the address holds no link", () => {
     const fetch = vi.spyOn(globalThis, "fetch");
     for (const address of ["/session/transfers", "/session/transfers#token=", "/session/transfers#token", "/session/transfers#m3"]) {
       const { unmount } = open(address);
@@ -93,7 +93,7 @@ describe("Private sign-in link", () => {
     expect(location.hash).toBe("");
   });
 
-  it("tries again when it can't reach Ember, or Ember fails, waiting longer each time", async () => {
+  it("tries again when it can't reach Papaya OS, or Papaya OS fails, waiting longer each time", async () => {
     vi.useFakeTimers();
     const fetch = serve(unreachable, () => Response.json({ error: "Something went wrong" }, { status: 500 }), signedIn);
     open();

@@ -1,18 +1,18 @@
 import type { RoomId } from "./index.ts";
 import { MAX_ID_LENGTH } from "./pages.ts";
 
-// Files attached to messages, which Ember keeps in R2. Campfire takes a file with the message that
+// Files attached to messages, which Papaya OS keeps in R2. Campfire takes a file with the message that
 // carries it, in one request, as its composer posts it, but a Worker takes at most 100 MB a request, so
 // the app uploads a file in parts that R2 puts back together, and the room posts its message once it has
 // all of them.
 
-/** The largest file Ember takes, in decimal bytes. */
+/** The largest file Papaya OS takes, in decimal bytes. */
 export const MAX_FILE_SIZE = 250_000_000;
 
 /** What the app's uploader says of a larger file, and the Worker's 413 says too. */
 export const FILE_TOO_LARGE = "Files must be 250 MB or smaller.";
 
-/** The longest file name Ember keeps, in UTF-16 code units: as long as common file systems let a name be. */
+/** The longest file name Papaya OS keeps, in UTF-16 code units: as long as common file systems let a name be. */
 export const MAX_FILE_NAME_LENGTH = 255;
 
 /** The longest type a browser can give a file: RFC 6838's 127 characters a side and the slash between. */
@@ -59,7 +59,7 @@ export const isPreviewed = (contentType: string) => isVariable(contentType) || c
 export const isWebImage = (contentType: string) => WEB_IMAGE_TYPES.has(contentType);
 
 /**
- * The most pixels a picture or video has for Ember to preview it or show it in its place, as a small
+ * The most pixels a picture or video has for Papaya OS to preview it or show it in its place, as a small
  * file can hold a picture far too large to decode: Campfire's
  * `Message::Attachment::THUMBNAIL_MAX_PIXELS`.
  */
@@ -123,10 +123,10 @@ export interface StoredFile {
 /** A UTF-16 surrogate without its pair, which no file name can hold. */
 const LONE_SURROGATE = /\p{Surrogate}/u;
 
-/** Why Ember keeps no file of a name: one longer than common file systems allow, or holding half a character. */
+/** Why Papaya OS keeps no file of a name: one longer than common file systems allow, or holding half a character. */
 export const FILE_NAME_NOT_KEPT = "That file's name can't be kept";
 
-/** Whether Ember can keep a file named `name`, once it has a name. */
+/** Whether Papaya OS can keep a file named `name`, once it has a name. */
 export const isKeepableFileName = (name: string) => name.length <= MAX_FILE_NAME_LENGTH && !LONE_SURROGATE.test(name);
 
 /** Parses an untrusted `NewUpload`, or returns why it's refused: `FILE_TOO_LARGE` for a file too large. */

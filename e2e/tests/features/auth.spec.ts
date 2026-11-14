@@ -3,7 +3,7 @@ import type { Page } from "@playwright/test";
 import { ADMINISTRATOR, administratorOn, drawnPicture, editorField, invitation, logOut, shownPicture, signInAsAdministrator, useOwnAddress } from "../../fixtures";
 import { expect, test, unique } from "./fixtures";
 
-const signInHeading = (page: Page) => page.getByRole("heading", { level: 1, name: "Sign in to Ember" });
+const signInHeading = (page: Page) => page.getByRole("heading", { level: 1, name: "Sign in to Papaya OS" });
 
 test.describe("Sign in with email and password", () => {
   test.beforeEach(({ page }) => useOwnAddress(page));
@@ -59,7 +59,7 @@ test.describe("Sign up with the join link", () => {
 
     await page.goto(link);
     await expect(page).toHaveTitle("Sign up");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Join Ember");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Join Papaya OS");
     await expect(page.getByLabel("Name")).toBeFocused();
     const emailAddress = `grace-${crypto.randomUUID()}@example.com`;
     await join(page, emailAddress);
@@ -138,7 +138,7 @@ test.describe("Version", () => {
   test("shows the version under the sign-in and join cards, and nobody's email address", async ({ page, request, session }) => {
     for (const path of ["/session/new", `/join/${(await invitation(request, session)).joinCode}`]) {
       await page.goto(path);
-      await expect(page.getByText(/^Ember version/)).toHaveText(/^Ember version \d+\.\d+/);
+      await expect(page.getByText(/^Version/)).toHaveText(/^Version \d+\.\d+/);
       await expect(page.getByText(ADMINISTRATOR.emailAddress)).toHaveCount(0);
     }
   });
@@ -148,7 +148,7 @@ test.describe("Sign in with a display name", () => {
   test("signs in with a display name and opens the first room", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("button", { name: "Join with just a name" }).click();
-    await expect(page.getByRole("heading", { name: "Welcome to Ember" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Welcome to Papaya OS" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Join" })).toBeDisabled();
 
     await page.getByLabel("Your name").fill("  Ada Lovelace  ");

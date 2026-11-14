@@ -56,35 +56,35 @@ import { CHANGES_SAVED } from "./settings-page";
 vi.mock("@/lib/previews", () => ({ avatarVariantOf: vi.fn(async () => new Blob(["variant"], { type: "image/webp" })) }));
 
 const ACCOUNT_ID = "0123456789abcdef0123456789abcdef";
-/** @ember's avatar while it's Ember's flame, and once an administrator has uploaded a picture. */
+/** @ember's avatar while it's Papaya OS's flame, and once an administrator has uploaded a picture. */
 const FLAME = "/users/ember.abc/avatar?v=20261101120000";
 const UPLOADED = "/users/ember.abc/avatar?v=20261105120000";
 
-/** One of Workers AI's, which Ember no longer offers, kept by a copy set up before, in the format Cloudflare's REST API took it in. */
+/** One of Workers AI's, which Papaya OS no longer offers, kept by a copy set up before, in the format Cloudflare's REST API took it in. */
 const KEPT_GLM: AssistantModel = { id: "@cf/zai-org/glm-4.7-flash", name: "GLM-4.7 Flash", format: "chat" };
 
-/** One of Workers AI's, as Cloudflare's model search lists it for Ember AI's account. */
+/** One of Workers AI's, as Cloudflare's model search lists it for Papaya AI's account. */
 const GEMMA: OfferedModel = { id: "@cf/google/gemma-4-26b-a4b-it", name: "Gemma 4 26B", format: "workers", price: { input: 0.1, output: 0.3 }, thinkingLevels: [] };
 
-/** The models Ember offers through Ember AI's account, as the Worker lists them: the models file's, then Workers AI's. */
+/** The models Papaya OS offers through Papaya AI's account, as the Worker lists them: the models file's, then Workers AI's. */
 const OFFERED: OfferedModels = { models: [...ASSISTANT_MODELS, GEMMA], suggested: SUGGESTED_MODEL, workersAi: null };
 
-/** Listing the models Ember offers, which the card does as it shows. */
+/** Listing the models Papaya OS offers, which the card does as it shows. */
 const LISTING = "POST /api/account/assistant/offered";
 /** The Tools card's request, which has tests of its own. */
 const TOOLS = `GET /api/account/agents/${ASSISTANT_ID}/tools`;
 
-/** Why Workers AI's models aren't listed, as the Worker says when Cloudflare didn't take Ember AI's API token for them. */
+/** Why Workers AI's models aren't listed, as the Worker says when Cloudflare didn't take Papaya AI's API token for them. */
 const UNLISTED = "Workers AI's models aren't listed, as Cloudflare didn't take the API token for them. Add the Workers AI Read permission to it in the Cloudflare dashboard.";
 
-/** The model `id`, as Ember offers it, or kept one it no longer offers, or else as it would keep one it doesn't know. */
+/** The model `id`, as Papaya OS offers it, or kept one it no longer offers, or else as it would keep one it doesn't know. */
 function known(id: string): AssistantModel {
   const { name, format } = [...OFFERED.models, KEPT_GLM].find((model) => model.id === id) ?? { name: id, format: "chat" as const };
   return { id, name, format };
 }
 
 /**
- * Ember AI on, running on `model`, with `most` the most its dials go to, people able to pick `others` too,
+ * Papaya AI on, running on `model`, with `most` the most its dials go to, people able to pick `others` too,
  * and doing `webTools` on the web: nothing yet for Anthropic's, OpenAI's and xAI's models, which can
  * search, and null for the rest, which can't.
  */
@@ -103,10 +103,10 @@ const on = (model: string, most: AnswerLevels = TOP_LEVELS, others: string[] = [
 type Answer<T = void> = (given: T) => Response | Promise<Response>;
 
 /**
- * Answers turning Ember AI off, changing it, taking a model out, adding a model, and uploading @ember's
+ * Answers turning Papaya AI off, changing it, taking a model out, adding a model, and uploading @ember's
  * avatar and taking it away as the server would, or as `stopped`, `changed`, `removed`, `added`,
- * `pictured` and `unpictured` say, reading Ember AI again as another tab's upload left it, or as
- * `read` says, and listing the models Ember offers with OFFERED, or as `offered` says.
+ * `pictured` and `unpictured` say, reading Papaya AI again as another tab's upload left it, or as
+ * `read` says, and listing the models Papaya OS offers with OFFERED, or as `offered` says.
  */
 function serve({
   stopped = () => Response.json({ assistant: null }),
@@ -143,14 +143,14 @@ function serve({
   });
 }
 
-/** What the card asked of the server, in order, but for listing the models Ember offers. */
+/** What the card asked of the server, in order, but for listing the models Papaya OS offers. */
 const asked = () =>
   vi
     .mocked(fetch)
     .mock.calls.map(([input, init]) => `${init?.method ?? "GET"} ${String(input)}`)
     .filter((request) => request !== LISTING);
 
-/** What the card listed the models Ember offers with, each time it did. */
+/** What the card listed the models Papaya OS offers with, each time it did. */
 const listedWith = () =>
   vi.mocked(fetch).mock.calls.flatMap(([input, init]) => (`${init?.method} ${String(input)}` === LISTING ? [JSON.parse(String(init?.body)) as unknown] : []));
 
@@ -161,14 +161,14 @@ function held(response: () => Response) {
   return { answered: () => answered, answer: () => act(async () => answer()) };
 }
 
-/** The administrator looking, whom What Ember adds around them shows asking @ember. */
+/** The administrator looking, whom What Papaya OS adds around them shows asking @ember. */
 const ada: Me = { id: "0mgk3x2a9b4c5d", name: "Ada Lovelace", administrator: true };
 
 /** The workspace as the page shows it, by the name its prompt gives @ember. */
 const Community = ({ children }: { children: React.ReactNode }) => <AccountContext value={{ ...useAccount(), name: "Analytical Engines" }}>{children}</AccountContext>;
 
 /**
- * @ember's settings, for a workspace whose Ember AI is `assistant`, with everyone the people directory
+ * @ember's settings, for a workspace whose Papaya AI is `assistant`, with everyone the people directory
  * lists, `people`, as the workspace has them, which `showPeople` changes.
  */
 function showCard(assistant: Assistant, people: People = new Map()) {
@@ -186,7 +186,7 @@ function showCard(assistant: Assistant, people: People = new Map()) {
   return { ...callbacks, user: userEvent.setup(), showPeople: (listed: People) => rerender(shown(listed)) };
 }
 
-/** @ember's settings, showing Ember AI as each change to it leaves it, as @ember's page does, with `people` as `showCard` has them. */
+/** @ember's settings, showing Papaya AI as each change to it leaves it, as @ember's page does, with `people` as `showCard` has them. */
 function showLiveCard(assistant: Assistant, people: People = new Map()) {
   const callbacks = { onSetUp: vi.fn(), onStopped: vi.fn(), onFailed: vi.fn() };
   function Live() {
@@ -215,7 +215,7 @@ afterEach(() => vi.restoreAllMocks());
 
 describe("@ember's page", () => {
   const SONNET = on("anthropic/claude-sonnet-5.5");
-  /** What reading Ember AI answers while it's `assistant`. */
+  /** What reading Papaya AI answers while it's `assistant`. */
   const readAs = (assistant: Assistant | null) => () => Response.json({ assistant, cloudflareAccountId: null });
 
   /** @ember's page at its address, as the workspace shows it, for `me`. */
@@ -243,7 +243,7 @@ describe("@ember's page", () => {
     expect(requests.mock.calls.map(([input]) => String(input))).toContain(`/api/account/agents/${ASSISTANT_ID}/tools`);
   });
 
-  it("is titled Edit agent and headed Ember, with Go Back to the AI assistant tab, showing @ember's settings once Ember AI is read", async () => {
+  it("is titled Edit agent and headed Papaya OS, with Go Back to the AI assistant tab, showing @ember's settings once Papaya AI is read", async () => {
     serve({ read: readAs(SONNET) });
     showPage();
     expect(document.title).toBe("Edit agent");
@@ -251,7 +251,7 @@ describe("@ember's page", () => {
     expect(screen.getByText(EMBER_EXPLAINED)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Go Back" })).toHaveAttribute("href", AGENTS_PATH);
     expect(await screen.findByRole("region", { name: "@ember" })).toBeInTheDocument();
-    // Modify with caution is in What Ember adds around them, under Instructions.
+    // Modify with caution is in What Papaya OS adds around them, under Instructions.
     expect(within(card()).getAllByRole("heading").map((heading) => heading.textContent)).toEqual(["Avatar", "Instructions", "Modify with caution", "Models", "Search the web", "Limits"]);
   });
 
@@ -264,7 +264,7 @@ describe("@ember's page", () => {
     expect(onFailed).not.toHaveBeenCalled();
   });
 
-  it("sends an administrator to the AI assistant tab while Ember AI is off, saying so", async () => {
+  it("sends an administrator to the AI assistant tab while Papaya AI is off, saying so", async () => {
     serve({ read: readAs(null) });
     const { onFailed } = showPage();
     expect(await screen.findByRole("alert")).toHaveTextContent(ASSISTANT_OFF);
@@ -273,7 +273,7 @@ describe("@ember's page", () => {
     expect(onFailed).not.toHaveBeenCalled();
   });
 
-  it("goes to the AI assistant tab once a change finds Ember AI turned off in another tab, saying so", async () => {
+  it("goes to the AI assistant tab once a change finds Papaya AI turned off in another tab, saying so", async () => {
     serve({ read: readAs(SONNET), changed: () => Response.json({ error: ASSISTANT_OFF }, { status: 409 }) });
     const { user, onFailed } = showPage();
     await screen.findByRole("region", { name: "@ember" });
@@ -283,7 +283,7 @@ describe("@ember's page", () => {
     expect(onFailed).not.toHaveBeenCalled();
   });
 
-  it("goes to the AI assistant tab once turning Search the web on finds Ember AI turned off in another tab, saying so", async () => {
+  it("goes to the AI assistant tab once turning Search the web on finds Papaya AI turned off in another tab, saying so", async () => {
     vi.spyOn(globalThis, "fetch").mockImplementation(async (input, init) => {
       const request = `${init?.method ?? "GET"} ${String(input)}`;
       if (request === "GET /api/account") return readAs(SONNET)();
@@ -300,19 +300,19 @@ describe("@ember's page", () => {
     expect(onFailed).not.toHaveBeenCalled();
   });
 
-  it("leaves a failure to read Ember AI to the workspace's alerts", async () => {
+  it("leaves a failure to read Papaya AI to the workspace's alerts", async () => {
     serve({ read: () => Response.json({ error: "Something went wrong" }, { status: 500 }) });
     const { onFailed } = showPage();
     await waitFor(() => expect(onFailed).toHaveBeenCalledWith(new ApiError(500, "Something went wrong")));
     expect(location.pathname).toBe(agentSettingsPath(ASSISTANT_ID));
   });
 
-  it("opens Set up Ember AI over the page for Search the web with a model that can't search, to choose another", async () => {
+  it("opens Set up Papaya AI over the page for Search the web with a model that can't search, to choose another", async () => {
     serve({ read: readAs(on("@cf/zai-org/glm-4.7-flash")) });
     const { user } = showPage();
     await screen.findByRole("region", { name: "@ember" });
     await user.click(webSwitch());
-    expect(await screen.findByRole("dialog", { name: "Set up Ember AI" })).toBeInTheDocument();
+    expect(await screen.findByRole("dialog", { name: "Set up Papaya AI" })).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: "Account ID" })).toHaveValue(ACCOUNT_ID);
   });
 });
@@ -322,13 +322,13 @@ describe("Instructions", () => {
   const save = () => within(card()).getByRole("button", { name: "Save instructions" });
   const SONNET = on("anthropic/claude-sonnet-5.5");
   const BRITISH: Assistant = { ...SONNET, instructions: "Answer in British English." };
-  /** The preview of what Ember adds around them, the box that asks for care before it's modified, and the template, once Modify is pressed. */
-  const preview = () => within(card()).getByText("What Ember adds around them").closest("details")!;
+  /** The preview of what Papaya OS adds around them, the box that asks for care before it's modified, and the template, once Modify is pressed. */
+  const preview = () => within(card()).getByText("What Papaya OS adds around them").closest("details")!;
   const caution = () => within(card()).getByRole("region", { name: "Modify with caution" });
   const modify = () => within(caution()).getByRole("button", { name: "Modify" });
-  const templateBox = () => within(card()).getByRole("textbox", { name: "What Ember adds around them" });
+  const templateBox = () => within(card()).getByRole("textbox", { name: "What Papaya OS adds around them" });
   const saveTemplate = () => within(caution()).getByRole("button", { name: "Save" });
-  /** What Ember adds around @ember's instructions, as an administrator modified it. */
+  /** What Papaya OS adds around @ember's instructions, as an administrator modified it. */
   const SCRIBE = "You are {{name}}, the scribe of {{community}}.\n\n{{instructions}}\n\nAnswer {{asker}} in at most {{words}} words.";
   /** The changes the page sent. */
   const changesSent = () =>
@@ -340,7 +340,7 @@ describe("Instructions", () => {
   beforeEach(() => history.replaceState(null, "", agentSettingsPath(ASSISTANT_ID)));
   afterEach(() => history.replaceState(null, "", "/"));
 
-  it("shows what administrators add to Ember's own, which Save instructions saves once what's typed differs", async () => {
+  it("shows what administrators add to Papaya OS's own, which Save instructions saves once what's typed differs", async () => {
     serve();
     const { user } = showCard(BRITISH);
     expect(box()).toHaveValue("Answer in British English.");
@@ -386,7 +386,7 @@ describe("Instructions", () => {
     expect(screen.queryByRole("alert")).toBeNull();
   });
 
-  it("shows what Ember adds around them, as @ember reads it when the administrator writes to it directly", () => {
+  it("shows what Papaya OS adds around them, as @ember reads it when the administrator writes to it directly", () => {
     serve();
     showCard(SONNET);
     expect(preview()).not.toHaveAttribute("open");
@@ -440,12 +440,12 @@ describe("Instructions", () => {
     expect(location.pathname).toBe(agentSettingsPath(ASSISTANT_ID));
   });
 
-  it("keeps Ember's own around them until Modify is pressed, asking for care first", async () => {
+  it("keeps Papaya OS's own around them until Modify is pressed, asking for care first", async () => {
     serve();
     const { user } = showCard(SONNET);
     expect(within(caution()).getByRole("heading", { level: 4, name: "Modify with caution" })).toBeInTheDocument();
     expect(caution()).toHaveTextContent(cautionFor("@ember"));
-    expect(within(card()).queryByRole("textbox", { name: "What Ember adds around them" })).toBeNull();
+    expect(within(card()).queryByRole("textbox", { name: "What Papaya OS adds around them" })).toBeNull();
     await user.click(modify());
     expect(templateBox()).toHaveValue(EMBER_TEMPLATE);
     expect(templateBox()).toHaveFocus();
@@ -453,7 +453,7 @@ describe("Instructions", () => {
     expect(save()).toBeDisabled();
   });
 
-  it("saves what's modified with Save beside it, or Save instructions, without the spaces around it, with a notice, and Ember's own as null", async () => {
+  it("saves what's modified with Save beside it, or Save instructions, without the spaces around it, with a notice, and Papaya OS's own as null", async () => {
     const answer = held(() => Response.json({ assistant: { ...SONNET, promptTemplate: SCRIBE } }));
     serve({ changed: answer.answered });
     const { user } = showLiveCard(SONNET);
@@ -474,7 +474,7 @@ describe("Instructions", () => {
 
     vi.mocked(fetch).mockImplementation(async () => Response.json({ assistant: { ...SONNET, instructions: "Be brief." } }));
     await user.type(box(), "Be brief.");
-    await user.click(within(caution()).getByRole("button", { name: "Use Ember's own" }));
+    await user.click(within(caution()).getByRole("button", { name: "Use Papaya OS's own" }));
     expect(within(preview()).queryByText("Modified")).toBeNull();
     await user.click(save());
     await waitFor(() => expect(changesSent()).toEqual([{ promptTemplate: SCRIBE }, { instructions: "Be brief.", promptTemplate: null }]));
@@ -482,7 +482,7 @@ describe("Instructions", () => {
     expect(saveTemplate()).toBeDisabled();
   });
 
-  it("refuses what Ember can't take before saving it, saying why in it, and in Unsaved Changes", async () => {
+  it("refuses what Papaya OS can't take before saving it, saying why in it, and in Unsaved Changes", async () => {
     serve();
     const { user, onFailed } = showLiveCard(SONNET);
     await user.click(modify());
@@ -501,7 +501,7 @@ describe("Instructions", () => {
     expect(location.pathname).toBe(agentSettingsPath(ASSISTANT_ID));
   });
 
-  it("asks before the page is left with what Ember adds around them unsaved", async () => {
+  it("asks before the page is left with what Papaya OS adds around them unsaved", async () => {
     serve();
     const { user } = showLiveCard(SONNET);
     await user.click(modify());
@@ -527,7 +527,7 @@ describe("Instructions", () => {
 
 describe("Avatar", () => {
   const avatar = () => within(card()).getByRole("img", { name: "@ember's avatar" });
-  const useTheFlame = () => within(card()).queryByRole("button", { name: "Use Ember's flame" });
+  const useTheFlame = () => within(card()).queryByRole("button", { name: "Use Papaya OS's flame" });
   const SONNET = on("anthropic/claude-sonnet-5.5");
   const PICTURED: Assistant = { ...SONNET, avatarUrl: UPLOADED, avatar: true };
   const moon = () => new File(["moon"], "moon.jpg", { type: "image/jpeg" });
@@ -537,18 +537,18 @@ describe("Avatar", () => {
       .mocked(fetch)
       .mock.calls.filter(([input, init]) => `${init?.method} ${String(input)}` === "PUT /api/account/assistant/avatar")
       .map(([, init]) => init?.body as FormData);
-  /** How many times Ember AI was read again. */
+  /** How many times Papaya AI was read again. */
   const reads = () => vi.mocked(fetch).mock.calls.filter(([input, init]) => String(input) === "/api/account" && init?.method === undefined).length;
   /** @ember as the people directory lists it, with its avatar at `avatarUrl`. */
   const listed = (avatarUrl: string): People =>
-    new Map([[ASSISTANT_ID, { id: ASSISTANT_ID, name: "Ember", bio: null, role: "bot", status: "active", avatarUrl } satisfies DirectoryUser]]);
+    new Map([[ASSISTANT_ID, { id: ASSISTANT_ID, name: "Papaya OS", bio: null, role: "bot", status: "active", avatarUrl } satisfies DirectoryUser]]);
 
   beforeEach(() => {
     vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:moon");
     vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
   });
 
-  it("shows Ember's flame while Ember AI is on, which a picture picked replaces", () => {
+  it("shows Papaya OS's flame while Papaya AI is on, which a picture picked replaces", () => {
     serve();
     showCard(SONNET);
     expect(avatar()).toHaveAttribute("src", FLAME);
@@ -568,7 +568,7 @@ describe("Avatar", () => {
 
     await waitFor(() => expect(uploads()).toHaveLength(1));
     expect(avatar()).toHaveAttribute("src", "blob:moon");
-    // Nothing else changes while it saves, so that its answer can't show Ember AI as it was.
+    // Nothing else changes while it saves, so that its answer can't show Papaya AI as it was.
     expect(picker()).toBeDisabled();
     expect(addModel()).toBeDisabled();
     expect(webSwitch()).toBeDisabled();
@@ -586,7 +586,7 @@ describe("Avatar", () => {
     expect(onFailed).not.toHaveBeenCalled();
   });
 
-  it("brings back Ember's flame with Use Ember's flame, saying nothing", async () => {
+  it("brings back Papaya OS's flame with Use Papaya OS's flame, saying nothing", async () => {
     const flameAgain = "/users/ember.abc/avatar?v=20261105130000";
     const fetch = serve({ unpictured: () => Response.json({ assistant: { ...SONNET, avatarUrl: flameAgain } }) });
     const { user } = showLiveCard(PICTURED);
@@ -614,11 +614,11 @@ describe("Avatar", () => {
   });
 
   it("leaves a picture that couldn't be saved to the page's alerts, showing the avatar as it was", async () => {
-    serve({ pictured: () => Response.json({ error: "Ember isn't set up to store files" }, { status: 503 }) });
+    serve({ pictured: () => Response.json({ error: "Papaya OS isn't set up to store files" }, { status: 503 }) });
     const { user, onChanged, onFailed } = showCard(SONNET);
     await user.upload(picker(), moon());
 
-    await waitFor(() => expect(onFailed).toHaveBeenCalledWith(new ApiError(503, "Ember isn't set up to store files")));
+    await waitFor(() => expect(onFailed).toHaveBeenCalledWith(new ApiError(503, "Papaya OS isn't set up to store files")));
     expect(onChanged).not.toHaveBeenCalled();
     expect(avatar()).toHaveAttribute("src", FLAME);
     expect(picker()).toBeEnabled();
@@ -636,7 +636,7 @@ describe("Avatar", () => {
     expect(useTheFlame()).toBeEnabled();
   });
 
-  it("shows the avatar as another tab changes it, once the people directory hears, reading Ember AI again for Use Ember's flame", async () => {
+  it("shows the avatar as another tab changes it, once the people directory hears, reading Papaya AI again for Use Papaya OS's flame", async () => {
     serve();
     const { showPeople, onFailed } = showLiveCard(SONNET, listed("/users/ember.abc/avatar?v=20261031120000"));
     // The directory can list an avatar from before the card's settings were read.
@@ -645,13 +645,13 @@ describe("Avatar", () => {
     showPeople(listed(UPLOADED));
     expect(avatar()).toHaveAttribute("src", UPLOADED);
 
-    expect(await within(card()).findByRole("button", { name: "Use Ember's flame" })).toBeEnabled();
+    expect(await within(card()).findByRole("button", { name: "Use Papaya OS's flame" })).toBeEnabled();
     expect(picker()).toHaveAccessibleDescription(UPLOADED_AVATAR_EXPLAINED);
     expect(reads()).toBe(1);
     expect(onFailed).not.toHaveBeenCalled();
   });
 
-  it("takes away Use Ember's flame once another tab brings back the flame", async () => {
+  it("takes away Use Papaya OS's flame once another tab brings back the flame", async () => {
     const flameAgain = "/users/ember.abc/avatar?v=20261105130000";
     serve({ read: () => Response.json({ assistant: { ...SONNET, avatarUrl: flameAgain } }) });
     const { showPeople } = showLiveCard(PICTURED, listed(UPLOADED));
@@ -663,14 +663,14 @@ describe("Avatar", () => {
     expect(picker()).toHaveAccessibleDescription(AVATAR_EXPLAINED);
   });
 
-  it("shows Ember AI off once it's read again after another tab turns it off", async () => {
+  it("shows Papaya AI off once it's read again after another tab turns it off", async () => {
     serve({ read: () => Response.json({ assistant: null }) });
     const { showPeople, onStopped } = showLiveCard(PICTURED, listed(UPLOADED));
     showPeople(listed("/users/ember.abc/avatar?v=20261105130000"));
     await waitFor(() => expect(onStopped).toHaveBeenCalledTimes(1));
   });
 
-  it("doesn't read Ember AI again for a picture it saves itself, which the directory may hear of before its answer", async () => {
+  it("doesn't read Papaya AI again for a picture it saves itself, which the directory may hear of before its answer", async () => {
     const answer = held(() => Response.json({ assistant: PICTURED }));
     serve({ pictured: answer.answered });
     const { user, showPeople } = showLiveCard(SONNET, listed(FLAME));
@@ -683,7 +683,7 @@ describe("Avatar", () => {
     expect(reads()).toBe(0);
   });
 
-  it("drops a read begun before a change of its own, which could show Ember AI as it was before the change", async () => {
+  it("drops a read begun before a change of its own, which could show Papaya AI as it was before the change", async () => {
     const read = held(() => Response.json({ assistant: PICTURED }));
     const saved = held(() => Response.json({ assistant: { ...PICTURED, most: { ...TOP_LEVELS, thinking: "low" } } }));
     serve({ read: read.answered, changed: saved.answered });
@@ -700,7 +700,7 @@ describe("Avatar", () => {
     expect(reads()).toBe(1);
   });
 
-  it("reads Ember AI again once a change of its own that dropped a read fails", async () => {
+  it("reads Papaya AI again once a change of its own that dropped a read fails", async () => {
     const first = held(() => Response.json({ assistant: PICTURED }));
     let answered = 0;
     serve({
@@ -712,7 +712,7 @@ describe("Avatar", () => {
     await user.click(within(card()).getByRole("radio", { name: "Low" }));
     await waitFor(() => expect(onFailed).toHaveBeenCalledOnce());
 
-    expect(await within(card()).findByRole("button", { name: "Use Ember's flame" })).toBeEnabled();
+    expect(await within(card()).findByRole("button", { name: "Use Papaya OS's flame" })).toBeEnabled();
     expect(within(card()).getByRole("radio", { name: "High" })).toBeChecked();
     expect(reads()).toBe(2);
   });
@@ -735,7 +735,7 @@ describe("Models", () => {
     expect(addModel()).toBeEnabled();
   });
 
-  it("says so of a model Ember no longer offers, once the Worker lists those it does, which can answer everyone still, or be removed", async () => {
+  it("says so of a model Papaya OS no longer offers, once the Worker lists those it does, which can answer everyone still, or be removed", async () => {
     const fetch = serve();
     const { user } = showCard(on("anthropic/claude-sonnet-5.5", TOP_LEVELS, [GEMMA.id, KEPT_GLM.id]));
     expect(await within(models()).findByRole("radio", { name: "GLM-4.7 Flash (no longer offered)" })).toBeEnabled();
@@ -746,7 +746,7 @@ describe("Models", () => {
     expect(listedWith()).toEqual([{ accountId: ACCOUNT_ID }]);
   });
 
-  it("doesn't say Ember no longer offers one of Workers AI's while the Worker couldn't list them, as it may offer it still", async () => {
+  it("doesn't say Papaya OS no longer offers one of Workers AI's while the Worker couldn't list them, as it may offer it still", async () => {
     const listing = held(() => Response.json({ ...OFFERED, models: [...ASSISTANT_MODELS], workersAi: UNLISTED } satisfies OfferedModels));
     serve({ offered: listing.answered });
     showCard(on("anthropic/claude-sonnet-5.5", TOP_LEVELS, [GEMMA.id, KEPT_GLM.id]));
@@ -801,7 +801,7 @@ describe("Models", () => {
     expect(addModel()).toHaveAccessibleDescription(MODELS_FULL);
   });
 
-  it("can't add a model once people can pick every one Ember offers, as the Worker lists them", async () => {
+  it("can't add a model once people can pick every one Papaya OS offers, as the Worker lists them", async () => {
     serve();
     showCard(on("anthropic/claude-sonnet-5.5", TOP_LEVELS, OFFERED.models.flatMap(({ id }) => (id === "anthropic/claude-sonnet-5.5" ? [] : [id]))));
     await waitFor(() => expect(addModel()).toBeDisabled());
@@ -813,7 +813,7 @@ describe("Add a model", () => {
   const dialog = () => screen.getByRole("dialog");
   const menu = () => within(dialog()).getByRole("combobox", { name: "Model" });
 
-  /** Opens Add a model from the card, for a workspace whose Ember AI is `assistant`. */
+  /** Opens Add a model from the card, for a workspace whose Papaya AI is `assistant`. */
   async function openDialog(assistant: Assistant = on("anthropic/claude-sonnet-5.5")) {
     const shown = showCard(assistant);
     await shown.user.click(within(card()).getByRole("button", { name: "Add a model" }));
@@ -821,7 +821,7 @@ describe("Add a model", () => {
     return shown;
   }
 
-  it("offers the models Ember offers that people can't pick yet, as the card listed them, the first of them chosen", async () => {
+  it("offers the models Papaya OS offers that people can't pick yet, as the card listed them, the first of them chosen", async () => {
     serve();
     await openDialog(on("anthropic/claude-sonnet-5.5", TOP_LEVELS, ["openai/gpt-6.1-sol", KEPT_GLM.id]));
     expect(dialog()).toHaveAccessibleName("Add a model");
@@ -880,7 +880,7 @@ describe("Add a model", () => {
     expect(dialog()).toHaveAccessibleName("Add a model");
   });
 
-  it("says why AI Gateway refused Ember AI's API token under the menu, as it isn't the model's doing", async () => {
+  it("says why AI Gateway refused Papaya AI's API token under the menu, as it isn't the model's doing", async () => {
     const refusal = "AI Gateway's endpoint for Anthropic didn't take the API token. Add the AI Gateway Run permission to the token in the Cloudflare dashboard, then try again.";
     serve({ added: () => Response.json({ error: refusal, field: "apiToken" }, { status: 422 }) });
     const { user, onChanged, onFailed } = await openDialog();
@@ -896,7 +896,7 @@ describe("Limits", () => {
   const dial = (name: string) => within(card()).getByRole("group", { name });
   const level = (name: string) => within(card()).getByRole("radio", { name });
 
-  it("has the most @ember may think and write for anyone's question while Ember AI is on, any level allowed", () => {
+  it("has the most @ember may think and write for anyone's question while Papaya AI is on, any level allowed", () => {
     serve();
     showCard(on("anthropic/claude-sonnet-5.5", { thinking: "medium", length: "long" }));
     expect(card()).toHaveTextContent(LIMITS_EXPLAINED);
@@ -921,7 +921,7 @@ describe("Limits", () => {
     expect(level("Off")).toBeEnabled();
   });
 
-  it("holds every other change while one saves, so that its answer can't show Ember AI as it was", async () => {
+  it("holds every other change while one saves, so that its answer can't show Papaya AI as it was", async () => {
     const answer = held(() => Response.json({ assistant: on("anthropic/claude-haiku-5.5", { thinking: "low", length: "long" }) }));
     serve({ changed: answer.answered });
     const { user } = showCard(on("anthropic/claude-haiku-5.5"));
@@ -1023,7 +1023,7 @@ describe("Search the web", () => {
     expect(onFailed).not.toHaveBeenCalled();
   });
 
-  it("says Ember AI changed while its model searched, its switch back off", async () => {
+  it("says Papaya AI changed while its model searched, its switch back off", async () => {
     serveWebSearch(() => Response.json({ error: WEB_SEARCH_CHANGED }, { status: 409 }));
     const { user, onFailed } = showLiveCard(on(SONNET));
     await user.click(webSwitch());
@@ -1047,7 +1047,7 @@ describe("Search the web", () => {
     expect(webSwitch()).toHaveAccessibleDescription(WEB_SEARCH_OFF);
   });
 
-  it("says a model Ember no longer offers that can't search can't, its switch opening Set up Ember AI to choose another", async () => {
+  it("says a model Papaya OS no longer offers that can't search can't, its switch opening Set up Papaya AI to choose another", async () => {
     serveWebSearch(() => turned(true));
     const { user, onSetUp } = showLiveCard(on("@cf/zai-org/glm-4.7-flash"));
     expect(webSwitch()).toHaveAccessibleDescription(cannotSearchWith("GLM-4.7 Flash"));
@@ -1058,10 +1058,10 @@ describe("Search the web", () => {
   });
 
   it("leaves a failure it can't say itself to the page's alerts", async () => {
-    serveWebSearch(() => Response.json({ error: "Only administrators can set up Ember AI" }, { status: 403 }));
+    serveWebSearch(() => Response.json({ error: "Only administrators can set up Papaya AI" }, { status: 403 }));
     const { user, onFailed } = showLiveCard(on(SONNET));
     await user.click(webSwitch());
-    await waitFor(() => expect(onFailed).toHaveBeenCalledWith(new ApiError(403, "Only administrators can set up Ember AI")));
+    await waitFor(() => expect(onFailed).toHaveBeenCalledWith(new ApiError(403, "Only administrators can set up Papaya AI")));
     expect(within(card()).getByRole("status")).toHaveTextContent("");
     expect(webSwitch()).not.toBeChecked();
   });
@@ -1096,7 +1096,7 @@ describe("Search the web", () => {
     expect(within(card()).getByRole("status")).toHaveTextContent("");
   });
 
-  it("forgets that choosing another model turned it off once Set up Ember AI opens, which may choose another", async () => {
+  it("forgets that choosing another model turned it off once Set up Papaya AI opens, which may choose another", async () => {
     serve({ changed: () => Response.json({ assistant: on("@cf/zai-org/glm-4.7-flash", TOP_LEVELS, [SONNET]) }) });
     const { user, onSetUp } = showLiveCard(on(SONNET, TOP_LEVELS, ["@cf/zai-org/glm-4.7-flash"], ["search", "read"]));
     await user.click(await within(card()).findByRole("radio", { name: "GLM-4.7 Flash (no longer offered)" }));

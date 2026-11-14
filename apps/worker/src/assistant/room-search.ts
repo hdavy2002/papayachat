@@ -4,7 +4,7 @@ import { searchIndex } from "../search-index";
 import { matchesOf } from "../searches";
 import { ToolError, type EmberTool } from "./tool-calls";
 
-// The first tool Ember runs for @ember and the agents: a search of the room they're asked in, for what was
+// The first tool Papaya OS runs for @ember and the agents: a search of the room they're asked in, for what was
 // written there besides the messages they read with a question, which it leaves out, so that those don't
 // crowd out what's older. It finds only that room's messages, which everyone who sees the answer can
 // read, as the search page finds them for someone in the room.

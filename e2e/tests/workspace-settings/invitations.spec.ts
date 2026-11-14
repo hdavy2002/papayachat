@@ -5,7 +5,7 @@ import { ADMINISTRATOR, administratorSession, cookieHeader, SAME_ORIGIN, sentFro
 import { forgetResendKey, giveResendKey, startFakeResend, type FakeResend, type SentEmail } from "./fake-resend";
 
 // Membership's Invite by email card, and the page an invitation's link opens, on the second test server,
-// which sends email with the Resend API the email specs fake, whose key each test gives Ember first. Each
+// which sends email with the Resend API the email specs fake, whose key each test gives Papaya OS first. Each
 // leaves the workspace as a new one is: no Resend API key, no From address, and no invitations waiting.
 
 const FROM = "chat@acme.example";
@@ -91,10 +91,10 @@ async function joinWith(browser: Browser, baseURL: string, link: string, emailAd
 }
 
 test.describe("Invite people by email", () => {
-  test("the administrator invites people, whom Ember emails a link each, then sends one again and revokes another", async ({ page, request, baseURL }) => {
+  test("the administrator invites people, whom Papaya OS emails a link each, then sends one again and revokes another", async ({ page, request, baseURL }) => {
     await giveFrom(request, FROM);
     const card = await openInvitations(page);
-    await expect(card).toContainText("Ember emails each person a link to join with their address, whichever ways to join are on.");
+    await expect(card).toContainText("Papaya OS emails each person a link to join with their address, whichever ways to join are on.");
 
     const hal = newAddress("hal");
     const ida = newAddress("ida");
@@ -133,7 +133,7 @@ test.describe("Invite people by email", () => {
 
   test("without a From address, the administrator copies each new link to send themselves, and it joins", async ({ page, browser, request, baseURL }) => {
     const card = await openInvitations(page);
-    await expect(card).toContainText("Ember can't send email yet, so you'll get each person's link to send them yourself.");
+    await expect(card).toContainText("Papaya OS can't send email yet, so you'll get each person's link to send them yourself.");
     const hal = newAddress("hal");
     const sent = resend.sent.length;
     await card.getByRole("textbox", { name: "Email addresses" }).fill(hal);

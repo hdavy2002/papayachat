@@ -331,7 +331,7 @@ describe("Turn on notifications", () => {
     unavailable();
     expect(await turnOnPush(KEY)).toEqual({
       title: "Notifications aren’t available here",
-      message: "Open Ember in a browser that supports notifications. On iPhone or iPad, add it to your Home Screen first.",
+      message: "Open Papaya OS in a browser that supports notifications. On iPhone or iPad, add it to your Home Screen first.",
       help: true,
     });
   });

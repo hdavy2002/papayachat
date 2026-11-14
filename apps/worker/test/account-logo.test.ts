@@ -32,7 +32,7 @@ const bytesOf = async (body: { arrayBuffer(): Promise<ArrayBuffer> }) => new Uin
 beforeEach(freshDeploy);
 
 describe("Workspace logo", () => {
-  it("serves Ember's stock app icon to anyone, and its 192-pixel one for size=small, kept five minutes and then a week while it's checked", async () => {
+  it("serves Papaya OS's stock app icon to anyone, and its 192-pixel one for size=small, kept five minutes and then a week while it's checked", async () => {
     const large = await logo("/account/logo");
     expect(large.status).toBe(200);
     expect(await bytesOf(large)).toEqual(icons["/logos/app-icon.png"]);
@@ -70,7 +70,7 @@ describe("Workspace logo", () => {
   });
 });
 
-/** Sets Ember up with Ada as its administrator, signed in. */
+/** Sets Papaya OS up with Ada as its administrator, signed in. */
 async function setUp(): Promise<Session> {
   const body = JSON.stringify({ name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" });
   const response = await api("/api/first_run", { method: "POST", body });
@@ -265,7 +265,7 @@ describe("Workspace logo", () => {
     const response = await removeLogo(ada);
     expect(response.status).toBe(200);
     const { account } = (await response.json()) as { account: Account };
-    expect(account).toEqual({ name: "Ember", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo: null, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false });
+    expect(account).toEqual({ name: "Papaya OS", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo: null, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false });
     expect(await socket.next()).toEqual({ type: "account.updated", account });
     expect(await bytesOf(await logo("/account/logo"))).toEqual(icons["/logos/app-icon.png"]);
     expect(await logoColumns()).toMatchObject({ logo_key: null, logo_variant: null });
@@ -294,7 +294,7 @@ describe("Workspace logo", () => {
 
     const unbound = await upload(ada, logoForm(blackHole(), largeVariant(), smallVariant()), { FILES: undefined });
     expect(unbound.status).toBe(503);
-    expect(await unbound.json()).toEqual({ error: "Ember isn't set up to store files" });
+    expect(await unbound.json()).toEqual({ error: "Papaya OS isn't set up to store files" });
     expect(await storedLogos()).toEqual([]);
     expect(await pendingDeletions()).toEqual([]);
   });

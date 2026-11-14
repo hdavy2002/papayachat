@@ -1,6 +1,6 @@
 import type { ModelFormat } from "@ember/protocol/assistant";
 
-// What the formats Ember asks a model in share: Anthropic's Messages and OpenAI's Responses each come two
+// What the formats Papaya OS asks a model in share: Anthropic's Messages and OpenAI's Responses each come two
 // ways, through Cloudflare's REST API and through AI Gateway's endpoint for the provider, and xAI's own
 // API is Responses too.
 

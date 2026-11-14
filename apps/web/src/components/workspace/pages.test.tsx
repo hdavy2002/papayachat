@@ -121,13 +121,13 @@ describe("Workspace layout", () => {
     expect(screen.getByText("Loading…")).toBeInTheDocument();
   });
 
-  it("says Ember can't be reached when they can't load, and tries again for the next page that needs them", async () => {
+  it("says Papaya OS can't be reached when they can't load, and tries again for the next page that needs them", async () => {
     vi.doMock("./pages", () => {
       throw new TypeError("Failed to fetch dynamically imported module");
     });
     const { show, navigate } = await freshWorkspace();
     show("/searches");
-    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't reach Ember. Check your connection and try again.");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't reach Papaya OS. Check your connection and try again.");
     expect(screen.getByText("Loading…")).toBeInTheDocument();
 
     // Straight from the one that couldn't load them.

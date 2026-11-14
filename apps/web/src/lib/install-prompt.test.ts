@@ -9,14 +9,14 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-/** The browser offering to install Ember, as Chromium does with `beforeinstallprompt`. */
+/** The browser offering to install Papaya OS, as Chromium does with `beforeinstallprompt`. */
 function offerToInstall() {
   const offer = new Event("beforeinstallprompt", { cancelable: true });
   dispatchEvent(offer);
   return offer;
 }
 
-/** Whether the browser may make its own offer to install Ember, which Install now would have taken. */
+/** Whether the browser may make its own offer to install Papaya OS, which Install now would have taken. */
 function browserOffers() {
   return !offerToInstall().defaultPrevented && !canInstall();
 }

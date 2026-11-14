@@ -23,7 +23,7 @@ const HASH_BYTES = 32;
 const CURRENT = `$scrypt$ln=${LOG_N},r=${R},p=${P}$`;
 const SCRYPT_DIGEST = /^\$scrypt\$ln=([1-9]\d?),r=([1-9]\d*),p=([1-9]\d*)\$([A-Za-z0-9+/]+)\$([A-Za-z0-9+/]+)$/;
 const PBKDF2_DIGEST = /^\$pbkdf2-sha256\$i=([1-9]\d*)\$([A-Za-z0-9+/]+)\$([A-Za-z0-9+/]+)$/;
-/** The iterations Ember made PBKDF2 digests with, which checking one costs besides the scrypt that replaces it. */
+/** The iterations Papaya OS made PBKDF2 digests with, which checking one costs besides the scrypt that replaces it. */
 const PBKDF2_ITERATIONS_BEFORE_SCRYPT = 100_000;
 const DUMMY_SALT = new Uint8Array(SALT_BYTES);
 

@@ -193,7 +193,7 @@ function footerPart(attachment: SlackPayload): CardPart | null {
 
 /**
  * A Block Kit block (https://docs.slack.dev/reference/block-kit/blocks) as a card's part, or null when it shows
- * nothing here. A block Ember doesn't know keeps the text it carries, and what only an app could answer, such as
+ * nothing here. A block Papaya OS doesn't know keeps the text it carries, and what only an app could answer, such as
  * a menu, or a button with neither an address nor an `action_id`, goes.
  */
 function blockPart(block: unknown): CardPart | null {

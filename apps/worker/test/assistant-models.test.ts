@@ -22,31 +22,31 @@ import { NOTES, PICKED_MODEL_NOTES } from "../src/assistant/answers";
 import { SETUP_CHANGED } from "../src/assistant/settings";
 import { addKeptModels, api, connect, cookieOf, freshDeploy, post, shown, WITH_THE_FLAME, workspaceSql, workspaceStub, type Client, type KeptModel, type Session } from "./support";
 
-// The models @ember can answer with: those Ember offers, which Set up Ember AI and Add a model list, the
-// ones administrators let people pick on the Ember AI card, which can be ones kept before Ember stopped
+// The models @ember can answer with: those Papaya OS offers, which Set up Papaya AI and Add a model list, the
+// ones administrators let people pick on the Papaya AI card, which can be ones kept before Papaya OS stopped
 // offering them, the one among them that answers everyone, and the one each person picks on their
 // profile, which @ember answers them with.
 
 const ACCOUNT_ID = "0123456789abcdef0123456789abcdef";
 const API_TOKEN = "an-api-token-with-ai-gateway-run_0123456";
 const SETUP = { accountId: ACCOUNT_ID, apiToken: API_TOKEN, model: "anthropic/claude-sonnet-5.5" };
-/** Where Cloudflare's REST API takes requests in Chat Completions, as Ember asks a model kept before Ember stopped offering it. */
+/** Where Cloudflare's REST API takes requests in Chat Completions, as Papaya OS asks a model kept before Papaya OS stopped offering it. */
 const CHAT_COMPLETIONS = `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/ai/v1/chat/completions`;
-/** Where the account's default gateway passes requests on to OpenAI's own Responses, as Ember asks GPT. */
+/** Where the account's default gateway passes requests on to OpenAI's own Responses, as Papaya OS asks GPT. */
 const OPENAI_ENDPOINT = `https://gateway.ai.cloudflare.com/v1/${ACCOUNT_ID}/default/openai/responses`;
 const HELLO = "Hello, team!";
 
 /**
- * The models people can pick, as Ember AI lists them once they've answered their test questions, which
+ * The models people can pick, as Papaya AI lists them once they've answered their test questions, which
  * they did at every level of thinking, through their providers' endpoints.
  */
 const CLAUDE: AssistantModel = { id: "anthropic/claude-sonnet-5.5", name: "Claude Sonnet 5.5", format: "anthropic", thinkingLevels: [...THINKING_LEVELS] };
 const HAIKU: AssistantModel = { id: "anthropic/claude-haiku-5.5", name: "Claude Haiku 5.5", format: "anthropic", thinkingLevels: [...THINKING_LEVELS] };
 const GPT: AssistantModel = { id: "openai/gpt-6.1-sol", name: "GPT-6.1 Sol", format: "openai", thinkingLevels: [...THINKING_LEVELS] };
-/** A model Ember no longer offers, kept from before, which Cloudflare's REST API took in Chat Completions. */
+/** A model Papaya OS no longer offers, kept from before, which Cloudflare's REST API took in Chat Completions. */
 const DEEPSEEK: AssistantModel & KeptModel = { id: "deepseek/deepseek-v4-pro", name: "DeepSeek V4 Pro", format: "chat", thinkingLevels: [...THINKING_LEVELS] };
 
-/** `model` as Ember listed one it hadn't asked at each level of thinking, saying nothing of the levels it takes. */
+/** `model` as Papaya OS listed one it hadn't asked at each level of thinking, saying nothing of the levels it takes. */
 const untested = ({ thinkingLevels: _, ...model }: AssistantModel): AssistantModel => model;
 
 /** `model` as the account's settings keep it. */
@@ -54,7 +54,7 @@ const kept = ({ thinkingLevels, ...model }: AssistantModel) => ({ ...model, thin
 
 const as = (session?: Session | null): Record<string, string> => (session ? { Cookie: session.cookie } : {});
 
-/** Sets Ember up with Ada as its administrator, signed in. */
+/** Sets Papaya OS up with Ada as its administrator, signed in. */
 async function setUp(): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify({ name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" }) });
   expect(response.status).toBe(201);
@@ -105,14 +105,14 @@ function cloudflare({ answer = answering(HELLO) }: { answer?: (sent: Sent) => Re
   return requests;
 }
 
-/** Sets Ember AI up as `administrator` with `setup`, as Set up Ember AI does, which has to work. */
+/** Sets Papaya AI up as `administrator` with `setup`, as Set up Papaya AI does, which has to work. */
 async function turnOn(administrator: Session, setup: unknown = SETUP): Promise<AssistantSaved> {
   const response = await setUpAs(administrator, setup);
   expect(response.status, await response.clone().text()).toBe(200);
   return (await response.json()) as AssistantSaved;
 }
 
-/** Sets Ember AI up as `session` with `setup`, as Set up Ember AI does. */
+/** Sets Papaya AI up as `session` with `setup`, as Set up Papaya AI does. */
 const setUpAs = (session: Session | null, setup: unknown) => api("/api/account/assistant", { method: "PUT", headers: as(session), body: JSON.stringify(setup) });
 
 /** Adds a model to those people can pick, as `session`, as Add a model does. */
@@ -121,7 +121,7 @@ const addModel = (session: Session | null, model: unknown) => api("/api/account/
 /** Takes a model out of those people can pick, as `session`, as its Remove does. */
 const removeModel = (session: Session | null, model: unknown) => api("/api/account/assistant/models", { method: "DELETE", headers: as(session), body: JSON.stringify({ model }) });
 
-/** Changes Ember AI as `session`, as the Ember AI card does. */
+/** Changes Papaya AI as `session`, as the Papaya AI card does. */
 const change = (session: Session | null, changes: unknown) => api("/api/account/assistant", { method: "PATCH", headers: as(session), body: JSON.stringify(changes) });
 
 /** Changes what `session` picks of @ember's answers, as their profile does. */
@@ -134,13 +134,13 @@ async function added(administrator: Session, model: AssistantModel): Promise<Ass
   return (await response.json()) as AssistantSaved;
 }
 
-/** Ember AI as the AI assistant tab shows it to `administrator`. */
+/** Papaya AI as the AI assistant tab shows it to `administrator`. */
 const settingsShown = async (administrator: Session) => ((await (await api("/api/account", { headers: as(administrator) })).json()) as WorkspaceSettings).assistant;
 
 /** @ember's answers to `person` as their profile shows them. */
 const yoursShown = async (person: Session) => ((await (await api("/api/users/me/profile", { headers: as(person) })).json()) as ProfileAnswer).profile.assistant;
 
-/** Ember AI as the account's settings keep it. */
+/** Papaya AI as the account's settings keep it. */
 const storedAssistant = async () =>
   (JSON.parse(((await workspaceSql("SELECT settings FROM accounts")) as Array<{ settings: string }>)[0]!.settings) as Record<string, unknown>).assistant as Record<string, unknown> | null;
 
@@ -148,7 +148,7 @@ const storedAssistant = async () =>
 const refusalOf = async (response: Response) => [response.status, ((await response.json()) as { error: string }).error];
 
 /**
- * Ember AI as the AI assistant tab shows it with `models`, the first of them answering everyone, with
+ * Papaya AI as the AI assistant tab shows it with `models`, the first of them answering everyone, with
  * Search the web off, or null for a model that can't search.
  */
 const settingsWith = (models: AssistantModel[], model = models[0]!.id): AssistantSettings => ({
@@ -169,7 +169,7 @@ beforeEach(freshDeploy);
 afterEach(() => vi.restoreAllMocks());
 
 describe("The models people can pick", () => {
-  it("start as the one Set up Ember AI chose, by the name Ember calls it, which the account keeps with the format it took", async () => {
+  it("start as the one Set up Papaya AI chose, by the name Papaya OS calls it, which the account keeps with the format it took", async () => {
     const ada = await setUp();
     cloudflare();
 
@@ -179,7 +179,7 @@ describe("The models people can pick", () => {
     expect((await storedAssistant())?.models).toEqual([kept(HAIKU)]);
   });
 
-  it("start as none Ember doesn't offer, which is refused on the model's field before AI Gateway is asked anything", async () => {
+  it("start as none Papaya OS doesn't offer, which is refused on the model's field before AI Gateway is asked anything", async () => {
     const ada = await setUp();
     const requests = cloudflare();
 
@@ -192,7 +192,7 @@ describe("The models people can pick", () => {
     expect(await settingsShown(ada)).toBeNull();
   });
 
-  it("add a model once it answers a test question through Ember AI's account, after the others", async () => {
+  it("add a model once it answers a test question through Papaya AI's account, after the others", async () => {
     const ada = await setUp();
     const requests = cloudflare({ answer: answering("Hi, I'm GPT.") });
     await turnOn(ada);
@@ -214,7 +214,7 @@ describe("The models people can pick", () => {
     expect((await added(ada, GPT)).assistant.models).toEqual([CLAUDE, { ...GPT, thinkingLevels: ["low", "medium", "high"] }]);
   });
 
-  it("add no model Ember doesn't offer, before AI Gateway is asked anything, nor one AI Gateway doesn't take, saying why on the model's field", async () => {
+  it("add no model Papaya OS doesn't offer, before AI Gateway is asked anything, nor one AI Gateway doesn't take, saying why on the model's field", async () => {
     const ada = await setUp();
     cloudflare();
     await turnOn(ada);
@@ -233,13 +233,13 @@ describe("The models people can pick", () => {
     expect((await settingsShown(ada))?.models).toEqual([CLAUDE]);
   });
 
-  it("add no model that answered through Ember AI as it was before it was set up again", async () => {
+  it("add no model that answered through Papaya AI as it was before it was set up again", async () => {
     const ada = await setUp();
     cloudflare();
     await turnOn(ada);
     vi.restoreAllMocks();
     cloudflare({
-      // While GPT answers its test question, Ember AI is turned off and set up again with another API token.
+      // While GPT answers its test question, Papaya AI is turned off and set up again with another API token.
       answer: async (sent) => {
         if (sent.url === OPENAI_ENDPOINT) {
           expect((await api("/api/account/assistant", { method: "DELETE", headers: as(ada) })).status).toBe(200);
@@ -253,7 +253,7 @@ describe("The models people can pick", () => {
     expect((await settingsShown(ada))?.models).toEqual([HAIKU]);
   });
 
-  it(`hold at most ${MAX_ASSISTANT_MODELS}, counting those kept before Ember stopped offering them`, async () => {
+  it(`hold at most ${MAX_ASSISTANT_MODELS}, counting those kept before Papaya OS stopped offering them`, async () => {
     const ada = await setUp();
     cloudflare();
     await turnOn(ada);
@@ -297,7 +297,7 @@ describe("The models people can pick", () => {
     expect((await settingsShown(ada))?.models).toEqual([CLAUDE, HAIKU]);
   });
 
-  it("have the model Set up Ember AI chooses in place of the one that answered everyone, and keep the others", async () => {
+  it("have the model Set up Papaya AI chooses in place of the one that answered everyone, and keep the others", async () => {
     const ada = await setUp();
     cloudflare();
     await turnOn(ada);
@@ -310,7 +310,7 @@ describe("The models people can pick", () => {
     expect((await turnOn(ada, { ...SETUP, model: GPT.id })).assistant).toEqual(settingsWith([GPT]));
   });
 
-  it("are forgotten when Ember AI is turned off", async () => {
+  it("are forgotten when Papaya AI is turned off", async () => {
     const ada = await setUp();
     cloudflare();
     await turnOn(ada);
@@ -320,19 +320,19 @@ describe("The models people can pick", () => {
     expect((await turnOn(ada, { ...SETUP, model: HAIKU.id })).assistant).toEqual(settingsWith([HAIKU]));
   });
 
-  it("are the one it answers with, for Ember AI set up before people could pick", async () => {
+  it("are the one it answers with, for Papaya AI set up before people could pick", async () => {
     const ada = await setUp();
     cloudflare();
     await turnOn(ada);
     await workspaceSql("UPDATE accounts SET settings = json_remove(settings, '$.assistant.models')");
     await evictDurableObject(workspaceStub());
 
-    // Its own model, which Ember hadn't asked at each level of thinking then.
+    // Its own model, which Papaya OS hadn't asked at each level of thinking then.
     expect(await settingsShown(ada)).toEqual(settingsWith([untested(CLAUDE)]));
     expect((await added(ada, GPT)).assistant.models).toEqual([untested(CLAUDE), GPT]);
   });
 
-  it("keep those kept before Ember stopped offering them, which can answer everyone, until they're removed, when they can't be added again", async () => {
+  it("keep those kept before Papaya OS stopped offering them, which can answer everyone, until they're removed, when they can't be added again", async () => {
     const ada = await setUp();
     const requests = cloudflare();
     await turnOn(ada);
@@ -342,7 +342,7 @@ describe("The models people can pick", () => {
 
     expect(await (await change(ada, { model: DEEPSEEK.id })).json()).toEqual({ assistant: settingsWith([CLAUDE, DEEPSEEK], DEEPSEEK.id) });
     expect(await storedAssistant()).toMatchObject({ model: DEEPSEEK.id, format: "chat" });
-    // Set up again, Ember AI answers everyone with one Ember offers.
+    // Set up again, Papaya AI answers everyone with one Papaya OS offers.
     expect(await refusalOf(await setUpAs(ada, { accountId: ACCOUNT_ID, model: DEEPSEEK.id }))).toEqual([422, MODEL_REFUSED]);
     await change(ada, { model: CLAUDE.id });
     expect(await (await removeModel(ada, DEEPSEEK.id)).json()).toEqual({ assistant: settingsWith([CLAUDE]) });
@@ -350,7 +350,7 @@ describe("The models people can pick", () => {
     expect(requests).toEqual([]);
   });
 
-  it("are the administrators' to change, while Ember AI is on", async () => {
+  it("are the administrators' to change, while Papaya AI is on", async () => {
     const ada = await setUp();
     const grace = await joinAsGrace();
     const requests = cloudflare();
@@ -441,7 +441,7 @@ describe("Your model", () => {
     expect((await yoursShown(grace))?.model).toBe(GPT.id);
   });
 
-  it("is kept only while Ember AI is on, when there are models to pick", async () => {
+  it("is kept only while Papaya AI is on, when there are models to pick", async () => {
     const ada = await setUp();
     expect(await (await pick(ada, { model: GPT.id, thinking: "off" })).json()).toEqual({ assistant: null });
     expect(await workspaceSql("SELECT assistant_thinking, assistant_model FROM users WHERE id = ?", ada.user.id)).toEqual([{ assistant_thinking: "off", assistant_model: null }]);
@@ -509,7 +509,7 @@ describe("@ember's answers", () => {
     expect(await askedAs(ada)).toEqual(["An answer.", "claude-sonnet-5-5"]);
   });
 
-  it("come from a model kept before Ember stopped offering it as it was kept, through Cloudflare's REST API", async () => {
+  it("come from a model kept before Papaya OS stopped offering it as it was kept, through Cloudflare's REST API", async () => {
     const ada = await setUp();
     const grace = await joinAsGrace();
     cloudflare();
@@ -548,7 +548,7 @@ describe("@ember's answers", () => {
     expect(await noted(grace, 403)).toBe(PICKED_MODEL_NOTES.model);
     expect(await noted(grace, 429)).toBe(NOTES.busy);
     expect(await noted(ada, 403)).toBe(NOTES.model);
-    expect(errors).toHaveBeenCalledWith(expect.stringContaining(`Ember AI's model ${GPT.id} didn't answer message`));
+    expect(errors).toHaveBeenCalledWith(expect.stringContaining(`Papaya AI's model ${GPT.id} didn't answer message`));
 
     // Once it answers everyone, it's still Grace's to change, as administrators choosing another wouldn't.
     cloudflare();

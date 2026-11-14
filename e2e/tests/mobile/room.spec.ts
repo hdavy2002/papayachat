@@ -25,7 +25,7 @@ test("the page for someone in no rooms fits the phone", async ({ page, screenIsF
 test("the welcome card fits the phone", async ({ page, room, screenIsFine }) => {
   await isolateRoom(page, room, { joinCode: "aB3d-Ef5h-iJ7k" });
   await openRoom(page, room);
-  await expect(page.getByRole("heading", { name: "Welcome to Ember" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Welcome to Papaya OS" })).toBeVisible();
   await screenIsFine();
 });
 

@@ -29,7 +29,7 @@ const API_TOKEN = "an-api-token-with-ai-gateway-run_0123456";
 const [OTHER_ACCOUNT_ID, OTHER_API_TOKEN] = ["fedcba9876543210fedcba9876543210", "another-api-token-with-ai-gateway-run_01"];
 /** Anthropic's model, which takes Messages, OpenAI's, which takes Responses, and DeepSeek's, which takes Chat Completions, where it has no tools for the web. */
 const [MESSAGES_MODEL, RESPONSES_MODEL, CHAT_MODEL] = ["anthropic/claude-sonnet-5.5", "openai/gpt-6.1-sol", "deepseek/deepseek-v4-pro"];
-/** xAI's Grok, which searches the web with Ember's own tool in Chat Completions, through Cloudflare's REST API, and another of xAI's. */
+/** xAI's Grok, which searches the web with Papaya OS's own tool in Chat Completions, through Cloudflare's REST API, and another of xAI's. */
 const [GROK, OTHER_GROK] = ["xai/grok-4.7", "xai/grok-4.5"];
 /** Another of Anthropic's. */
 const HAIKU = "anthropic/claude-haiku-5.5";
@@ -37,13 +37,13 @@ const HAIKU = "anthropic/claude-haiku-5.5";
 const PROVIDER_ENDPOINTS = `https://gateway.ai.cloudflare.com/v1/${ACCOUNT_ID}/default`;
 const ANTHROPIC_ENDPOINT = `${PROVIDER_ENDPOINTS}/anthropic/v1/messages`;
 const OPENAI_ENDPOINT = `${PROVIDER_ENDPOINTS}/openai/responses`;
-/** Where Cloudflare's REST API takes Chat Completions, through the default gateway, and Cloudflare's Web Search API, which Ember searches with for a model given its own tool. */
+/** Where Cloudflare's REST API takes Chat Completions, through the default gateway, and Cloudflare's Web Search API, which Papaya OS searches with for a model given its own tool. */
 const CHAT_COMPLETIONS = `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/ai/v1/chat/completions`;
 const WEB_SEARCH = `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/ai/websearch/`;
-/** Ember's own tool for searching the web, as a model in Chat Completions is given it. */
+/** Papaya OS's own tool for searching the web, as a model in Chat Completions is given it. */
 const EMBERS_SEARCH = { type: "function", function: expect.objectContaining({ name: "web_search" }) };
 
-/** Anthropic's tools for searching the web and reading pages, as Ember gives a model that may. */
+/** Anthropic's tools for searching the web and reading pages, as Papaya OS gives a model that may. */
 const SEARCH_TOOL = { type: "web_search_20250305", name: "web_search", max_uses: WEB_SEARCHES_PER_ANSWER };
 const READ_TOOL = { type: "web_fetch_20250910", name: "web_fetch", max_uses: PAGES_READ_PER_ANSWER, max_content_tokens: 10_000 };
 
@@ -70,7 +70,7 @@ interface Asked {
 
 /**
  * Stands in for AI Gateway, answering each request with `answer`, and keeping what it's sent, but for the
- * tools Ember runs itself, which an answer in a room is given beside the web's (ember-tools.test.ts).
+ * tools Papaya OS runs itself, which an answer in a room is given beside the web's (ember-tools.test.ts).
  */
 function fakeGateway(answer: (asked: Asked) => Response | Promise<Response>): Asked[] {
   const requests: Asked[] = [];
@@ -87,15 +87,15 @@ function fakeGateway(answer: (asked: Asked) => Response | Promise<Response>): As
 }
 
 /**
- * Whether `tool` is one Ember runs, as Messages or Responses lists one, rather than one of a provider's own
- * or Ember's own for searching the web, which Chat Completions lists as a function too.
+ * Whether `tool` is one Papaya OS runs, as Messages or Responses lists one, rather than one of a provider's own
+ * or Papaya OS's own for searching the web, which Chat Completions lists as a function too.
  */
 function isEmbersTool(tool: unknown): boolean {
   const { type, function: called } = tool as { type?: string; function?: { name?: string } };
   return type === undefined || (type === "function" && called?.name !== "web_search");
 }
 
-/** Whether a request to `url` goes to one of AI Gateway's endpoints for each provider, as Ember asks Claude and GPT, and not to Cloudflare's API. */
+/** Whether a request to `url` goes to one of AI Gateway's endpoints for each provider, as Papaya OS asks Claude and GPT, and not to Cloudflare's API. */
 const toProvider = (url: string) => new URL(url).hostname === "gateway.ai.cloudflare.com";
 
 /** Whether `asked` gives the model a tool of `type`'s. */
@@ -154,7 +154,7 @@ const RESPONSES_SEARCHED = {
 };
 
 /**
- * A model in Chat Completions given Ember's own tool for searching the web, which calls it for "Cloudflare
+ * A model in Chat Completions given Papaya OS's own tool for searching the web, which calls it for "Cloudflare
  * AI Gateway", then says what it found, as Cloudflare's Web Search API finds the docs and the blog.
  */
 function searchingInChat({ url, body }: Asked): Response {
@@ -175,11 +175,11 @@ function searching({ url, ...asked }: Asked): Response {
 const ALL_LEVELS = [...THINKING_LEVELS];
 const XAI_LEVELS = ["low", "medium", "high"];
 
-/** `model`, called `name`, as a copy set up before Ember asked it through its provider's endpoint keeps it, in `format`, through Cloudflare's REST API. */
+/** `model`, called `name`, as a copy set up before Papaya OS asked it through its provider's endpoint keeps it, in `format`, through Cloudflare's REST API. */
 const keptIn = (format: KeptModel["format"], id: string, name: string): KeptModel => ({ id, name, format, thinkingLevels: ALL_LEVELS });
 const KEPT_DEEPSEEK = keptIn("chat", CHAT_MODEL, "DeepSeek V4 Pro");
 
-/** Sets Ember up with Ada as its administrator, signed in, and Ember AI on with `model`, as `setUpAssistant` sets it up. */
+/** Sets Papaya OS up with Ada as its administrator, signed in, and Papaya AI on with `model`, as `setUpAssistant` sets it up. */
 async function setUp(model = MESSAGES_MODEL): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify({ name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" }) });
   expect(response.status).toBe(201);
@@ -194,8 +194,8 @@ function greetingGateway(): void {
 }
 
 /**
- * Sets Ember AI up as `administrator` with `model`, through the account `accountId` with `apiToken`, as
- * Set up Ember AI does, answering Ember AI as it is then.
+ * Sets Papaya AI up as `administrator` with `model`, through the account `accountId` with `apiToken`, as
+ * Set up Papaya AI does, answering Papaya AI as it is then.
  */
 async function setUpAssistant(
   administrator: Session,
@@ -210,7 +210,7 @@ async function setUpAssistant(
   return ((await saved.json()) as AssistantSaved).assistant;
 }
 
-/** Turns Search the web `on` or off as `session`, as its switch on the Ember AI card does. */
+/** Turns Search the web `on` or off as `session`, as its switch on the Papaya AI card does. */
 const turnWebSearch = (session: Session | null, on: unknown) =>
   api("/api/account/assistant/web_search", { method: "PUT", headers: session ? { Cookie: session.cookie } : {}, body: JSON.stringify({ on }) });
 
@@ -221,7 +221,7 @@ async function turnedWebSearch(administrator: Session, on: boolean): Promise<Web
   return (await response.json()) as WebSearchChanged;
 }
 
-/** Changes Ember AI as `administrator`, as the Ember AI card does: its dials, or which model answers everyone. */
+/** Changes Papaya AI as `administrator`, as the Papaya AI card does: its dials, or which model answers everyone. */
 const changeAssistant = (administrator: Session, changes: unknown) =>
   api("/api/account/assistant", { method: "PATCH", headers: { Cookie: administrator.cookie }, body: JSON.stringify(changes) });
 
@@ -237,22 +237,22 @@ async function pickModel(person: Session, model: string): Promise<void> {
   expect(response.status, await response.clone().text()).toBe(200);
 }
 
-/** Ember AI as the account's settings keep it. */
+/** Papaya AI as the account's settings keep it. */
 const storedAssistant = async () => {
   const [{ settings }] = (await workspaceSql("SELECT settings FROM accounts")) as [{ settings: string }];
   return (JSON.parse(settings) as { assistant: { web_tools?: unknown; web_tools_asked_at?: unknown } | null }).assistant;
 };
 
-/** What Ember AI's model may do on the web, as the account's settings keep it. */
+/** What Papaya AI's model may do on the web, as the account's settings keep it. */
 const storedWebTools = async () => (await storedAssistant())?.web_tools;
 
-/** The format Ember AI asks the model that answers everyone in, and each model people can pick with the format and levels of thinking it's asked in, as the account's settings keep them. */
+/** The format Papaya AI asks the model that answers everyone in, and each model people can pick with the format and levels of thinking it's asked in, as the account's settings keep them. */
 const storedModels = async () => {
   const { format, models } = (await storedAssistant()) as unknown as { format: string; models: Array<{ id: string; format: string; thinking_levels?: string[] }> };
   return [format, models.map(({ id, format, thinking_levels }) => [id, format, thinking_levels])];
 };
 
-/** Ember AI as the workspace's settings show it to `session`. */
+/** Papaya AI as the workspace's settings show it to `session`. */
 const assistantSettings = async (session: Session) => ((await (await api("/api/account", { headers: { Cookie: session.cookie } })).json()) as WorkspaceSettings).assistant;
 
 /** A message mentioning @ember. */
@@ -319,7 +319,7 @@ describe("Search the web", () => {
     expect(requests[0]!.body).toHaveProperty("max_tool_calls", WEB_SEARCHES_PER_ANSWER);
   });
 
-  it("turns on for Grok with Ember's own tool in Chat Completions, through Cloudflare's REST API, where AI Gateway's credits pay, keeping it and the other Grok models people pick where they are", async () => {
+  it("turns on for Grok with Papaya OS's own tool in Chat Completions, through Cloudflare's REST API, where AI Gateway's credits pay, keeping it and the other Grok models people pick where they are", async () => {
     const ada = await setUp(GROK);
     await answerWithKeptModel(keptIn("chat", GROK, "Grok 4.7"), keptIn("chat", OTHER_GROK, "Grok 4.5"), keptIn("messages", MESSAGES_MODEL, "Claude Sonnet 5.5"));
     expect((await assistantSettings(ada))!.webTools).toEqual([]);
@@ -328,7 +328,7 @@ describe("Search the web", () => {
     const { assistant, found } = await turnedWebSearch(ada, true);
     expect(assistant.webTools).toEqual(["search"]);
     expect(found).toBe(FOUND);
-    // Ember runs the search Grok asks for with Cloudflare's Web Search API, through the default gateway, and nothing goes to AI Gateway's xAI endpoint.
+    // Papaya OS runs the search Grok asks for with Cloudflare's Web Search API, through the default gateway, and nothing goes to AI Gateway's xAI endpoint.
     expect(requests.map(({ url, authorization }) => [url, authorization])).toEqual([CHAT_COMPLETIONS, WEB_SEARCH, CHAT_COMPLETIONS].map((url) => [url, `Bearer ${API_TOKEN}`]));
     expect(requests[0]!.body).toMatchObject({ model: GROK, tools: [EMBERS_SEARCH] });
     expect(await storedWebTools()).toEqual(["search"]);
@@ -346,7 +346,7 @@ describe("Search the web", () => {
     expect(await storedModels()).toEqual(["chat", [[GROK, "chat", ALL_LEVELS], [OTHER_GROK, "chat", ALL_LEVELS]]]);
   });
 
-  it("gives the Grok models people pick Ember's own tool once Search the web is on, whatever answers everyone, asking them nothing then", async () => {
+  it("gives the Grok models people pick Papaya OS's own tool once Search the web is on, whatever answers everyone, asking them nothing then", async () => {
     const ada = await setUp(MESSAGES_MODEL);
     await answerWithKeptModel(keptIn("messages", MESSAGES_MODEL, "Claude Sonnet 5.5"), keptIn("chat", GROK, "Grok 4.7"));
     const requests = fakeGateway(searching);
@@ -476,13 +476,13 @@ describe("Search the web", () => {
 
   it("turns off once the model that answers everyone, kept from before, is added again, taking its test question in a format it hasn't searched in", async () => {
     const ada = await setUp();
-    // Kept while Ember asked Claude through Cloudflare's REST API, where it searched in Messages.
+    // Kept while Papaya OS asked Claude through Cloudflare's REST API, where it searched in Messages.
     await answerWithKeptModel(keptIn("messages", MESSAGES_MODEL, "Claude Sonnet 5.5"));
     fakeGateway(searching);
     await turnedWebSearch(ada, true);
     expect(await storedAssistant()).toMatchObject({ format: "messages", web_tools: ["search", "read"] });
 
-    // Through Anthropic's endpoint, as Ember asks Claude now.
+    // Through Anthropic's endpoint, as Papaya OS asks Claude now.
     await changeModels(ada, "POST", MESSAGES_MODEL);
     expect(await storedAssistant()).toMatchObject({ format: "anthropic", web_tools: [] });
     expect((await assistantSettings(ada))!.webTools).toEqual([]);
@@ -511,7 +511,7 @@ describe("Search the web", () => {
     expect(await storedWebTools()).toEqual([]);
   });
 
-  it("turns nothing on once Ember AI asks another model, after the one asked searched", async () => {
+  it("turns nothing on once Papaya AI asks another model, after the one asked searched", async () => {
     const ada = await setUp();
     let asked = false;
     let answering = false;
@@ -537,7 +537,7 @@ describe("Search the web", () => {
     expect(await storedWebTools()).toEqual([]);
   });
 
-  it("turns nothing on once Ember AI asks through another Cloudflare account, after the one asked searched", async () => {
+  it("turns nothing on once Papaya AI asks through another Cloudflare account, after the one asked searched", async () => {
     const ada = await setUp();
     let asked = false;
     let answering = false;
@@ -587,7 +587,7 @@ describe("Search the web", () => {
     expect((await turnedWebSearch(ada, true)).assistant.webTools).toEqual(["search", "read"]);
   });
 
-  it("turns nothing on once Ember AI is turned off and set up again, after it was asked to turn on, while the model searched", async () => {
+  it("turns nothing on once Papaya AI is turned off and set up again, after it was asked to turn on, while the model searched", async () => {
     const ada = await setUp();
     let asked = false;
     let answering = false;
@@ -615,7 +615,7 @@ describe("Search the web", () => {
     expect(await storedWebTools()).toEqual([]);
   });
 
-  it("is only for administrators, while Ember AI is on, before anything's asked", async () => {
+  it("is only for administrators, while Papaya AI is on, before anything's asked", async () => {
     const ada = await setUp();
     const [{ join_code: joinCode }] = (await workspaceSql("SELECT join_code FROM accounts")) as [{ join_code: string }];
     const joined = await api(`/api/join/${joinCode}`, { method: "POST", body: JSON.stringify({ name: "Grace Hopper", emailAddress: "grace@example.com", password: "compiler design" }) });
@@ -751,7 +751,7 @@ describe("@ember on the web", () => {
     client.close();
   });
 
-  it("searches with Grok with Ember's own tool through Cloudflare's REST API, listing the pages its searches found", async () => {
+  it("searches with Grok with Papaya OS's own tool through Cloudflare's REST API, listing the pages its searches found", async () => {
     const ada = await setUp(GROK);
     fakeGateway(searching);
     await turnedWebSearch(ada, true);
@@ -847,7 +847,7 @@ describe("@ember on the web", () => {
     expect(unsearchable.map(({ url, body }) => [url.split("/ai/v1/")[1], body.tools])).toEqual([["chat/completions", undefined]]);
     const instructions = unsearchable[0]!.body.messages![0]!.content;
     expect(instructions).toContain("You can't search the web or open links with the model Ada Lovelace picked for your answers to them.");
-    expect(instructions).toContain("they can pick one that can under Ember AI on their profile.");
+    expect(instructions).toContain("they can pick one that can under Papaya AI on their profile.");
     expect(instructions).not.toContain("an administrator can turn on Search the web");
 
     // And with the one that answers everyone again, once they pick that one.
@@ -900,7 +900,7 @@ describe("What @ember is told of the web", () => {
   it("says, while Search the web is on, that the model the asker picked can't search, and that they can pick one that can", () => {
     const told = questionFor({ ...EMBER, instructions: "", promptTemplate: null }, [QUESTION], ADA, IN_GENERAL, { thinking: "low", length: "medium" }, new Date(), [], true).instructions;
     expect(told).toContain("You can't search the web or open links with the model Ada Lovelace picked for your answers to them.");
-    expect(told).toContain("When they ask you to, say so, and that they can pick one that can under Ember AI on their profile.");
+    expect(told).toContain("When they ask you to, say so, and that they can pick one that can under Papaya AI on their profile.");
     expect(told).not.toContain("an administrator");
   });
 });

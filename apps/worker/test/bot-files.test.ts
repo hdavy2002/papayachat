@@ -31,7 +31,7 @@ import {
 
 const files = (env as unknown as Env).FILES!;
 
-/** Sets Ember up with Ada as its administrator and a bot, which is in first run's general room. */
+/** Sets Papaya OS up with Ada as its administrator and a bot, which is in first run's general room. */
 async function withBot(): Promise<{ administrator: Session; bot: BotSettings; general: RoomId }> {
   const setUp = await api("/api/first_run", { method: "POST", body: JSON.stringify({ name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" }) });
   expect(setUp.status).toBe(201);

@@ -6,7 +6,7 @@ import type { DirectoryEntry } from "./workspace-store";
 
 // The addresses of people's avatars, /users/<token>/avatar?v=<version>, which the people directory and
 // `user.updated` frames give out and avatars.ts serves. The token names someone and is signed so nobody
-// can make one up, and the version changes whenever they do. @ember's picture comes with Ember, so its
+// can make one up, and the version changes whenever they do. @ember's picture comes with Papaya OS, so its
 // address names the release too (&release=<version>): browsers keep an avatar for half an hour, and
 // would go on showing @ember's old picture after an update that changes it.
 

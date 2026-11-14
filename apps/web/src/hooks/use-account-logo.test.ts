@@ -32,7 +32,7 @@ describe("Workspace logo", () => {
     expect(touchIcon()).toHaveAttribute("href", "/logos/app-icon.png");
   });
 
-  it("follows the logo as it changes, keeping Ember's icons while there's none", () => {
+  it("follows the logo as it changes, keeping Papaya OS's icons while there's none", () => {
     const { rerender, unmount } = renderHook(({ logo }) => useAccountLogo(logo), { initialProps: { logo: null as string | null } });
     expect(icon()).toHaveAttribute("href", "/logos/app-icon-48.png");
     rerender({ logo: LOGO });

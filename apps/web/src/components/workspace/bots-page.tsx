@@ -82,7 +82,7 @@ export function BotsPage({ onFailed }: { onFailed: (error: unknown) => void }) {
           <p className="col-span-full mt-1.5 max-w-prose text-muted-foreground">
             Chat bots let other apps and services post in your rooms, and reply when people talk to them.
             Each of a bot's rooms gets two addresses below, one for posting text or a file and one that takes a Slack incoming webhook's payload.
-            Give a bot a webhook URL, and Ember sends it every message that @mentions it or is sent to it in a DM, then posts whatever it answers within 30 seconds.
+            Give a bot a webhook URL, and Papaya OS sends it every message that @mentions it or is sent to it in a DM, then posts whatever it answers within 30 seconds.
           </p>
           <PageLink
             href={NEW_BOT_PATH}

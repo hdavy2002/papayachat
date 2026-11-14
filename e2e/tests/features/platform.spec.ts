@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { expect, test } from "./fixtures";
 
 /**
- * The SHA-256 of each icon the manifest lists: Ember's app icons and, for the shortcuts, Iconoir's plus
+ * The SHA-256 of each icon the manifest lists: Papaya OS's app icons and, for the shortcuts, Iconoir's plus
  * and user, as the project's owner chose, where Campfire lists its add and person (app/assets/images/).
  */
 const ICONS: Record<string, string> = {
@@ -19,7 +19,7 @@ interface Manifest {
 }
 
 test.describe("Web app manifest", () => {
-  test("Chrome reads the manifest the page links without errors, and can install Ember", async ({ playwright, baseURL }) => {
+  test("Chrome reads the manifest the page links without errors, and can install Papaya OS", async ({ playwright, baseURL }) => {
     // Chrome installs nothing from an incognito window, which every context Playwright opens is, so
     // this opens a profile of its own.
     const context = await playwright.chromium.launchPersistentContext("", { baseURL, executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE || undefined });
@@ -40,7 +40,7 @@ test.describe("Web app manifest", () => {
     }
   });
 
-  test("lists Ember's icons, and Iconoir's for its shortcuts, byte for byte", async ({ request }) => {
+  test("lists Papaya OS's icons, and Iconoir's for its shortcuts, byte for byte", async ({ request }) => {
     const manifest = (await (await request.get("/webmanifest.json")).json()) as Manifest;
     const sources = [...manifest.icons, ...manifest.shortcuts.flatMap((shortcut) => shortcut.icons)].map((icon) => icon.src);
     expect(new Set(sources)).toEqual(new Set(Object.keys(ICONS)));
@@ -51,7 +51,7 @@ test.describe("Web app manifest", () => {
     }
   });
 
-  test("lists Ember's own screenshots, each a PNG of the size it says", async ({ request }) => {
+  test("lists Papaya OS's own screenshots, each a PNG of the size it says", async ({ request }) => {
     const manifest = (await (await request.get("/webmanifest.json")).json()) as Manifest;
     expect(manifest.screenshots.map((screenshot) => screenshot.src)).toEqual(["/screenshots/chat.png", "/screenshots/sidebar.png", "/screenshots/dark-mode.png"]);
     for (const { src, sizes } of manifest.screenshots) {
@@ -67,7 +67,7 @@ test.describe("Web app manifest", () => {
 });
 
 test.describe("Installable page head", () => {
-  test("every page links the manifest and Ember's icons, with the theme colors", async ({ page, request }) => {
+  test("every page links the manifest and Papaya OS's icons, with the theme colors", async ({ page, request }) => {
     for (const path of ["/", "/session/new", "/rooms/all-talk"]) {
       const html = await (await request.get(path)).text();
       // The page as the server sends it, since its script recolors the theme at once (ui.appearance).

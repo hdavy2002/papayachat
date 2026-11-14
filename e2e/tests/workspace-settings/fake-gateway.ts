@@ -3,21 +3,21 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import path from "node:path";
 import { AI_GATEWAY_ACCOUNT, AI_GATEWAY_PORT } from "../../projects/workspace-settings";
 
-// AI Gateway for the Ember AI specs, at the address the second test server's AI_GATEWAY_URL names, as Ember
+// AI Gateway for the Papaya AI specs, at the address the second test server's AI_GATEWAY_URL names, as Papaya OS
 // asks it (apps/worker/src/assistant/gateway.ts): the default gateway's endpoints for Anthropic, OpenAI
-// and xAI, where Ember asks the models it offers in their providers' own APIs, of one account,
+// and xAI, where Papaya OS asks the models it offers in their providers' own APIs, of one account,
 // `AI_GATEWAY_ACCOUNT`, taking that account's API token in AI Gateway's own header alone, and Cloudflare's
-// REST API, where Ember asks Workers AI's models, and a model kept from before it offered only those, in
+// REST API, where Papaya OS asks Workers AI's models, and a model kept from before it offered only those, in
 // any of its three formats. It answers with `HELLO` in the format asked, or, given a tool for searching
 // the web in Messages or Responses, with `FOUND`, citing `SOURCE`, as the model would once it had
-// searched, or, given Ember's own in Chat Completions, as Workers AI's models are, with a call of it, and
+// searched, or, given Papaya OS's own in Chat Completions, as Workers AI's models are, with a call of it, and
 // once told what it found, with `FOUND`, or, asked `CARD_QUESTION` last, with `CARDED` and a card's Slack
 // payload, or, asked `RECALL_QUESTION` last in Messages with the room's search among its tools, with a
 // call of it, and then with `RECALLED` and what the search found, refusing as Cloudflare does an account
 // or a token it doesn't know. The REST API's model search
-// lists two of Workers AI's models, `GEMMA` and one Ember doesn't offer, and its Web Search API finds
+// lists two of Workers AI's models, `GEMMA` and one Papaya OS doesn't offer, and its Web Search API finds
 // `SOURCE`, saying `FOUND`. It also serves the models file the second test server's EMBER_MODELS_URL
-// names, as GitHub serves the one on Ember's main branch (apps/worker/src/assistant/offered.ts): the
+// names, as GitHub serves the one on Papaya OS's main branch (apps/worker/src/assistant/offered.ts): the
 // repository's, with `NEWER` added. A spec can hold its answers, to see what shows while a model answers.
 
 /** What every model says, whatever it's asked. */
@@ -29,7 +29,7 @@ export const SOURCE = { url: "https://developers.cloudflare.com/ai-gateway/", ti
 
 /**
  * What a model asked `CARD_QUESTION` says, `CARDED`, then a status card's Slack payload in a ```slack block,
- * which Ember shows as a card headed `CARD_HEADER` under the answer, its button linking to `CARD_LINK`.
+ * which Papaya OS shows as a card headed `CARD_HEADER` under the answer, its button linking to `CARD_LINK`.
  */
 export const CARD_QUESTION = "How's the launch going? Show me a card.";
 export const CARDED = "Here's where the launch stands.";
@@ -44,7 +44,7 @@ const CARD_PAYLOAD = {
 };
 
 /**
- * What a model asked `RECALL_QUESTION`, and then a word, does with the room's search, a tool Ember runs: it
+ * What a model asked `RECALL_QUESTION`, and then a word, does with the room's search, a tool Papaya OS runs: it
  * searches for the word, and says `RECALLED`, then what the search answered.
  */
 export const RECALL_QUESTION = "Where's the offsite? Look for";
@@ -53,17 +53,17 @@ export const RECALLED = "The room's search says:";
 /** Where the models file is, as the second test server's EMBER_MODELS_URL names it. */
 const MODELS_FILE_PATH = "/models.json";
 
-/** A model the models file lists that the one Ember shipped with doesn't, as a model added to it after a release is. */
+/** A model the models file lists that the one Papaya OS shipped with doesn't, as a model added to it after a release is. */
 export const NEWER = { id: "openai/gpt-7", name: "GPT-7", price: { input: 5, output: 25 }, web: ["search"] };
 
-/** The models file: the repository's, which Ember shipped with, and `NEWER`, which every copy offers once it reads the file. */
+/** The models file: the repository's, which Papaya OS shipped with, and `NEWER`, which every copy offers once it reads the file. */
 const shippedFile = JSON.parse(readFileSync(path.resolve(import.meta.dirname, "../../../models.json"), "utf8")) as { models: unknown[] };
 const MODELS_FILE = { ...shippedFile, models: [...shippedFile.models, NEWER] };
 
-/** The one of Workers AI's models that the model search lists that Ember offers, as it takes tools. */
+/** The one of Workers AI's models that the model search lists that Papaya OS offers, as it takes tools. */
 export const GEMMA = { id: "@cf/google/gemma-4-26b-a4b-it", name: "Gemma 4 26B" };
 
-/** Workers AI's text models, as the model search lists them in OpenRouter's format: `GEMMA`, and Llama, which takes no tools, so that Ember doesn't offer it. */
+/** Workers AI's text models, as the model search lists them in OpenRouter's format: `GEMMA`, and Llama, which takes no tools, so that Papaya OS doesn't offer it. */
 const MODEL_SEARCH = {
   data: [
     {
@@ -88,7 +88,7 @@ const MODEL_SEARCH = {
 /** What the Web Search API answers every search with: `SOURCE`, as saying `FOUND`. */
 const WEB_SEARCH = { success: true, result: { items: [{ ...SOURCE, description: FOUND }] } };
 
-/** What Ember asked AI Gateway: where, with which token, as Cloudflare's API or AI Gateway's endpoints for each provider take it, and gateway, and what. */
+/** What Papaya OS asked AI Gateway: where, with which token, as Cloudflare's API or AI Gateway's endpoints for each provider take it, and gateway, and what. */
 export interface GatewayAsked {
   path: string;
   authorization: string | undefined;
@@ -101,7 +101,7 @@ export interface GatewayAsked {
 export const ANTHROPIC_PATH = `/v1/${AI_GATEWAY_ACCOUNT.accountId}/default/anthropic/v1/messages`;
 const OPENAI_PATH = `/v1/${AI_GATEWAY_ACCOUNT.accountId}/default/openai/responses`;
 export const XAI_PATH = `/v1/${AI_GATEWAY_ACCOUNT.accountId}/default/grok/v1/responses`;
-/** Where Cloudflare's REST API takes requests in Chat Completions, as Ember asks Grok while it isn't to search. */
+/** Where Cloudflare's REST API takes requests in Chat Completions, as Papaya OS asks Grok while it isn't to search. */
 export const CHAT_COMPLETIONS_PATH = `/accounts/${AI_GATEWAY_ACCOUNT.accountId}/ai/v1/chat/completions`;
 
 /** The format of Cloudflare's REST API whose answers each provider's endpoint answers with, by its path. */
@@ -168,7 +168,7 @@ const SEARCHED_ANSWERS: Record<string, unknown> = {
   },
 };
 
-/** A Workers AI model's call of Ember's tool for searching the web, in Chat Completions, which Ember runs with the Web Search API. */
+/** A Workers AI model's call of Papaya OS's tool for searching the web, in Chat Completions, which Papaya OS runs with the Web Search API. */
 const SEARCH_CALL = {
   object: "chat.completion",
   choices: [
@@ -184,14 +184,14 @@ const SEARCH_CALL = {
   ],
 };
 
-/** What Grok or a Workers AI model says in Chat Completions once Ember has told it what its search found. */
+/** What Grok or a Workers AI model says in Chat Completions once Papaya OS has told it what its search found. */
 const FOUND_IN_CHAT = answersSaying(FOUND)["chat/completions"];
 
-/** Whether `body` gives Grok or a Workers AI model Ember's own tool for searching the web, a function. */
+/** Whether `body` gives Grok or a Workers AI model Papaya OS's own tool for searching the web, a function. */
 const takesSearchFunction = (body: Record<string, unknown>) =>
   Array.isArray(body.tools) && body.tools.some((tool: { type?: unknown; function?: { name?: unknown } }) => tool.type === "function" && tool.function?.name === "web_search");
 
-/** Whether `body` ends with what Ember's tool for searching the web found, told to the model as the tool's answer. */
+/** Whether `body` ends with what Papaya OS's tool for searching the web found, told to the model as the tool's answer. */
 const toldWhatItFound = (body: Record<string, unknown>) => Array.isArray(body.messages) && (body.messages.at(-1) as { role?: unknown } | undefined)?.role === "tool";
 
 /** Whether the last message `body` asks, in any format, is `CARD_QUESTION`, whatever came before it in the conversation. */

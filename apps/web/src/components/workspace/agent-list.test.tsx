@@ -10,7 +10,7 @@ import { agentSettingsPath, NEW_AGENT_PATH } from "@/hooks/use-route";
 import { ApiError } from "@/lib/api";
 import { AGENTS_EXPLAINED, AGENTS_PATH, AgentList, EMBER_DOES, roomsOf, SEARCHES_THE_WEB, useAgentsOnly } from "./agent-list";
 
-/** Ember AI on GLM-4.7 Flash, the only model people can pick, which can't search the web. */
+/** Papaya AI on GLM-4.7 Flash, the only model people can pick, which can't search the web. */
 const ON: Assistant = {
   accountId: "0123456789abcdef0123456789abcdef",
   model: "@cf/zai-org/glm-4.7-flash",
@@ -55,7 +55,7 @@ const serve = (listed: () => Response | Promise<Response> = () => Response.json(
     throw new Error(`Unexpected request for ${init?.method ?? "GET"} ${String(input)}`);
   });
 
-/** The card, for Ember AI as `assistant` has it, with the people directory as `people`, which `showPeople` changes. */
+/** The card, for Papaya AI as `assistant` has it, with the people directory as `people`, which `showPeople` changes. */
 function showList(assistant: Assistant = ON, people: People = new Map()) {
   const onFailed = vi.fn();
   const shown = (listed: People) => (
@@ -166,7 +166,7 @@ describe("Rooms an agent is in", () => {
   });
 });
 
-describe("Pages for administrators while Ember AI is on", () => {
+describe("Pages for administrators while Papaya AI is on", () => {
   /** What the agents' pages make of a failure: sending the page away, or else leaving it to `onFailed`. */
   function useFailed() {
     const onFailed = vi.fn();
@@ -185,7 +185,7 @@ describe("Pages for administrators while Ember AI is on", () => {
     expect(onFailed).not.toHaveBeenCalled();
   });
 
-  it("sends an administrator to the AI assistant tab once Ember AI is found off, saying so", async () => {
+  it("sends an administrator to the AI assistant tab once Papaya AI is found off, saying so", async () => {
     history.replaceState(null, "", NEW_AGENT_PATH);
     const { onFailed, failed } = useFailed();
     failed(new ApiError(409, ASSISTANT_OFF));

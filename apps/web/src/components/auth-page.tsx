@@ -6,7 +6,7 @@ import { Version } from "@/components/version";
 import { cn } from "@/lib/utils";
 
 // What the sign-in and join pages share: a card on the surface, holding a heading and a form, with
-// Ember's version under it.
+// Papaya OS's version under it.
 
 /** What the app knows about the workspace before anyone signs in. */
 export type SignedOutWorkspace = Omit<Bootstrap, "user">;
@@ -60,8 +60,8 @@ export function AuthHeading({ title, logo, children }: { title: string; logo: st
   );
 }
 
-/** The workspace's logo at `logo`, 48px wide, or Ember's flame while it has none. */
+/** The workspace's logo at `logo`, 48px wide, or Papaya OS's flame while it has none. */
 export function AuthLogo({ logo }: { logo: string | null }) {
   if (logo) return <AccountLogo src={logo} className="mx-auto mb-5 size-12" />;
-  return <img src="/ember-icon.png" alt="Ember" width={48} height={48} className="mx-auto mb-5 block size-12 object-contain" />;
+  return <img src="/ember-icon.png" alt="Papaya OS" width={48} height={48} className="mx-auto mb-5 block size-12 object-contain" />;
 }

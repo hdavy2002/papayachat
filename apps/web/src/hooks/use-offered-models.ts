@@ -2,15 +2,15 @@ import { useEffect, useEffectEvent, useState } from "react";
 import { ASSISTANT_MODELS, SUGGESTED_MODEL, type AssistantKeys, type OfferedModels } from "@ember/protocol/assistant";
 import { ApiError, fetchOfferedModels, isSignedOut } from "@/lib/api";
 
-/** The models this Ember shipped with, as the Worker offers them before it has read the models file. */
+/** The models this Papaya OS shipped with, as the Worker offers them before it has read the models file. */
 export const SHIPPED_MODELS: OfferedModels = { models: [...ASSISTANT_MODELS], suggested: SUGGESTED_MODEL, workersAi: null };
 
 /** Why Workers AI's models aren't listed when asking the Worker for the models it offers failed. */
-export const OFFERED_UNREAD = "Workers AI's models aren't listed, as Ember couldn't list them. Try again in a moment.";
+export const OFFERED_UNREAD = "Workers AI's models aren't listed, as Papaya OS couldn't list them. Try again in a moment.";
 
 /**
- * The models Ember offers through the account `keys` names (`fetchOfferedModels`), or else, when asking
- * fails, those this Ember shipped with, saying why Workers AI's aren't among them, but for a session
+ * The models Papaya OS offers through the account `keys` names (`fetchOfferedModels`), or else, when asking
+ * fails, those this Papaya OS shipped with, saying why Workers AI's aren't among them, but for a session
  * that's ended, which fails.
  */
 export async function offeredModelsThrough(keys: AssistantKeys | null): Promise<OfferedModels> {
@@ -23,8 +23,8 @@ export async function offeredModelsThrough(keys: AssistantKeys | null): Promise<
 }
 
 /**
- * The models Ember offers (`offeredModelsThrough`), which the Worker is asked for while `asking`, through
- * the account `keys` names, as Set up Ember AI has them typed, or Ember AI's without them, and again for
+ * The models Papaya OS offers (`offeredModelsThrough`), which the Worker is asked for while `asking`, through
+ * the account `keys` names, as Set up Papaya AI has them typed, or Papaya AI's without them, and again for
  * other keys: null until it answers. A session that's ended while it asks goes to `failed`.
  */
 export function useOfferedModels(asking: boolean, keys: AssistantKeys | null, failed: (error: unknown) => void): OfferedModels | null {

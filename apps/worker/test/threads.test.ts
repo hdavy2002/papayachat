@@ -431,7 +431,7 @@ describe("Pushing replies", () => {
 });
 
 describe("Bots in threads", () => {
-  /** Sets Ember up with Ada as its administrator, signed in, answering her session and first run's general room. */
+  /** Sets Papaya OS up with Ada as its administrator, signed in, answering her session and first run's general room. */
   async function setUp(): Promise<{ ada: Session; general: RoomId }> {
     const response = await api("/api/first_run", { method: "POST", body: JSON.stringify({ name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" }) });
     expect(response.status).toBe(201);
@@ -465,7 +465,7 @@ describe("Bots in threads", () => {
     expect(idsOf((await openThread(client, parent.id)).messages)).toEqual([asked.id, answered.message.id]);
   });
 
-  /** What Ember delivers to a webhook that says nothing back, as one that answers later doesn't, each by the message it delivers. */
+  /** What Papaya OS delivers to a webhook that says nothing back, as one that answers later doesn't, each by the message it delivers. */
   function deliveredLater(): Map<string, { room: { path: string } }> {
     const delivered = new Map<string, { room: { path: string } }>();
     vi.spyOn(globalThis, "fetch").mockImplementation(async (_input, init) => {

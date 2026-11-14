@@ -29,7 +29,7 @@ interface SectionProps {
 
 /**
  * Which sections of help to give: the browser's settings, but not for Safari or Chrome on an iPhone or
- * iPad, which have none; the system's, only in the installed app; and how to install Ember, but not for
+ * iPad, which have none; the system's, only in the installed app; and how to install Papaya OS, but not for
  * Chrome, nor for Firefox but on Android, nor in the installed app.
  */
 function useSections(platform: Platform) {
@@ -55,7 +55,7 @@ export function NotificationHelp({ platform }: { platform: Platform }) {
   );
 }
 
-/** How to install Ember, as your profile gives it, if it gives it to this browser. */
+/** How to install Papaya OS, as your profile gives it, if it gives it to this browser. */
 export function InstallInstructions({ platform }: { platform: Platform }) {
   return useSections(platform).install && <InstallSteps platform={platform} />;
 }
@@ -63,7 +63,7 @@ export function InstallInstructions({ platform }: { platform: Platform }) {
 /** Ruby's `String#capitalize`, as Campfire names the browser: its first letter upper case, and the rest lower. */
 const capitalize = ([first = "", ...rest]: string) => first.toUpperCase() + rest.join("").toLowerCase();
 
-/** The address of Ember's home page. */
+/** The address of Papaya OS's home page. */
 const siteAddress = () => new URL("/", location.href).href;
 
 function BrowserSettings({ platform, open }: SectionProps) {
@@ -209,18 +209,18 @@ function SystemSettings({ platform, open }: SectionProps) {
           </li>
         </Steps>
       ) : edge && desktop ? (
-        <SystemSteps platform={platform} app="Ember" windowsSwitch="the toggle button" macSwitch="the allow notifications switch" />
+        <SystemSteps platform={platform} app="Papaya OS" windowsSwitch="the toggle button" macSwitch="the allow notifications switch" />
       ) : (firefox || chrome) && desktop ? (
-        <SystemSteps platform={platform} app="Ember" windowsSwitch="the toggle button" macSwitch="the allow notifications switch" />
+        <SystemSteps platform={platform} app="Papaya OS" windowsSwitch="the toggle button" macSwitch="the allow notifications switch" />
       ) : safari && desktop ? (
-        <SystemSteps platform={platform} app="Ember" windowsSwitch="the toggle button" macSwitch="the allow notifications switch" />
+        <SystemSteps platform={platform} app="Papaya OS" windowsSwitch="the toggle button" macSwitch="the allow notifications switch" />
       ) : (safari || chrome) && ios ? (
         <Steps>
           <li>
             Open the <Pictured icon={Settings} size={20} /> Settings app.
           </li>
           <li>
-            Scroll to and tap <em>Ember</em>.
+            Scroll to and tap <em>Papaya OS</em>.
           </li>
           <li>
             Tap <em>Notifications</em>.
@@ -241,7 +241,7 @@ function SystemSettings({ platform, open }: SectionProps) {
             Tap <em>App notifications</em>.
           </li>
           <li>
-            Scroll to <em>Ember</em>.
+            Scroll to <em>Papaya OS</em>.
           </li>
           <li>
             Tap <Pictured icon={SwitchOff} alt="the switch" size={22} /> to <em>Allow Notifications</em>.
@@ -255,18 +255,18 @@ function SystemSettings({ platform, open }: SectionProps) {
 }
 
 /**
- * How to install Ember. Chrome gets no install steps, so Chrome on Android's never show, and Edge's keep
+ * How to install Papaya OS. Chrome gets no install steps, so Chrome on Android's never show, and Edge's keep
  * its button apart from the next word.
  */
 function InstallSteps({ platform, open }: SectionProps) {
   const browser = capitalize(platform.browser);
   const { firefox, chrome, safari, edge, android, ios, desktop } = platform;
   return (
-    <HelpSection icon={DownloadDataWindow} title="Install Ember as a web app." open={open}>
+    <HelpSection icon={DownloadDataWindow} title="Install Papaya OS as a web app." open={open}>
       {edge ? (
         <Steps>
           <li>
-            Click <Pictured icon={GridPlus} alt="the app available - install Ember chat button" size={16} /> in the address bar.
+            Click <Pictured icon={GridPlus} alt="the app available - install Papaya OS chat button" size={16} /> in the address bar.
           </li>
           <li>
             Click <em>Install</em>.
@@ -293,7 +293,7 @@ function InstallSteps({ platform, open }: SectionProps) {
       ) : (safari || chrome) && ios ? (
         <>
           <Paragraph>
-            To receive push notifications in {browser} for {platform.operatingSystem}, you must install Ember as a web app.
+            To receive push notifications in {browser} for {platform.operatingSystem}, you must install Papaya OS as a web app.
           </Paragraph>
           <Steps>
             <li>
@@ -305,7 +305,7 @@ function InstallSteps({ platform, open }: SectionProps) {
           </Steps>
         </>
       ) : (
-        <Paragraph>Some platforms require you to install Ember as a web app to receive push notifications.</Paragraph>
+        <Paragraph>Some platforms require you to install Papaya OS as a web app to receive push notifications.</Paragraph>
       )}
       <InstallNow />
     </HelpSection>
@@ -313,7 +313,7 @@ function InstallSteps({ platform, open }: SectionProps) {
 }
 
 /**
- * Campfire's `.pwa__installer`: Install now, which shows the browser's prompt to install Ember once the
+ * Campfire's `.pwa__installer`: Install now, which shows the browser's prompt to install Papaya OS once the
  * browser has offered to. It's an ink button wherever it shows, even in the dialog, where the header's
  * styles would make it clear, its icon white on white.
  */

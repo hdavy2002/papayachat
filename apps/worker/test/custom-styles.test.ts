@@ -7,7 +7,7 @@ import { api, cookieOf, freshDeploy, openWorkspaceSocket, shown, signIn, workspa
 
 const ada = { name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" };
 
-/** Sets Ember up with Ada as its administrator, signed in. */
+/** Sets Papaya OS up with Ada as its administrator, signed in. */
 async function setUp(): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(ada) });
   expect(response.status).toBe(201);
@@ -30,7 +30,7 @@ const bootstrap = async (session?: Session) => (await (await api("/api/bootstrap
 const stored = async () => ((await workspaceSql("SELECT custom_styles, updated_at FROM accounts")) as Array<{ custom_styles: string | null; updated_at: string }>)[0]!;
 
 /** The workspace as pages show it with `customStyles`. */
-const styled = (customStyles: string): Account => ({ name: "Ember", tagline: "", hideTranslationButtons: true, customStyles, restrictRoomCreation: false, logo: null, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false });
+const styled = (customStyles: string): Account => ({ name: "Papaya OS", tagline: "", hideTranslationButtons: true, customStyles, restrictRoomCreation: false, logo: null, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false });
 
 /** CSS as an administrator might type it, with what would end an unescaped `<style>`. */
 const CSS = ".mb-app { --mb-ink: rebeccapurple; }\n</style><script>alert(1)</script>\n";

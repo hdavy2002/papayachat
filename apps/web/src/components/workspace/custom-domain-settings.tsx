@@ -22,14 +22,14 @@ import { cn } from "@/lib/utils";
 import { CopyButton, ROUND_BUTTON } from "./link-buttons";
 import { workspaceSectionPath } from "./settings-navigation";
 
-// The Custom domain section of workspace settings. Ember holds no Cloudflare token, so the administrator
+// The Custom domain section of workspace settings. Papaya OS holds no Cloudflare token, so the administrator
 // adds the domain in Cloudflare's dashboard, which the section opens with what to paste there copied: to
 // the Worker, where the domain's DNS is on Cloudflare or moves there from the provider public DNS says
 // has it, or, to keep the DNS at that provider, as a custom hostname of another domain already on
 // Cloudflare (Cloudflare for SaaS), with the one record to add at the provider. Use then makes the
-// domain Ember's address, once a check finds it reaches Ember, and goes there. A domain that already
-// reaches Ember, as one added to the Worker before does, gets no steps, only Save. Going back makes the
-// Worker's workers.dev address Ember's again. A domain Ember moves away from keeps reaching it, sending
+// domain Papaya OS's address, once a check finds it reaches Papaya OS, and goes there. A domain that already
+// reaches Papaya OS, as one added to the Worker before does, gets no steps, only Save. Going back makes the
+// Worker's workers.dev address Papaya OS's again. A domain Papaya OS moves away from keeps reaching it, sending
 // people on, until it's removed in Cloudflare, so the section names it until a check finds it gone.
 // Styled as the Rooms section is.
 
@@ -49,7 +49,7 @@ export const CLOUDFLARE_DNS_RECORDS = "https://dash.cloudflare.com/?to=/:account
 export const CLOUDFLARE_CUSTOM_HOSTNAMES = "https://dash.cloudflare.com/?to=/:account/:zone/ssl-tls/custom-hostnames";
 
 /**
- * The name of the record a domain on Cloudflare takes other domains to Ember by, as Cloudflare for SaaS's
+ * The name of the record a domain on Cloudflare takes other domains to Papaya OS by, as Cloudflare for SaaS's
  * fallback origin: an AAAA record for 100::, which goes nowhere, as Cloudflare's guide to a Worker as the
  * fallback origin has it, and as docs/self-hosting.md names it.
  */
@@ -58,7 +58,7 @@ const SAAS_ORIGIN = "ember-saas";
 /** A workers.dev address, `<worker>.<subdomain>.workers.dev`: the Worker's name, then its account's subdomain. */
 const WORKERS_DEV = /^([a-z0-9-]+)\.[a-z0-9-]+\.workers\.dev$/;
 
-/** The name of the Worker at `host`, a workers.dev address, which a deploy gives Ember, or null at any other. */
+/** The name of the Worker at `host`, a workers.dev address, which a deploy gives Papaya OS, or null at any other. */
 const workerAt = (host: string) => WORKERS_DEV.exec(host.toLowerCase())?.[1] ?? null;
 
 /** The section's buttons, as its New room is. */
@@ -168,11 +168,11 @@ const RECORD_AT: Record<Exclude<DnsProvider, "cloudflare">, (zone: ReactNode) =>
   other: (zone) => <>Where {zone}'s DNS is, add:</>,
 };
 
-/** How a change, or a check, changes the addresses Ember knows reach it. */
+/** How a change, or a check, changes the addresses Papaya OS knows reach it. */
 type AddressesChange = (addresses: EmberAddresses) => EmberAddresses;
 
 interface Props {
-  /** The addresses Ember knows reach it besides its own, as workspace settings has them. */
+  /** The addresses Papaya OS knows reach it besides its own, as workspace settings has them. */
   addresses: EmberAddresses;
   /** Shows the addresses as a change, or a check, changes them, which only workspace settings shows. */
   showAddresses: (change: AddressesChange) => void;
@@ -186,7 +186,7 @@ interface Props {
 
 /**
  * The host typed in, with or without its scheme and path, as `location.host` would write it at that
- * address, or why it can't be Ember's custom domain.
+ * address, or why it can't be Papaya OS's custom domain.
  */
 function domainTyped(text: string): { domain: string } | { refusal: string } {
   const typed = text.trim();
@@ -218,10 +218,10 @@ function registeredGuess(hostname: string): string {
 }
 
 /**
- * Ember's address for administrators. Where a deploy puts it, while that's its address or it has none,
+ * Papaya OS's address for administrators. Where a deploy puts it, while that's its address or it has none,
  * the steps to give it a custom domain, which Move to another domain shows anywhere else. At an address
- * that could be a custom domain, Use, which makes it Ember's, and while it has one, Go back to where a
- * deploy puts it, or Stop using it until Ember knows where that is. The domains Ember moved away from,
+ * that could be a custom domain, Use, which makes it Papaya OS's, and while it has one, Go back to where a
+ * deploy puts it, or Stop using it until Papaya OS knows where that is. The domains Papaya OS moved away from,
  * each with a check.
  */
 export function CustomDomainSettings({ addresses, showAddresses, askForAccount, onSaved, onFailed }: Props) {
@@ -232,15 +232,15 @@ export function CustomDomainSettings({ addresses, showAddresses, askForAccount, 
   const mounted = useMounted();
   const here = location.host;
   const hereCanBe = isHost(here) && canBeCustomDomain(location.hostname);
-  // This page's address is where a deploy puts Ember before a page there has told it so.
+  // This page's address is where a deploy puts Papaya OS before a page there has told it so.
   const deployed = addresses.deployed ?? (isHost(here) && !hereCanBe ? here : null);
   const worker = workerAt(deployed ?? here);
-  // The page's own address, while it's a custom domain Ember has moved away from, which reaches Ember as surely as the page does.
+  // The page's own address, while it's a custom domain Papaya OS has moved away from, which reaches Papaya OS as surely as the page does.
   const left = hereCanBe && customDomain !== null && customDomain !== here ? here : null;
   const others = addresses.others.filter((address) => address !== here && address !== customDomain);
-  // Where a deploy puts Ember, the steps to a custom domain are what it offers.
+  // Where a deploy puts Papaya OS, the steps to a custom domain are what it offers.
   const settingUpHere = !hereCanBe && (customDomain === null || customDomain === here);
-  // Ember's address when the addresses were last shown. Another tab moving Ember changes them too, as only
+  // Papaya OS's address when the addresses were last shown. Another tab moving Papaya OS changes them too, as only
   // the server can say, so they're asked for again then.
   const shownFor = useRef(customDomain);
   // While they're asked for, what's changed them here since, which the answer may have been read before,
@@ -268,7 +268,7 @@ export function CustomDomainSettings({ addresses, showAddresses, askForAccount, 
     );
   }, [customDomain, showAddresses, mounted, onFailed]);
 
-  /** Makes `address` Ember's, then does `then`, or says why the server refused it to `refused`, where given, rather than as the workspace's alerts do. */
+  /** Makes `address` Papaya OS's, then does `then`, or says why the server refused it to `refused`, where given, rather than as the workspace's alerts do. */
   const change = (address: string | null, then?: () => void, refused?: (refusal: string) => void) => {
     setChanging(true);
     const answered = askForAccount();
@@ -291,10 +291,10 @@ export function CustomDomainSettings({ addresses, showAddresses, askForAccount, 
       },
     );
   };
-  // Workspace settings stay wherever they're opened, so moving Ember from another address takes them along.
+  // Workspace settings stay wherever they're opened, so moving Papaya OS from another address takes them along.
   const use = (address: string, refused?: (refusal: string) => void) => change(address, address === here ? undefined : () => void moveTo(address), refused);
   const forget = (address: string) => changeAddresses((known) => ({ ...known, others: known.others.filter((other) => other !== address) }));
-  // Ember's address, or where a deploy puts it while it has none, as people open it there.
+  // Papaya OS's address, or where a deploy puts it while it has none, as people open it there.
   const address = customDomain ?? (here === deployed ? here : null);
   const actions = [
     hereCanBe && customDomain !== here && (
@@ -302,7 +302,7 @@ export function CustomDomainSettings({ addresses, showAddresses, askForAccount, 
         Use {here}
       </button>
     ),
-    // Where a deploy puts Ember, with no address of its own, the steps are all it offers.
+    // Where a deploy puts Papaya OS, with no address of its own, the steps are all it offers.
     deployed !== null && customDomain !== deployed && !(customDomain === null && settingUpHere) && (
       <button key="back" type="button" onClick={() => use(deployed)} disabled={changing} className={BUTTON}>
         Go back to {deployed}
@@ -327,7 +327,7 @@ export function CustomDomainSettings({ addresses, showAddresses, askForAccount, 
       </h2>
       {address !== null && (
         <p>
-          Ember's address is <strong className="wrap-anywhere">{address}</strong>.
+          Papaya OS's address is <strong className="wrap-anywhere">{address}</strong>.
         </p>
       )}
       <OtherAddresses
@@ -362,14 +362,14 @@ function DomainsLink({ worker }: { worker: string | null }) {
   );
 }
 
-/** What checking `address`, a custom domain Ember moved away from, found there. */
-const checkedNote = (address: string, reaches: CustomDomainReach) => (reaches === "ember" ? `${address} still reaches Ember.` : `${address} no longer reaches Ember.`);
+/** What checking `address`, a custom domain Papaya OS moved away from, found there. */
+const checkedNote = (address: string, reaches: CustomDomainReach) => (reaches === "ember" ? `${address} still reaches Papaya OS.` : `${address} no longer reaches Papaya OS.`);
 
 /**
- * The custom domains that reach Ember besides its own, until they're removed from the Worker named
- * `worker`, forwarding people to `sendsPeople`, "here" or an address, or showing Ember while it has none,
- * null: `left`, the page's own, if it's one, and `others`, those Ember moved away from, each with a check,
- * after which one that no longer reaches Ember is gone.
+ * The custom domains that reach Papaya OS besides its own, until they're removed from the Worker named
+ * `worker`, forwarding people to `sendsPeople`, "here" or an address, or showing Papaya OS while it has none,
+ * null: `left`, the page's own, if it's one, and `others`, those Papaya OS moved away from, each with a check,
+ * after which one that no longer reaches Papaya OS is gone.
  */
 function OtherAddresses({
   left,
@@ -411,14 +411,14 @@ function OtherAddresses({
     <div className="flex flex-col gap-2">
       {listed.length > 0 && (
         <>
-          <ul aria-label="Other addresses that reach Ember" className="flex flex-col gap-2">
+          <ul aria-label="Other addresses that reach Papaya OS" className="flex flex-col gap-2">
             {listed.map((address) => (
               <li key={address} className="flex flex-wrap items-center gap-x-3 gap-y-2">
                 <p className="min-w-0 flex-1 basis-[16em]">
                   <strong className="wrap-anywhere">{address}</strong> still{" "}
-                  {sendsPeople === null ? "reaches Ember" : sendsPeople === "here" ? "forwards here" : <span className="wrap-anywhere">forwards to {sendsPeople}</span>}.
+                  {sendsPeople === null ? "reaches Papaya OS" : sendsPeople === "here" ? "forwards here" : <span className="wrap-anywhere">forwards to {sendsPeople}</span>}.
                 </p>
-                {/* The page's own address needs no check: it reaches Ember, or the page couldn't ask. */}
+                {/* The page's own address needs no check: it reaches Papaya OS, or the page couldn't ask. */}
                 {address !== left && (
                   <button type="button" aria-label={`Check ${address}`} onClick={() => check(address)} disabled={checked?.reaches === "checking"} className={BUTTON}>
                     Check
@@ -439,7 +439,7 @@ function OtherAddresses({
   );
 }
 
-/** Makes a domain Ember's address and goes there, saying why the server refused it to `refused`. */
+/** Makes a domain Papaya OS's address and goes there, saying why the server refused it to `refused`. */
 type Use = (domain: string, refused: (refusal: string) => void) => void;
 
 /** Answers `otherwise` for any failure but being signed out, which it passes on. */
@@ -451,9 +451,9 @@ const unlessSignedOut =
   };
 
 /**
- * The domain to give Ember, and then, once Set up has checked it, Save, if it already reaches Ember, or
+ * The domain to give Papaya OS, and then, once Set up has checked it, Save, if it already reaches Papaya OS, or
  * where its DNS is and the steps from there: its field takes the focus at once when `autoFocus` says, as
- * when Move to another domain shows it. `worker` names the Worker that runs Ember, where that's known, and
+ * when Move to another domain shows it. `worker` names the Worker that runs Papaya OS, where that's known, and
  * `changing` says a change is saving.
  */
 function SetUp({ autoFocus, worker, changing, use, onFailed }: { autoFocus: boolean; worker: string | null; changing: boolean; use: Use; onFailed: Props["onFailed"] }) {
@@ -463,7 +463,7 @@ function SetUp({ autoFocus, worker, changing, use, onFailed }: { autoFocus: bool
   const asked = useRef<object | null>(null);
   // The domain being checked.
   const [checking, setChecking] = useState<string | null>(null);
-  // What Set up found of the domain: whether it reaches Ember already, and where its DNS is for the steps if not.
+  // What Set up found of the domain: whether it reaches Papaya OS already, and where its DNS is for the steps if not.
   const [found, setFound] = useState<(CustomDomainLookup & { domain: string; reaches: CustomDomainReach }) | null>(null);
   const mounted = useMounted();
 
@@ -541,12 +541,12 @@ function SetUp({ autoFocus, worker, changing, use, onFailed }: { autoFocus: bool
   );
 }
 
-/** What Set up shows for a domain that already reaches Ember, as one added to the Worker before does: no steps, only Save, which makes it Ember's address. */
+/** What Set up shows for a domain that already reaches Papaya OS, as one added to the Worker before does: no steps, only Save, which makes it Papaya OS's address. */
 function Reaches({ domain, changing, use }: { domain: string; changing: boolean; use: Use }) {
   return (
     <>
       <p className="wrap-anywhere">
-        <strong>{domain}</strong> already reaches Ember.
+        <strong>{domain}</strong> already reaches Papaya OS.
       </p>
       <div>
         <UseButton label="Save" domain={domain} changing={changing} use={use} />
@@ -555,7 +555,7 @@ function Reaches({ domain, changing, use }: { domain: string; changing: boolean;
   );
 }
 
-/** What the steps to make a domain Ember's address need, besides the provider they're for. */
+/** What the steps to make a domain Papaya OS's address need, besides the provider they're for. */
 interface StepsFor {
   /** The domain, as Use takes it, with any port. */
   domain: string;
@@ -563,7 +563,7 @@ interface StepsFor {
   hostname: string;
   /** The zone it's in, as DNS said, or the domain it was most likely registered as. */
   zone: string;
-  /** The name of the Worker that runs Ember, where that's known. */
+  /** The name of the Worker that runs Papaya OS, where that's known. */
   worker: string | null;
   changing: boolean;
   use: Use;
@@ -571,7 +571,7 @@ interface StepsFor {
 
 /**
  * The DNS provider menu, starting at the one public DNS says serves `zone`, the zone `domain` is in, or
- * Cloudflare where it didn't say, and the steps from there to make `domain` Ember's address: at Cloudflare,
+ * Cloudflare where it didn't say, and the steps from there to make `domain` Papaya OS's address: at Cloudflare,
  * adding the domain to the Worker, after moving the zone's DNS there from the provider DNS found, if any,
  * and at any other provider, keeping the DNS there through another domain on Cloudflare.
  */
@@ -609,7 +609,7 @@ function OnCloudflare({ domain, hostname, zone, worker, changing, use, from }: S
       {from !== null && (
         <p className={cn(NOTE, "wrap-anywhere")}>This moves {zone}'s DNS to Cloudflare, which copies its records.</p>
       )}
-      <ol aria-label={`Steps to make ${domain} Ember's address`} className="flex list-decimal flex-col gap-3 ps-5">
+      <ol aria-label={`Steps to make ${domain} Papaya OS's address`} className="flex list-decimal flex-col gap-3 ps-5">
         {from !== null && (
           <>
             <li>
@@ -629,7 +629,7 @@ function OnCloudflare({ domain, hostname, zone, worker, changing, use, from }: S
           )}
           {worker === null ? (
             <>
-              , choose the Worker that runs Ember, then <em>Domains &gt; Add Domain</em>
+              , choose the Worker that runs Papaya OS, then <em>Domains &gt; Add Domain</em>
             </>
           ) : (
             <>
@@ -646,7 +646,7 @@ function OnCloudflare({ domain, hostname, zone, worker, changing, use, from }: S
 }
 
 /**
- * What giving Ember the domain while its DNS stays at `provider` takes: another domain already on
+ * What giving Papaya OS the domain while its DNS stays at `provider` takes: another domain already on
  * Cloudflare, which the person names, for Cloudflare for SaaS. The record at the provider is a CNAME,
  * which a zone's own name can't be, so the domain must be a name under its zone.
  */
@@ -694,17 +694,17 @@ function KeepingDns({ hostname, zone, provider, ...steps }: StepsFor & { provide
 }
 
 /**
- * The steps to give Ember the domain through Cloudflare for SaaS on `onCloudflare`, another domain already
+ * The steps to give Papaya OS the domain through Cloudflare for SaaS on `onCloudflare`, another domain already
  * there: the record and fallback origin it takes, the domain as a custom hostname, and the Worker's
  * routes; then the one record to add at `provider`, and Use. A fallback origin the domain has already
- * stays, as replacing it would send its other custom hostnames to Ember's record, and the Worker's route
- * takes this one to Ember whatever it is. Cloudflare answers the certificate authority itself at
+ * stays, as replacing it would send its other custom hostnames to Papaya OS's record, and the Worker's route
+ * takes this one to Papaya OS whatever it is. Cloudflare answers the certificate authority itself at
  * `/.well-known/`, so no Worker runs there.
  */
 function SaasSteps({ domain, hostname, zone, worker, changing, use, provider, onCloudflare }: StepsFor & { provider: Exclude<DnsProvider, "cloudflare">; onCloudflare: string }) {
   const origin = `${SAAS_ORIGIN}.${onCloudflare}`;
   return (
-    <ol aria-label={`Steps to make ${domain} Ember's address`} className="flex list-decimal flex-col gap-3 ps-5">
+    <ol aria-label={`Steps to make ${domain} Papaya OS's address`} className="flex list-decimal flex-col gap-3 ps-5">
       <li>
         In Cloudflare, add this record to <strong className="wrap-anywhere">{onCloudflare}</strong>, proxied:
         <RecordToAdd type="AAAA" name={SAAS_ORIGIN} value="100::" />
@@ -718,7 +718,7 @@ function SaasSteps({ domain, hostname, zone, worker, changing, use, provider, on
       </li>
       <li>
         Under <em>Workers Routes</em>, route <strong className="wrap-anywhere">{hostname}/*</strong> to{" "}
-        {worker === null ? "the Worker that runs Ember" : <strong className="wrap-anywhere">{worker}</strong>}, and <strong className="wrap-anywhere">{hostname}/.well-known/*</strong> to{" "}
+        {worker === null ? "the Worker that runs Papaya OS" : <strong className="wrap-anywhere">{worker}</strong>}, and <strong className="wrap-anywhere">{hostname}/.well-known/*</strong> to{" "}
         <em>None</em>, so Cloudflare can get it a certificate.
       </li>
       <li>
@@ -741,7 +741,7 @@ function hostnameTyped(text: string): string | null {
   return hostname.includes(".") ? hostname : null;
 }
 
-/** The last step: Use `domain`, which makes it Ember's address and goes there, or says under it why not. */
+/** The last step: Use `domain`, which makes it Papaya OS's address and goes there, or says under it why not. */
 function UseStep({ domain, changing, use }: { domain: string; changing: boolean; use: Use }) {
   return (
     <li>
@@ -750,7 +750,7 @@ function UseStep({ domain, changing, use }: { domain: string; changing: boolean;
   );
 }
 
-/** A button saying `label` that makes `domain` Ember's address and goes there, or says under it why not. */
+/** A button saying `label` that makes `domain` Papaya OS's address and goes there, or says under it why not. */
 function UseButton({ label, domain, changing, use }: { label: string; domain: string; changing: boolean; use: Use }) {
   const [refusal, setRefusal] = useState<string | null>(null);
   return (

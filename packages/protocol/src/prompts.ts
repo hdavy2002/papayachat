@@ -5,7 +5,7 @@ import type { WebTool } from "./assistant.ts";
 // their instructions: who they are, how the chat shows what they write, cards included, what they may
 // do on the web, the date, and where they're asked. The Worker sends it to their models, and an agent's
 // page shows it around the instructions typed there, so that what it shows is what the model reads.
-// Ember writes it from a template, its own or one an administrator changed, whose placeholders it fills
+// Papaya OS writes it from a template, its own or one an administrator changed, whose placeholders it fills
 // in each time.
 
 /** Where @ember's and the agents' settings are, which what they're told of what an administrator could do names. */
@@ -25,7 +25,7 @@ export interface Prompt {
 }
 
 /**
- * What Ember fills in a template with each time: the answerer's name, the community's, where it's asked,
+ * What Papaya OS fills in a template with each time: the answerer's name, the community's, where it's asked,
  * who asked, about how many words it may answer in, how it can show cards under its answer, what it's
  * told of the web, today's date, and, between what's before them and what's after, its instructions.
  */
@@ -73,14 +73,14 @@ const CARD_EXAMPLE = String.raw`{"attachments": [{"color": "warning", "blocks": 
 ]}]}`;
 
 /**
- * What @ember and the agents are told of the cards they can show under an answer, which Ember makes of the
+ * What @ember and the agents are told of the cards they can show under an answer, which Papaya OS makes of the
  * Slack payloads they write in ```slack blocks, as a bot's webhook posts them (apps/worker/src/bots/slack.ts):
  * when a card helps, the blocks it can show, Slack's markup, what doesn't show, and how a good card looks.
  * It's in every question they're asked, so it says only what a model needs, in about 1,800 of Claude's
  * tokens.
  */
 export const CARDS_PROMPT = [
-  `You can show cards under your answer, the way Slack shows an app's message. Write a Slack message's payload as JSON in a code block that starts with ${FENCE}slack, and Ember shows its blocks and attachments as cards in place of the block. The cards show under all your words, wherever you write the block, so write your words first and end your answer with it.`,
+  `You can show cards under your answer, the way Slack shows an app's message. Write a Slack message's payload as JSON in a code block that starts with ${FENCE}slack, and Papaya OS shows its blocks and attachments as cards in place of the block. The cards show under all your words, wherever you write the block, so write your words first and end your answer with it.`,
   `Answer with a card when someone should take something in at a glance: where something stands, a report or a summary of the facts, options to compare, a checklist, a schedule, a ranking, or links to open next. Leave it out of a conversational reply, an explanation, or an answer of a sentence or two. Write your words outside the block, as a payload's "text" doesn't show. With a card, keep them to a sentence or two on what it means or what it leaves out, and never repeat what it shows. Put in a card only what you know from the conversation or your sources, and never make up a link.`,
   `A payload is {"blocks": [...]}, which shows as one card, or, for a status, {"attachments": [{"color": "good", "blocks": [...]}]}, which shows each attachment as a card with a bar down its left side in its color: "good" (green) when it's done or healthy, "warning" (amber) when it's at risk, "danger" (red) when it's failing or blocked. Use attachments only for a status like that, and blocks for anything else. Blocks show top to bottom:\n${CARD_BLOCKS}`,
   `In mrkdwn, Slack's markup and not Markdown, write *bold* with one asterisk, _italics_, ~strikethrough~, \`code\`, <https://example.com|a link> and emoji by name, such as :white_check_mark:. It has no headings or lists, so start a list's lines with "• ". Menus, date pickers, inputs, checkboxes and buttons without a url don't show, as only a Slack app could answer them. Write people's names rather than Slack's mentions, which show only as text and notify nobody. A card's pictures show only at addresses a person in the conversation wrote. Write JSON that parses, with double quotes, "\\n" for a line break inside a string, and no trailing commas or comments: a block that doesn't parse, or shows nothing, stays as code.`,
@@ -88,7 +88,7 @@ export const CARDS_PROMPT = [
 ].join("\n\n");
 
 /**
- * What @ember is told, as Ember writes it: what stays the same from question to question before what
+ * What @ember is told, as Papaya OS writes it: what stays the same from question to question before what
  * changes, as providers cache the start of a prompt.
  */
 export const EMBER_TEMPLATE = `You are {{name}}, the AI assistant in the team chat "{{community}}". People ask you things by mentioning @ember in a room or a thread, or by writing to you directly.
@@ -105,7 +105,7 @@ Today is {{today}}, in UTC.
 
 You're asked in {{where}}. Its messages follow, oldest first, each after its writer's name. Answer the last one, which {{asker}} wrote, as a helpful teammate would: plainly, and in at most about {{words}} words.`;
 
-/** What an agent is told, as Ember writes it, in the order @ember's is. */
+/** What an agent is told, as Papaya OS writes it, in the order @ember's is. */
 export const AGENT_TEMPLATE = `You are {{name}}, an AI agent in the team chat "{{community}}". People ask you things by mentioning @{{name}} in a room or a thread, or by writing to you directly.
 
 {{instructions}}
@@ -120,17 +120,17 @@ Today is {{today}}, in UTC.
 
 You're asked in {{where}}. Its messages follow, oldest first, each after its writer's name. Answer the last one, which {{asker}} wrote, in at most about {{words}} words.`;
 
-/** Ember's own template for the answerer `answererId`: @ember's, or an agent's, saved or not (null). */
+/** Papaya OS's own template for the answerer `answererId`: @ember's, or an agent's, saved or not (null). */
 export const ownTemplateFor = (answererId: UserId | null) => (answererId === ASSISTANT_ID ? EMBER_TEMPLATE : AGENT_TEMPLATE);
 
 /**
  * What the answerer `answererId` is told, @ember, or an agent called `name`, by its id, or null for one
- * not saved yet, from `template`, an administrator's, or else Ember's own (`ownTemplateFor`): before its
+ * not saved yet, from `template`, an administrator's, or else Papaya OS's own (`ownTemplateFor`): before its
  * instructions, who it is, and after them, how the chat shows what it writes, cards included
  * (`CARDS_PROMPT`), what it's told of the web, `web`, the date at `now`, in UTC, and where it's asked,
  * to answer the last message, which `askerName` wrote, in at most about `words` words. An agent answers
  * as its instructions say, where @ember answers as a helpful teammate would, and then as administrators
- * added. A placeholder Ember doesn't fill in stays as it's written, as it does in a template without the
+ * added. A placeholder Papaya OS doesn't fill in stays as it's written, as it does in a template without the
  * instructions, which goes before them.
  */
 export function promptAround(
@@ -177,24 +177,24 @@ export function withInstructions({ before, after }: Prompt, instructions: string
 /** How many line breaks `space` holds. */
 const lineBreaksIn = (space: string) => space.split("\n").length - 1;
 
-/** The longest template Ember takes, as long as the instructions it goes around may be. */
+/** The longest template Papaya OS takes, as long as the instructions it goes around may be. */
 export const MAX_TEMPLATE_LENGTH = 10_000;
 
 /** Why a template is refused before anything's saved. */
-export const TEMPLATE_REFUSED = "Write what Ember adds around the instructions, or go back to Ember's own.";
-export const TEMPLATE_TOO_LONG = `What Ember adds around the instructions can be at most ${MAX_TEMPLATE_LENGTH.toLocaleString("en-US")} characters.`;
-export const INSTRUCTIONS_PLACE_NEEDED = `What Ember adds around the instructions needs ${placeholderOf("instructions")} in it once, where they go.`;
+export const TEMPLATE_REFUSED = "Write what Papaya OS adds around the instructions, or go back to Papaya OS's own.";
+export const TEMPLATE_TOO_LONG = `What Papaya OS adds around the instructions can be at most ${MAX_TEMPLATE_LENGTH.toLocaleString("en-US")} characters.`;
+export const INSTRUCTIONS_PLACE_NEEDED = `What Papaya OS adds around the instructions needs ${placeholderOf("instructions")} in it once, where they go.`;
 
-/** Why a template can't have the placeholder `written`, which Ember has nothing to fill in for. */
+/** Why a template can't have the placeholder `written`, which Papaya OS has nothing to fill in for. */
 export const unknownPlaceholder = (written: string) =>
-  `Ember has nothing to fill in for {{${written}}}. It fills in ${PLACEHOLDERS.map(placeholderOf).join(", ")}.`;
+  `Papaya OS has nothing to fill in for {{${written}}}. It fills in ${PLACEHOLDERS.map(placeholderOf).join(", ")}.`;
 
-/** How many places for the instructions `template` has, which Ember takes only one of. */
+/** How many places for the instructions `template` has, which Papaya OS takes only one of. */
 export const placesForInstructions = (template: string) => template.split(INSTRUCTIONS).length - 1;
 
 /**
- * Why `template` can't be what Ember adds around an answerer's instructions, or null when it can: it's
- * longer than Ember takes, has a placeholder Ember doesn't fill in, or doesn't have the instructions'
+ * Why `template` can't be what Papaya OS adds around an answerer's instructions, or null when it can: it's
+ * longer than Papaya OS takes, has a placeholder Papaya OS doesn't fill in, or doesn't have the instructions'
  * once, as an answerer's instructions would otherwise go unread.
  */
 export function templateRefusal(template: string): string | null {
@@ -206,9 +206,9 @@ export function templateRefusal(template: string): string | null {
 }
 
 /**
- * Parses an untrusted template for what Ember adds around the instructions of the answerer `answererId`,
- * @ember or an agent, saved or not (null), as its page saves it: null, or Ember's own template, for
- * Ember's own, which then changes as Ember does, or else a template Ember takes (`templateRefusal`),
+ * Parses an untrusted template for what Papaya OS adds around the instructions of the answerer `answererId`,
+ * @ember or an agent, saved or not (null), as its page saves it: null, or Papaya OS's own template, for
+ * Papaya OS's own, which then changes as Papaya OS does, or else a template Papaya OS takes (`templateRefusal`),
  * without the spaces around it. Returns why it's refused instead.
  */
 export function parseTemplate(given: unknown, answererId: UserId | null): { template: string | null } | { error: string } {
@@ -227,7 +227,7 @@ export function parseTemplate(given: unknown, answererId: UserId | null): { temp
  */
 export function webPromptFor(askerName: string, webTools: readonly WebTool[], webSearchOn: boolean): string {
   if (!webTools.includes("search") && webSearchOn) {
-    return `You can't search the web or open links with the model ${askerName} picked for your answers to them. When they ask you to, say so, and that they can pick one that can under Ember AI on their profile.`;
+    return `You can't search the web or open links with the model ${askerName} picked for your answers to them. When they ask you to, say so, and that they can pick one that can under Papaya AI on their profile.`;
   }
   if (!webTools.includes("search")) {
     return `You can't search the web or open links. When someone asks you to, say so, and that an administrator can turn on Search the web under ${AI_SETTINGS}.`;

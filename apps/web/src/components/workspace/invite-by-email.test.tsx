@@ -87,7 +87,7 @@ describe("Invite people by email", () => {
   it("emails each address typed, apart by commas, spaces or lines, or with names, saying what came of them", async () => {
     serve();
     const { user } = showCard();
-    expect(card()).toHaveTextContent("Ember emails each person a link to join with their address, whichever ways to join are on. A link works once, for 7 days.");
+    expect(card()).toHaveTextContent("Papaya OS emails each person a link to join with their address, whichever ways to join are on. A link works once, for 7 days.");
     expect(pending()).not.toBeInTheDocument();
     await user.type(box(), "ann@example.com, bob@example.com;cy@example.com{Enter}Dee <dee@example.com> ANN@example.com");
     await user.click(sendButton());
@@ -155,10 +155,10 @@ describe("Invite people by email", () => {
     expect(rows()).toHaveLength(1);
   });
 
-  it("gives the links to copy while Ember can't send email", async () => {
+  it("gives the links to copy while Papaya OS can't send email", async () => {
     serve({ invited: (emailAddresses) => Response.json({ outcomes: emailAddresses.map((address) => outcomeOf(address, null)) }) });
     const { user, onSetUpEmail } = showCard({ emails: false });
-    expect(card()).toHaveTextContent("Ember can't send email yet, so you'll get each person's link to send them yourself. A link works once, for 7 days. Set up email to have Ember send them.");
+    expect(card()).toHaveTextContent("Papaya OS can't send email yet, so you'll get each person's link to send them yourself. A link works once, for 7 days. Set up email to have Papaya OS send them.");
     await user.click(within(card()).getByRole("button", { name: "Set up email" }));
     expect(onSetUpEmail).toHaveBeenCalledOnce();
     await user.type(box(), "ann@example.com bob@example.com");
@@ -231,7 +231,7 @@ describe("Invite people by email", () => {
       ]);
     });
 
-    it("makes a new link while Ember can't send email", async () => {
+    it("makes a new link while Papaya OS can't send email", async () => {
       serve({ resent: () => Response.json({ invitation: invitation("ann@example.com", { delivery: null }), link: `${LINK}new` }) });
       const { user } = showCard({ invitations: [invitation("ann@example.com", { delivery: null }, 2)], emails: false });
       await user.click(within(rowFor("ann@example.com")).getByRole("button", { name: "New link for ann@example.com" }));

@@ -29,7 +29,7 @@ import {
   type Session,
 } from "./support";
 
-// Uploading files to a room in parts, which R2 keeps, and serving them from the addresses Ember signs.
+// Uploading files to a room in parts, which R2 keeps, and serving them from the addresses Papaya OS signs.
 
 /** An Active Storage key. */
 const KEY = /^[0-9a-z]{28}$/;
@@ -418,7 +418,7 @@ describe("Image, video and file previews", () => {
     });
     expect((await ada.next("message.created")).message).toEqual(image);
 
-    // Ember can't read a video's size, but its poster has its shape.
+    // Papaya OS can't read a video's size, but its poster has its shape.
     const video = await uploadWithPreview(ada.session, room, "alpha centuri.mp4", new Uint8Array(1_000), "video/mp4", recordedImage("alpha-centuri-poster.webp"));
     expect(video.attachment).toMatchObject({ contentType: "video/mp4", width: 320, height: 180, previewUrl: expect.stringMatching(/^\/previews\/[0-9a-z]{28}\/[\w-]{22}\/alpha%20centuri\.mp4$/) });
     expect((await ada.next("message.created")).message).toEqual(video);
@@ -559,7 +559,7 @@ describe("Image, video and file previews", () => {
     expect((await sendPreview(ada, room, upload.id, thumbnail)).status).toBe(204);
     const previewed = (await finishWith(images, ada, room, upload, screenshot)).attachment;
     expect(new Uint8Array(await (await fetchFile(previewed.previewUrl!)).arrayBuffer())).toEqual(thumbnail);
-    // Images reads at most 20 MB, 100 megapixels and 12,000 pixels a side, and Ember previews no picture of an unknown size.
+    // Images reads at most 20 MB, 100 megapixels and 12,000 pixels a side, and Papaya OS previews no picture of an unknown size.
     const large = (header: Uint8Array, length: number) => {
       const bytes = new Uint8Array(length);
       bytes.set(header);
@@ -769,7 +769,7 @@ describe("File links", () => {
     expect((await fetchFile(file.url, { "If-Modified-Since": earlier })).status).toBe(200);
   });
 
-  it("answers an empty 404 for an address Ember didn't make or a file it doesn't have, and Campfire's 404 page to anything but a read", async () => {
+  it("answers an empty 404 for an address Papaya OS didn't make or a file it doesn't have, and Campfire's 404 page to anything but a read", async () => {
     const ada = await signIn("Ada");
     const room = await freshRoom("lobby");
     const file = await uploadFile(ada, room, "moon.jpg", recordedImage("moon-thumb.jpg"));
@@ -937,7 +937,7 @@ describe("Health check", () => {
 
     const response = await apiWith(unbound, `/api/rooms/${room}/uploads`, { method: "POST", headers: { Cookie: ada.cookie }, body: JSON.stringify(newUpload("moon.jpg", 1)) });
     expect(response.status).toBe(503);
-    expect(await errorOf(response)).toBe("Ember isn't set up to store files");
+    expect(await errorOf(response)).toBe("Papaya OS isn't set up to store files");
     expect((await apiWith(unbound, file.url)).status).toBe(404);
     const upload = await started(ada, room, "moon.jpg", new Uint8Array(1));
     const preview = recordedImage("moon-avatar.webp");

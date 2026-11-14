@@ -241,7 +241,7 @@ async function signInGuest(given: unknown, request: Request, env: Env): Promise<
 }
 
 /**
- * What the app asks first: whether Ember is set up yet, who this browser is signed in as, the key
+ * What the app asks first: whether Papaya OS is set up yet, who this browser is signed in as, the key
  * browsers subscribe to push notifications with, and the platform its notification setup help is for.
  */
 async function bootstrap(request: Request, env: Env): Promise<Response> {
@@ -283,14 +283,14 @@ async function me(request: Request, env: Env): Promise<Response> {
  * Workspace settings, which anyone signed in may see, read-only unless they're an administrator, with
  * the Papaya site whose members can sign in, once the deployment has its keys, whether it hears the
  * site's webhooks, where Turnstile's keys come from, the deployment's taking the place of any an
- * administrator gave, and, for administrators, the Cloudflare account Ember is deployed to. They hold
+ * administrator gave, and, for administrators, the Cloudflare account Papaya OS is deployed to. They hold
  * the join code, which no cache should keep, as the sidebar's invitation does.
  */
 async function workspaceSettings(request: Request, env: Env): Promise<Response> {
   const credentials = await credentialsOf(request, env);
   const settings = credentials && (await workspace(env).workspaceSettings(credentials));
   if (!settings) return problem(401, "Not signed in");
-  if (settings === "not set up") return problem(404, "Ember isn't set up yet");
+  if (settings === "not set up") return problem(404, "Papaya OS isn't set up yet");
   const deployment = {
     memberfulSite: memberfulKeysOf(env)?.site ?? null,
     memberfulWebhooks: memberfulWebhooksOf(env) !== null,
@@ -304,10 +304,10 @@ async function workspaceSettings(request: Request, env: Env): Promise<Response> 
 const turnstileOf = (env: Env, saved: TurnstileSettings["turnstile"]): TurnstileSettings["turnstile"] => (turnstileKeysOf(env) ? "secret" : saved);
 
 /**
- * Gives Ember a Turnstile widget's keys to check people with, as Set up Turnstile does once the widget's
+ * Gives Papaya OS a Turnstile widget's keys to check people with, as Set up Turnstile does once the widget's
  * check has passed in its dialog, after who's asking, as changing the workspace does, and once siteverify
  * takes that check's token with the secret key, which says the keys are one widget's, and that it checks
- * people here, answering where Ember's keys come from then. A key that can't be one, or that siteverify
+ * people here, answering where Papaya OS's keys come from then. A key that can't be one, or that siteverify
  * refuses, is refused on its field.
  */
 async function saveTurnstileKeys(request: Request, env: Env): Promise<Response> {
@@ -322,13 +322,13 @@ async function saveTurnstileKeys(request: Request, env: Env): Promise<Response> 
   return turnstileAnswer(env, await workspace(env).changeTurnstileKeys(credentials, { siteKey: keys.siteKey, secretKey: keys.secretKey }));
 }
 
-/** Takes away the Turnstile widget's keys Ember was given, as turning off the Turnstile card's switch does, answering where Ember's keys come from then. */
+/** Takes away the Turnstile widget's keys Papaya OS was given, as turning off the Turnstile card's switch does, answering where Papaya OS's keys come from then. */
 async function forgetTurnstileKeys(request: Request, env: Env): Promise<Response> {
   const credentials = await credentialsOf(request, env);
   return turnstileAnswer(env, credentials && (await workspace(env).changeTurnstileKeys(credentials, null)));
 }
 
-/** The answer to changing Turnstile's keys: where Ember's keys come from then, or who can't. */
+/** The answer to changing Turnstile's keys: where Papaya OS's keys come from then, or who can't. */
 function turnstileAnswer(env: Env, changed: { saved: boolean } | "forbidden" | null): Response {
   if (!changed) return problem(401, "Not signed in");
   if (changed === "forbidden") return problem(403, "Only administrators can change the workspace");
@@ -349,8 +349,8 @@ async function sendTestEmail(request: Request, env: Env): Promise<Response> {
 }
 
 /**
- * Gives Ember a Resend API key to send email with, as Set up email's Send with Resend does, once Resend
- * takes it (`checkResendApiKey`), after who's asking, as changing the workspace does, answering how Ember
+ * Gives Papaya OS a Resend API key to send email with, as Set up email's Send with Resend does, once Resend
+ * takes it (`checkResendApiKey`), after who's asking, as changing the workspace does, answering how Papaya OS
  * sends email then.
  */
 async function saveResendApiKey(request: Request, env: Env): Promise<Response> {
@@ -379,13 +379,13 @@ async function checkSendingDomain(request: Request, env: Env): Promise<Response>
   return json({ onboarded: await isOnboardedToEmailSending(check.domain) } satisfies SendingDomainCheck, { headers: { "Cache-Control": "no-store" } });
 }
 
-/** Takes away the Resend API key Ember was given, as Set up email does when Cloudflare Email Service is chosen instead, answering how Ember sends email then. */
+/** Takes away the Resend API key Papaya OS was given, as Set up email does when Cloudflare Email Service is chosen instead, answering how Papaya OS sends email then. */
 async function forgetResendApiKey(request: Request, env: Env): Promise<Response> {
   const credentials = await credentialsOf(request, env);
   return emailSettingsAnswer(credentials && (await workspace(env).changeResendApiKey(credentials, null)));
 }
 
-/** The answer to changing how Ember sends email: how it does then, or who can't. */
+/** The answer to changing how Papaya OS sends email: how it does then, or who can't. */
 function emailSettingsAnswer(email: EmailSettings | "forbidden" | null): Response {
   if (!email) return problem(401, "Not signed in");
   if (email === "forbidden") return problem(403, "Only administrators can change the workspace");
@@ -403,10 +403,10 @@ async function regenerateJoinCode(request: Request, env: Env): Promise<Response>
 
 /**
  * Changes the workspace, as its settings save it. Someone who isn't an administrator hears so before
- * anything they sent is checked. Ember's address can only be the one the request came to, or a custom
- * domain or where a deploy puts Ember while it reaches Ember (`addressRefusal`), Papaya, or its
+ * anything they sent is checked. Papaya OS's address can only be the one the request came to, or a custom
+ * domain or where a deploy puts Papaya OS while it reaches Papaya OS (`addressRefusal`), Papaya, or its
  * Members only, can only be turned on with the deployment's Papaya keys, and Email domain only with a
- * domain to let in, while Ember can send email. Turning any of them off always works.
+ * domain to let in, while Papaya OS can send email. Turning any of them off always works.
  */
 async function changeAccount(request: Request, env: Env): Promise<Response> {
   const credentials = await credentialsOf(request, env);
@@ -425,9 +425,9 @@ async function changeAccount(request: Request, env: Env): Promise<Response> {
 }
 
 /**
- * Checks what a domain Ember moved away from reaches, as Workspace settings' Check asks, after who's
- * asking, as changing the workspace does: this Ember, something else, or nothing yet. One that no longer
- * reaches Ember is forgotten.
+ * Checks what a domain Papaya OS moved away from reaches, as Workspace settings' Check asks, after who's
+ * asking, as changing the workspace does: this Papaya OS, something else, or nothing yet. One that no longer
+ * reaches Papaya OS is forgotten.
  */
 async function checkCustomDomain(request: Request, env: Env): Promise<Response> {
   const credentials = await credentialsOf(request, env);
@@ -443,7 +443,7 @@ async function checkCustomDomain(request: Request, env: Env): Promise<Response> 
 }
 
 /**
- * Looks up where the DNS of a domain an administrator is making Ember's address is, as Workspace
+ * Looks up where the DNS of a domain an administrator is making Papaya OS's address is, as Workspace
  * settings' Set up asks for its steps, after who's asking, as checking one does.
  */
 async function lookUpCustomDomain(request: Request, env: Env): Promise<Response> {
@@ -457,7 +457,7 @@ async function lookUpCustomDomain(request: Request, env: Env): Promise<Response>
 }
 
 /**
- * The release this Ember is, and the newest one GitHub names, for an administrator, as General settings
+ * The release this Papaya OS is, and the newest one GitHub names, for an administrator, as General settings
  * says, telling them when a newer one is out: as GitHub last said, or `afresh`, as opening Admin asks.
  */
 async function release(request: Request, env: Env, afresh: boolean): Promise<Response> {
@@ -737,7 +737,7 @@ async function disconnectMemberful(request: Request, env: Env): Promise<Response
 
 /**
  * Sends the browser on to sign in at the Papaya site to connect an account there, with the cookie that
- * keeps the state it goes with, or on to Ember's custom domain to connect from there, which no cache should keep.
+ * keeps the state it goes with, or on to Papaya OS's custom domain to connect from there, which no cache should keep.
  */
 const connectionAnswer = ({ connection, cookie }: { connection: MemberfulConnection; cookie: string | null }) =>
   json(connection, { status: 202, headers: { ...(cookie === null ? {} : { "Set-Cookie": cookie }), "Cache-Control": "no-store" } });
@@ -1042,7 +1042,7 @@ async function connectToWorkspace(request: Request, env: Env): Promise<Response>
 /**
  * Connects a tab to room `roomId`, or with `huddle` to the room's huddle, which has a socket of its own
  * beside the one a tab shows the room on. Either is for the room's members. An address a ban blocks can
- * read the room, as it can the rest of Ember, but can't join its huddle, where it would be heard.
+ * read the room, as it can the rest of Papaya OS, but can't join its huddle, where it would be heard.
  */
 async function connectToRoom(request: Request, env: Env, roomId: RoomId, huddle = false): Promise<Response> {
   // As with Action Cable, the address is only there for upgrades from the app's own pages.

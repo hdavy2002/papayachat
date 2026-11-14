@@ -23,7 +23,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { fingerprintOf, MAX_TOOL_SCHEMA_LENGTH } from "../src/apps/mcp";
 import { api, apiWith, builtPages, cookieOf, freshDeploy, shown, workspaceSql, type Session } from "./support";
 
-// Apps: the MCP servers an administrator connects on the AI assistant tab, whose tools Ember reads from
+// Apps: the MCP servers an administrator connects on the AI assistant tab, whose tools Papaya OS reads from
 // them over Streamable HTTP. A fake server stands behind `fetch`, answering as the protocol has it.
 
 const ACCOUNT_ID = "0123456789abcdef0123456789abcdef";
@@ -33,7 +33,7 @@ const SONNET = "anthropic/claude-sonnet-5.5";
 const ada = { name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" };
 const grace = { name: "Grace Hopper", emailAddress: "grace@example.com", password: "nanoseconds" };
 
-/** Where the fake server is, on this machine, which Ember asks without looking its name up, and on the Internet. */
+/** Where the fake server is, on this machine, which Papaya OS asks without looking its name up, and on the Internet. */
 const LOCAL = "http://localhost:3845/mcp";
 const TRACKER = "https://mcp.tracker.example/mcp";
 
@@ -63,7 +63,7 @@ interface Asked {
 }
 
 let asked: Asked[];
-/** Whether each request Ember sent while reading an app, a lookup of its name or one to the fake server, could be stopped at a deadline. */
+/** Whether each request Papaya OS sent while reading an app, a lookup of its name or one to the fake server, could be stopped at a deadline. */
 let timed: boolean[];
 /** What the fake server is: the pages of tools it lists, the token it takes, if it takes one, and what it answers in place of all that, if anything. */
 let server: { pages: ListedTool[][]; token?: string; instead?: (asked: Asked) => Response | null | Promise<Response | null> };
@@ -98,7 +98,7 @@ beforeEach(async () => {
       const found = url.searchParams.get("type") === "A" ? (addresses[url.searchParams.get("name")!] ?? []) : [];
       return Response.json({ Status: 0, Answer: found.map((data) => ({ type: 1, data })) });
     }
-    // Turning Ember AI on asks its model a test question.
+    // Turning Papaya AI on asks its model a test question.
     if (url.hostname !== "localhost" && url.hostname !== "mcp.tracker.example") {
       return Response.json({ type: "message", role: "assistant", content: [{ type: "text", text: "Hello!" }], stop_reason: "end_turn", usage: { input_tokens: 10, output_tokens: 10 } });
     }
@@ -115,7 +115,7 @@ afterEach(() => vi.restoreAllMocks());
 
 const as = (session?: Session | null): Record<string, string> => (session ? { Cookie: session.cookie } : {});
 
-/** Sets Ember up with Ada as its administrator, signed in, and Ember AI on. */
+/** Sets Papaya OS up with Ada as its administrator, signed in, and Papaya AI on. */
 async function setUp(): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(ada) });
   expect(response.status).toBe(201);
@@ -198,7 +198,7 @@ describe("Connecting an app", () => {
     expect(await appOf(await show(administrator, app.id))).toEqual(app);
     expect(((await (await listApps(administrator)).json()) as Apps).apps).toEqual([{ id: app.id, name: "Tracker", url: LOCAL, toolCount: 2 }]);
 
-    // Ember asks as the protocol has it, at the address it was given, and follows no redirect.
+    // Papaya OS asks as the protocol has it, at the address it was given, and follows no redirect.
     expect(asked.filter(({ rpc }) => rpc !== undefined).map(({ rpc }) => rpc)).toEqual(["initialize", "notifications/initialized", "tools/list"]);
     expect(new Set(asked.map(({ url }) => url))).toEqual(new Set([LOCAL]));
     expect(new Set(asked.map(({ redirect }) => redirect))).toEqual(new Set(["manual"]));
@@ -243,7 +243,7 @@ describe("Connecting an app", () => {
     expect(asked.length).toBeGreaterThan(0);
     expect(asked.every(({ authorization }) => authorization === "Bearer tracker-secret-token")).toBe(true);
 
-    // Another app's sealed token doesn't open as this one's: Ember asks without one, and the server refuses.
+    // Another app's sealed token doesn't open as this one's: Papaya OS asks without one, and the server refuses.
     server.token = undefined;
     const other = await appOf(await connect(administrator, { name: "Other", url: LOCAL, token: "another-token" }), 201);
     const [{ token: others }] = (await workspaceSql("SELECT token FROM apps WHERE id = ?", other.id)) as [{ token: string }];
@@ -263,7 +263,7 @@ describe("Connecting an app", () => {
     asked.length = 0;
     addresses["mcp.tracker.example"] = ["10.0.0.7"];
     expect(await refusalOf(await connect(administrator, { name: "Inside", url: TRACKER }), 422)).toEqual({
-      error: "Ember couldn't find mcp.tracker.example on the Internet. Check the address.",
+      error: "Papaya OS couldn't find mcp.tracker.example on the Internet. Check the address.",
       field: "url",
     });
     addresses["mcp.tracker.example"] = [];
@@ -271,7 +271,7 @@ describe("Connecting an app", () => {
     expect(asked).toEqual([]);
   });
 
-  it("refuses an address Ember won't ask, a blank name and a token a header can't carry, before asking anything", async () => {
+  it("refuses an address Papaya OS won't ask, a blank name and a token a header can't carry, before asking anything", async () => {
     const administrator = await setUp();
     for (const url of ["http://mcp.tracker.example/mcp", "ftp://mcp.tracker.example", "https://user:pass@mcp.tracker.example/mcp", "mcp.tracker.example"]) {
       expect(await refusalOf(await connect(administrator, { name: "Tracker", url }), 422), url).toEqual({ error: APP_URL_REFUSED, field: "url" });
@@ -289,7 +289,7 @@ describe("Connecting an app", () => {
     server.token = "right";
     expect(await refusalOf(await connect(administrator, { name: "Tracker", url: LOCAL, token: "not-the-token-1234" }), 422)).toEqual({ error: "localhost:3845 didn't take that token.", field: "token" });
     expect(await refusalOf(await connect(administrator, { name: "Tracker", url: LOCAL }), 422)).toEqual({
-      error: "localhost:3845 asks for a sign-in. Give a token for it, if it has one: Ember can't sign in to an app any other way yet.",
+      error: "localhost:3845 asks for a sign-in. Give a token for it, if it has one: Papaya OS can't sign in to an app any other way yet.",
       field: "token",
     });
     server = { pages: [], instead: () => new Response("Forbidden", { status: 403, headers: { "WWW-Authenticate": 'Bearer error="insufficient_scope", scope="tools:read"' } }) };
@@ -304,7 +304,7 @@ describe("Connecting an app", () => {
     });
     server = { pages: [], instead: () => new Response(null, { status: 307, headers: { Location: "https://elsewhere.example/mcp" } }) };
     expect((await refusalOf(await connect(administrator, { name: "Tracker", url: LOCAL }), 422)).error).toBe(
-      "localhost:3845 sends that address on to another, which Ember doesn't follow. Give the address it ends at.",
+      "localhost:3845 sends that address on to another, which Papaya OS doesn't follow. Give the address it ends at.",
     );
     expect(asked.some(({ url }) => url.includes("elsewhere"))).toBe(false);
     server = { pages: [], instead: () => new Response("<html>Welcome</html>", { headers: { "Content-Type": "text/html" } }) };
@@ -312,9 +312,9 @@ describe("Connecting an app", () => {
       "localhost:3845 didn't answer as an MCP server does. Check the address, which often ends in /mcp.",
     );
     server = { pages: [], instead: () => Promise.reject(new TypeError("Network connection lost.")) };
-    expect((await refusalOf(await connect(administrator, { name: "Tracker", url: LOCAL }), 422)).error).toBe("Ember couldn't reach localhost:3845. Check the address.");
+    expect((await refusalOf(await connect(administrator, { name: "Tracker", url: LOCAL }), 422)).error).toBe("Papaya OS couldn't reach localhost:3845. Check the address.");
     server = { pages: [[]] };
-    expect((await refusalOf(await connect(administrator, { name: "Tracker", url: LOCAL }), 422)).error).toBe("localhost:3845 answered, but it has no tools Ember can use.");
+    expect((await refusalOf(await connect(administrator, { name: "Tracker", url: LOCAL }), 422)).error).toBe("localhost:3845 answered, but it has no tools Papaya OS can use.");
     // A server may write what it was sent in its answer, which the log doesn't quote.
     server = { pages: [], instead: ({ authorization }) => new Response(`No: you sent ${authorization}`, { status: 500 }) };
     expect((await refusalOf(await connect(administrator, { name: "Tracker", url: LOCAL, token: "echoed-token-5678" }), 422)).error).toBe("localhost:3845 answered 500. Try again in a moment.");
@@ -325,7 +325,7 @@ describe("Connecting an app", () => {
     expect(JSON.stringify(logged.mock.calls)).not.toContain("echoed-token-5678");
   });
 
-  it("stops reading a server that answers with more than Ember reads, and connects nothing", async () => {
+  it("stops reading a server that answers with more than Papaya OS reads, and connects nothing", async () => {
     const administrator = await setUp();
     vi.spyOn(console, "error").mockImplementation(() => {});
     let megabytes = 0;
@@ -338,7 +338,7 @@ describe("Connecting an app", () => {
       });
     server = { pages: [], instead: ({ rpc }) => (rpc === "tools/list" ? new Response(endless(), { headers: { "Content-Type": "application/json" } }) : null) };
 
-    expect(await refusalOf(await connect(administrator, { name: "Tracker", url: LOCAL }), 422)).toEqual({ error: "localhost:3845 answered with more than Ember reads.", field: "url" });
+    expect(await refusalOf(await connect(administrator, { name: "Tracker", url: LOCAL }), 422)).toEqual({ error: "localhost:3845 answered with more than Papaya OS reads.", field: "url" });
     expect(megabytes).toBeLessThan(10);
     expect(((await (await listApps(administrator)).json()) as Apps).apps).toEqual([]);
   });
@@ -357,7 +357,7 @@ describe("Connecting an app", () => {
     expect(app.tools[0]!.description).toHaveLength(MAX_TOOL_DESCRIPTION_LENGTH);
     expect(app.tools[0]!.description.endsWith("…")).toBe(true);
     expect(app.tools[1]).toEqual({ name: "bare", title: null, description: "" });
-    // "has spaces" and "huge" can't be used, and seven more are past what Ember keeps.
+    // "has spaces" and "huge" can't be used, and seven more are past what Papaya OS keeps.
     expect(app.toolsLeftOut).toBe(9);
     expect(asked.filter(({ rpc }) => rpc === "tools/list")).toHaveLength(2);
   });
@@ -372,7 +372,7 @@ describe("Connecting an app", () => {
     expect(asked.filter(({ rpc }) => rpc === "tools/list")).toHaveLength(10);
   });
 
-  it("is for administrators, while Ember AI is on, and for at most as many apps as Ember connects", async () => {
+  it("is for administrators, while Papaya AI is on, and for at most as many apps as Papaya OS connects", async () => {
     const administrator = await setUp();
     const member = await joinAsGrace();
     for (const refused of [await listApps(member), await connect(member, { name: "Tracker", url: LOCAL }), await connect(member, "nonsense")]) {
@@ -389,7 +389,7 @@ describe("Connecting an app", () => {
     expect((await api("/api/account/assistant", { method: "DELETE", headers: as(administrator) })).status).toBe(200);
     expect(await refusalOf(await listApps(administrator), 409)).toEqual({ error: ASSISTANT_OFF });
     expect(await refusalOf(await connect(administrator, { name: "Tracker", url: LOCAL }), 409)).toEqual({ error: ASSISTANT_OFF });
-    // Turning Ember AI off keeps the apps, for when it's on again.
+    // Turning Papaya AI off keeps the apps, for when it's on again.
     expect(await workspaceSql("SELECT COUNT(*) AS count FROM apps")).toEqual([{ count: MAX_APPS }]);
   });
 });
@@ -576,7 +576,7 @@ describe("An agent's tools", () => {
       const { picked, changed } = tools.find(({ name }) => name === "create_issue")!;
       return { picked, changed };
     };
-    /** Has the app's server describe create_issue `how`, which Ember finds reading its tools again. */
+    /** Has the app's server describe create_issue `how`, which Papaya OS finds reading its tools again. */
     const describe = async (how: string) => {
       server.pages = [[SEARCH_ISSUES, { ...CREATE_ISSUE, description: how }]];
       await appOf(await readAgain(administrator, tracker.id));
@@ -647,7 +647,7 @@ describe("An agent's tools", () => {
     expect(pickedIn(await offeredBy(await offered(administrator, ASSISTANT_ID)))).toHaveLength(MAX_AGENT_TOOLS);
   });
 
-  it("is for administrators, while Ember AI is on, and for @ember and agents alone", async () => {
+  it("is for administrators, while Papaya AI is on, and for @ember and agents alone", async () => {
     const administrator = await setUp();
     const member = await joinAsGrace();
     await appOf(await connect(administrator, { name: "Tracker", url: LOCAL }), 201);
@@ -667,7 +667,7 @@ describe("An agent's tools", () => {
     expect((await api("/api/account/assistant", { method: "DELETE", headers: as(administrator) })).status).toBe(200);
     expect(await refusalOf(await offered(administrator, ASSISTANT_ID), 409)).toEqual({ error: ASSISTANT_OFF });
     expect(await refusalOf(await pick(administrator, ASSISTANT_ID, []), 409)).toEqual({ error: ASSISTANT_OFF });
-    // Turning Ember AI off keeps the picks, as it keeps the apps.
+    // Turning Papaya AI off keeps the picks, as it keeps the apps.
     expect(await workspaceSql("SELECT agent_id FROM agent_tools")).toEqual([{ agent_id: ASSISTANT_ID }]);
   });
 });

@@ -33,7 +33,7 @@ const workspace: Omit<Bootstrap, "user"> = {
   signInWithMemberful: false,
   turnstileSiteKey: null,
   passwordResetCodes: false,
-  account: { name: "Ember", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo: null, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false },
+  account: { name: "Papaya OS", tagline: "", hideTranslationButtons: true, customStyles: "", restrictRoomCreation: false, logo: null, customDomain: null, joinLink: true, openSignUp: false, memberfulJoin: false, memberfulSignIn: false, emailDomainSignUp: false, emailDomains: [], navigationIcons: {}, huddles: false },
   version: "0.1",
   vapidPublicKey: null,
   platform: CHROME_MAC,
@@ -71,8 +71,8 @@ describe("Sign up with the join link", () => {
   it("asks for a name, email address and password", () => {
     render(<JoinPage workspace={workspace} joinCode={JOIN_CODE} onJoined={vi.fn()} />);
     expect(document.title).toBe("Sign up");
-    expect(screen.getByRole("img", { name: "Ember" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { level: 1, name: "Join Ember" })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Papaya OS" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: "Join Papaya OS" })).toBeInTheDocument();
     expect(screen.getByText("Create your account and join the conversation.")).toBeInTheDocument();
 
     const name = screen.getByLabelText("Name");
@@ -141,11 +141,11 @@ describe("Sign up with the join link", () => {
     expect(screen.getByRole("button", { name: "Create account" })).toBeEnabled();
   });
 
-  it("says when Ember can't be reached", async () => {
+  it("says when Papaya OS can't be reached", async () => {
     vi.spyOn(globalThis, "fetch").mockRejectedValue(new TypeError("Failed to fetch"));
     render(<JoinPage workspace={workspace} joinCode={JOIN_CODE} onJoined={vi.fn()} />);
     await join();
-    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't reach Ember. Check your connection and try again.");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't reach Papaya OS. Check your connection and try again.");
     expect(screen.getByLabelText("Email address")).toHaveValue("grace@example.com");
   });
 
@@ -221,7 +221,7 @@ describe("Sign up without a link", () => {
     const fetch = respond(201, { user: grace });
     const onJoined = vi.fn();
     render(<JoinPage workspace={open} joinCode={null} onJoined={onJoined} />);
-    expect(screen.getByRole("heading", { level: 1, name: "Join Ember" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: "Join Papaya OS" })).toBeInTheDocument();
     await join();
     await waitFor(() => expect(onJoined).toHaveBeenCalledWith(grace));
     const [path, init] = fetch.mock.calls[0]!;
@@ -328,10 +328,10 @@ describe("Sign up without a link", () => {
 });
 
 describe("Version", () => {
-  it("shows Ember's version under the card, as the sign-in page does, and nobody to email", () => {
+  it("shows Papaya OS's version under the card, as the sign-in page does, and nobody to email", () => {
     render(<JoinPage workspace={workspace} joinCode={JOIN_CODE} onJoined={vi.fn()} />);
     const card = screen.getByRole("heading", { name: /^Join / }).closest("section")!;
-    expect(card.nextElementSibling).toHaveTextContent(/^Ember version 0\.1$/);
+    expect(card.nextElementSibling).toHaveTextContent(/^Version 0\.1$/);
     expect(screen.queryByRole("link", { name: /@/ })).not.toBeInTheDocument();
   });
 });
@@ -350,11 +350,11 @@ describe("Translation buttons", () => {
 });
 
 describe("Workspace logo", () => {
-  it("shows the workspace's logo in place of Ember's flame", () => {
+  it("shows the workspace's logo in place of Papaya OS's flame", () => {
     const logo = "/account/logo?v=20261017120000";
     render(<JoinPage workspace={{ ...workspace, account: { ...workspace.account, logo } }} joinCode={JOIN_CODE} onJoined={vi.fn()} />);
     expect(screen.getByRole("img", { name: "Account logo" })).toHaveAttribute("src", logo);
-    expect(screen.queryByRole("img", { name: "Ember" })).toBeNull();
+    expect(screen.queryByRole("img", { name: "Papaya OS" })).toBeNull();
   });
 });
 

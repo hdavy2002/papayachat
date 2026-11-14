@@ -10,11 +10,11 @@ import { EMAIL_SIGN_UP_LINK, emailSignUpUrl } from "./join-link";
 import { SetUpTurnstile } from "./turnstile-settings";
 
 // The Email domain card in Membership's ways to join: an administrator lists the domains whose email
-// addresses can join, and people with one ask for a link at /join/email, which Ember emails them. Laid
+// addresses can join, and people with one ask for a link at /join/email, which Papaya OS emails them. Laid
 // out as the other ways to join are, with its domains while it's on. It can't be on without one, so
 // turning it on before there are any opens the list, and saving them turns it on. Nor can it be on
-// before Ember can send email, so turning it on before then says so and opens Set up email, as the
-// project's owner asked (2026-10-26), and goes on once Ember can.
+// before Papaya OS can send email, so turning it on before then says so and opens Set up email, as the
+// project's owner asked (2026-10-26), and goes on once Papaya OS can.
 
 const NOTE = "text-[0.8em] text-muted-foreground max-md:text-[12px]";
 const BUTTON = "inline-flex min-h-11 items-center justify-center rounded-[9px] border bg-background px-3.5 py-2.5 font-medium disabled:opacity-50";
@@ -32,16 +32,16 @@ const sameDomains = (domains: readonly string[], kept: readonly string[]) => dom
 interface Props {
   /** The domains it lets in, as kept, whether it's on or not. */
   domains: string[];
-  /** Whether Ember can send email, which it takes to email people their links. */
+  /** Whether Papaya OS can send email, which it takes to email people their links. */
   emails: boolean;
-  /** Whether Ember has Turnstile's keys, whose check stands in for the limit on a network. */
+  /** Whether Papaya OS has Turnstile's keys, whose check stands in for the limit on a network. */
   turnstile: boolean;
   /** Where its switch is: where it was moved to while that's saved, or else where the workspace has it. */
   checked: boolean;
   onCheckedChange: (on: boolean) => void;
   /** Saves `domains` in place of those it has, turning it on with them if `turnOn`, then calls `settled` with whether it did. */
   saveDomains: (domains: string[], turnOn: boolean, settled: (saved: boolean) => void) => void;
-  /** Opens Set up email, calling `then`, if given, once it closes with Ember able to send email. */
+  /** Opens Set up email, calling `then`, if given, once it closes with Papaya OS able to send email. */
   onSetUpEmail: (then?: () => void) => void;
   /** Opens Set up Turnstile, whose check lifts the limit on a network. */
   onSetUpTurnstile: () => void;
@@ -51,7 +51,7 @@ interface Props {
 
 /**
  * Email domain, for administrators: its switch, then while it's on, its domains, to add to and remove
- * from, then save, the link to its page, and how often Ember emails a link. Until Ember can send email
+ * from, then save, the link to its page, and how often Papaya OS emails a link. Until Papaya OS can send email
  * it says so, and turning it on sets that up first.
  */
 export function EmailDomainSettings({ domains, emails, turnstile, checked, onCheckedChange, saveDomains, onSetUpEmail, onSetUpTurnstile, setAside }: Props) {
@@ -114,10 +114,10 @@ export function EmailDomainSettings({ domains, emails, turnstile, checked, onChe
           <p id="email-domain-description" className={cn(NOTE, checked && !emails && setAside === null && "text-negative")}>
             {setAside ??
               (emails
-                ? "People with an email address at your domains join with a link Ember emails them."
+                ? "People with an email address at your domains join with a link Papaya OS emails them."
                 : checked
-                  ? "It's on, but Ember can't send email, so nobody gets a link to join with until email is set up."
-                  : "People with an email address at your domains join with a link Ember emails them. Ember can't send email yet, so turning this on sets that up first.")}
+                  ? "It's on, but Papaya OS can't send email, so nobody gets a link to join with until email is set up."
+                  : "People with an email address at your domains join with a link Papaya OS emails them. Papaya OS can't send email yet, so turning this on sets that up first.")}
           </p>
         </div>
         <Switch
@@ -196,7 +196,7 @@ export function EmailDomainSettings({ domains, emails, turnstile, checked, onChe
           )}
           {checked && <ShareableLink id="email_sign_up" label="Share with people at your domains" url={emailSignUpUrl()} sharing={EMAIL_SIGN_UP_LINK} />}
           <p className={NOTE}>
-            Ember emails an address at most {EMAILS_PER_ADDRESS} links an hour, whoever asks, so nobody can use it to fill someone's inbox.{" "}
+            Papaya OS emails an address at most {EMAILS_PER_ADDRESS} links an hour, whoever asks, so nobody can use it to fill someone's inbox.{" "}
             {turnstile ? (
               "Cloudflare Turnstile checks that whoever asks for a link is a person."
             ) : (

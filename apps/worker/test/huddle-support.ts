@@ -254,21 +254,21 @@ export async function listen(client: HuddleSocket, fresh = false) {
 
 const founder = { name: "Ada Lovelace", emailAddress: "ada@example.com", password: "analytical engine" };
 
-/** Sets Ember up with Ada as its administrator, signed in. */
+/** Sets Papaya OS up with Ada as its administrator, signed in. */
 export async function setUp(): Promise<Session> {
   const response = await api("/api/first_run", { method: "POST", body: JSON.stringify(founder) });
   expect(response.status).toBe(201);
   return { user: shown(((await response.json()) as NewWorkspace).user), cookie: cookieOf(response) };
 }
 
-/** Gives Ember `app`'s keys as `administrator`, as Set up huddles does. */
+/** Gives Papaya OS `app`'s keys as `administrator`, as Set up huddles does. */
 export async function giveKeys(administrator: Session, app = APP): Promise<void> {
   const response = await api("/api/account/huddles", { method: "PUT", headers: { Cookie: administrator.cookie }, body: JSON.stringify(app) });
   expect(response.status, await response.clone().text()).toBe(200);
 }
 
 /**
- * Sets Ember up with huddles on: Ada, its administrator, has given it an SFU app's keys, which a
+ * Sets Papaya OS up with huddles on: Ada, its administrator, has given it an SFU app's keys, which a
  * stand-in for the SFU took, and has been asked nothing since.
  */
 export async function huddlesOn(): Promise<{ ada: Session; sfu: StandInSfu }> {
