@@ -21,7 +21,7 @@ const WRITES = ["POST", "PUT", "PATCH", "DELETE"];
 async function expectPage(response: Response, status: number, html: string) {
   expect(response.status).toBe(status);
   expect(response.headers.get("Content-Type")).toBe("text/html; charset=utf-8");
-  expect(response.headers.get("X-Frame-Options")).toBe("SAMEORIGIN");
+  expect(response.headers.get("Content-Security-Policy")).toContain("frame-ancestors 'self' https://yellow.papayaos.app");
   expect(await response.text()).toBe(html);
 }
 

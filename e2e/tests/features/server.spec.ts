@@ -100,7 +100,7 @@ test.describe("Security headers and HTTPS", () => {
       const framed = page.waitForResponse(`${baseURL}/session/new`);
       await showInFrame(`${baseURL}/session/new`);
       const headers = (await framed).headers();
-      expect(headers["x-frame-options"]).toBe("SAMEORIGIN");
+      expect(headers["x-frame-options"]).toBeUndefined();
       expect(headers["content-security-policy"]).toContain("frame-ancestors 'self'");
       await expect.poll(() => page.frames()[1]?.url()).toMatch(/^chrome-error:/);
     } finally {

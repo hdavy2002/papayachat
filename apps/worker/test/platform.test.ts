@@ -26,8 +26,8 @@ const page = (path: string, init: Init = {}) => apiWith({ ASSETS: builtPages }, 
 /** Over plain HTTP, to a host that isn't this machine. */
 const overHttp = (path: string, init: RequestInit = {}) => exports.default.fetch(`http://ember.test${path}`, { redirect: "manual", ...init });
 
+// No X-Frame-Options where the policy is sent: its frame-ancestors lets the Papaya OS desktop frame the chat.
 const RAILS_DEFAULTS = {
-  "x-frame-options": "SAMEORIGIN",
   "x-xss-protection": "0",
   "x-content-type-options": "nosniff",
   "x-permitted-cross-domain-policies": "none",
@@ -43,7 +43,7 @@ const WEB_ANALYTICS_BEACON = "https://static.cloudflareinsights.com/beacon.min.j
 
 /** The policy every answer carries, for this suite's host, without a page's own scripts. */
 const POLICY =
-  `default-src 'self'; script-src 'self' ${WEB_ANALYTICS_BEACON}; style-src 'self' 'unsafe-inline'; img-src 'self' https: data: blob:; media-src 'self' blob:; connect-src 'self' wss://ember.test; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; report-uri /csp-report`;
+  `default-src 'self'; script-src 'self' ${WEB_ANALYTICS_BEACON}; style-src 'self' 'unsafe-inline'; img-src 'self' https: data: blob:; media-src 'self' blob:; connect-src 'self' wss://ember.test; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self' https://yellow.papayaos.app https://papayaos.app https://www.papayaos.app; report-uri /csp-report`;
 
 /** `text`'s SHA-256 in base64, as a policy names a script. */
 const sha256 = async (text: string) => btoa(String.fromCharCode(...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)))));

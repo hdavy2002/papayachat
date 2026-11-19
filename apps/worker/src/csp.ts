@@ -1,5 +1,6 @@
 import { isHttps } from "./auth";
 import { bodyUpTo } from "./bodies";
+import { PAPAYA_DESKTOP_ORIGINS } from "./papaya-origins";
 import { urlOf } from "./request-url";
 
 // A Content-Security-Policy on everything the Worker answers, which Campfire goes without: the backstop
@@ -68,7 +69,8 @@ function writePolicy(host: string, https: boolean, scriptHashes: readonly string
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
-    "frame-ancestors 'self'",
+    // Papaya Chat opens in a window of the Papaya OS desktop (papaya-desktop.ts).
+    `frame-ancestors 'self' ${PAPAYA_DESKTOP_ORIGINS.join(" ")}`,
     `report-uri ${CSP_REPORT_PATH}`,
   ].join("; ");
 }

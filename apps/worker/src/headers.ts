@@ -12,7 +12,6 @@ import { versionOf } from "./version";
 
 /** `config.action_dispatch.default_headers`, as Rails 7.1 sets them. */
 const DEFAULT_HEADERS: [string, string][] = [
-  ["X-Frame-Options", "SAMEORIGIN"],
   ["X-XSS-Protection", "0"],
   ["X-Content-Type-Options", "nosniff"],
   ["X-Permitted-Cross-Domain-Policies", "none"],
@@ -73,6 +72,15 @@ export function withHeaders(response: Response, request: Request, env: Env, { ve
     if (!answer.headers.has(name)) answer.headers.set(name, value);
   }
   if (policy && !answer.headers.has("Content-Security-Policy")) answer.headers.set("Content-Security-Policy", contentSecurityPolicy(request));
+  // The policy's frame-ancestors lets the Papaya OS desktop frame the chat; anything without a policy
+  // keeps Rails' SAMEORIGIN.
+  if (!answer.headers.has("Content-Security-Policy") && !answer.headers.has("X-Frame-Options")) answer.headers.set("X-Frame-Options", "SAMEORIGIN");
+  // The desktop is cross-origin isolated (COEP credentialless), and a frame in it has to be too, and
+  // say it may be embedded by its own site (papayaos.app).
+  if (policy) {
+    if (!answer.headers.has("Cross-Origin-Embedder-Policy")) answer.headers.set("Cross-Origin-Embedder-Policy", "credentialless");
+    if (!answer.headers.has("Cross-Origin-Resource-Policy")) answer.headers.set("Cross-Origin-Resource-Policy", "same-site");
+  }
   if (version) {
     answer.headers.set("X-Version", versionOf(env));
     // Rails leaves out a header that's nil, but sends one that's blank.

@@ -134,6 +134,7 @@ import { checkResendApiKey } from "./mail";
 import { manifest, manifestFormatOf } from "./manifest";
 import { finishMemberfulSignIn, memberfulConnectionFor, memberfulRefusal, memberfulWebhook, memberfulWebhooksOf, startMemberfulSignIn } from "./memberful";
 import { memberfulKeysOf } from "./memberful-api";
+import { PAPAYA_EMBED_PATH, PAPAYA_TOKEN_PATH, papayaEmbed, papayaTokenSignIn } from "./papaya-desktop";
 import { anyOtherPage, formAnswer } from "./pages";
 import { askForPasswordReset, passwordResetPage, resetPasswordWithCode } from "./password-resets";
 import { DUMMY_DIGEST, passwordHasher } from "./passwords";
@@ -1259,6 +1260,9 @@ async function route(request: Request, env: Env, pathname: string): Promise<Resp
   if (write && pathname.startsWith("/api/") && isCrossSite(request)) return problem(422, "Requests from other sites are refused");
   if (action) return action();
   if (pathname.startsWith("/api/")) return problem(404, "Not found");
+  // Papaya Chat in a Papaya OS window, signed in with the desktop's Clerk session (papaya-desktop.ts).
+  if (pathname === PAPAYA_EMBED_PATH) return papayaEmbed(request, env);
+  if (pathname === PAPAYA_TOKEN_PATH) return (await isFromBannedAddress(request, env)) ? tooManyRequests() : papayaTokenSignIn(request, env);
   if (pathname === MEMBERFUL_SIGN_IN_PATH) return startMemberfulSignIn(request, env);
   // Signing in, which a banned IP address can't do, though it's a GET.
   if (pathname === MEMBERFUL_CALLBACK_PATH) return (await isFromBannedAddress(request, env)) ? tooManyRequests() : finishMemberfulSignIn(request, env);

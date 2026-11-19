@@ -2185,4 +2185,75 @@ describe("Sign in with Clerk", () => {
     expect(me.name).toBe("Katherine Johnson");
     expect(await identities()).toEqual([{ issuer: CLERK, subject: "user_2abc", user_id: me.id }]);
   });
+
+  describe("from a Papaya OS window", () => {
+    const b64url = (bytes: Uint8Array) => btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    const text = (value: unknown) => b64url(new TextEncoder().encode(JSON.stringify(value)));
+    const sameOrigin = { "Content-Type": "application/json", Origin: origin, "Sec-Fetch-Site": "same-origin", "CF-Connecting-IP": IP };
+
+    /** Stands in for Clerk's public keys and the suite's /api/me, and signs session tokens like Clerk's. */
+    async function fakeDesktop() {
+      const keys = (await crypto.subtle.generateKey(
+        { name: "RSASSA-PKCS1-v1_5", modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: "SHA-256" },
+        true,
+        ["sign", "verify"],
+      )) as CryptoKeyPair;
+      const jwk = { ...((await crypto.subtle.exportKey("jwk", keys.publicKey)) as JsonWebKey), kid: "ins_1", alg: "RS256", use: "sig" };
+      vi.spyOn(globalThis, "fetch").mockImplementation(async (input, init) => {
+        const request = new Request(input, init);
+        if (request.url === `${CLERK}/.well-known/jwks.json`) return Response.json({ keys: [jwk] });
+        if (request.url === "https://papayaos.app/api/me")
+          return Response.json({ user: { name: "Katherine Johnson", email: "katherine@example.com", clerkId: "user_2abc" } });
+        return new Response("Unauthorized", { status: 401 });
+      });
+      return async (claims: Record<string, unknown>) => {
+        const signing = `${text({ alg: "RS256", kid: "ins_1", typ: "JWT" })}.${text(claims)}`;
+        const signature = new Uint8Array(await crypto.subtle.sign("RSASSA-PKCS1-v1_5", keys.privateKey, new TextEncoder().encode(signing)));
+        return `${signing}.${b64url(signature)}`;
+      };
+    }
+
+    const now = () => Math.floor(Date.now() / 1000);
+
+    it("signs in whoever the desktop's Clerk session token says, as the same account Sign in with Papaya would", async () => {
+      const administrator = await setUp();
+      expect((await apiWith(CLERK_KEYS, "/api/account", { method: "PATCH", headers: as(administrator), body: JSON.stringify({ settings: { memberfulJoin: true } }) })).status).toBe(200);
+      const sign = await fakeDesktop();
+      const embed = await viaClerk("/auth/papaya/embed?for=user_2abc");
+      expect(embed.status).toBe(200);
+      expect(embed.headers.get("Content-Security-Policy")).toContain("frame-ancestors 'self' https://yellow.papayaos.app");
+      expect(embed.headers.get("Cross-Origin-Embedder-Policy")).toBe("credentialless");
+      const token = await sign({ sub: "user_2abc", iss: CLERK, exp: now() + 60, azp: "https://yellow.papayaos.app" });
+      const answer = await viaClerk("/auth/papaya/token?return_to=/rooms", { method: "POST", headers: sameOrigin, body: JSON.stringify({ token }) });
+      expect(answer.status).toBe(200);
+      expect(await answer.json()).toEqual({ location: "/rooms" });
+      const me = await api("/api/me", { headers: { Cookie: cookieOf(answer) } });
+      expect(((await me.json()) as { user: Me }).user.name).toBe("Katherine Johnson");
+      expect(await identities()).toEqual([expect.objectContaining({ issuer: CLERK, subject: "user_2abc" })]);
+      // Opened again by the same person, the window goes straight to the chat.
+      const cookies = answer.headers.getSetCookie().map((cookie) => cookie.split(";")[0]).join("; ");
+      const again = await viaClerk("/auth/papaya/embed?for=user_2abc&return_to=/rooms", { headers: { Cookie: cookies } });
+      expect(again.status).toBe(302);
+      expect(new URL(again.headers.get("Location")!).pathname).toBe("/rooms");
+      // By someone else, it waits for their token.
+      expect((await viaClerk("/auth/papaya/embed?for=user_other", { headers: { Cookie: cookies } })).status).toBe(200);
+    });
+
+    it("refuses a token Clerk didn't sign, one out of date, one from another site, and one sent from another site", async () => {
+      const administrator = await setUp();
+      expect((await apiWith(CLERK_KEYS, "/api/account", { method: "PATCH", headers: as(administrator), body: JSON.stringify({ settings: { memberfulJoin: true } }) })).status).toBe(200);
+      const sign = await fakeDesktop();
+      const post = (token: string, headers: Record<string, string> = sameOrigin) =>
+        viaClerk("/auth/papaya/token", { method: "POST", headers, body: JSON.stringify({ token }) });
+      const good = await sign({ sub: "user_2abc", iss: CLERK, exp: now() + 60 });
+      const [, payload, signature] = good.split(".");
+      expect((await post(`${text({ alg: "RS256", kid: "ins_1" })}.${text({ sub: "user_evil", iss: CLERK, exp: now() + 60 })}.${signature}`)).status).toBe(401);
+      expect((await post(await sign({ sub: "user_2abc", iss: CLERK, exp: now() - 60 }))).status).toBe(401);
+      expect((await post(await sign({ sub: "user_2abc", iss: "https://clerk.other.com", exp: now() + 60 }))).status).toBe(401);
+      expect((await post(await sign({ sub: "user_2abc", iss: CLERK, exp: now() + 60, azp: "https://evil.example" }))).status).toBe(401);
+      expect((await post(good, { ...sameOrigin, Origin: "https://evil.example", "Sec-Fetch-Site": "cross-site" })).status).toBe(422);
+      expect(payload).toBeTruthy();
+      expect(await identities()).toEqual([]);
+    });
+  });
 });

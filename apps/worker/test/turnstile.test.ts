@@ -276,14 +276,13 @@ describe("Check that people are people with Cloudflare Turnstile", () => {
       expect(response.status).toBe(200);
       expect(response.headers.get("Content-Type")).toBe("text/html; charset=utf-8");
       expect(response.headers.get("Cache-Control")).toBe("no-cache");
-      expect(response.headers.get("X-Frame-Options")).toBe("SAMEORIGIN");
       const html = await response.text();
       expect(html).toContain(`${TURNSTILE}/turnstile/v0/api.js?render=explicit`);
       const policy = response.headers.get("Content-Security-Policy")!;
       const [hash] = await inlineScriptHashes(html);
       expect(policy).toContain(`script-src 'self' https://static.cloudflareinsights.com/beacon.min.js/ 'sha256-${hash}' ${TURNSTILE};`);
       expect(policy).toContain(`; frame-src ${TURNSTILE};`);
-      expect(policy).toContain("; frame-ancestors 'self';");
+      expect(policy).toContain("; frame-ancestors 'self' https://yellow.papayaos.app https://papayaos.app https://www.papayaos.app;");
     });
 
     it("answers HEAD with nothing, and refuses other methods", async () => {
