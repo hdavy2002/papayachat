@@ -2120,6 +2120,36 @@ export class Workspace extends DurableObject<Env> {
   }
 
   /**
+   * Signs in from a Papaya OS window someone whose account here has the email address Clerk verified for
+   * them, but was never connected to their Papaya account (`signInWithMemberful` answered "taken"):
+   * connects it now and starts a session, since everyone on the desktop has signed in with Papaya
+   * already, so asking for this chat's password as well would be a second sign-in. Only the Worker's
+   * desktop route calls it, with a member whose session token checked out against Clerk's keys. "taken"
+   * when no active person with a password has that address, "another" when theirs is connected to
+   * another Papaya account, and "refused" or "membership" as connecting from the profile answers.
+   */
+  async signInWithPapayaEmail(issuer: string, member: MemberfulMember, readAt: number, tokenDigest: string, client: Client): Promise<Me | MemberfulRefusal> {
+    const emailAddress = member.emailAddress;
+    if (emailAddress === null) return "taken";
+    return this.closingSockets(async () => {
+      if (await this.store.linkedPerson(issuer, member.id)) return "claimed";
+      const found = (await this.store.passwordFor(emailAddress)) ?? (await this.store.passwordFor(emailAddress.toLowerCase()));
+      if (!found) return "taken";
+      const person = await this.store.connectingPerson(found.userId, issuer);
+      if (!person) return "refused";
+      if (person.subject !== null) return "another";
+      if (person.membershipNeeded && !member.subscribed) return "membership";
+      if (!(await this.store.connectIdentity(found, linkedAccountOf(issuer, member), readAt, new Date().toISOString()))) return "refused";
+      this.linkedSites.add(issuer);
+      await this.keepCatchingUp(Date.now() + MEMBERSHIP_CATCH_UP_MS);
+      const session = await this.sessions.keep(tokenDigest, () =>
+        this.store.startLinkedSession(found.userId, sortableId(), tokenDigest, client, new Date().toISOString(), linkedAccountOf(issuer, member)),
+      );
+      return session ? meOf(session) : "refused";
+    });
+  }
+
+  /**
    * What connecting the account of the person `credentials` signs in to one at the Papaya site
    * `issuer` from their profile checks first: whose account it is, and the digest of their password, or
    * "" without one, which the Worker checks the password they give against, counting it against

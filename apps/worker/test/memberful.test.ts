@@ -2192,22 +2192,24 @@ describe("Sign in with Clerk", () => {
     const sameOrigin = { "Content-Type": "application/json", Origin: origin, "Sec-Fetch-Site": "same-origin", "CF-Connecting-IP": IP };
 
     /** Stands in for Clerk's public keys and the suite's /api/me, and signs session tokens like Clerk's. */
-    async function fakeDesktop() {
+    async function fakeDesktop(email = "katherine@example.com") {
       const keys = (await crypto.subtle.generateKey(
         { name: "RSASSA-PKCS1-v1_5", modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: "SHA-256" },
         true,
         ["sign", "verify"],
       )) as CryptoKeyPair;
-      const jwk = { ...((await crypto.subtle.exportKey("jwk", keys.publicKey)) as JsonWebKey), kid: "ins_1", alg: "RS256", use: "sig" };
+      // A key id of its own, as Clerk gives a new key, since the Worker keeps the keys it has fetched.
+      const kid = `ins_${crypto.randomUUID()}`;
+      const jwk = { ...((await crypto.subtle.exportKey("jwk", keys.publicKey)) as JsonWebKey), kid, alg: "RS256", use: "sig" };
       vi.spyOn(globalThis, "fetch").mockImplementation(async (input, init) => {
         const request = new Request(input, init);
         if (request.url === `${CLERK}/.well-known/jwks.json`) return Response.json({ keys: [jwk] });
         if (request.url === "https://papayaos.app/api/me")
-          return Response.json({ user: { name: "Katherine Johnson", email: "katherine@example.com", clerkId: "user_2abc" } });
+          return Response.json({ user: { name: "Katherine Johnson", email, clerkId: "user_2abc" } });
         return new Response("Unauthorized", { status: 401 });
       });
       return async (claims: Record<string, unknown>) => {
-        const signing = `${text({ alg: "RS256", kid: "ins_1", typ: "JWT" })}.${text(claims)}`;
+        const signing = `${text({ alg: "RS256", kid, typ: "JWT" })}.${text(claims)}`;
         const signature = new Uint8Array(await crypto.subtle.sign("RSASSA-PKCS1-v1_5", keys.privateKey, new TextEncoder().encode(signing)));
         return `${signing}.${b64url(signature)}`;
       };
@@ -2239,6 +2241,18 @@ describe("Sign in with Clerk", () => {
       expect((await viaClerk("/auth/papaya/embed?for=user_other", { headers: { Cookie: cookies } })).status).toBe(200);
     });
 
+    it("connects the account that has their email already, the administrator's included, instead of asking for its password", async () => {
+      const administrator = await setUp();
+      expect((await apiWith(CLERK_KEYS, "/api/account", { method: "PATCH", headers: as(administrator), body: JSON.stringify({ settings: { memberfulJoin: true } }) })).status).toBe(200);
+      const sign = await fakeDesktop(ada.emailAddress);
+      const token = await sign({ sub: "user_2abc", iss: CLERK, exp: now() + 60 });
+      const answer = await viaClerk("/auth/papaya/token", { method: "POST", headers: sameOrigin, body: JSON.stringify({ token }) });
+      expect(answer.status).toBe(200);
+      const me = await api("/api/me", { headers: { Cookie: cookieOf(answer) } });
+      expect(((await me.json()) as { user: Me }).user.id).toBe(administrator.user.id);
+      expect(await identities()).toEqual([{ issuer: CLERK, subject: "user_2abc", user_id: administrator.user.id }]);
+    });
+
     it("refuses a token Clerk didn't sign, one out of date, one from another site, and one sent from another site", async () => {
       const administrator = await setUp();
       expect((await apiWith(CLERK_KEYS, "/api/account", { method: "PATCH", headers: as(administrator), body: JSON.stringify({ settings: { memberfulJoin: true } }) })).status).toBe(200);
@@ -2247,7 +2261,8 @@ describe("Sign in with Clerk", () => {
         viaClerk("/auth/papaya/token", { method: "POST", headers, body: JSON.stringify({ token }) });
       const good = await sign({ sub: "user_2abc", iss: CLERK, exp: now() + 60 });
       const [, payload, signature] = good.split(".");
-      expect((await post(`${text({ alg: "RS256", kid: "ins_1" })}.${text({ sub: "user_evil", iss: CLERK, exp: now() + 60 })}.${signature}`)).status).toBe(401);
+      const [header] = good.split(".");
+      expect((await post(`${header}.${text({ sub: "user_evil", iss: CLERK, exp: now() + 60 })}.${signature}`)).status).toBe(401);
       expect((await post(await sign({ sub: "user_2abc", iss: CLERK, exp: now() - 60 }))).status).toBe(401);
       expect((await post(await sign({ sub: "user_2abc", iss: "https://clerk.other.com", exp: now() + 60 }))).status).toBe(401);
       expect((await post(await sign({ sub: "user_2abc", iss: CLERK, exp: now() + 60, azp: "https://evil.example" }))).status).toBe(401);

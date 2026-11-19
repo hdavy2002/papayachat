@@ -172,7 +172,10 @@ export async function papayaTokenSignIn(request: Request, env: Env): Promise<Res
   if (!member) return failed("failed", 401);
   const session = newSessionToken();
   const digest = await tokenDigest(session, env.SESSION_SECRET);
-  const user = await workspace(env).signInWithMemberful(keys.site, member, begun.begunAt, digest, clientOf(request));
+  let user = await workspace(env).signInWithMemberful(keys.site, member, begun.begunAt, digest, clientOf(request));
+  // An account here with their (Clerk-verified) email that was never connected: they signed in to the
+  // desktop with Papaya, so it's connected now rather than asking for this chat's password too.
+  if (user === "taken") user = await workspace(env).signInWithPapayaEmail(keys.site, member, begun.begunAt, digest, clientOf(request));
   if (typeof user === "string") return failed(user);
   const returnPath = returnPathOf(urlOf(request).searchParams.get("return_to"));
   return json({ location: returnPath }, 200, sessionCookie(request, session), hostCookie(request, DESKTOP_USER_COOKIE, claims.sub, DESKTOP_USER_MAX_AGE_SECONDS));
